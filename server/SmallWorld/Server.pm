@@ -17,7 +17,7 @@ sub new {
 
 sub process {
 	my ($this, $r) = @_;
-	my $processor = SmallWorld::Processor->new($r);
+	my $processor = SmallWorld::Processor->new($r->param('request'));
 	$processor->process();
 }
 

@@ -1,0 +1,3 @@
+install libapreq2
+install dev-perl/JSON
+perl require File::Base

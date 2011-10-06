@@ -19,7 +19,7 @@ sub handler {
 	my $rs = SmallWorld::Server->new();
 	
 	$rr->content_type('text/plain');
-	$rs->process($r->param('request'));
+	$rs->process($r);
 	
 	return Apache2::Const::OK;
 }
