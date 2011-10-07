@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use utf8;
 
-use JSON;
+use JSON qw(encode_json decode_json);
 
 use SmallWorld::Consts;
 
@@ -18,7 +18,7 @@ sub new {
     $r = "{}";
   }
 
-  $self->{json} = eval { return JSON->new->decode($r) or {}; };
+  $self->{json} = eval { return decode_json($r) or {}; };
 #$self->{db} = SmallWorld::DB->new;
 
   bless $self, $class;
@@ -28,24 +28,62 @@ sub new {
 
 sub process {
   my ($self) = @_;
-  my $cmd = $self->{json}->{command} || "";
-  my $result = { result => R_ALL_OK };
-  my $str = "";
-  my $funcName = "cmd_$cmd";
-  if ( $cmd && exists &{$funcName} ) {
-    my $func = \&{$funcName};
+  my $result = { result => $self->checkJsonCmd() };
+
+  if ( $result->{result} eq R_ALL_OK ) {
+    my $cmd = $self->{json}->{command};
+    my $func = \&{"cmd_$cmd"};
     &$func($self, $result);
   }
-  else {
-    $result->{result} = R_BAD_JSON;
-  }
-  $str = JSON->new->encode($result) or die "Can not encode JSON-object\n";
-  print $str;
+
+  print encode_json($result) or die "Can not encode JSON-object\n";
 }
 
 sub debug {
   return if !$ENV{DEBUG};
   use Data::Dumper; print Dumper(@_);
+}
+
+sub checkJsonCmd {
+  my ($self) = @_;
+  my $json = $self->{json};
+  my $cmd = $json->{command};
+  return R_BAD_JSON if !$cmd;
+
+  my $pattern = PATTERN->{$cmd};
+  foreach ( @$pattern ) {
+    my $val = $json->{ $_->{name} };
+    # если это необязательное поле и оно пустое, то пропускаем его
+    if ( !$_->{mandatory} && !$val ) {
+      next;
+    }
+
+    # если это обязательное поле и оно пустое, то ошибка
+    return $self->errorCode($_) if ( !$val );
+
+    # если тип параметра -- строка
+    if ( $_->{type} eq "unicode" ) {
+      # если длина строки не удовлетворяет требованиям, то ошибка
+      if ( $_->{min} && length $val < $_->{min} ||
+          length $val > $_->{max} ) {
+        return $self->errorCode($_);
+      }
+    }
+    elsif ( $_->{type} eq "int" ) {
+      # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
+      if ( $_->{min} && $val < $_->{min} ||
+          $_->{max} && $val > $_->{max} ) {
+        return $self->errorCode($_);
+      }
+    }
+  }
+
+  return R_ALL_OK;
+}
+
+sub errorCode() {
+  my ($self, $paramInfo) = @_;
+  return $paramInfo->{errorCode} || R_BAD_JSON;
 }
 
 
