@@ -45,15 +45,10 @@ sub debug {
   use Data::Dumper; print Dumper(@_);
 }
 
-sub checkUsername {
-  return R_ALREADY_TAKEN if $_[0]->{db}->dbExists("players", "username", $_[0]->{json}->{username});   
-  return 0;
+sub checkLoginAndPassword {
+  my $self = shift;
+  return !defined $self->{db}->query("SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?", $self->{json}->{username}, $self->{json}->{password});
 }
-
-sub checkPassword {
-  return 0;
-}
-
 
 sub checkJsonCmd {
   my ($self) = @_;
@@ -89,12 +84,23 @@ sub checkJsonCmd {
       }
     }
   }
-  #заменить нормальный кодом 
-  if ($cmd eq 'register') {
-    my $res = $self->checkUsername;
-    return $res if $res;
-    $res = $self->checkPassword;
-    return $res if $res;
+
+  my $err = {
+    register    =>
+    [
+      { code => R_BAD_USERNAME, handler => sub { $self->{json}->{username} !~ m/^[A-Za-z]{1}[\w\-]{2,15}$/;} },
+      { code => R_BAD_PASSWORD, handler => sub { $self->{json}->{password} !~ m/^.{6,18}$/;} },
+      { code => R_USERNAME_TAKEN, handler => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username});} }
+    ],
+    resetServer => [],
+    login       =>
+    [
+      { code => R_BAD_LOGIN, handler => sub { $self->checkLoginAndPassword(); } }
+    ],
+  };
+
+  foreach my $r (@{$err->{$cmd}}) {
+    return $r->{code} if $r->{handler}->();
   }
 
   return R_ALL_OK;
@@ -105,9 +111,12 @@ sub errorCode() {
   return $paramInfo->{errorCode} || R_BAD_JSON;
 }
 
-
-
 # Команды, которые приходят от клиента
+sub cmd_resetServer {
+  my ($self, $result) = @_;
+  $self->{db}->clear();
+}
+
 sub cmd_register {
   my ($self, $result) = @_;
   $self->{db}->addPlayer($self->{json}->{username}, $self->{json}->{password});
@@ -115,8 +124,7 @@ sub cmd_register {
 
 sub cmd_login {
   my ($self, $result) = @_;
-  $self->{json}->{username};
-  $self->{json}->{password};
+  $result->{sid} = $self->{db}->getSid($self->{json}->{username}, $self->{json}->{password});
 }
 
 sub cmd_logout {
@@ -230,10 +238,6 @@ sub cmd_enchant {
 sub cmd_getVisibleTokenBadges {
   my ($self, $result) = @_;
   $self->{json}->{gameId};
-}
-
-sub cmd_resetServer {
-  my ($self, $result) = @_;
 }
 
 sub cmd_throwDice {
