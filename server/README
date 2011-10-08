@@ -1,3 +1,26 @@
-install libapreq2
-install dev-perl/JSON
-perl require File::Base
+I. INSTALL
+
+install libapreq2, firebird
+perl require File::Base, JSON, DBI
+
+
+II. CONFIGURE
+
+* configure apache2 (/etc/apache2/vhosts.d/00_default_vhost.conf):
+...
+<VirtualHost *:80>
+    ServerName server.smallworld
+    Include /etc/apache2/vhosts.d/smallworld.include
+</VirtualHost>
+
+* configure apache2 (/etc/apache2/vhosts.d/smallworld.include):
+DocumentRoot "/var/www/SmallWorld/server"
+PerlRequire "/var/www/SmallWorld/server/startup.pl"
+<Directory "/var/www/SmallWorld/server">
+    SetHandler perl-script
+    PerlResponseHandler Dispatcher
+    Options ExecCGI FollowSymLinks -Indexes
+    AllowOverride all
+    Order deny,allow
+    Allow from all
+</Directory>

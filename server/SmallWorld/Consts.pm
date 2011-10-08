@@ -8,7 +8,7 @@ use utf8;
 
 require Exporter;
 our @ISA    = qw( Exporter );
-our @EXPORT = qw(  
+our @EXPORT = qw(
   R_ALL_OK
   R_ALREADY_EXISTS
   R_ALREADY_IN_GAME
@@ -34,7 +34,6 @@ our @EXPORT = qw(
   R_TOO_MANY_PLAYERS
   R_USERNAME_TAKEN
 
-  CMD_ERRORS
   PATTERN
 
   USERS
