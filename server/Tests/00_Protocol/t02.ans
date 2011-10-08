@@ -1,0 +1,38 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badUsernameOrPassword"
+    },
+    {
+        "result": "badUsernameOrPassword"
+    },
+    {
+        "result": "badUsernameOrPassword"
+    },
+    {
+        "result": "badUsernameOrPassword"
+    },
+    {
+        "result": "ok",
+        "sid": 1
+    },
+    {
+        "result": "ok",
+        "sid": 2
+    },
+    {
+        "result": "ok",
+        "sid": 3
+    },
+    {
+        "result": "badUsernameOrPassword"
+    },
+    {
+        "result": "badJson"
+    },
+    {
+        "result": "badJson"
+    }
+]

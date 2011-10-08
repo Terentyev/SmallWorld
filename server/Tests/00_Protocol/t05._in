@@ -1,0 +1,28 @@
+{
+    "test": [
+        {
+            "action": "getMessages"
+        },
+        {
+            "action": "getMessages",
+            "since": 1
+        },
+        {
+            "action": "getMessages",
+            "since": -1
+        },
+        {
+            "action": "getMessages",
+            "since": 2
+        },
+        {
+            "Xaction": "getMessages",
+            "since": 1
+        },
+        {
+            "action": "XgetMessages",
+            "since": 1
+        }
+    ],
+    "description": "test getMessages function"
+}

@@ -1,0 +1,26 @@
+[
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "ok",
+        "messages": [
+          { "userId": 1, "message": "message 1", "mesTime": "10:10:10" }
+        ]
+    },
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "ok",
+        "messages": [
+          { "userId": 1, "message": "message 1", "mesTime": "10:10:10" }
+        ]
+    },
+    {
+        "result": "badJson"
+    },
+    {
+        "result": "badJson"
+    }
+]

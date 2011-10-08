@@ -1,0 +1,41 @@
+{
+    "test": [
+        {
+            "action": "sendMessage"
+        },
+        {
+            "action": "sendMessage",
+            "sid": 1
+        },
+        {
+            "action": "sendMessage",
+            "text": "Hello, world!"
+        },
+        {
+            "action": "sendMessage",
+            "sid": -1,
+            "text": "Hello, world!"
+        },
+        {
+            "action": "sendMessage",
+            "sid": 1,
+            "text": "very-very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee... loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong text"
+        },
+        {
+            "action": "sendMessage",
+            "sid": 2,
+            "text": "Hello, underworld!"
+        },
+        {
+            "Xaction": "sendMessage",
+            "sid": 1,
+            "text": "Hello, underworld!"
+        },
+        {
+            "action": "XsendMessage",
+            "sid": 1,
+            "text": "Hello, underworld!"
+        }
+    ],
+    "description": "test sendMessage function"
+}

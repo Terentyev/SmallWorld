@@ -1,0 +1,26 @@
+[
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "badJson"
+    },
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badJson"
+    },
+    {
+        "result": "badJson"
+    }
+]

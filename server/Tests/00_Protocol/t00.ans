@@ -1,8 +1,5 @@
 [
     {
-        "result": "ok"
-    },
-    {
         "result": "badMapName"
     },
     {
@@ -15,10 +12,10 @@
         "result": "badPlayersNum"
     },
     {
-        "result": "badPlayersNum"
+        "result": "badTurnsNum"
     },
     {
-        "result": "badPlayersNum"
+        "result": "badTurnsNum"
     },
     {
         "result": "ok",
@@ -29,7 +26,9 @@
         "mapId": 2
     },
     {
-        "result": "ok",
-        "mapId": 3
+        "result": "badJson"
+    },
+    {
+        "result": "badJson"
     }
 ]

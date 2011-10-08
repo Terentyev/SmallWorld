@@ -1,0 +1,37 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badUsername"
+    },
+    {
+        "result": "badUsername"
+    },
+    {
+        "result": "badPassword"
+    },
+    {
+        "result": "badPassword"
+    },
+    {
+        "result": "ok",
+        "userId": 1
+    },
+    {
+        "result": "usernameTaken"
+    },
+    {
+        "result": "ok",
+        "userId": 2
+    },
+    {
+        "result": "usernameTaken"
+    },
+    {
+        "result": "badJson"
+    },
+    {
+        "result": "badJson"
+    }
+]

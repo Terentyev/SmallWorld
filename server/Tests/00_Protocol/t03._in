@@ -1,0 +1,27 @@
+{
+    "test": [
+        {
+            "action": "resetServer"
+        },
+        {
+            "action": "logout"
+        },
+        {
+            "action": "logout",
+            "sid": "a"
+        },
+        {
+            "action": "logout",
+            "sid": 1
+        },
+        {
+            "Xaction": "logout",
+            "sid": 1
+        },
+        {
+            "action": "Xlogout",
+            "sid": 1
+        }
+    ],
+    "description": "test logout function"
+}

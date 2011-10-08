@@ -1,0 +1,58 @@
+{
+    "test": [
+        {
+            "action": "resetServer"
+        },
+        {
+            "action": "login",
+            "username": "very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long username",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "1",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username 1",
+            "password": "very-very-very-very long password"
+        },
+        {
+            "action": "login",
+            "username": "username 1",
+            "password": "1"
+        },
+        {
+            "action": "login",
+            "username": "username 1",
+            "password": "password 1"
+        },
+        {
+            "action": "login",
+            "username": "username 1",
+            "password": "password 1"
+        },
+        {
+            "action": "login",
+            "username": "username 2",
+            "password": "password 1"
+        },
+        {
+            "action": "login",
+            "username": "username 2",
+            "password": "password 2"
+        },
+        {
+            "Xaction": "login",
+            "username": "username 1",
+            "password": "password 1"
+        },
+        {
+            "action": "Xlogin",
+            "username": "username 1",
+            "password": "password 1"
+        }
+    ],
+    "description": "test login function"
+}

@@ -1,59 +1,64 @@
 {
     "test": [
         {
-            "action": "resetServer"
+            "action": "uploadMap"
         },
         {
             "action": "uploadMap",
-            "mapName": "fgjajjsfhjksjhkljhkljgdfkhldklgdkhjskhjk"
+            "mapName": "very-very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long map name"
         },
         {
             "action": "uploadMap",
-            "mapName": "fgjajjsfhjksjhkldsagshrtutydsaagsdhghdfjjjfgkitrigfshhdgdttttttttttjhkljgdfkhldklgdkhjskhjk",
-            "playersNum": 2,
-            "turnsNum": 5
+            "mapName": "map 1",
+            "playersNum": 1
         },
         {
             "action": "uploadMap",
-            "mapName": "map1",
-            "playersNum": 1,
-            "turnsNum": 5
+            "mapName": "map 1",
+            "playersNum": 10
         },
         {
             "action": "uploadMap",
-            "mapName": "map1",
-            "playersNum": "fdskgkjk",
-            "turnsNum": 5
-        },
-        {
-            "action": "uploadMap",
-            "mapName": "map1",
-            "playersNum": -5,
-            "turnsNum": 5
-        },
-        {
-            "action": "uploadMap",
-            "mapName": "map1",
-            "playersNum": 6,
-            "turnsNum": 5
-        },
-        {
-            "action": "uploadMap",
-            "mapName": "map1",
-            "playersNum": 2,
-            "turnsNum": 5
-        },
-        {
-            "action": "uploadMap",
-            "mapName": "map2",
-            "playersNum": 2,
-            "turnsNum": 5
-        },
-        {
-            "action": "uploadMap",
-            "mapName": "map1",
+            "mapName": "map 1",
             "playersNum": 3,
-            "turnsNum": 5
+            "turnsNum": 4
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 1",
+            "playersNum": 3,
+            "turnsNum": 11
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 1",
+            "playersNum": 3,
+            "turnsNum": 6
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": 1,
+                "landDescription": [ "border", "coast" ],
+                "adjacent": 1
+              }
+            ]
+        },
+        {
+            "Xaction": "uploadMap",
+            "mapName": "map 3",
+            "playersNum": 3,
+            "turnsNum": 6
+        },
+        {
+            "action": "XuploadMap",
+            "mapName": "map 3",
+            "playersNum": 3,
+            "turnsNum": 6
         }
     ],
     "description": "test uploadMap function"

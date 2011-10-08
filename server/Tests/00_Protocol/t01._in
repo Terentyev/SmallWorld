@@ -1,0 +1,58 @@
+{
+    "test": [
+        {
+            "action": "resetServer"
+        },
+        {
+            "action": "register",
+            "username": "very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long username",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "1",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "username 1",
+            "password": "very-very-very-very long password"
+        },
+        {
+            "action": "register",
+            "username": "username 1",
+            "password": "1"
+        },
+        {
+            "action": "register",
+            "username": "username 1",
+            "password": "password 1"
+        },
+        {
+            "action": "register",
+            "username": "username 1",
+            "password": "password 1"
+        },
+        {
+            "action": "register",
+            "username": "username 2",
+            "password": "password 1"
+        },
+        {
+            "action": "register",
+            "username": "username 2",
+            "password": "password 2"
+        },
+        {
+            "Xaction": "register",
+            "username": "username 1",
+            "password": "password 1"
+        },
+        {
+            "action": "Xregister",
+            "username": "username 1",
+            "password": "password 1"
+        }
+    ],
+    "description": "test register function"
+}
