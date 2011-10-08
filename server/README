@@ -1,7 +1,7 @@
 I. INSTALL
 
 install libapreq2, firebird
-perl require File::Base, JSON, DBI
+perl require File::Base, JSON, DBI, DBD::InterBase
 
 
 II. CONFIGURE
@@ -24,3 +24,6 @@ PerlRequire "/var/www/SmallWorld/server/startup.pl"
     Order deny,allow
     Allow from all
 </Directory>
+
+* do not forget add record to hosts-file (/etc/hosts || %SystemRoot%\system32\drivers\etc\hosts):
+127.0.0.1   localhost server.smallworld
