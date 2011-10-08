@@ -77,7 +77,7 @@ sub checkJsonCmd {
     if ( $_->{type} eq "unicode" ) {
       # если длина строки не удовлетворяет требованиям, то ошибка
       if ( $_->{min} && length $val < $_->{min} ||
-          length $val > $_->{max} ) {
+          $_->{max} && length $val > $_->{max} ) {
         return $self->errorCode($_);
       }
     }

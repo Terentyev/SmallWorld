@@ -62,25 +62,28 @@ use constant R_BAD_POSITION         => "badPosition"          ;
 use constant R_BAD_READINESS_STATUS => "badReadinessStatus"   ;
 use constant R_BAD_SID              => "badSid"               ;
 use constant R_BAD_STAGE            => "badStage"             ;
+use constant R_BAD_TURNS_NUM        => "badTurnsNum"          ;
 use constant R_BAD_USERNAME         => "badUsername"          ;
 use constant R_NOT_IN_GAME          => "notInGame"            ;
 use constant R_TOO_MANY_PLAYERS     => "tooManyPlayers"       ;
 use constant R_USERNAME_TAKEN       => "usernameTaken"        ;
 
-use constant MIN_USERNAME_LEN  => 3  ;
-use constant MIN_PASSWORD_LEN  => 6  ;
-use constant MAX_USERNAME_LEN  => 16 ;
-use constant MAX_PASSWORD_LEN  => 18 ;
-use constant MAX_MAPNAME_LEN   => 15 ;
-use constant MIN_PLAYERS_NUM   => 2  ;
-use constant MAX_PLAYERS_NUM   => 5  ;
-use constant MIN_GAMENAME_LEN  => 1  ;
+use constant MAX_GAMEDESCR_LEN => 300;
 use constant MAX_GAMENAME_LEN  => 50 ;
+use constant MAX_MAPNAME_LEN   => 15 ;
+use constant MAX_PASSWORD_LEN  => 18 ;
+use constant MAX_PLAYERS_NUM   => 5  ;
 use constant MAX_RACENAME_LEN  => 20 ;
 use constant MAX_SKILLNAME_LEN => 20 ;
-use constant MAX_GAMEDESCR_LEN => 300;
-use constant VISIBLE_RACES     => 6  ;
+use constant MAX_TURNS_NUM     => 10 ;
+use constant MAX_USERNAME_LEN  => 16 ;
+use constant MIN_GAMENAME_LEN  => 1  ;
+use constant MIN_PASSWORD_LEN  => 6  ;
+use constant MIN_PLAYERS_NUM   => 2  ;
+use constant MIN_TURNS_NUM     => 5  ;
+use constant MIN_USERNAME_LEN  => 3  ;
 use constant RACE_NUM          => 14 ;
+use constant VISIBLE_RACES     => 6  ;
 
 use constant PATTERN => {
   register => [
@@ -136,8 +139,22 @@ use constant PATTERN => {
     },
     {name => "text", type => "unicode", mandatory => 1}
   ],
-  getMessages => [ {name => "since", type => "int", mandatory => 1} ],
-  createDefaultMaps => [ {name => "sid", type => "int", mandatory => 0} ],
+  getMessages => [
+    {
+      name => "since",
+      type => "int",
+      mandatory => 1,
+      errorCode => R_BAD_SID # stupid youth!!!
+    }
+  ],
+  createDefaultMaps => [
+    {
+      name => "sid",
+      type => "int",
+      mandatory => 0,
+      errorCode => R_BAD_SID
+    }
+  ],
   uploadMap => [
     {
       name => "mapName",
@@ -163,8 +180,9 @@ use constant PATTERN => {
       name => "turnsNum",
       mandatory => 1,
       type => "int",
-      min => 5,
-      max => 10
+      min => MIN_TURNS_NUM,
+      max => MAX_TURNS_NUM,
+      errorCode => R_BAD_TURNS_NUM
     }
   ],
   createGame => [
