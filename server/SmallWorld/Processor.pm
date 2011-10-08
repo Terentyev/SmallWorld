@@ -31,7 +31,7 @@ sub process {
   my $result = { result => $self->checkJsonCmd() };
 
   if ( $result->{result} eq R_ALL_OK ) {
-    my $cmd = $self->{json}->{command};
+    my $cmd = $self->{json}->{action};
     my $func = \&{"cmd_$cmd"};
     &$func($self, $result);
   }
@@ -47,7 +47,7 @@ sub debug {
 sub checkJsonCmd {
   my ($self) = @_;
   my $json = $self->{json};
-  my $cmd = $json->{command};
+  my $cmd = $json->{action};
   return R_BAD_JSON if !$cmd;
 
   my $pattern = PATTERN->{$cmd};
