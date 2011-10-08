@@ -1,0 +1,35 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badMapName"
+    },
+    {
+        "result": "badMapName"
+    },
+    {
+        "result": "badPlayersNum"
+    },
+    {
+        "result": "badPlayersNum"
+    },
+    {
+        "result": "badPlayersNum"
+    },
+    {
+        "result": "badPlayersNum"
+    },
+    {
+        "result": "ok",
+        "mapId": 1
+    },
+    {
+        "result": "ok",
+        "mapId": 2
+    },
+    {
+        "result": "ok",
+        "mapId": 3
+    }
+]
