@@ -20,6 +20,7 @@ PerlRequire "/var/www/SmallWorld/server/startup.pl"
     SetHandler perl-script
     PerlResponseHandler Dispatcher
     Options ExecCGI FollowSymLinks -Indexes
+    SetEnv DB_PATH /var/www/SmallWorld/server/db/SMALLWORLD.FDB # путь к базе данных
     AllowOverride all
     Order deny,allow
     Allow from all
