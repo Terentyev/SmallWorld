@@ -8,7 +8,8 @@ use utf8;
 use JSON qw(encode_json decode_json);
 
 use SmallWorld::Consts;
-
+use SmallWorld::Conf;
+use SmallWorld::DB;
 
 sub new {
   my $class = shift;
@@ -17,25 +18,25 @@ sub new {
   if ( !$r ) {
     $r = "{}";
   }
-
   $self->{json} = eval { return decode_json($r) or {}; };
-#$self->{db} = SmallWorld::DB->new;
+  $self->{db} = SmallWorld::DB->new;
 
   bless $self, $class;
-
   return $self;
 }
 
 sub process {
   my ($self) = @_;
+  $self->{db}->connect(DB_NAME, DB_LOGIN, DB_PASSWORD, DB_MAX_BLOB_SIZE);
+
   my $result = { result => $self->checkJsonCmd() };
 
   if ( $result->{result} eq R_ALL_OK ) {
-    my $cmd = $self->{json}->{command};
+    my $cmd = $self->{json}->{action};
     my $func = \&{"cmd_$cmd"};
     &$func($self, $result);
   }
-
+  $self->{db}->disconnect;
   print encode_json($result) or die "Can not encode JSON-object\n";
 }
 
@@ -44,13 +45,24 @@ sub debug {
   use Data::Dumper; print Dumper(@_);
 }
 
+sub checkUsername {
+  return R_ALREADY_TAKEN if $_[0]->{db}->dbExists("players", "username", $_[0]->{json}->{username});   
+  return 0;
+}
+
+sub checkPassword {
+  return 0;
+}
+
+
 sub checkJsonCmd {
   my ($self) = @_;
   my $json = $self->{json};
-  my $cmd = $json->{command};
+  my $cmd = $json->{action};
   return R_BAD_JSON if !$cmd;
 
   my $pattern = PATTERN->{$cmd};
+  return R_BAD_JSON if !$pattern;
   foreach ( @$pattern ) {
     my $val = $json->{ $_->{name} };
     # если это необязательное поле и оно пустое, то пропускаем его
@@ -77,6 +89,13 @@ sub checkJsonCmd {
       }
     }
   }
+  #заменить нормальный кодом 
+  if ($cmd eq 'register') {
+    my $res = $self->checkUsername;
+    return $res if $res;
+    $res = $self->checkPassword;
+    return $res if $res;
+  }
 
   return R_ALL_OK;
 }
@@ -87,11 +106,11 @@ sub errorCode() {
 }
 
 
+
 # Команды, которые приходят от клиента
 sub cmd_register {
   my ($self, $result) = @_;
-  $self->{json}->{username};
-  $self->{json}->{password};
+  $self->{db}->addPlayer($self->{json}->{username}, $self->{json}->{password});
 }
 
 sub cmd_login {
