@@ -8,7 +8,7 @@ use utf8;
 
 require Exporter;
 our @ISA    = qw( Exporter );
-our @EXPORT = qw(
+our @EXPORT = qw(  
   R_ALL_OK
   R_ALREADY_EXISTS
   R_ALREADY_IN_GAME
@@ -34,6 +34,7 @@ our @EXPORT = qw(
   R_TOO_MANY_PLAYERS
   R_USERNAME_TAKEN
 
+  CMD_ERRORS
   PATTERN
 
   USERS
@@ -231,7 +232,8 @@ use constant PATTERN => {
       type => "int",
       mandatory => 1,
       min => 0,
-      max => 1
+      max => 1,
+      errorCode => R_BAD_READINESS_STATUS
     },
     {name => "visibleRaces", type => "list", mandatory => 0},
     {name => "visibleSpecialPowers", type => "list", mandatory => 0}
@@ -252,13 +254,6 @@ use constant PATTERN => {
       errorCode => R_BAD_POSITION
     }
   ],
-  conquer => [
-    {name => "sid", type => "int", mandatory => 1},
-    {name => "regionId", type => "int", mandatory => 1},
-    {name => "raceId", type => "int", min => 0, max => RACE_NUM, mandatory => 0}
-  ],
-  decline =>[ {name => "sid", type => "int", mandatory => 1} ],
-  finishTurn => [ {name => "sid", type => "int", mandatory => 1} ],
   doSmth => [
     {
       name => "sid",
@@ -267,6 +262,13 @@ use constant PATTERN => {
       errorCode => R_BAD_SID
     }
   ],
+  conquer => [
+    {name => "sid", type => "int", mandatory => 1},
+    {name => "regionId", type => "int", mandatory => 1},
+    {name => "raceId", type => "int", min => 0, max => RACE_NUM, mandatory => 0}
+  ],
+  decline =>[ {name => "sid", type => "int", mandatory => 1} ],
+  finishTurn => [ {name => "sid", type => "int", mandatory => 1} ],
   redeploy => [
     {name => "sid", type => "int", mandatory => 1},
     {name => "raceId", type => "int", mandatory => 0},
