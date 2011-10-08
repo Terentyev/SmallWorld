@@ -20,7 +20,7 @@ CREATE TABLE GAMES (
   id          INTEGER NOT NULL PRIMARY KEY,
   name        VARCHAR(50) NOT NULL UNIQUE,
   description VARCHAR(300),
-  isStarted   SMALLINT DEFAULT 0 NOT NULL, 
+  isStarted   SMALLINT DEFAULT 0 NOT NULL,
   state       BLOB SUB_TYPE 1
 );
 
@@ -48,13 +48,20 @@ BEGIN
 END^
 
 
-CREATE PROCEDURE MAKENEWSID(id INTEGER)
-RETURNS (newSid INTEGER)   
+CREATE PROCEDURE MAKESID(name VARCHAR(16), pass VARCHAR(18))
+RETURNS (newSid INTEGER)
 AS   
+DECLARE VARIABLE oldsid INTEGER;
 BEGIN   
-  newSid = GEN_ID(GEN_SID, 1);
-  UPDATE PLAYERS SET sid = :newSid WHERE id = :id;
-  SUSPEND;  
+  SELECT sid FROM players WHERE username = :name AND pass = :pass INTO :oldsid;
+  IF (:oldsid IS NULL) THEN
+    BEGIN 
+      newSid = GEN_ID(GEN_SID, 1);
+      UPDATE PLAYERS SET sid = :newSid WHERE username = :name AND pass = :pass;
+    END
+  ELSE
+    newSid = :oldsid;
+  SUSPEND;
 END^ 
 
 CREATE PROCEDURE LOGOUT(sid INTEGER)
