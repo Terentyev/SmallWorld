@@ -48,12 +48,19 @@ BEGIN
 END^
 
 
-CREATE PROCEDURE MAKENEWSID(id INTEGER)
+CREATE PROCEDURE MAKESID(name VARCHAR(16), pass VARCHAR(18))
 RETURNS (newSid INTEGER)   
 AS   
+DECLARE VARIABLE oldsid INTEGER;
 BEGIN   
-  newSid = GEN_ID(GEN_SID, 1);
-  UPDATE PLAYERS SET sid = :newSid WHERE id = :id;
+  SELECT sid FROM players WHERE username = :name AND pass = :pass INTO :oldsid;
+  IF (:oldsid IS NULL) THEN
+    BEGIN 
+      newSid = GEN_ID(GEN_SID, 1);
+      UPDATE PLAYERS SET sid = :newSid WHERE username = :name AND pass = :pass;
+    END
+  ELSE
+    newSid = :oldsid;
   SUSPEND;  
 END^ 
 
