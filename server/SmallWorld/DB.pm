@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use SmallWorld::Conf;
+use SmallWorld::Config;
 use DBD::InterBase;
 use DBI;
 

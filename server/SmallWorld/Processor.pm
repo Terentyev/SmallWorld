@@ -8,7 +8,7 @@ use utf8;
 use JSON qw(encode_json decode_json);
 
 use SmallWorld::Consts;
-use SmallWorld::Conf;
+use SmallWorld::Config;
 use SmallWorld::DB;
 
 sub new {

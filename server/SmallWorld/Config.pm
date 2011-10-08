@@ -1,4 +1,4 @@
-package SmallWorld::Conf;
+package SmallWorld::Config;
 
 use strict;
 use warnings;
