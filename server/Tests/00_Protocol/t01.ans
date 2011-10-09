@@ -6,6 +6,24 @@
         "result": "badUsername"
     },
     {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badUsername"
+    },
+    {
+        "result": "badUsername"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badUsername"
+    },
+    {
         "result": "badUsername"
     },
     {
@@ -15,15 +33,13 @@
         "result": "badPassword"
     },
     {
-        "result": "ok",
-        "userId": 1
+        "result": "ok"
     },
     {
         "result": "usernameTaken"
     },
     {
-        "result": "ok",
-        "userId": 2
+        "result": "ok"
     },
     {
         "result": "usernameTaken"

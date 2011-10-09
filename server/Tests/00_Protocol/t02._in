@@ -4,6 +4,18 @@
             "action": "resetServer"
         },
         {
+            "action": "register",
+            "username": "username_1",
+            "password": "password 1"
+        },
+        {
+            "action": "register",
+            "username": "username_2",
+            "password": "password 1"
+        },
+
+
+        {
             "action": "login",
             "username": "very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long username",
             "password": "1234567"
@@ -15,42 +27,44 @@
         },
         {
             "action": "login",
-            "username": "username 1",
+            "username": "username_1",
             "password": "very-very-very-very long password"
         },
         {
             "action": "login",
-            "username": "username 1",
+            "username": "username_1",
             "password": "1"
         },
         {
             "action": "login",
-            "username": "username 1",
+            "username": "username_1",
             "password": "password 1"
         },
         {
             "action": "login",
-            "username": "username 1",
+            "username": "username_1",
             "password": "password 1"
         },
         {
             "action": "login",
-            "username": "username 2",
+            "username": "username_2",
             "password": "password 1"
         },
         {
             "action": "login",
-            "username": "username 2",
+            "username": "username_2",
             "password": "password 2"
         },
+
+
         {
             "Xaction": "login",
-            "username": "username 1",
+            "username": "username_1",
             "password": "password 1"
         },
         {
             "action": "Xlogin",
-            "username": "username 1",
+            "username": "username_1",
             "password": "password 1"
         }
     ],

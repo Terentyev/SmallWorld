@@ -5,6 +5,36 @@
         },
         {
             "action": "register",
+            "username": "1letters",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "Letters",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "LETTERS",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "-letters",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "_letters",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "all123-_",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
             "username": "very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long username",
             "password": "1234567"
         },
@@ -15,42 +45,42 @@
         },
         {
             "action": "register",
-            "username": "username 1",
+            "username": "username_1",
             "password": "very-very-very-very long password"
         },
         {
             "action": "register",
-            "username": "username 1",
+            "username": "username_1",
             "password": "1"
         },
         {
             "action": "register",
-            "username": "username 1",
+            "username": "username_1",
             "password": "password 1"
         },
         {
             "action": "register",
-            "username": "username 1",
+            "username": "username_1",
             "password": "password 1"
         },
         {
             "action": "register",
-            "username": "username 2",
+            "username": "username_2",
             "password": "password 1"
         },
         {
             "action": "register",
-            "username": "username 2",
+            "username": "username_2",
             "password": "password 2"
         },
         {
             "Xaction": "register",
-            "username": "username 1",
+            "username": "username_1",
             "password": "password 1"
         },
         {
             "action": "Xregister",
-            "username": "username 1",
+            "username": "username_1",
             "password": "password 1"
         }
     ],
