@@ -1,0 +1,67 @@
+{
+    "test": [
+        {
+            "action": "createGame"
+        },
+        {
+            "action": "createGame",
+            "sid": 1
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "very-very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long game name"
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": ""
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "game name 1"
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "game name 1",
+            "mapId": -1
+        },
+        {
+            "action": "createGame",
+            "sid": -1,
+            "gameName": "game name 1",
+            "mapId": 1
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "game name 1",
+            "mapId": 1
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "game name 1",
+            "mapId": 1,
+            "gameDescr": "very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong game description"
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "game name 1",
+            "mapId": 1,
+            "gameDescr": "game description"
+        },
+        {
+            "Xaction": "createGame",
+            "sid": 1
+        },
+        {
+            "action": "XcreateGame",
+            "sid": 1
+        }
+    ],
+    "description": "test createGame function"
+}

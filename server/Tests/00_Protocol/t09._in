@@ -1,0 +1,65 @@
+{
+    "test": [
+        {
+            "action": "resetServer"
+        },
+        {
+            "action": "createDefaultMaps"
+        },
+        {
+            "action": "register",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "game name 1",
+            "mapId": 1
+        },
+
+
+
+        {
+            "action": "leaveGame"
+        },
+        {
+            "action": "leaveGame",
+            "sid": -1
+        },
+        {
+            "action": "leaveGame",
+            "sid": 1
+        },
+        {
+            "action": "joinGame",
+            "sid": 1,
+            "gameId": 1
+        },
+        {
+            "action": "leaveGame",
+            "sid": 1
+        },
+        {
+            "action": "leaveGame",
+            "sid": 1
+        },
+
+
+
+        {
+            "Xaction": "leaveGame",
+            "sid": 1
+        },
+        {
+            "action": "XleaveGame",
+            "sid": 1
+        }
+    ],
+    "description": "test leaveGame function"
+}

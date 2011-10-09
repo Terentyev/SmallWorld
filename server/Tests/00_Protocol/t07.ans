@@ -1,0 +1,43 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 1
+    },
+
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "ok"
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameId": 1
+    },
+    {
+        "result": "ok",
+        "games": []
+    },
+
+
+    {
+        "result": "badJson"
+    },
+    {
+        "result": "badJson"
+    }
+]
