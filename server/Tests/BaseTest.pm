@@ -41,14 +41,13 @@ sub check {
   foreach ( @{ $inTest->{test} } ) {
     my $req = encode_json($_);
     my $cnt = $self->sendRequest($req);
-    my $eth = encode_json($answers->[$i]);
 
-    if ( $self->compare($eth, $cnt) ) {
+    if ( $self->compare($answers->[$i], eval { return decode_json($cnt) || {}; }) ) {
       print ".";
     }
     else {
       print "X";
-      $self->addReport($in, $i, $req, $eth, $cnt);
+      $self->addReport($in, $i, $req, encode_json($answers->[$i]), $cnt);
     }
     #printf("%d: %s != %s\n", $i + 1, $cnt, encode_json($answers->[$i]));
     $i++;
@@ -112,6 +111,7 @@ sub compare {
   else {
     $res = "$eth" eq "$cnt";
   }
+  return $res;
 }
 
 1;
