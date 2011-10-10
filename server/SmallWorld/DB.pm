@@ -5,6 +5,7 @@ use warnings;
 use utf8;
 
 use SmallWorld::Config;
+use SmallWorld::Consts;
 use DBD::InterBase;
 use DBI;
 
@@ -12,8 +13,6 @@ sub new {
   my $class = shift;
   my $self = {};
   $self->{dbh} = undef;
-  $self->{dbTables} = ["PLAYERS", "MAPS", "GAMES", "MESSAGES"];
-  $self->{dbGenerators} = ["GEN_MAP_ID", "GEN_GAME_ID", "GEN_MESSAGE_ID", "GEN_SID", "GEN_PLAYER_ID"];
   bless $self, $class;
   return $self
 }
@@ -43,6 +42,12 @@ sub _do {
   $self->{dbh}->do($s, undef, @list) or $self->dbError;
 }
 
+sub _getId {
+  my $self = shift;
+  my $name = uc shift;
+  return $self->{dbh}->selectrow_array("SELECT gen_id(GEN_$name\_ID, 0) FROM RDB\$DATABASE");
+}
+
 sub query {
   my $self = shift;
   my $sql = shift;
@@ -57,17 +62,23 @@ sub dbExists {
 
 sub clear {
   my $self = shift;
-  foreach (@{$self->{dbTables}}){
+  foreach (@{&DB_TABLES_NAMES}){
     $self->_do("DELETE FROM $_");
   }
-  foreach (@{$self->{dbGenerators}}){
+  foreach (@{&DB_GENERATORS_NAMES}){
     $self->_do("SET GENERATOR $_ TO 0");
   }
 }
 
+sub addMap {
+  my $self = shift;
+  $self->_do("INSERT INTO MAPS (name, playersNum, turnsNum, regions) VALUES (?, ?, ?, ?)", @_);
+  return $self->_getId("MAP");
+}
+
 sub addPlayer {
   my $self = shift;
-  $self->_do("INSERT INTO PLAYERS(username, pass) VALUES(?,?)", @_);
+  $self->_do("INSERT INTO PLAYERS (username, pass) VALUES(?,?)", @_);
 }
 
 sub getSid {
@@ -75,5 +86,9 @@ sub getSid {
   return $self->query("EXECUTE PROCEDURE MAKESID(?,?)", @_);
 }
 
+sub logout {
+  my $self = shift;
+  $self->_do("EXECUTE PROCEDURE LOGOUT(?)", @_);
+}
 1;
 
