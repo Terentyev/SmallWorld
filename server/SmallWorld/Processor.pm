@@ -93,7 +93,7 @@ sub checkJsonCmd {
   }
 
   my $errorHandlers = {
-    &R_BAD_USERNAME => sub { $self->{json}->{username} !~ m/^[A-Za-z]+[\w\-]$/;},
+    &R_BAD_USERNAME => sub { $self->{json}->{username} !~ m/^[A-Za-z][\w\-]*$/;},
     &R_BAD_PASSWORD => sub { $self->{json}->{password} !~ m/^.{6,18}$/;},
     &R_USERNAME_TAKEN => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username});},
     &R_BAD_LOGIN =>sub { $self->checkLoginAndPassword(); },
