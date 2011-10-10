@@ -5,7 +5,8 @@ CREATE TABLE PLAYERS (
   id        INTEGER NOT NULL PRIMARY KEY,
   username  VARCHAR(16) NOT NULL UNIQUE,
   pass      VARCHAR(18), 
-  sid       INTEGER DEFAULT NULL
+  sid       INTEGER DEFAULT NULL,
+  gameId    INTEGER DEFAULT NULL
 );
 
 CREATE TABLE MAPS (
@@ -13,7 +14,7 @@ CREATE TABLE MAPS (
   name        VARCHAR(16) NOT NULL UNIQUE,
   playersNum  SMALLINT NOT NULL,
   turnsNum    SMALLINT NOT NULL,
-  json        BLOB SUB_TYPE 1
+  regions     BLOB SUB_TYPE 1
 );
 
 CREATE TABLE GAMES (
@@ -21,6 +22,7 @@ CREATE TABLE GAMES (
   name        VARCHAR(50) NOT NULL UNIQUE,
   description VARCHAR(300),
   isStarted   SMALLINT DEFAULT 0 NOT NULL,
+  mapId       INTEGER NOT NULL REFERENCES MAPS(id) ON UPDATE CASCADE ON DELETE CASCADE,
   state       BLOB SUB_TYPE 1
 );
 
@@ -53,14 +55,8 @@ RETURNS (newSid INTEGER)
 AS   
 DECLARE VARIABLE oldsid INTEGER;
 BEGIN   
-  SELECT sid FROM players WHERE username = :name AND pass = :pass INTO :oldsid;
-  IF (:oldsid IS NULL) THEN
-    BEGIN 
-      newSid = GEN_ID(GEN_SID, 1);
-      UPDATE PLAYERS SET sid = :newSid WHERE username = :name AND pass = :pass;
-    END
-  ELSE
-    newSid = :oldsid;
+  newSid = GEN_ID(GEN_SID, 1);
+  UPDATE PLAYERS SET sid = :newSid WHERE username = :name AND pass = :pass;
   SUSPEND;
 END^ 
 

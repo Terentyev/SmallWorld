@@ -37,7 +37,7 @@ sub process {
     &$func($self, $result);
   }
   $self->{db}->disconnect;
-  print encode_json($result) or die "Can not encode JSON-object\n";
+  print encode_json($result)."\n" or die "Can not encode JSON-object\n";
 }
 
 sub debug {
@@ -47,7 +47,14 @@ sub debug {
 
 sub checkLoginAndPassword {
   my $self = shift;
-  return !defined $self->{db}->query("SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?", $self->{json}->{username}, $self->{json}->{password});
+  return !defined $self->{db}->query("SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?",
+                                     $self->{json}->{username}, $self->{json}->{password});
+}
+
+sub checkInGame {
+  my $self = shift;
+  my $gameId = $self->{db}->query("SELECT gameId FROM PLAYERS WHERE sid = ?", $self->{json}->{sid});
+  return defined $gameId;
 }
 
 sub checkJsonCmd {
@@ -57,7 +64,7 @@ sub checkJsonCmd {
   return R_BAD_JSON if !$cmd;
 
   my $pattern = PATTERN->{$cmd};
-  return R_BAD_JSON if !$pattern;
+  return R_BAD_ACTION if !$pattern;
   foreach ( @$pattern ) {
     my $val = $json->{ $_->{name} };
     # если это необязательное поле и оно пустое, то пропускаем его
@@ -85,22 +92,21 @@ sub checkJsonCmd {
     }
   }
 
-  my $err = {
-    register    =>
-    [
-      { code => R_BAD_USERNAME, handler => sub { $self->{json}->{username} !~ m/^[A-Za-z]{1}[\w\-]{2,15}$/;} },
-      { code => R_BAD_PASSWORD, handler => sub { $self->{json}->{password} !~ m/^.{6,18}$/;} },
-      { code => R_USERNAME_TAKEN, handler => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username});} }
-    ],
-    resetServer => [],
-    login       =>
-    [
-      { code => R_BAD_LOGIN, handler => sub { $self->checkLoginAndPassword(); } }
-    ],
+  my $errorHandlers = {
+    &R_BAD_USERNAME => sub { $self->{json}->{username} !~ m/^[A-Za-z]+[\w\-]$/;},
+    &R_BAD_PASSWORD => sub { $self->{json}->{password} !~ m/^.{6,18}$/;},
+    &R_USERNAME_TAKEN => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username});},
+    &R_BAD_LOGIN =>sub { $self->checkLoginAndPassword(); },
+    &R_BAD_SID  => sub { !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
+    &R_BAD_MAP_ID => sub { !$self->{db}->dbExists("maps", "id", $self->{json}->{mapId}); },
+    &R_BAD_MAP_NAME => sub { $self->{db}->dbExists("maps", "name", $self->{json}->{mapName}); },
+    &R_BAD_GAME_NAME => sub { $self->{db}->dbExists("games", "name", $self->{json}->{gameName}); },
+    &R_ALREADY_IN_GAME => sub { $self->checkInGame(); }
   };
 
-  foreach my $r (@{$err->{$cmd}}) {
-    return $r->{code} if $r->{handler}->();
+  my $errorList = CMD_ERRORS->{$cmd};
+  foreach ( @$errorList ) {
+    return $_ if $errorHandlers->{$_}->();
   }
 
   return R_ALL_OK;
@@ -124,12 +130,16 @@ sub cmd_register {
 
 sub cmd_login {
   my ($self, $result) = @_;
-  $result->{sid} = $self->{db}->getSid($self->{json}->{username}, $self->{json}->{password});
+  $result->{sid} = $self->{db}->makeSid($self->{json}->{username}, $self->{json}->{password});
 }
 
 sub cmd_logout {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
+  $self->{db}->logout($self->{json}->{sid});
+}
+
+sub cmd_doSmth {
+  return;
 }
 
 sub cmd_sendMessage {
@@ -145,23 +155,21 @@ sub cmd_getMessages {
 
 sub cmd_createDefaultMaps {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
+  foreach (@{&DEFAULT_MAPS}){
+    $self->{db}->addMap($_->{mapName}, $_->{playersNum}, $_->{turnsNum},
+                        exists($_->{regions}) ? encode_json($_->{regions}) : "[]");
+  }
 }
 
 sub cmd_uploadMap {
   my ($self, $result) = @_;
-  $self->{json}->{mapName};
-  $self->{json}->{palyersNum};
-  $self->{json}->{regions};
-  $self->{json}->{turnsNum};
+  $result->{mapId} = $self->{db}->addMap($self->{json}->{mapName}, $self->{json}->{playersNum},
+                                         $self->{json}->{turnsNum}, encode_json($self->{json}->{regions}));
 }
 
 sub cmd_createGame {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{gameName};
-  $self->{json}->{mapId};
-  $self->{json}->{gameDescr};
+  $result->{gameId} = $self->{db}->createGame($self->{json});
 }
 
 sub cmd_getGameList {
