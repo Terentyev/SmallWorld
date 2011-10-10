@@ -48,6 +48,11 @@ sub _getId {
   return $self->{dbh}->selectrow_array("SELECT gen_id(GEN_$name\_ID, 0) FROM RDB\$DATABASE");
 }
 
+sub _getPlayerId {
+  my $self = shift;
+  return $self->query("SELECT id FROM PLAYERS WHERE sid = ?", @_);
+}
+
 sub query {
   my $self = shift;
   my $sql = shift;
@@ -81,7 +86,16 @@ sub addPlayer {
   $self->_do("INSERT INTO PLAYERS (username, pass) VALUES(?,?)", @_);
 }
 
-sub getSid {
+sub createGame {
+  my ($self, $h) = @_;
+  $h->{gameDescr} = "" if !exists $h->{gameDescr};
+  $self->_do("INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)", $h->{gameName}, $h->{mapId}, $h->{gameDescr});
+  my $game_id = $self->_getId("GAME");
+  $self->_do("UPDATE PLAYERS SET gameId = ? WHERE sid = ?", $game_id, $h->{sid});
+  return $game_id;
+}
+
+sub makeSid {
   my $self = shift;
   return $self->query("EXECUTE PROCEDURE MAKESID(?,?)", @_);
 }
