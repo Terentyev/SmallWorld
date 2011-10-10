@@ -33,6 +33,6 @@
         "result": "badJson"
     },
     {
-        "result": "badJson"
+        "result": "badAction"
     }
 ]
