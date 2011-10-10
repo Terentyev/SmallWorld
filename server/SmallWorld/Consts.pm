@@ -30,6 +30,7 @@ our @EXPORT = qw(
   R_BAD_SID
   R_BAD_STAGE
   R_BAD_USERNAME
+  R_CANNOT_CONQUER
   R_NOT_IN_GAME
   R_TOO_MANY_PLAYERS
   R_USERNAME_TAKEN
@@ -40,6 +41,31 @@ our @EXPORT = qw(
   PLAYERS
   GAMES
   MAPS
+
+  AMAZONS_CONQ_TOKENS_NUM
+  AMAZONS_TOKENS_NUM
+  DWARVES_TOKENS_NUM
+  ELVES_DEF_TOKENS_NUM
+  ELVES_TOKENS_NUM
+  GIANTS_CONQ_TOKENS_NUM
+  GIANTS_TOKENS_NUM
+  HALFLINGS_TOKENS_NUM
+  HUMANS_TOKENS_NUM
+  ORCS_TOKENS_NUM
+  RATMEN_TOKENS_NUM
+  SKELETONS_TOKENS_NUM
+  SORCERERS_TOKENS_NUM
+  TRITONS_CONQ_TOKENS_NUM
+  TRITONS_TOKENS_NUM
+  TROLLS_DEF_TOKENS_NUM
+  TROLLS_TOKENS_NUM
+  WIZARDS_TOKENS_NUM
+
+  REGION_TYPE_BORDER
+  REGION_TYPE_FARMLAND
+  REGION_TYPE_MAGIC
+  REGION_TYPE_MINE
+  REGION_TYPE_MOUNTAIN
 );
 
 use constant R_ALL_OK               => "ok"                   ;
@@ -64,6 +90,7 @@ use constant R_BAD_SID              => "badSid"               ;
 use constant R_BAD_STAGE            => "badStage"             ;
 use constant R_BAD_TURNS_NUM        => "badTurnsNum"          ;
 use constant R_BAD_USERNAME         => "badUsername"          ;
+use constant R_CANNOT_CONQUER       => "cannotConquer"        ;
 use constant R_NOT_IN_GAME          => "notInGame"            ;
 use constant R_TOO_MANY_PLAYERS     => "tooManyPlayers"       ;
 use constant R_USERNAME_TAKEN       => "usernameTaken"        ;
@@ -321,6 +348,32 @@ use constant PLAYERS           => "players"        ;
 use constant GAMES             => "games"          ;
 use constant MAPS              => "maps"           ;
 
+# игровые бонусы и штрафы
+use constant AMAZONS_CONQ_TOKENS_NUM => 4;
+use constant AMAZONS_TOKENS_NUM      => 6;
+use constant DWARVES_TOKENS_NUM      => 3;
+use constant ELVES_DEF_TOKENS_NUM    => 1;
+use constant ELVES_TOKENS_NUM        => 6;
+use constant GIANTS_CONQ_TOKENS_NUM  => 1;
+use constant GIANTS_TOKENS_NUM       => 6;
+use constant HALFLINGS_TOKENS_NUM    => 6;
+use constant HUMANS_TOKENS_NUM       => 5;
+use constant ORCS_TOKENS_NUM         => 5;
+use constant RATMEN_TOKENS_NUM       => 8;
+use constant SKELETONS_TOKENS_NUM    => 6;
+use constant SORCERERS_TOKENS_NUM    => 5;
+use constant TRITONS_CONQ_TOKENS_NUM => 1;
+use constant TRITONS_TOKENS_NUM      => 6;
+use constant TROLLS_DEF_TOKENS_NUM   => 1;
+use constant TROLLS_TOKENS_NUM       => 5;
+use constant WIZARDS_TOKENS_NUM      => 5;
+
+# типы регионов
+use constant REGION_TYPE_BORDER   => "border"  ;
+use constant REGION_TYPE_FARMLAND => "farmland";
+use constant REGION_TYPE_MAGIC    => "magic"   ;
+use constant REGION_TYPE_MINE     => "mine"    ;
+use constant REGION_TYPE_MOUNTAIN => "mountain";
 
 __END__
 
