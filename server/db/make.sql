@@ -13,7 +13,7 @@ CREATE TABLE MAPS (
   name        VARCHAR(16) NOT NULL UNIQUE,
   playersNum  SMALLINT NOT NULL,
   turnsNum    SMALLINT NOT NULL,
-  json        BLOB SUB_TYPE 1
+  regions     BLOB SUB_TYPE 1
 );
 
 CREATE TABLE GAMES (
@@ -53,14 +53,8 @@ RETURNS (newSid INTEGER)
 AS   
 DECLARE VARIABLE oldsid INTEGER;
 BEGIN   
-  SELECT sid FROM players WHERE username = :name AND pass = :pass INTO :oldsid;
-  IF (:oldsid IS NULL) THEN
-    BEGIN 
-      newSid = GEN_ID(GEN_SID, 1);
-      UPDATE PLAYERS SET sid = :newSid WHERE username = :name AND pass = :pass;
-    END
-  ELSE
-    newSid = :oldsid;
+  newSid = GEN_ID(GEN_SID, 1);
+  UPDATE PLAYERS SET sid = :newSid WHERE username = :name AND pass = :pass;
   SUSPEND;
 END^ 
 
