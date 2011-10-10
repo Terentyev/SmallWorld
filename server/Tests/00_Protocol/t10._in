@@ -1,0 +1,91 @@
+{
+    "test": [
+        {
+            "action": "resetServer"
+        },
+        {
+            "action": "createDefaultMaps"
+        },
+        {
+            "action": "register",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "game name 1",
+            "mapId": 1
+        },
+        {
+            "action": "register",
+            "username": "username2",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username2",
+            "password": "1234567"
+        },
+
+
+        {
+            "action": "setReadinessStatus"
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": -1
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": 1
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": -1,
+            "isReady": 1
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": 1,
+            "isReady": -1
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": 1,
+            "isReady": 1
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": 2,
+            "isReady": 1
+        },
+        {
+            "action": "joinGame",
+            "sid": 2,
+            "gameId": 1
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": 2,
+            "isReady": 1
+        },
+
+
+
+        {
+            "Xaction": "setReadinessStatus",
+            "sid": 1
+        },
+        {
+            "action": "XsetReadinessStatus",
+            "sid": 1
+        }
+    ],
+    "description": "test setReadinessStatus function"
+}

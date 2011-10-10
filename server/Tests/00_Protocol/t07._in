@@ -1,0 +1,54 @@
+{
+    "test": [
+        {
+            "action": "resetServer"
+        },
+        {
+            "action": "register",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username1",
+            "password": "1234567"
+        },
+
+
+        {
+            "action": "getGameList"
+        },
+        {
+            "action": "getGameList",
+            "sid": -1
+        },
+        {
+            "action": "getGameList",
+            "sid": 1
+        },
+
+        {
+            "action": "createDefaultMaps"
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
+            "gameName": "game name 1",
+            "mapId": 1
+        },
+        {
+            "action": "getGameList"
+        },
+
+
+        {
+            "Xaction": "getGameList",
+            "sid": 1
+        },
+        {
+            "action": "XgetGameList",
+            "sid": 1
+        }
+    ],
+    "description": "test getGameList function"
+}

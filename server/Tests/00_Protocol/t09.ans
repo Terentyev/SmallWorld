@@ -1,0 +1,47 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 1
+    },
+    {
+        "result": "ok",
+        "gameId": 1
+    },
+
+
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "notInGame"
+    },
+
+
+    {
+        "result": "badJson"
+    },
+    {
+        "result": "badJson"
+    }
+]

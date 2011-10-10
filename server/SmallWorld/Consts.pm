@@ -230,7 +230,14 @@ use constant PATTERN => {
       errorCode => R_BAD_GAME_DESC
     }
   ],
-  getGameList => [ {name => "sid", type => "int", mandatory => 0} ],
+  getGameList => [
+    {
+      name => "sid",
+      type => "int",
+      mandatory => 0,
+      errorCode => R_BAD_SID
+    }
+  ],
   joinGame => [
     {
       name => "sid",

@@ -37,13 +37,13 @@ sub check {
   my $answers = decode_json($self->readFile($ans));
   my $inTest = decode_json($self->readFile($in));
   my $i = 0;
-  print "  $inTest->{description}: ";
+  print "   $inTest->{description}: ";
   foreach ( @{ $inTest->{test} } ) {
     my $req = encode_json($_);
     my $cnt = $self->sendRequest($req);
     my $eth = encode_json($answers->[$i]);
 
-    if ( $cnt eq $eth ) {
+    if ( $self->compare($eth, $cnt) ) {
       print ".";
     }
     else {
@@ -88,6 +88,29 @@ sub outReport {
       print "       Expected: $_->{ethalon}\n";
       print "       Get:      $_->{content}\n";
     }
+  }
+}
+
+sub compare {
+  my ($self, $eth, $cnt) = @_;
+
+  return 0 if defined $eth != defined $cnt && defined $eth;
+
+  my $res;
+  if ( ref $eth eq "HASH" ) {
+    foreach (keys %{ $eth }) {
+      $res = $self->compare($eth->{$_}, $cnt->{$_});
+      return 0 if !$res;
+    }
+  }
+  elsif ( ref $eth eq "ARRAY" ) {
+    for (my $i = 0; $i < @$eth; ++$i) {
+      $res = $self->compare($eth->[$_], $cnt->[$_]);
+      return 0 if !$res;
+    }
+  }
+  else {
+    $res = "$eth" eq "$cnt";
   }
 }
 
