@@ -1,6 +1,36 @@
 {
     "test": [
         {
+            "action": "resetServer"
+        },
+        {
+            "action": "register",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "username2",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username2",
+            "password": "1234567"
+        },
+        {
+            "action": "sendMessage",
+            "sid": 1,
+            "text": "message 1"
+        },
+
+
+        {
             "action": "getMessages"
         },
         {
@@ -15,6 +45,8 @@
             "action": "getMessages",
             "since": 2
         },
+
+
         {
             "Xaction": "getMessages",
             "since": 1

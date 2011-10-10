@@ -1,6 +1,9 @@
 {
     "test": [
         {
+            "action": "resetServer"
+        },
+        {
             "action": "uploadMap"
         },
         {
@@ -33,7 +36,8 @@
             "action": "uploadMap",
             "mapName": "map 1",
             "playersNum": 3,
-            "turnsNum": 6
+            "turnsNum": 6,
+            "regions": []
         },
         {
             "action": "uploadMap",
