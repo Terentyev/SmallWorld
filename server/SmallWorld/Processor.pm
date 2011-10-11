@@ -80,7 +80,7 @@ sub checkJsonCmd {
   foreach ( @$pattern ) {
     my $val = $json->{ $_->{name} };
     # если это необязательное поле и оно пустое, то пропускаем его
-    if ( !$_->{mandatory} && !$val ) {
+    if ( !$_->{mandatory} && !defined $val ) {
       next;
     }
 
@@ -90,15 +90,15 @@ sub checkJsonCmd {
     # если тип параметра -- строка
     if ( $_->{type} eq "unicode" ) {
       # если длина строки не удовлетворяет требованиям, то ошибка
-      if ( $_->{min} && length $val < $_->{min} ||
-          $_->{max} && length $val > $_->{max} ) {
+      if ( defined $_->{min} && length $val < $_->{min} ||
+          defined $_->{max} && length $val > $_->{max} ) {
         return $self->errorCode($_);
       }
     }
     elsif ( $_->{type} eq "int" ) {
       # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
-      if ( $_->{min} && $val < $_->{min} ||
-          $_->{max} && $val > $_->{max} ) {
+      if ( defined $_->{min} && $val < $_->{min} ||
+          defined $_->{max} && $val > $_->{max} ) {
         return $self->errorCode($_);
       }
     }
