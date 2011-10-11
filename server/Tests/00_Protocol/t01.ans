@@ -49,5 +49,11 @@
     },
     {
         "result": "badAction"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
     }
 ]

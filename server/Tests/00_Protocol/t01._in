@@ -40,7 +40,7 @@
         },
         {
             "action": "register",
-            "username": "1",
+            "username": "a1",
             "password": "1234567"
         },
         {
@@ -82,6 +82,16 @@
             "action": "Xregister",
             "username": "username_1",
             "password": "password 1"
+        },
+        {
+            "action": "register",
+            "username": "a_z",
+            "password": "?'s%w#"
+        },
+        {
+            "action": "register",
+            "username": "Z-x1234567890_Aa",
+            "password": "'*; 12345678_-@#!)"
         }
     ],
     "description": "test register function"
