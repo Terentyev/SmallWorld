@@ -48,22 +48,22 @@
         {
             "action": "setReadinessStatus",
             "sid": -1,
-            "isReady": 1
+            "readinessStatus": 1
         },
         {
             "action": "setReadinessStatus",
             "sid": 1,
-            "isReady": -1
+            "readinessStatus": -1
         },
         {
             "action": "setReadinessStatus",
             "sid": 1,
-            "isReady": 1
+            "readinessStatus": 1
         },
         {
             "action": "setReadinessStatus",
             "sid": 2,
-            "isReady": 1
+            "readinessStatus": 1
         },
         {
             "action": "joinGame",
@@ -73,7 +73,7 @@
         {
             "action": "setReadinessStatus",
             "sid": 2,
-            "isReady": 1
+            "readinessStatus": 1
         },
 
 
@@ -83,7 +83,7 @@
             "sid": 1
         },
         {
-            "action": "XsetReadinessStatus",
+            "action": "XreadinessStatus",
             "sid": 1
         }
     ],

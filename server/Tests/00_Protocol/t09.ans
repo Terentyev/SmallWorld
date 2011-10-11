@@ -16,6 +16,13 @@
         "result": "ok",
         "gameId": 1
     },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 2
+    },
 
 
     {
@@ -28,13 +35,34 @@
         "result": "notInGame"
     },
     {
+        "result": "alreadyInGame"
+    },
+    {
+        "result": "ok"
+    },
+    {
         "result": "ok"
     },
     {
         "result": "ok"
     },
     {
-        "result": "notInGame"
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "alreadyInGame"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badGameId"
     },
 
 
