@@ -295,7 +295,7 @@ use constant PATTERN => {
       errorCode => R_BAD_SID
     },
     {
-      name => "isReady",
+      name => "readinessStatus",
       type => "int",
       mandatory => 1,
       min => 0,
