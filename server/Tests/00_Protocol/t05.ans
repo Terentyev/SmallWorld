@@ -1,11 +1,33 @@
 [
     {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 2
+    },
+    {
+        "result": "ok"
+    },
+
+
+    {
         "result": "badSid"
     },
     {
         "result": "ok",
         "messages": [
-          { "userId": 1, "message": "message 1", "mesTime": "10:10:10" }
+          { "userId": 1, "message": "message 1" }
         ]
     },
     {
@@ -14,9 +36,11 @@
     {
         "result": "ok",
         "messages": [
-          { "userId": 1, "message": "message 1", "mesTime": "10:10:10" }
+          { "userId": 1, "message": "message 1" }
         ]
     },
+
+
     {
         "result": "badJson"
     },
