@@ -53,6 +53,11 @@ sub _getPlayerId {
   return $self->query("SELECT id FROM PLAYERS WHERE sid = ?", @_);
 }
 
+sub getGameId {
+  my $self = shift;
+  return $self->query("SELECT gameId FROM PLAYERS WHERE sid = ?", @_);
+}
+
 sub query {
   my $self = shift;
   my $sql = shift;
@@ -95,6 +100,11 @@ sub createGame {
   return $game_id;
 }
 
+sub joinGame {
+  my $self = shift;
+  $self->_do("UPDATE PLAYERS SET gameId = ? WHERE sid = ?", @_);
+}
+
 sub makeSid {
   my $self = shift;
   return $self->query("EXECUTE PROCEDURE MAKESID(?,?)", @_);
@@ -102,7 +112,47 @@ sub makeSid {
 
 sub logout {
   my $self = shift;
-  $self->_do("EXECUTE PROCEDURE LOGOUT(?)", @_);
+  $self->leaveGame($_[0]);
+  $self->_do("EXECUTE PROCEDURE LOGOUT(?)", $_[0]);
 }
+
+sub playersCount {
+  my $self = shift;
+  return $self->query("SELECT COUNT(*) FROM PLAYERS WHERE gameId = ?", $_[0]);
+}
+
+sub readyCount {
+  my $self = shift;
+  return $self->query("SELECT COUNT(*) FROM PLAYERS WHERE isReady = 1 AND gameId = ?", $_[0]);
+}
+
+sub getGameState {
+  my $self = shift;
+  return $self->query("SELECT isStarted FROM GAMES WHERE id = ?", $_[0]);
+}
+
+sub leaveGame {
+  my $self = shift;
+  my $gameId = $self->getGameId($_[0]);
+  if (defined $gameId) {
+    $self->_do("UPDATE PLAYERS SET isReady = 0, gameId = NULL WHERE sid = ?", $_[0]);
+    $self->_do("DELETE FROM GAMES WHERE id = ?", $gameId) if !$self->playersCount($gameId);
+  }
+}
+
+sub setIsReady {
+  my $self = shift;
+  my ($isReady, $sid) = @_;
+  my $gameId = $self->getGameId($sid);
+  $self->_do("UPDATE PLAYERS SET isReady = ? WHERE sid = ?", $isReady, $sid);
+  $self->_do("UPDATE GAMES SET isStarted = 1 WHERE id = ?", $gameId)
+    if $self->readyCount($gameId) == $self->getMaxPlayers($gameId);
+}
+
+sub getMaxPlayers {
+  my $self = shift;
+  return $self->query("SELECT playersNum FROM MAPS m INNER JOIN GAMES g ON m.id = g.mapId WHERE g.id = ?", $_[0]);
+}
+
 1;
 

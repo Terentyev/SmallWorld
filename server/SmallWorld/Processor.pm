@@ -57,6 +57,18 @@ sub checkInGame {
   return defined $gameId;
 }
 
+sub checkPlayersNum {
+  my $self = shift;
+  my $n = $self->{db}->getMaxPlayers($self->{json}->{gameId});
+  return $self->{db}->playersCount($self->{json}->{gameId}) >= $n;
+}
+
+sub checkIsStarted {
+  my ($self, $h) = @_;
+  my $gameId = exists($h->{gameId}) ? $h->{gameId} : $self->{db}->getGameId($h->{sid});
+  $self->{db}->getGameState($gameId);
+}
+
 sub checkJsonCmd {
   my ($self) = @_;
   my $json = $self->{json};
@@ -73,7 +85,7 @@ sub checkJsonCmd {
     }
 
     # если это обязательное поле и оно пустое, то ошибка
-    return $self->errorCode($_) if ( !$val );
+    return $self->errorCode($_) if ( !defined $val );
 
     # если тип параметра -- строка
     if ( $_->{type} eq "unicode" ) {
@@ -93,15 +105,19 @@ sub checkJsonCmd {
   }
 
   my $errorHandlers = {
-    &R_BAD_USERNAME => sub { $self->{json}->{username} !~ m/^[A-Za-z][\w\-]*$/;},
-    &R_BAD_PASSWORD => sub { $self->{json}->{password} !~ m/^.{6,18}$/;},
-    &R_USERNAME_TAKEN => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username});},
-    &R_BAD_LOGIN =>sub { $self->checkLoginAndPassword(); },
-    &R_BAD_SID  => sub { !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
-    &R_BAD_MAP_ID => sub { !$self->{db}->dbExists("maps", "id", $self->{json}->{mapId}); },
-    &R_BAD_MAP_NAME => sub { $self->{db}->dbExists("maps", "name", $self->{json}->{mapName}); },
-    &R_BAD_GAME_NAME => sub { $self->{db}->dbExists("games", "name", $self->{json}->{gameName}); },
-    &R_ALREADY_IN_GAME => sub { $self->checkInGame(); }
+    &R_ALREADY_IN_GAME  => sub { $self->checkInGame(); },
+    &R_BAD_GAME_ID      => sub { !$self->{db}->dbExists("games", "id", $self->{json}->{gameId}); },
+    &R_BAD_GAME_NAME    => sub { $self->{db}->dbExists("games", "name", $self->{json}->{gameName}); },
+    &R_BAD_GAME_STATE   => sub { $self->checkIsStarted($self->{json}); },
+    &R_BAD_LOGIN        => sub { $self->checkLoginAndPassword(); },
+    &R_BAD_MAP_ID       => sub { !$self->{db}->dbExists("maps", "id", $self->{json}->{mapId}); },
+    &R_BAD_MAP_NAME     => sub { $self->{db}->dbExists("maps", "name", $self->{json}->{mapName}); },
+    &R_BAD_PASSWORD     => sub { $self->{json}->{password} !~ m/^.{6,18}$/;},
+    &R_BAD_SID          => sub { !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
+    &R_BAD_USERNAME     => sub { $self->{json}->{username} !~ m/^[A-Za-z][\w\-]*$/;},
+    &R_NOT_IN_GAME      => sub { !defined $self->{db}->getGameId($self->{json}->{sid}); },
+    &R_TOO_MANY_PLAYERS => sub { $self->checkPlayersNum(); },
+    &R_USERNAME_TAKEN   => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username});}
   };
 
   my $errorList = CMD_ERRORS->{$cmd};
@@ -179,19 +195,18 @@ sub cmd_getGameList {
 
 sub cmd_joinGame {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{gameId};
+  $self->{db}->joinGame($self->{json}->{gameId}, $self->{json}->{sid});
 }
 
 sub cmd_leaveGame {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
+  $self->{db}->leaveGame($self->{json}->{sid});
 }
 
 sub cmd_setReadinessStatus {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{isReady};
+  $self->{db}->setIsReady( $self->{json}->{readinessStatus}, $self->{json}->{sid} );
+  #TO DO
   $self->{json}->{visibleRaces};
   $self->{json}->{visiblePowers};
 }
