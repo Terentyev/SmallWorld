@@ -90,6 +90,7 @@ sub checkJsonCmd {
     # если тип параметра -- строка
     if ( $_->{type} eq "unicode" ) {
       # если длина строки не удовлетворяет требованиям, то ошибка
+      return $self->errorCode($_) if ref(\$val) ne "SCALAR";
       if ( defined $_->{min} && length $val < $_->{min} ||
           defined $_->{max} && length $val > $_->{max} ) {
         return $self->errorCode($_);
@@ -97,6 +98,7 @@ sub checkJsonCmd {
     }
     elsif ( $_->{type} eq "int" ) {
       # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
+      return $self->errorCode($_) if ref(\$val) ne "SCALAR" || $val !~ m/^[\d]+$/;
       if ( defined $_->{min} && $val < $_->{min} ||
           defined $_->{max} && $val > $_->{max} ) {
         return $self->errorCode($_);
