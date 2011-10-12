@@ -185,8 +185,9 @@ use constant PATTERN => {
   getMessages => [
     {
       name => "since",
-      type => "int",
+      type => "float",
       mandatory => 1,
+      min => 0,
       errorCode => R_BAD_SID # stupid youth!!!
     }
   ],

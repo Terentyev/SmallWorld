@@ -19,7 +19,7 @@ sub new {
 
 sub dbError {
   my $self = shift;
-  my $error =  defined $_[0] ? $_[0] : $self->{dbh}->errstr;
+  my $error = defined $_[0] ? $_[0] : $self->{dbh}->errstr;
   die "DB error: $error";
 }
 
@@ -39,7 +39,7 @@ sub disconnect {
 sub _do {
   my $self = shift;
   my ($s, @list) = @_;
-  $self->{dbh}->do($s, undef, @list) or $self->dbError;
+  $self->{dbh}->do($s, undef, @list) or $self->dbError();
 }
 
 sub _getId {
@@ -48,7 +48,7 @@ sub _getId {
   return $self->{dbh}->selectrow_array("SELECT gen_id(GEN_$name\_ID, 0) FROM RDB\$DATABASE");
 }
 
-sub _getPlayerId {
+sub getPlayerId {
   my $self = shift;
   return $self->query("SELECT id FROM PLAYERS WHERE sid = ?", @_);
 }
@@ -61,7 +61,7 @@ sub getGameId {
 sub query {
   my $self = shift;
   my $sql = shift;
-  return $self->{dbh}->selectrow_array($sql, undef, @_)
+  return $self->{dbh}->selectrow_array($sql, undef, @_) or $self->dbError();
 }
 
 sub dbExists {
@@ -92,11 +92,12 @@ sub addPlayer {
 }
 
 sub createGame {
-  my ($self, $h) = @_;
-  $h->{gameDescr} = "" if !exists $h->{gameDescr};
-  $self->_do("INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)", $h->{gameName}, $h->{mapId}, $h->{gameDescr});
+  my $self = shift;
+  my ($sid, $gameName, $mapId, $gameDescr) = @_;
+  $gameDescr = "" if !defined $gameDescr;
+  $self->_do("INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)", $gameName, $mapId, $gameDescr);
   my $game_id = $self->_getId("GAME");
-  $self->_do("UPDATE PLAYERS SET gameId = ? WHERE sid = ?", $game_id, $h->{sid});
+  $self->_do("UPDATE PLAYERS SET gameId = ? WHERE sid = ?", $game_id, $sid);
   return $game_id;
 }
 
@@ -152,6 +153,18 @@ sub setIsReady {
 sub getMaxPlayers {
   my $self = shift;
   return $self->query("SELECT playersNum FROM MAPS m INNER JOIN GAMES g ON m.id = g.mapId WHERE g.id = ?", $_[0]);
+}
+
+sub addMessage {
+  my $self = shift;
+  my ($sid, $text) = @_;
+  $self->_do("INSERT INTO MESSAGES (text, userId) VALUES (?, ?)", $text, $self->getPlayerId($sid));
+}
+
+sub getMessages {
+  my $self = shift;
+  return $self->{dbh}->selectcol_arrayref("SELECT id, text, userId FROM MESSAGES WHERE id > ? ",
+                                          { Columns => [1,2,3] }, $_[0]) or dbError;
 }
 
 1;

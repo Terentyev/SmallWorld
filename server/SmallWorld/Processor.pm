@@ -7,6 +7,7 @@ use utf8;
 
 use JSON qw(encode_json decode_json);
 
+use Scalar::Util;
 use SmallWorld::Consts;
 use SmallWorld::Config;
 use SmallWorld::DB;
@@ -98,12 +99,21 @@ sub checkJsonCmd {
     }
     elsif ( $_->{type} eq "int" ) {
       # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne "SCALAR" || $val !~ m/^[\d]+$/;
+      return $self->errorCode($_) if ref(\$val) ne "SCALAR" || $val !~ /^[+-]?\d+\z/;
       if ( defined $_->{min} && $val < $_->{min} ||
           defined $_->{max} && $val > $_->{max} ) {
         return $self->errorCode($_);
       }
     }
+    elsif ( $_->{type} eq "float" ) {
+      # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
+      return $self->errorCode($_) if ref(\$val) ne "SCALAR" || $val !~ /^-?(?:\d+\.?|\.\d)\d*\z/;
+      if ( defined $_->{min} && $val < $_->{min} ||
+          defined $_->{max} && $val > $_->{max} ) {
+        return $self->errorCode($_);
+      }
+    }
+
   }
 
   my $errorHandlers = {
@@ -162,13 +172,17 @@ sub cmd_doSmth {
 
 sub cmd_sendMessage {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{text};
+  $self->{db}->addMessage($self->{json}->{sid}, $self->{json}->{text});
 }
 
 sub cmd_getMessages {
   my ($self, $result) = @_;
-  $self->{json}->{since};
+  my $ref = $self->{db}->getMessages(int($self->{json}->{since}));
+  $result->{messages} = ();
+  my $n = @$ref;
+  for (my $i = 0; $i < $n; $i += 3){
+    push @{$result->{messages}}, { 'time' => @$ref[$i], 'text' => @$ref[$i+1], 'userId' => @$ref[$i+2] };
+  }
 }
 
 sub cmd_createDefaultMaps {
@@ -187,8 +201,10 @@ sub cmd_uploadMap {
 
 sub cmd_createGame {
   my ($self, $result) = @_;
-  $result->{gameId} = $self->{db}->createGame($self->{json});
+  $result->{gameId} = $self->{db}->createGame($self->{json}->{sid}, $self->{json}->{gameName},
+                                              $self->{json}->{mapId}, $self->{json}->{gameDescr})
 }
+
 
 sub cmd_getGameList {
   my ($self, $result) = @_;
