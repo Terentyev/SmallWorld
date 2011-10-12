@@ -74,7 +74,7 @@ sub checkJsonCmd {
   my ($self) = @_;
   my $json = $self->{json};
   my $cmd = $json->{action};
-  return R_BAD_JSON if !$cmd;
+  return R_BAD_JSON if !defined $cmd;
 
   my $pattern = PATTERN->{$cmd};
   return R_BAD_ACTION if !$pattern;
