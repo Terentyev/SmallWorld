@@ -8,6 +8,7 @@ use open qw( :std :utf8 ); # нужно, чтобы не выдавалось п
 
 use JSON qw( decode_json encode_json );
 use LWP::UserAgent;
+use URI::Escape;
 
 use Tests::Config;
 
@@ -68,7 +69,7 @@ sub sendRequest {
   my ($self, $query) = @_;
   my $req = HTTP::Request->new(POST => "http://" . SERVER_ADDRESS . "/");
   $req->content_type("application/x-www-form-urlencoded");
-  $req->content("request=$query");
+  $req->content("request=" . uri_escape($query));
   return $self->{ua}->request($req)->content;
 }
 

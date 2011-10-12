@@ -2,6 +2,8 @@
     {
         "result": "ok"
     },
+
+
     {
         "result": "badUsername"
     },
@@ -44,16 +46,18 @@
     {
         "result": "usernameTaken"
     },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+
+
     {
         "result": "badJson"
     },
     {
         "result": "badAction"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
     }
 ]
