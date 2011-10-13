@@ -167,5 +167,11 @@ sub getMessages {
                                           { Columns => [1,2,3] }, $_[0]) or dbError;
 }
 
+sub getMaps {
+  my $self = shift;
+  return $self->{dbh}->selectcol_arrayref("SELECT id, name, playersNum, turnsNum FROM MAPS",
+                                          { Columns => [1, 2, 3, 4] }) or dbError;
+}
+
 1;
 

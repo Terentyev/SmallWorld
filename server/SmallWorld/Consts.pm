@@ -26,6 +26,7 @@ our @EXPORT = qw(
   R_BAD_PLAYERS_NUM
   R_BAD_POSITION
   R_BAD_READINESS_STATUS
+  R_BAD_REGIONS
   R_BAD_SID
   R_BAD_STAGE
   R_BAD_USERNAME
@@ -46,6 +47,7 @@ our @EXPORT = qw(
   GIANTS_TOKENS_NUM
   HALFLINGS_TOKENS_NUM
   HUMANS_TOKENS_NUM
+  LOSTTRIBES_TOKENS_MAX
   ORCS_TOKENS_NUM
   RATMEN_TOKENS_NUM
   SKELETONS_TOKENS_NUM
@@ -61,6 +63,13 @@ our @EXPORT = qw(
   REGION_TYPE_MAGIC
   REGION_TYPE_MINE
   REGION_TYPE_MOUNTAIN
+  REGION_TYPE_COAST
+  REGION_TYPE_SEA
+  REGION_TYPE_FOREST
+  REGION_TYPE_HILL
+  REGION_TYPE_SWAMP
+  REGION_TYPE_CAVERN
+  REGION_TYPES
 
   DB_GENERATORS_NAMES
   DB_TABLES_NAMES
@@ -85,6 +94,7 @@ use constant R_BAD_PASSWORD         => "badPassword"          ;
 use constant R_BAD_PLAYERS_NUM      => "badPlayersNum"        ;
 use constant R_BAD_POSITION         => "badPosition"          ;
 use constant R_BAD_READINESS_STATUS => "badReadinessStatus"   ;
+use constant R_BAD_REGIONS          => "badRegions"           ;
 use constant R_BAD_SID              => "badSid"               ;
 use constant R_BAD_STAGE            => "badStage"             ;
 use constant R_BAD_TURNS_NUM        => "badTurnsNum"          ;
@@ -118,14 +128,15 @@ use constant CMD_ERRORS => {
   sendMessage        => [R_BAD_SID],
   getMessages        => [],
   createDefaultMaps  => [],
-  uploadMap          => [R_BAD_MAP_NAME],
+  uploadMap          => [R_BAD_MAP_NAME, R_BAD_REGIONS],
   createGame         => [R_BAD_SID, R_BAD_GAME_NAME, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
   joinGame           => [R_BAD_SID, R_BAD_GAME_ID, R_BAD_GAME_STATE, R_ALREADY_IN_GAME, R_TOO_MANY_PLAYERS],
   leaveGame          => [R_BAD_SID, R_NOT_IN_GAME],
   setReadinessStatus => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE],
   selectRace         => [R_BAD_SID, R_BAD_POSITION, R_BAD_MONEY_AMOUNT, R_BAD_STAGE],
   doSmth             => [R_BAD_SID],
-  resetServer        => []
+  resetServer        => [],
+  getMapList         => []
 };
 
 use constant PATTERN => {
@@ -218,7 +229,8 @@ use constant PATTERN => {
     {
       name => "regions",
       type => "list",
-      mandatory => 0,
+      mandatory => 1,
+      errorCode => R_BAD_REGIONS
     },
     {
       name => "turnsNum",
@@ -259,6 +271,14 @@ use constant PATTERN => {
     }
   ],
   getGameList => [
+    {
+      name => "sid",
+      type => "int",
+      mandatory => 0,
+      errorCode => R_BAD_SID
+    }
+  ],
+  getMapList => [
     {
       name => "sid",
       type => "int",
@@ -418,22 +438,36 @@ use constant DEFAULT_MAPS => [
 # игровые бонусы и штрафы
 use constant AMAZONS_CONQ_TOKENS_NUM => 4;
 use constant AMAZONS_TOKENS_NUM      => 6;
+use constant AMAZONS_TOKENS_MAX      => 15;
 use constant DWARVES_TOKENS_NUM      => 3;
+use constant DWARVES_TOKENS_MAX      => 8;
 use constant ELVES_DEF_TOKENS_NUM    => 1;
 use constant ELVES_TOKENS_NUM        => 6;
+use constant ELVES_TOKENS_MAX        => 11;
 use constant GIANTS_CONQ_TOKENS_NUM  => 1;
 use constant GIANTS_TOKENS_NUM       => 6;
+use constant GIANTS_TOKENS_MAX       => 11;
 use constant HALFLINGS_TOKENS_NUM    => 6;
+use constant HALFLINGS_TOKENS_MAX    => 11;
 use constant HUMANS_TOKENS_NUM       => 5;
+use constant HUMANS_TOKENS_MAX       => 10;
+use constant LOSTTRIBES_TOKENS_MAX   => 18;
 use constant ORCS_TOKENS_NUM         => 5;
+use constant ORCS_TOKENS_MAX         => 10;
 use constant RATMEN_TOKENS_NUM       => 8;
+use constant RATMEN_TOKENS_MAX       => 13;
 use constant SKELETONS_TOKENS_NUM    => 6;
+use constant SKELETONS_TOKENS_MAX    => 20;
 use constant SORCERERS_TOKENS_NUM    => 5;
+use constant SORCERERS_TOKENS_MAX    => 18;
 use constant TRITONS_CONQ_TOKENS_NUM => 1;
 use constant TRITONS_TOKENS_NUM      => 6;
+use constant TRITONS_TOKENS_MAX      => 11;
 use constant TROLLS_DEF_TOKENS_NUM   => 1;
 use constant TROLLS_TOKENS_NUM       => 5;
+use constant TROLLS_TOKENS_MAX       => 10;
 use constant WIZARDS_TOKENS_NUM      => 5;
+use constant WIZARDS_TOKENS_MAX      => 10;
 
 # типы регионов
 use constant REGION_TYPE_BORDER   => "border"  ;
@@ -441,6 +475,15 @@ use constant REGION_TYPE_FARMLAND => "farmland";
 use constant REGION_TYPE_MAGIC    => "magic"   ;
 use constant REGION_TYPE_MINE     => "mine"    ;
 use constant REGION_TYPE_MOUNTAIN => "mountain";
+use constant REGION_TYPE_COAST    => "coast"   ;
+use constant REGION_TYPE_SEA      => "sea"     ;
+use constant REGION_TYPE_FOREST   => "forest"  ;
+use constant REGION_TYPE_HILL     => "hill"    ;
+use constant REGION_TYPE_SWAMP    => "swamp"   ;
+use constant REGION_TYPE_CAVERN   => "cavern"  ;
+
+use constant REGION_TYPES => [REGION_TYPE_BORDER, REGION_TYPE_FARMLAND, REGION_TYPE_MAGIC, REGION_TYPE_MINE, REGION_TYPE_MOUNTAIN, REGION_TYPE_COAST,
+                              REGION_TYPE_SEA, REGION_TYPE_FOREST, REGION_TYPE_HILL, REGION_TYPE_SWAMP, REGION_TYPE_CAVERN];
 
 __END__
 
