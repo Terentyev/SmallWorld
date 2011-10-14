@@ -107,6 +107,7 @@ use constant R_USERNAME_TAKEN       => "usernameTaken"        ;
 use constant MAX_GAMEDESCR_LEN => 300;
 use constant MAX_GAMENAME_LEN  => 50 ;
 use constant MAX_MAPNAME_LEN   => 15 ;
+use constant MAX_MSG_LEN       => 300;
 use constant MAX_PASSWORD_LEN  => 18 ;
 use constant MAX_PLAYERS_NUM   => 5  ;
 use constant MAX_RACENAME_LEN  => 20 ;
@@ -136,7 +137,8 @@ use constant CMD_ERRORS => {
   selectRace         => [R_BAD_SID, R_BAD_POSITION, R_BAD_MONEY_AMOUNT, R_BAD_STAGE],
   doSmth             => [R_BAD_SID],
   resetServer        => [],
-  getMapList         => []
+  getMapList         => [R_BAD_SID],
+  getGameList        => [R_BAD_SID]
 };
 
 use constant PATTERN => {
@@ -191,7 +193,12 @@ use constant PATTERN => {
       mandatory => 1,
       errorCode => R_BAD_SID
     },
-    {name => "text", type => "unicode", mandatory => 1}
+    {
+      name => "text",
+      type => "unicode",
+      max => MAX_MSG_LEN,
+      mandatory => 1
+    }
   ],
   getMessages => [
     {

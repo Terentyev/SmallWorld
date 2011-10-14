@@ -167,7 +167,7 @@ sub checkJsonCmd {
     &R_BAD_MAP_NAME     => sub { $self->{db}->dbExists("maps", "name", $self->{json}->{mapName}); },
     &R_BAD_PASSWORD     => sub { $self->{json}->{password} !~ m/^.{6,18}$/;},
     &R_BAD_REGIONS      => sub { $self->checkRegions();},
-    &R_BAD_SID          => sub { !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
+    &R_BAD_SID          => sub { defined $self->{json}->{sid} && !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
     &R_BAD_USERNAME     => sub { $self->{json}->{username} !~ m/^[A-Za-z][\w\-]*$/;},
     &R_NOT_IN_GAME      => sub { !defined $self->{db}->getGameId($self->{json}->{sid}); },
     &R_TOO_MANY_PLAYERS => sub { $self->checkPlayersNum(); },
