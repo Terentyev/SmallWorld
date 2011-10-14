@@ -95,6 +95,8 @@ sub compare {
   my ($self, $eth, $cnt) = @_;
 
   return 0 if defined $eth != defined $cnt && defined $eth;
+  return 1 if !defined $eth && !defined $cnt;
+  return 0 if ref $cnt ne ref $eth;
 
   my $res;
   if ( ref $eth eq "HASH" ) {
@@ -105,7 +107,7 @@ sub compare {
   }
   elsif ( ref $eth eq "ARRAY" ) {
     for (my $i = 0; $i < @$eth; ++$i) {
-      $res = $self->compare($eth->[$_], $cnt->[$_]);
+      $res = $self->compare($eth->[$i], $cnt->[$i]);
       return 0 if !$res;
     }
   }

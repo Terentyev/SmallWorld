@@ -24,13 +24,15 @@
             "action": "uploadMap",
             "mapName": "map 1",
             "playersNum": 3,
-            "turnsNum": 4
+            "turnsNum": 4,
+            "regions": []
         },
         {
             "action": "uploadMap",
             "mapName": "map 1",
             "playersNum": 3,
-            "turnsNum": 11
+            "turnsNum": 11,
+            "regions": []
         },
         {
             "action": "uploadMap",
