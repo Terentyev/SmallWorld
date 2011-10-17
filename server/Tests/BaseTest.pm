@@ -112,7 +112,7 @@ sub compare {
     }
   }
   else {
-    $res = "$eth" eq "$cnt";
+    $res = $eth eq $cnt;
   }
   return $res;
 }

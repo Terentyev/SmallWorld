@@ -33,9 +33,8 @@ sub process {
   my $result = { result => $self->checkJsonCmd() };
 
   if ( $result->{result} eq R_ALL_OK ) {
-    my $cmd = $self->{json}->{action};
-    my $func = \&{"cmd_$cmd"};
-    &$func($self, $result);
+    no strict 'refs';
+    &{"cmd_$self->{json}->{action}"}($self, $result);
   }
   $self->{db}->disconnect;
   print encode_json($result)."\n" or die "Can not encode JSON-object\n";
