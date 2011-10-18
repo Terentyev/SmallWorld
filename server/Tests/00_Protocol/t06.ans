@@ -42,6 +42,9 @@
         "result": "ok"
     },
     {
+        "result": "gameNameTaken"
+    },
+    {
         "result": "alreadyInGame"
     },
     {

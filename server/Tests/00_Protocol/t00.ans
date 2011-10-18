@@ -58,7 +58,9 @@
         "mapId": 2
     },
 
-
+    {
+        "result": "mapNameTaken"
+    },
     {
         "result": "badJson"
     },

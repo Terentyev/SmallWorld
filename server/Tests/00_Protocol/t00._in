@@ -223,7 +223,12 @@
             ]
         },
 
-
+        {
+            "action": "uploadMap",
+            "mapName": "map 1",
+            "playersNum": 3,
+            "turnsNum": 6
+        },
         {
             "Xaction": "uploadMap",
             "mapName": "map 3",
