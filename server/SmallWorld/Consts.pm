@@ -19,7 +19,6 @@ our @EXPORT = qw(
   R_BAD_JSON
   R_BAD_LOGIN
   R_BAD_MAP_ID
-  R_BAD_MAP_NAME
   R_BAD_MONEY_AMOUNT
   R_BAD_NUM_OF_PLAYERS
   R_BAD_PASSWORD
@@ -31,6 +30,8 @@ our @EXPORT = qw(
   R_BAD_STAGE
   R_BAD_USERNAME
   R_CANNOT_CONQUER
+  R_GAME_NAME_TAKEN
+  R_MAP_NAME_TAKEN
   R_NOT_IN_GAME
   R_TOO_MANY_PLAYERS
   R_USERNAME_TAKEN
@@ -102,6 +103,8 @@ use constant R_BAD_STAGE            => "badStage"             ;
 use constant R_BAD_TURNS_NUM        => "badTurnsNum"          ;
 use constant R_BAD_USERNAME         => "badUsername"          ;
 use constant R_CANNOT_CONQUER       => "cannotConquer"        ;
+use constant R_GAME_NAME_TAKEN      => "gameNameTaken"        ;
+use constant R_MAP_NAME_TAKEN       => "mapNameTaken"         ;
 use constant R_NOT_IN_GAME          => "notInGame"            ;
 use constant R_TOO_MANY_PLAYERS     => "tooManyPlayers"       ;
 use constant R_USERNAME_TAKEN       => "usernameTaken"        ;
@@ -131,8 +134,8 @@ use constant CMD_ERRORS => {
   sendMessage        => [R_BAD_SID],
   getMessages        => [],
   createDefaultMaps  => [],
-  uploadMap          => [R_BAD_MAP_NAME, R_BAD_REGIONS],
-  createGame         => [R_BAD_SID, R_BAD_GAME_NAME, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
+  uploadMap          => [R_MAP_NAME_TAKEN, R_BAD_REGIONS],
+  createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
   joinGame           => [R_BAD_SID, R_BAD_GAME_ID, R_BAD_GAME_STATE, R_ALREADY_IN_GAME, R_TOO_MANY_PLAYERS],
   leaveGame          => [R_BAD_SID, R_NOT_IN_GAME],
   setReadinessStatus => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE],
@@ -397,36 +400,36 @@ use constant DEFAULT_MAPS => [
     { 'population' => 1, 'landDescription' => ['coast'], 'adjacent' => [1, 2] }
   ]},
   {'mapName' => 'defaultMap6', 'playersNum' => 2, 'turnsNum' => 7, 'regions' => [
-     { 'landDescription' => ['sea', 'border'], 'adjacent' => [1, 16, 17] },                                            # 1
-     { 'landDescription' => ['mine', 'border', 'coast', 'forest'], 'adjacent' => [0, 17, 18, 2] },                     # 2
-     { 'landDescription' => ['border', 'mountain'], 'adjacent' => [1, 18, 20, 3] },                                    # 3
-     { 'landDescription' => ['farmland', 'border'], 'adjacent' => [2, 20, 21, 4] },                                    # 4
-     { 'landDescription' => ['cavern', 'border', 'swamp'], 'adjacent' => [3, 21, 22, 5] },                             # 5
-     { 'population' => 1, 'landDescription' => ['forest', 'border'], 'adjacent' => [4, 22, 6] },                       # 6
-     { 'landDescription' => ['mine', 'border', 'swamp'], 'adjacent' => [5, 22, 7, 23, 25] },                           # 7
-     { 'landDescription' => ['border', 'mountain', 'coast'], 'adjacent' => [6, 25, 9, 8, 23] },                        # 8
-     { 'landDescription' => ['border', 'sea'], 'adjacent' => [7, 9, 10] },                                             # 9
-     { 'population' => 1, 'landDescription' => ['cavern', 'coast'], 'adjacent' => [8, 7, 10, 25] },                    #10
-     { 'population' => 1, 'landDescription' => ['mine', 'coast', 'forest', 'border'], 'adjacent' => [9, 25, 26, 11] }, #11
-     { 'landDescription' => ['forest', 'border'], 'adjacent' => [10, 26, 29, 12] },                                    #12
-     { 'landDescription' => ['mountain', 'border'], 'adjacent' => [11, 29, 27, 13] },                                  #13
-     { 'landDescription' => ['mountain', 'border'], 'adjacent' => [12, 27, 15, 14] },                                  #14
-     { 'landDescription' => ['hill', 'border'], 'adjacent' => [13, 15] },                                              #15
-     { 'landDescription' => ['farmland', 'magic', 'border'], 'adjacent' => [14, 19, 27, 16] },                         #16
-     { 'landDescription' => ['border', 'mountain', 'cavern', 'mine', 'coast'], 'adjacent' => [15, 19, 0, 17] },        #17
-     { 'population' => 1, 'landDescription' => ['farmland', 'magic', 'coast'], 'adjacent' => [16, 19, 0, 18] },        #18
-     { 'landDescription' => ['swamp'], 'adjacent' => [17, 2, 20, 1, 19] },                                             #19
-     { 'population' => 1, 'landDescription' => ['swamp'], 'adjacent' => [18, 27, 28, 20] },                            #20
-     { 'population' => 1, 'landDescription' => ['hill', 'magic'], 'adjacent' => [19, 28, 2, 3, 21] },                  #21
-     { 'landDescription' => ['mountain', 'mine'], 'adjacent' => [20, 24, 28, 3, 4, 22] },                              #22
-     { 'population' => 1, 'landDescription' => ['farmland'], 'adjacent' => [21, 24, 5, 4, 23] },                       #23
-     { 'landDescription' => ['hill', 'magic'], 'adjacent' => [22, 25, 6, 24, 7] },                                     #24
-     { 'landDescription' => ['mountain', 'cavern'], 'adjacent' => [23, 21, 22, 28] },                                  #25
-     { 'population' => 1, 'landDescription' => ['farmland'], 'adjacent' => [24, 23, 6, 7, 9, 10, 26] },                #26
-     { 'population' => 1, 'landDescription' => ['swamp', 'magic'], 'adjacent' => [25, 10, 11, 29, 28] },               #27
-     { 'population' => 1, 'landDescription' => ['forest', 'cavern'], 'adjacent' => [28, 29, 12, 13, 15, 19] },         #28
-     { 'landDescription' => ['sea'], 'adjacent' => [27, 19, 20, 21, 24, 26, 29] },                                     #29
-     { 'landDescription' => ['hill'], 'adjacent' => [28, 27, 12, 11, 26] }                                             #30
+     { 'landDescription' => ['sea', 'border'], 'adjacent' => [2, 17, 18] },                                            # 1
+     { 'landDescription' => ['mine', 'border', 'coast', 'forest'], 'adjacent' => [1, 18, 19, 3] },                     # 2
+     { 'landDescription' => ['border', 'mountain'], 'adjacent' => [2, 19, 21, 4] },                                    # 3
+     { 'landDescription' => ['farmland', 'border'], 'adjacent' => [3, 21, 22, 5] },                                    # 4
+     { 'landDescription' => ['cavern', 'border', 'swamp'], 'adjacent' => [4, 22, 23, 6] },                             # 5
+     { 'population' => 1, 'landDescription' => ['forest', 'border'], 'adjacent' => [5, 23, 7] },                       # 6
+     { 'landDescription' => ['mine', 'border', 'swamp'], 'adjacent' => [6, 23, 8, 24, 26] },                           # 7
+     { 'landDescription' => ['border', 'mountain', 'coast'], 'adjacent' => [7, 26, 10, 9, 24] },                       # 8
+     { 'landDescription' => ['border', 'sea'], 'adjacent' => [8, 10, 11] },                                            # 9
+     { 'population' => 1, 'landDescription' => ['cavern', 'coast'], 'adjacent' => [9, 8, 11, 26] },                    #10
+     { 'population' => 1, 'landDescription' => ['mine', 'coast', 'forest', 'border'], 'adjacent'=> [10, 26, 27, 12] }, #11
+     { 'landDescription' => ['forest', 'border'], 'adjacent' => [11, 27, 30, 13] },                                    #12
+     { 'landDescription' => ['mountain', 'border'], 'adjacent' => [12, 30, 28, 14] },                                  #13
+     { 'landDescription' => ['mountain', 'border'], 'adjacent' => [13, 28, 16, 15] },                                  #14
+     { 'landDescription' => ['hill', 'border'], 'adjacent' => [14, 16] },                                              #15
+     { 'landDescription' => ['farmland', 'magic', 'border'], 'adjacent' => [15, 20, 28, 17] },                         #16
+     { 'landDescription' => ['border', 'mountain', 'cavern', 'mine', 'coast'], 'adjacent' => [16, 20, 1, 18] },        #17
+     { 'population' => 1, 'landDescription' => ['farmland', 'magic', 'coast'], 'adjacent' => [17, 20, 1, 19] },        #18
+     { 'landDescription' => ['swamp'], 'adjacent' => [18, 3, 21, 2, 20] },                                             #19
+     { 'population' => 1, 'landDescription' => ['swamp'], 'adjacent' => [19, 28, 29, 21] },                            #20
+     { 'population' => 1, 'landDescription' => ['hill', 'magic'], 'adjacent' => [20, 29, 3, 4, 22] },                  #21
+     { 'landDescription' => ['mountain', 'mine'], 'adjacent' => [21, 25, 29, 4, 5, 23] },                              #22
+     { 'population' => 1, 'landDescription' => ['farmland'], 'adjacent' => [22, 25, 6, 5, 24] },                       #23
+     { 'landDescription' => ['hill', 'magic'], 'adjacent' => [23, 26, 7, 25, 8] },                                     #24
+     { 'landDescription' => ['mountain', 'cavern'], 'adjacent' => [24, 22, 23, 26] },                                  #25
+     { 'population' => 1, 'landDescription' => ['farmland'], 'adjacent' => [25, 24, 7, 8, 10, 11, 27] },               #26
+     { 'population' => 1, 'landDescription' => ['swamp', 'magic'], 'adjacent' => [26, 11, 12, 30, 29] },               #27
+     { 'population' => 1, 'landDescription' => ['forest', 'cavern'], 'adjacent' => [29, 30, 13, 14, 16, 20] },         #28
+     { 'landDescription' => ['sea'], 'adjacent' => [28, 20, 21, 22, 25, 27, 30] },                                     #29
+     { 'landDescription' => ['hill'], 'adjacent' => [29, 28, 13, 12, 27] }                                             #30
    ] },
    { 'mapName' => 'defaultMap7', 'playersNum' => 2, 'turnsNum' => 5, 'regions' => [
      { 'landDescription' => ['border', 'mountain', 'mine', 'farmland','magic'], 'adjacent' => [2] },

@@ -157,11 +157,11 @@ sub checkJsonCmd {
   my $errorHandlers = {
     &R_ALREADY_IN_GAME  => sub { $self->checkInGame(); },
     &R_BAD_GAME_ID      => sub { !$self->{db}->dbExists('games', 'id', $self->{json}->{gameId}); },
-    &R_BAD_GAME_NAME    => sub { $self->{db}->dbExists('games', 'name', $self->{json}->{gameName}); },
+    &R_GAME_NAME_TAKEN  => sub { $self->{db}->dbExists('games', 'name', $self->{json}->{gameName}); },
     &R_BAD_GAME_STATE   => sub { $self->checkIsStarted($self->{json}); },
     &R_BAD_LOGIN        => sub { $self->checkLoginAndPassword(); },
     &R_BAD_MAP_ID       => sub { !$self->{db}->dbExists('maps', 'id', $self->{json}->{mapId}); },
-    &R_BAD_MAP_NAME     => sub { $self->{db}->dbExists('maps', 'name', $self->{json}->{mapName}); },
+    &R_MAP_NAME_TAKEN   => sub { $self->{db}->dbExists('maps', 'name', $self->{json}->{mapName}); },
     &R_BAD_PASSWORD     => sub { $self->{json}->{password} !~ m/^.{6,18}$/;},
     &R_BAD_REGIONS      => sub { $self->checkRegions();},
     &R_BAD_SID          => sub { defined $self->{json}->{sid} && !$self->{db}->dbExists('players', 'sid', $self->{json}->{sid}); },
