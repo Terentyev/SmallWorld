@@ -68,7 +68,7 @@
               },
               {
                 "population": 1,
-                "landDescription": [ "border", "coast" ],
+                "landDescription": [ "border", "coast" ]
               }
             ]
         },
