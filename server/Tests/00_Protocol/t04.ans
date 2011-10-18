@@ -31,10 +31,10 @@
         "result": "badSid"
     },
     {
-        "result": "badMessageText"
+        "result": "ok"
     },
     {
-        "result": "ok"
+        "result": "badMessageText"
     },
     {
         "result": "ok"
