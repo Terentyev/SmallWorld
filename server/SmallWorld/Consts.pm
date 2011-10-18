@@ -88,6 +88,7 @@ use constant R_BAD_JSON             => "badJson"              ;
 use constant R_BAD_LOGIN            => "badUsernameOrPassword";
 use constant R_BAD_MAP_ID           => "badMapId"             ;
 use constant R_BAD_MAP_NAME         => "badMapName"           ;
+use constant R_BAD_MESSAGE_TEXT     => "badMessageText"       ;
 use constant R_BAD_MONEY_AMOUNT     => "badMoneyAmount"       ;
 use constant R_BAD_NUM_OF_PLAYERS   => "badNumberOfPlayers"   ;
 use constant R_BAD_PASSWORD         => "badPassword"          ;
@@ -96,6 +97,7 @@ use constant R_BAD_POSITION         => "badPosition"          ;
 use constant R_BAD_READINESS_STATUS => "badReadinessStatus"   ;
 use constant R_BAD_REGIONS          => "badRegions"           ;
 use constant R_BAD_SID              => "badSid"               ;
+use constant R_BAD_SINCE            => "badSince"             ;
 use constant R_BAD_STAGE            => "badStage"             ;
 use constant R_BAD_TURNS_NUM        => "badTurnsNum"          ;
 use constant R_BAD_USERNAME         => "badUsername"          ;
@@ -197,7 +199,8 @@ use constant PATTERN => {
       name => 'text',
       type => 'unicode',
       max => MAX_MSG_LEN,
-      mandatory => 1
+      mandatory => 1,
+      errorCode => R_BAD_MESSAGE_TEXT
     }
   ],
   getMessages => [
@@ -206,7 +209,7 @@ use constant PATTERN => {
       type => 'int',
       mandatory => 1,
       min => 0,
-      errorCode => R_BAD_SID # stupid youth!!!
+      errorCode => R_BAD_SINCE
     }
   ],
   createDefaultMaps => [
@@ -323,7 +326,7 @@ use constant PATTERN => {
       errorCode => R_BAD_SID
     },
     {
-      name => 'readinessStatus',
+      name => 'isReady',
       type => 'int',
       mandatory => 1,
       min => 0,
