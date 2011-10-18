@@ -77,8 +77,11 @@ sub checkRegions {
   my $l = @$r;
   my $ex;
   for (my $i = 0; $i < $l; ++$i){
-    $s += @$r[$i]->{population} if exists @$r[$i]->{population};
-
+    if (exists @$r[$i]->{population}) {
+      return 1 if @$r[$i]->{population} !~ /^[+-]?\d+\z/ || @$r[$i]->{population} < 0;
+      $s += @$r[$i]->{population};
+    }
+    return 1 if defined @$r[$i]->{landDescription} && ref @$r[$i]->{landDescription} ne 'ARRAY';
     foreach my $j (@{@$r[$i]->{landDescription}}) {
       $ex = 0;
       foreach (@{&REGION_TYPES}) {
@@ -89,8 +92,10 @@ sub checkRegions {
       }
       return 1 if !$ex;
     }
-    return 1 if ref @$r[$i]->{adjacent} ne 'ARRAY';
+    return 1 if !defined @$r[$i]->{adjacent} || ref @$r[$i]->{adjacent} ne 'ARRAY';
     foreach my $j (@{@$r[$i]->{adjacent}}) {
+
+      return 1 if !defined @$r[$j-1]->{adjacent} || ref @$r[$j-1]->{adjacent} ne 'ARRAY';
       #регион граничет с недопустимым регионом или самим собой
       return 1 if $j< 1 || $j > $l || $j == $i + 1;
 
@@ -225,7 +230,7 @@ sub cmd_createDefaultMaps {
 
 sub cmd_uploadMap {
   my ($self, $result) = @_;
-  $result->{mapId} = $self->{db}->addMap( @{$self->{json}}{qw/mapName playersNum turnsNum regions/} );
+  $result->{mapId} = $self->{db}->addMap( @{$self->{json}}{qw/mapName playersNum turnsNum/}, encode_json($self->{json}->{regions}));
 }
 
 sub cmd_createGame {
