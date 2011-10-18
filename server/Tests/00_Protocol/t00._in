@@ -41,6 +41,7 @@
             "turnsNum": 6,
             "regions": []
         },
+
         {
             "action": "uploadMap",
             "mapName": "map 2",
@@ -54,6 +55,175 @@
               }
             ]
         },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": 1,
+                "landDescription": [ "border", "coast" ],
+                "adjacent": [2]
+              },
+              {
+                "population": 1,
+                "landDescription": [ "border", "coast" ],
+              }
+            ]
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": 1,
+                "landDescription": [ "border", "coast" ],
+                "adjacent": [2]
+              },
+              {
+                "population": 1,
+                "landDescription": [ "border", "coast" ],
+                "adjacent": { "adj" : 1 }
+              }
+            ]
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": 1,
+                "landDescription": [ "border", "coast" ],
+                "adjacent": [2]
+              },
+              {
+                "population": 1,
+                "landDescription": [ "border", "coast" ],
+                "adjacent": [1, 2]
+              }
+            ]
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": -1,
+                "landDescription": [ "border", "coast" ],
+                "adjacent": []
+              }
+            ]
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": 19,
+                "landDescription": [ "border", "coast" ],
+                "adjacent": []
+              }
+            ]
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": "text",
+                "landDescription": [ "border", "coast" ],
+                "adjacent": []
+              }
+            ]
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": 1,
+                "landDescription": "border",
+                "adjacent": []
+              }
+            ]
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": 1,
+                "landDescription": ["border2"],
+                "adjacent": []
+              }
+            ]
+        },
+        {
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": "+1",
+                "landDescription": [ "border", "coast", "sea", "mountain", "mine", "farmland", "magic", "forest", "hill", "swamp", "cavern" ],
+                "adjacent": [2, 3, 4, 5, 6]
+              },
+              {
+                "landDescription": [ "coast", "sea", "mountain", "mine", "farmland", "magic", "forest", "hill", "swamp" ],
+                "adjacent": [1, 3, 4, 7]
+              },
+              {
+                "population": 0,
+                "landDescription": [ "sea", "mountain", "mine", "farmland", "magic", "forest", "hill" ],
+                "adjacent": [1, 2, 6, 7]
+              },
+              {
+                "population": 1,
+                "landDescription": [ "mountain", "mine", "farmland", "magic", "forest" ],
+                "adjacent": [1, 2, 5, 6, 7]
+              },
+              {
+                "population": "1",
+                "landDescription": [ "mine", "farmland", "magic" ],
+                "adjacent": [1, 4, 6, 7]
+              },
+              {
+                "population": 1,
+                "landDescription": [ "farmland"],
+                "adjacent": [1, 3, 4, 5, 7]
+              },
+              {
+                "population": 1,
+                "landDescription": [],
+                "adjacent": [2, 3, 4, 5, 6, 8]
+              },
+              {
+                "adjacent": [7, 9]
+              },
+              {
+                "population": 1,
+                "adjacent": [8]
+              }
+            ]
+        },
+
+
         {
             "Xaction": "uploadMap",
             "mapName": "map 3",

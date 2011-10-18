@@ -48,7 +48,7 @@
         {
             "action": "setReadinessStatus",
             "sid": -1,
-            "readinessStatus": 1
+            "isReady": 1
         },
         {
             "action": "setReadinessStatus",

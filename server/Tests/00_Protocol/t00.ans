@@ -24,9 +24,41 @@
         "result": "ok",
         "mapId": 1
     },
+
+
     {
         "result": "badRegions"
     },
+    {
+        "result": "badRegions"
+    },
+    {
+        "result": "badRegions"
+    },
+    {
+        "result": "badRegions"
+    },
+    {
+        "result": "badRegions"
+    },
+    {
+        "result": "badRegions"
+    },
+    {
+        "result": "badRegions"
+    },
+    {
+        "result": "badRegions"
+    },
+    {
+        "result": "badRegions"
+    },
+    {
+        "result": "ok",
+        "mapId": 2
+    },
+
+
     {
         "result": "badJson"
     },
