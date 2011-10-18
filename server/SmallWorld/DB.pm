@@ -173,5 +173,16 @@ sub getMaps {
                                           { Columns => [1, 2, 3, 4] }) or dbError;
 }
 
+sub getGames {
+  my $self = shift;
+  return $self->{dbh}->selectall_arrayref('SELECT * FROM GAMES', { Slice => {} } ) or dbError;
+}
+
+sub getPlayers {
+  my $self = shift;
+  return $self->{dbh}->selectall_arrayref('SELECT id, userName, isReady FROM PLAYERS WHERE gameId = ?',
+                                          { Slice => {} }, @_ ) or dbError;
+}
+
 1;
 
