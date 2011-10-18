@@ -22,22 +22,35 @@
 
 
     {
-        "result": "badSid"
+        "result": "badSince"
     },
     {
         "result": "ok",
         "messages": [
-          { "userId": 1, "text": "message 1" }
+          { "id": 1, "time": 1, "userId": 1, "text": "message 1" }
         ]
     },
     {
-        "result": "badSid"
+        "result": "badSince"
     },
     {
         "result": "ok",
-        "messages": null
+        "messages": []
     },
 
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "messages": [
+          { "id": 2, "time": 2, "userId": 1, "text": "message 2" },
+          { "id": 3, "time": 3, "userId": 2, "text": "message 3" }
+        ]
+    },
 
     {
         "result": "badJson"
