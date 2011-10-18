@@ -17,7 +17,7 @@ sub new {
   my $self = { json => undef, db => undef };
   my ($r) = @_;
   if ( !$r ) {
-    $r = "{}";
+    $r = '{}';
   }
   $self->{json} = eval { return decode_json($r) or {}; };
   $self->{db} = SmallWorld::DB->new;
@@ -48,13 +48,13 @@ sub debug {
 
 sub checkLoginAndPassword {
   my $self = shift;
-  return !defined $self->{db}->query("SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?",
+  return !defined $self->{db}->query('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
                                      $self->{json}->{username}, $self->{json}->{password});
 }
 
 sub checkInGame {
   my $self = shift;
-  my $gameId = $self->{db}->query("SELECT gameId FROM PLAYERS WHERE sid = ?", $self->{json}->{sid});
+  my $gameId = $self->{db}->query('SELECT gameId FROM PLAYERS WHERE sid = ?', $self->{json}->{sid});
   return defined $gameId;
 }
 
@@ -127,51 +127,43 @@ sub checkJsonCmd {
     return $self->errorCode($_) if ( !defined $val );
 
     # если тип параметра -- строка
-    if ( $_->{type} eq "unicode" ) {
+    if ( $_->{type} eq 'unicode' ) {
       # если длина строки не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne "SCALAR";
+      return $self->errorCode($_) if ref(\$val) ne 'SCALAR';
       if ( defined $_->{min} && length $val < $_->{min} ||
           defined $_->{max} && length $val > $_->{max} ) {
         return $self->errorCode($_);
       }
     }
-    elsif ( $_->{type} eq "int" ) {
+    elsif ( $_->{type} eq 'int' ) {
       # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne "SCALAR" || $val !~ /^[+-]?\d+\z/;
+      return $self->errorCode($_) if ref(\$val) ne 'SCALAR' || $val !~ /^[+-]?\d+\z/;
       if ( defined $_->{min} && $val < $_->{min} ||
           defined $_->{max} && $val > $_->{max} ) {
         return $self->errorCode($_);
       }
     }
-    elsif ( $_->{type} eq "float" ) {
-      # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne "SCALAR" || $val !~ /^-?(?:\d+\.?|\.\d)\d*\z/;
-      if ( defined $_->{min} && $val < $_->{min} ||
-          defined $_->{max} && $val > $_->{max} ) {
-        return $self->errorCode($_);
-      }
-    }
-    elsif ( $_->{type} eq "list" ) {
-      return $self->errorCode($_) if ref($val) ne "ARRAY";
+    elsif ( $_->{type} eq 'list' ) {
+      return $self->errorCode($_) if ref($val) ne 'ARRAY';
     }
 
   }
 
   my $errorHandlers = {
     &R_ALREADY_IN_GAME  => sub { $self->checkInGame(); },
-    &R_BAD_GAME_ID      => sub { !$self->{db}->dbExists("games", "id", $self->{json}->{gameId}); },
-    &R_BAD_GAME_NAME    => sub { $self->{db}->dbExists("games", "name", $self->{json}->{gameName}); },
+    &R_BAD_GAME_ID      => sub { !$self->{db}->dbExists('games', 'id', $self->{json}->{gameId}); },
+    &R_BAD_GAME_NAME    => sub { $self->{db}->dbExists('games', 'name', $self->{json}->{gameName}); },
     &R_BAD_GAME_STATE   => sub { $self->checkIsStarted($self->{json}); },
     &R_BAD_LOGIN        => sub { $self->checkLoginAndPassword(); },
-    &R_BAD_MAP_ID       => sub { !$self->{db}->dbExists("maps", "id", $self->{json}->{mapId}); },
-    &R_BAD_MAP_NAME     => sub { $self->{db}->dbExists("maps", "name", $self->{json}->{mapName}); },
+    &R_BAD_MAP_ID       => sub { !$self->{db}->dbExists('maps', 'id', $self->{json}->{mapId}); },
+    &R_BAD_MAP_NAME     => sub { $self->{db}->dbExists('maps', 'name', $self->{json}->{mapName}); },
     &R_BAD_PASSWORD     => sub { $self->{json}->{password} !~ m/^.{6,18}$/;},
     &R_BAD_REGIONS      => sub { $self->checkRegions();},
-    &R_BAD_SID          => sub { defined $self->{json}->{sid} && !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
+    &R_BAD_SID          => sub { defined $self->{json}->{sid} && !$self->{db}->dbExists('players', 'sid', $self->{json}->{sid}); },
     &R_BAD_USERNAME     => sub { $self->{json}->{username} !~ m/^[A-Za-z][\w\-]*$/;},
     &R_NOT_IN_GAME      => sub { !defined $self->{db}->getGameId($self->{json}->{sid}); },
     &R_TOO_MANY_PLAYERS => sub { $self->checkPlayersNum(); },
-    &R_USERNAME_TAKEN   => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username});}
+    &R_USERNAME_TAKEN   => sub { $self->{db}->dbExists('players', 'username', $self->{json}->{username});}
   };
 
   my $errorList = CMD_ERRORS->{$cmd};
@@ -208,10 +200,6 @@ sub cmd_logout {
   $self->{db}->logout($self->{json}->{sid});
 }
 
-sub cmd_doSmth {
-  return;
-}
-
 sub cmd_sendMessage {
   my ($self, $result) = @_;
   $self->{db}->addMessage($self->{json}->{sid}, $self->{json}->{text});
@@ -219,12 +207,14 @@ sub cmd_sendMessage {
 
 sub cmd_getMessages {
   my ($self, $result) = @_;
-  my $ref = $self->{db}->getMessages(int($self->{json}->{since}));
-  $result->{messages} = ();
+  my $ref = $self->{db}->getMessages($self->{json}->{since});
+  my @a = ();
   my $n = @$ref;
-  for (my $i = 0; $i < $n; $i += 3){
-    push @{$result->{messages}}, { 'time' => @$ref[$i], 'text' => @$ref[$i+1], 'userId' => @$ref[$i+2] };
+  for (my $i = 0; $i < $n; $i += 4){
+    push @a, { 'id' => @$ref[$i], 'text' => @$ref[$i+1], 'userId' => @$ref[$i+2],
+                                   'time' => TEST_MODE ? @$ref[$i] : @$ref[$i+3] };
   }
+  @{$result->{messages}} = reverse @a;
 }
 
 sub cmd_createDefaultMaps {

@@ -50,12 +50,12 @@ sub _getId {
 
 sub getPlayerId {
   my $self = shift;
-  return $self->query("SELECT id FROM PLAYERS WHERE sid = ?", @_);
+  return $self->query('SELECT id FROM PLAYERS WHERE sid = ?', @_);
 }
 
 sub getGameId {
   my $self = shift;
-  return $self->query("SELECT gameId FROM PLAYERS WHERE sid = ?", @_);
+  return $self->query('SELECT gameId FROM PLAYERS WHERE sid = ?', @_);
 }
 
 sub query {
@@ -82,62 +82,62 @@ sub clear {
 
 sub addMap {
   my $self = shift;
-  $self->_do("INSERT INTO MAPS (name, playersNum, turnsNum, regions) VALUES (?, ?, ?, ?)", @_);
-  return $self->_getId("MAP");
+  $self->_do('INSERT INTO MAPS (name, playersNum, turnsNum, regions) VALUES (?, ?, ?, ?)', @_);
+  return $self->_getId('MAP');
 }
 
 sub addPlayer {
   my $self = shift;
-  $self->_do("INSERT INTO PLAYERS (username, pass) VALUES(?,?)", @_);
+  $self->_do('INSERT INTO PLAYERS (username, pass) VALUES(?,?)', @_);
 }
 
 sub createGame {
   my $self = shift;
   my ($sid, $gameName, $mapId, $gameDescr) = @_;
   $gameDescr = "" if !defined $gameDescr;
-  $self->_do("INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)", $gameName, $mapId, $gameDescr);
-  my $game_id = $self->_getId("GAME");
-  $self->_do("UPDATE PLAYERS SET gameId = ? WHERE sid = ?", $game_id, $sid);
+  $self->_do('INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)', $gameName, $mapId, $gameDescr);
+  my $game_id = $self->_getId('GAME');
+  $self->_do('UPDATE PLAYERS SET gameId = ? WHERE sid = ?', $game_id, $sid);
   return $game_id;
 }
 
 sub joinGame {
   my $self = shift;
-  $self->_do("UPDATE PLAYERS SET gameId = ? WHERE sid = ?", @_);
+  $self->_do('UPDATE PLAYERS SET gameId = ? WHERE sid = ?', @_);
 }
 
 sub makeSid {
   my $self = shift;
-  return $self->query("EXECUTE PROCEDURE MAKESID(?,?)", @_);
+  return $self->query('EXECUTE PROCEDURE MAKESID(?,?)', @_);
 }
 
 sub logout {
   my $self = shift;
   $self->leaveGame($_[0]);
-  $self->_do("EXECUTE PROCEDURE LOGOUT(?)", $_[0]);
+  $self->_do('EXECUTE PROCEDURE LOGOUT(?)', $_[0]);
 }
 
 sub playersCount {
   my $self = shift;
-  return $self->query("SELECT COUNT(*) FROM PLAYERS WHERE gameId = ?", $_[0]);
+  return $self->query('SELECT COUNT(*) FROM PLAYERS WHERE gameId = ?', $_[0]);
 }
 
 sub readyCount {
   my $self = shift;
-  return $self->query("SELECT COUNT(*) FROM PLAYERS WHERE isReady = 1 AND gameId = ?", $_[0]);
+  return $self->query('SELECT COUNT(*) FROM PLAYERS WHERE isReady = 1 AND gameId = ?', $_[0]);
 }
 
 sub getGameState {
   my $self = shift;
-  return $self->query("SELECT isStarted FROM GAMES WHERE id = ?", $_[0]);
+  return $self->query('SELECT isStarted FROM GAMES WHERE id = ?', $_[0]);
 }
 
 sub leaveGame {
   my $self = shift;
   my $gameId = $self->getGameId($_[0]);
   if (defined $gameId) {
-    $self->_do("UPDATE PLAYERS SET isReady = 0, gameId = NULL WHERE sid = ?", $_[0]);
-    $self->_do("DELETE FROM GAMES WHERE id = ?", $gameId) if !$self->playersCount($gameId);
+    $self->_do('UPDATE PLAYERS SET isReady = 0, gameId = NULL WHERE sid = ?', $_[0]);
+    $self->_do('DELETE FROM GAMES WHERE id = ?', $gameId) if !$self->playersCount($gameId);
   }
 }
 
@@ -145,31 +145,31 @@ sub setIsReady {
   my $self = shift;
   my ($isReady, $sid) = @_;
   my $gameId = $self->getGameId($sid);
-  $self->_do("UPDATE PLAYERS SET isReady = ? WHERE sid = ?", $isReady, $sid);
-  $self->_do("UPDATE GAMES SET isStarted = 1 WHERE id = ?", $gameId)
+  $self->_do('UPDATE PLAYERS SET isReady = ? WHERE sid = ?', $isReady, $sid);
+  $self->_do('UPDATE GAMES SET isStarted = 1 WHERE id = ?', $gameId)
     if $self->readyCount($gameId) == $self->getMaxPlayers($gameId);
 }
 
 sub getMaxPlayers {
   my $self = shift;
-  return $self->query("SELECT playersNum FROM MAPS m INNER JOIN GAMES g ON m.id = g.mapId WHERE g.id = ?", $_[0]);
+  return $self->query('SELECT playersNum FROM MAPS m INNER JOIN GAMES g ON m.id = g.mapId WHERE g.id = ?', $_[0]);
 }
 
 sub addMessage {
   my $self = shift;
   my ($sid, $text) = @_;
-  $self->_do("INSERT INTO MESSAGES (text, userId) VALUES (?, ?)", $text, $self->getPlayerId($sid));
+  $self->_do('INSERT INTO MESSAGES (text, playerId) VALUES (?, ?)', $text, $self->getPlayerId($sid));
 }
 
 sub getMessages {
   my $self = shift;
-  return $self->{dbh}->selectcol_arrayref("SELECT id, text, userId FROM MESSAGES WHERE id > ? ",
-                                          { Columns => [1,2,3] }, $_[0]) or dbError;
+  return $self->{dbh}->selectcol_arrayref('SELECT FIRST 100 id, text, playerId, t FROM MESSAGES WHERE id > ? ORDER BY id DESC',
+                                          { Columns => [1, 2, 3, 4] }, $_[0]) or dbError;
 }
 
 sub getMaps {
   my $self = shift;
-  return $self->{dbh}->selectcol_arrayref("SELECT id, name, playersNum, turnsNum FROM MAPS",
+  return $self->{dbh}->selectcol_arrayref('SELECT id, name, playersNum, turnsNum FROM MAPS',
                                           { Columns => [1, 2, 3, 4] }) or dbError;
 }
 
