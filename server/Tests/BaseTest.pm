@@ -38,6 +38,9 @@ sub check {
   my $answers = decode_json($self->readFile($ans));
   my $inTest = decode_json($self->readFile($in));
   my $i = 0;
+  if ( !defined $inTest->{description} ) {
+    $inTest->{description} = $in;
+  }
   print "   $inTest->{description}: ";
   foreach ( @{ $inTest->{test} } ) {
     my $req = encode_json($_);
