@@ -22,13 +22,19 @@
         "result": "badSid"
     },
     {
-        "result": "badJson"
+        "result": "badMessageText"
     },
     {
         "result": "badSid"
     },
     {
         "result": "badSid"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badMessageText"
     },
     {
         "result": "ok"

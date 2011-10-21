@@ -68,6 +68,12 @@
         {
             "action": "createGame",
             "sid": 1,
+            "gameName": "game name 1",
+            "mapId": 2
+        },
+        {
+            "action": "createGame",
+            "sid": 1,
             "gameName": "game name 2",
             "mapId": 1,
             "gameDescr": "game description"

@@ -12,7 +12,8 @@
 
 
     {
-        "result": "ok"
+        "result": "ok",
+        "games": []
     },
     {
         "result": "badSid"

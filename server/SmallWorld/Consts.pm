@@ -34,6 +34,7 @@ use constant R_BAD_JSON             => "badJson"              ;
 use constant R_BAD_LOGIN            => "badUsernameOrPassword";
 use constant R_BAD_MAP_ID           => "badMapId"             ;
 use constant R_BAD_MAP_NAME         => "badMapName"           ;
+use constant R_BAD_MESSAGE_TEXT     => "badMessageText"       ;
 use constant R_BAD_MONEY_AMOUNT     => "badMoneyAmount"       ;
 use constant R_BAD_NUM_OF_PLAYERS   => "badNumberOfPlayers"   ;
 use constant R_BAD_PASSWORD         => "badPassword"          ;
@@ -44,9 +45,12 @@ use constant R_BAD_REGION           => "badRegion"            ;
 use constant R_BAD_REGION_ID        => "badRegionId"          ;
 use constant R_BAD_REGIONS          => "badRegions"           ;
 use constant R_BAD_SID              => "badSid"               ;
+use constant R_BAD_SINCE            => "badSince"             ;
 use constant R_BAD_STAGE            => "badStage"             ;
 use constant R_BAD_TURNS_NUM        => "badTurnsNum"          ;
 use constant R_BAD_USERNAME         => "badUsername"          ;
+use constant R_GAME_NAME_TAKEN      => "gameNameTaken"        ;
+use constant R_MAP_NAME_TAKEN       => "mapNameTaken"         ;
 use constant R_NOT_IN_GAME          => "notInGame"            ;
 use constant R_TOO_MANY_PLAYERS     => "tooManyPlayers"       ;
 use constant R_USERNAME_TAKEN       => "usernameTaken"        ;
@@ -76,8 +80,8 @@ use constant CMD_ERRORS => {
   sendMessage        => [R_BAD_SID],
   getMessages        => [],
   createDefaultMaps  => [],
-  uploadMap          => [R_BAD_MAP_NAME, R_BAD_REGIONS],
-  createGame         => [R_BAD_SID, R_BAD_GAME_NAME, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
+  uploadMap          => [R_MAP_NAME_TAKEN, R_BAD_REGIONS],
+  createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
   joinGame           => [R_BAD_SID, R_BAD_GAME_ID, R_BAD_GAME_STATE, R_ALREADY_IN_GAME, R_TOO_MANY_PLAYERS],
   leaveGame          => [R_BAD_SID, R_NOT_IN_GAME],
   setReadinessStatus => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE],
@@ -92,16 +96,16 @@ use constant CMD_ERRORS => {
 use constant PATTERN => {
   register => [
     {
-      name => "username",
-      type => "unicode",
+      name => 'username',
+      type => 'unicode',
       mandatory => 1,
       min => MIN_USERNAME_LEN,
       max => MAX_USERNAME_LEN,
       errorCode => R_BAD_USERNAME
     },
     {
-      name => "password",
-      type => "unicode",
+      name => 'password',
+      type => 'unicode',
       mandatory => 1,
       min => MIN_PASSWORD_LEN,
       max => MAX_PASSWORD_LEN,
@@ -110,16 +114,16 @@ use constant PATTERN => {
   ],
   login => [
     {
-      name => "username",
-      type => "unicode",
+      name => 'username',
+      type => 'unicode',
       mandatory => 1,
       min => MIN_USERNAME_LEN,
       max => MAX_USERNAME_LEN,
       errorCode => R_BAD_LOGIN
     },
     {
-      name => "password",
-      type => "unicode",
+      name => 'password',
+      type => 'unicode',
       mandatory => 1,
       min => MIN_PASSWORD_LEN,
       max => MAX_PASSWORD_LEN,
@@ -128,69 +132,70 @@ use constant PATTERN => {
   ],
   logout => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_SID
     }
   ],
   sendMessage => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_SID
     },
     {
-      name => "text",
-      type => "unicode",
+      name => 'text',
+      type => 'unicode',
       max => MAX_MSG_LEN,
-      mandatory => 1
+      mandatory => 1,
+      errorCode => R_BAD_MESSAGE_TEXT
     }
   ],
   getMessages => [
     {
-      name => "since",
-      type => "float",
+      name => 'since',
+      type => 'int',
       mandatory => 1,
       min => 0,
-      errorCode => R_BAD_SID # stupid youth!!!
+      errorCode => R_BAD_SINCE
     }
   ],
   createDefaultMaps => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 0,
       errorCode => R_BAD_SID
     }
   ],
   uploadMap => [
     {
-      name => "mapName",
-      type => "unicode",
+      name => 'mapName',
+      type => 'unicode',
       mandatory => 1,
       max => MAX_MAPNAME_LEN,
       errorCode => R_BAD_MAP_NAME
     },
     {
-      name => "playersNum",
-      type => "int",
+      name => 'playersNum',
+      type => 'int',
       mandatory => 1,
       min => MIN_PLAYERS_NUM,
       max => MAX_PLAYERS_NUM,
       errorCode => R_BAD_PLAYERS_NUM
     },
     {
-      name => "regions",
-      type => "list",
+      name => 'regions',
+      type => 'list',
       mandatory => 1,
       errorCode => R_BAD_REGIONS
     },
     {
-      name => "turnsNum",
+      name => 'turnsNum',
       mandatory => 1,
-      type => "int",
+      type => 'int',
       min => MIN_TURNS_NUM,
       max => MAX_TURNS_NUM,
       errorCode => R_BAD_TURNS_NUM
@@ -198,28 +203,28 @@ use constant PATTERN => {
   ],
   createGame => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_SID
     },
     {
-      name => "gameName",
-      type => "unicode",
+      name => 'gameName',
+      type => 'unicode',
       mandatory => 1,
       min => MIN_GAMENAME_LEN,
       max => MAX_GAMENAME_LEN,
       errorCode => R_BAD_GAME_NAME
     },
     {
-      name => "mapId",
-      type => "int",
+      name => 'mapId',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_MAP_ID
     },
     {
-      name => "gameDescr",
-      type => "unicode",
+      name => 'gameDescr',
+      type => 'unicode',
       mandatory => 0,
       max => MAX_GAMEDESCR_LEN,
       errorCode => R_BAD_GAME_DESC
@@ -227,70 +232,70 @@ use constant PATTERN => {
   ],
   getGameList => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 0,
       errorCode => R_BAD_SID
     }
   ],
   getMapList => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 0,
       errorCode => R_BAD_SID
     }
   ],
   joinGame => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_SID
     },
     {
-      name => "gameId",
-      type => "int",
+      name => 'gameId',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_GAME_ID
     }
   ],
   leaveGame => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_SID
     }
   ],
   setReadinessStatus => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_SID
     },
     {
-      name => "readinessStatus",
-      type => "int",
+      name => 'isReady',
+      type => 'int',
       mandatory => 1,
       min => 0,
       max => 1,
       errorCode => R_BAD_READINESS_STATUS
     },
-    {name => "visibleRaces", type => "list", mandatory => 0},
-    {name => "visibleSpecialPowers", type => "list", mandatory => 0}
+    {name => 'visibleRaces', type => 'list', mandatory => 0},
+    {name => 'visibleSpecialPowers', type => 'list', mandatory => 0}
   ],
   selectRace => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1,
       errorCode => R_BAD_SID
     },
     {
-      name => "position",
-      type => "int",
+      name => 'position',
+      type => 'int',
       mandatory => 1,
       min => 0,
       max => VISIBLE_RACES - 1,
@@ -314,22 +319,22 @@ use constant PATTERN => {
   decline =>[ {name => "sid", type => "int", mandatory => 1} ],
   finishTurn => [ {name => "sid", type => "int", mandatory => 1} ],
   redeploy => [
-    {name => "sid", type => "int", mandatory => 1},
-    {name => "raceId", type => "int", mandatory => 0},
-    {name => "regions", type => "list", mandatory => 1}
+    {name => 'sid', type => 'int', mandatory => 1},
+    {name => 'raceId', type => 'int', mandatory => 0},
+    {name => 'regions', type => 'list', mandatory => 1}
   ],
   defend => [
-    {name => "sid", type => "int", mandatory => 1},
-    {name => "regions", type => "list", mandatory => 1}
+    {name => 'sid', type => 'int', mandatory => 1},
+    {name => 'regions', type => 'list', mandatory => 1}
   ],
   enchant => [
-    {name => "sid", type => "int", mandatory => 1},
-    {name => "regionId", type => "int", mandatory => 1}
+    {name => 'sid', type => 'int', mandatory => 1},
+    {name => 'regionId', type => 'int', mandatory => 1}
   ],
   getVisibleTokenBadges => [
-    {name => "gameId", type => "int", mandatory => 1}
+    {name => 'gameId', type => 'int', mandatory => 1}
   ],
-  resetServer => [ {name => "sid", type => "int", mandatory => 0} ],
+  resetServer => [ {name => 'sid', type => 'int', mandatory => 0} ],
   throwDice => [
     {name => "sid", type => "int", mandatory => 1},
     {name => "dice", type => "int", mandatory => 0}
@@ -344,58 +349,58 @@ use constant PATTERN => {
   ]
 };
 
-use constant DB_GENERATORS_NAMES => ["GEN_MAP_ID", "GEN_GAME_ID", "GEN_MESSAGE_ID", "GEN_SID", "GEN_PLAYER_ID"];
-use constant DB_TABLES_NAMES     => ["PLAYERS", "MAPS", "GAMES", "MESSAGES"]                                   ;
+use constant DB_GENERATORS_NAMES => ['GEN_MAP_ID', 'GEN_GAME_ID', 'GEN_MESSAGE_ID', 'GEN_SID', 'GEN_PLAYER_ID'];
+use constant DB_TABLES_NAMES     => ['PLAYERS', 'MAPS', 'GAMES', 'MESSAGES']                                   ;
 
 use constant DEFAULT_MAPS => [
-  {"mapName" => "defaultMap1", "playersNum" => 2, "turnsNum" => 5},
-  {"mapName" => "defaultMap2", "playersNum" => 3, "turnsNum" => 5},
-  {"mapName" => "defaultMap3", "playersNum" => 4, "turnsNum" => 5},
-  {"mapName" => "defaultMap4", "playersNum" => 5, "turnsNum" => 5},
-  {"mapName" => "defaultMap5", "playersNum" => 2, "turnsNum" => 5, "regions" => [
-    { "population" => 1, "landDescription" => ["mountain"], "adjacent" => [3, 4] },
-    { "population" => 1, "landDescription" => ["sea"], "adjacent" => [1, 4] },
-    { "population" => 1, "landDescription" => ["border", "mountain"], "adjacent" => [1]},
-    { "population" => 1, "landDescription" => ["coast"], "adjacent" => [1, 2] }
+  {'mapName' => 'defaultMap1', 'playersNum' => 2, 'turnsNum' => 5},
+  {'mapName' => 'defaultMap2', 'playersNum' => 3, 'turnsNum' => 5},
+  {'mapName' => 'defaultMap3', 'playersNum' => 4, 'turnsNum' => 5},
+  {'mapName' => 'defaultMap4', 'playersNum' => 5, 'turnsNum' => 5},
+  {'mapName' => 'defaultMap5', 'playersNum' => 2, 'turnsNum' => 5, 'regions' => [
+    { 'population' => 1, 'landDescription' => ['mountain'], 'adjacent' => [3, 4] },
+    { 'population' => 1, 'landDescription' => ['sea'], 'adjacent' => [1, 4] },
+    { 'population' => 1, 'landDescription' => ['border', 'mountain'], 'adjacent' => [1]},
+    { 'population' => 1, 'landDescription' => ['coast'], 'adjacent' => [1, 2] }
   ]},
-  {"mapName" => "defaultMap6", "playersNum" => 2, "turnsNum" => 7, "regions" => [
-     { "landDescription" => ["sea", "border"], "adjacent" => [1, 16, 17] },                                            # 1
-     { "landDescription" => ["mine", "border", "coast", "forest"], "adjacent" => [0, 17, 18, 2] },                     # 2
-     { "landDescription" => ["border", "mountain"], "adjacent" => [1, 18, 20, 3] },                                    # 3
-     { "landDescription" => ["farmland", "border"], "adjacent" => [2, 20, 21, 4] },                                    # 4
-     { "landDescription" => ["cavern", "border", "swamp"], "adjacent" => [3, 21, 22, 5] },                             # 5
-     { "population" => 1, "landDescription" => ["forest", "border"], "adjacent" => [4, 22, 6] },                       # 6
-     { "landDescription" => ["mine", "border", "swamp"], "adjacent" => [5, 22, 7, 23, 25] },                           # 7
-     { "landDescription" => ["border", "mountain", "coast"], "adjacent" => [6, 25, 9, 8, 23] },                        # 8
-     { "landDescription" => ["border", "sea"], "adjacent" => [7, 9, 10] },                                             # 9
-     { "population" => 1, "landDescription" => ["cavern", "coast"], "adjacent" => [8, 7, 10, 25] },                    #10
-     { "population" => 1, "landDescription" => ["mine", "coast", "forest", "border"], "adjacent" => [9, 25, 26, 11] }, #11
-     { "landDescription" => ["forest", "border"], "adjacent" => [10, 26, 29, 12] },                                    #12
-     { "landDescription" => ["mountain", "border"], "adjacent" => [11, 29, 27, 13] },                                  #13
-     { "landDescription" => ["mountain", "border"], "adjacent" => [12, 27, 15, 14] },                                  #14
-     { "landDescription" => ["hill", "border"], "adjacent" => [13, 15] },                                              #15
-     { "landDescription" => ["farmland", "magic", "border"], "adjacent" => [14, 19, 27, 16] },                         #16
-     { "landDescription" => ["border", "mountain", "cavern", "mine", "coast"], "adjacent" => [15, 19, 0, 17] },        #17
-     { "population" => 1, "landDescription" => ["farmland", "magic", "coast"], "adjacent" => [16, 19, 0, 18] },        #18
-     { "landDescription" => ["swamp"], "adjacent" => [17, 2, 20, 1, 19] },                                             #19
-     { "population" => 1, "landDescription" => ["swamp"], "adjacent" => [18, 27, 28, 20] },                            #20
-     { "population" => 1, "landDescription" => ["hill", "magic"], "adjacent" => [19, 28, 2, 3, 21] },                  #21
-     { "landDescription" => ["mountain", "mine"], "adjacent" => [20, 24, 28, 3, 4, 22] },                              #22
-     { "population" => 1, "landDescription" => ["farmland"], "adjacent" => [21, 24, 5, 4, 23] },                       #23
-     { "landDescription" => ["hill", "magic"], "adjacent" => [22, 25, 6, 24, 7] },                                     #24
-     { "landDescription" => ["mountain", "cavern"], "adjacent" => [23, 21, 22, 28] },                                  #25
-     { "population" => 1, "landDescription" => ["farmland"], "adjacent" => [24, 23, 6, 7, 9, 10, 26] },                #26
-     { "population" => 1, "landDescription" => ["swamp", "magic"], "adjacent" => [25, 10, 11, 29, 28] },               #27
-     { "population" => 1, "landDescription" => ["forest", "cavern"], "adjacent" => [28, 29, 12, 13, 15, 19] },         #28
-     { "landDescription" => ["sea"], "adjacent" => [27, 19, 20, 21, 24, 26, 29] },                                     #29
-     { "landDescription" => ["hill"], "adjacent" => [28, 27, 12, 11, 26] }                                             #30
+  {'mapName' => 'defaultMap6', 'playersNum' => 2, 'turnsNum' => 7, 'regions' => [
+     { 'landDescription' => ['sea', 'border'], 'adjacent' => [2, 17, 18] },                                            # 1
+     { 'landDescription' => ['mine', 'border', 'coast', 'forest'], 'adjacent' => [1, 18, 19, 3] },                     # 2
+     { 'landDescription' => ['border', 'mountain'], 'adjacent' => [2, 19, 21, 4] },                                    # 3
+     { 'landDescription' => ['farmland', 'border'], 'adjacent' => [3, 21, 22, 5] },                                    # 4
+     { 'landDescription' => ['cavern', 'border', 'swamp'], 'adjacent' => [4, 22, 23, 6] },                             # 5
+     { 'population' => 1, 'landDescription' => ['forest', 'border'], 'adjacent' => [5, 23, 7] },                       # 6
+     { 'landDescription' => ['mine', 'border', 'swamp'], 'adjacent' => [6, 23, 8, 24, 26] },                           # 7
+     { 'landDescription' => ['border', 'mountain', 'coast'], 'adjacent' => [7, 26, 10, 9, 24] },                       # 8
+     { 'landDescription' => ['border', 'sea'], 'adjacent' => [8, 10, 11] },                                            # 9
+     { 'population' => 1, 'landDescription' => ['cavern', 'coast'], 'adjacent' => [9, 8, 11, 26] },                    #10
+     { 'population' => 1, 'landDescription' => ['mine', 'coast', 'forest', 'border'], 'adjacent'=> [10, 26, 27, 12] }, #11
+     { 'landDescription' => ['forest', 'border'], 'adjacent' => [11, 27, 30, 13] },                                    #12
+     { 'landDescription' => ['mountain', 'border'], 'adjacent' => [12, 30, 28, 14] },                                  #13
+     { 'landDescription' => ['mountain', 'border'], 'adjacent' => [13, 28, 16, 15] },                                  #14
+     { 'landDescription' => ['hill', 'border'], 'adjacent' => [14, 16] },                                              #15
+     { 'landDescription' => ['farmland', 'magic', 'border'], 'adjacent' => [15, 20, 28, 17] },                         #16
+     { 'landDescription' => ['border', 'mountain', 'cavern', 'mine', 'coast'], 'adjacent' => [16, 20, 1, 18] },        #17
+     { 'population' => 1, 'landDescription' => ['farmland', 'magic', 'coast'], 'adjacent' => [17, 20, 1, 19] },        #18
+     { 'landDescription' => ['swamp'], 'adjacent' => [18, 3, 21, 2, 20] },                                             #19
+     { 'population' => 1, 'landDescription' => ['swamp'], 'adjacent' => [19, 28, 29, 21] },                            #20
+     { 'population' => 1, 'landDescription' => ['hill', 'magic'], 'adjacent' => [20, 29, 3, 4, 22] },                  #21
+     { 'landDescription' => ['mountain', 'mine'], 'adjacent' => [21, 25, 29, 4, 5, 23] },                              #22
+     { 'population' => 1, 'landDescription' => ['farmland'], 'adjacent' => [22, 25, 6, 5, 24] },                       #23
+     { 'landDescription' => ['hill', 'magic'], 'adjacent' => [23, 26, 7, 25, 8] },                                     #24
+     { 'landDescription' => ['mountain', 'cavern'], 'adjacent' => [24, 22, 23, 26] },                                  #25
+     { 'population' => 1, 'landDescription' => ['farmland'], 'adjacent' => [25, 24, 7, 8, 10, 11, 27] },               #26
+     { 'population' => 1, 'landDescription' => ['swamp', 'magic'], 'adjacent' => [26, 11, 12, 30, 29] },               #27
+     { 'population' => 1, 'landDescription' => ['forest', 'cavern'], 'adjacent' => [29, 30, 13, 14, 16, 20] },         #28
+     { 'landDescription' => ['sea'], 'adjacent' => [28, 20, 21, 22, 25, 27, 30] },                                     #29
+     { 'landDescription' => ['hill'], 'adjacent' => [29, 28, 13, 12, 27] }                                             #30
    ] },
-   { "mapName" => "defaultMap7", "playersNum" => 2, "turnsNum" => 5, "regions" => [
-     { "landDescription" => ["border", "mountain", "mine", "farmland","magic"], "adjacent" => [2] },
-     { "landDescription" => ["mountain"], "adjacent" => [1, 3] },
-     { "population" => 1, "landDescription" => ["mountain", "mine"], "adjacent" => [2, 4] },
-     { "population" => 1, "landDescription" => ["mountain"], "adjacent" => [3, 5] },
-     { "landDescription" => ["mountain", "mine"], "adjacent" => [4] }
+   { 'mapName' => 'defaultMap7', 'playersNum' => 2, 'turnsNum' => 5, 'regions' => [
+     { 'landDescription' => ['border', 'mountain', 'mine', 'farmland','magic'], 'adjacent' => [2] },
+     { 'landDescription' => ['mountain'], 'adjacent' => [1, 3] },
+     { 'population' => 1, 'landDescription' => ['mountain', 'mine'], 'adjacent' => [2, 4] },
+     { 'population' => 1, 'landDescription' => ['mountain'], 'adjacent' => [3, 5] },
+     { 'landDescription' => ['mountain', 'mine'], 'adjacent' => [4] }
    ] }
 ];
 

@@ -48,6 +48,22 @@
 
 
         {
+            "action": "sendMessage",
+            "sid": 1,
+            "text": "message 2"
+        },
+        {
+            "action": "sendMessage",
+            "sid": 2,
+            "text": "message 3"
+        },
+        {
+            "action": "getMessages",
+            "since": 1
+        },
+
+
+        {
             "Xaction": "getMessages",
             "since": 1
         },

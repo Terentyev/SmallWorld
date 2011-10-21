@@ -44,12 +44,22 @@
         {
             "action": "sendMessage",
             "sid": 1,
-            "text": "very-very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee... loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong text"
+            "text": "good very-very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee... looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong text(300 symbols)"
+        },
+        {
+            "action": "sendMessage",
+            "sid": 1,
+            "text": "text with more then 300 symbols.............................................................................................................................................................................................................................................................................."
         },
         {
             "action": "sendMessage",
             "sid": 2,
             "text": "Hello, underworld!"
+        },
+        {
+            "action": "sendMessage",
+            "sid": 2,
+            "text": ""
         },
 
 

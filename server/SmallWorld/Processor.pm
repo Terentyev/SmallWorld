@@ -18,7 +18,7 @@ sub new {
   my $self = { json => undef, db => undef };
   my ($r) = @_;
   if ( !$r ) {
-    $r = "{}";
+    $r = '{}';
   }
   $self->{json} = eval { return decode_json($r) or {}; };
   $self->{db} = SmallWorld::DB->new;
@@ -48,13 +48,13 @@ sub debug {
 
 sub checkLoginAndPassword {
   my $self = shift;
-  return !defined $self->{db}->query("SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?",
-                                     $self->{json}->{username}, $self->{json}->{password});
+  return !defined $self->{db}->query('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
+                                     @{$self->{json}}{qw/username password/} );
 }
 
 sub checkInGame {
   my $self = shift;
-  my $gameId = $self->{db}->query("SELECT gameId FROM PLAYERS WHERE sid = ?", $self->{json}->{sid});
+  my $gameId = $self->{db}->query('SELECT gameId FROM PLAYERS WHERE sid = ?', $self->{json}->{sid});
   return defined $gameId;
 }
 
@@ -77,8 +77,11 @@ sub checkRegions {
   my $l = @$r;
   my $ex;
   for (my $i = 0; $i < $l; ++$i){
-    $s += @$r[$i]->{population} if exists @$r[$i]->{population};
-
+    if (exists @$r[$i]->{population}) {
+      return 1 if @$r[$i]->{population} !~ /^[+-]?\d+\z/ || @$r[$i]->{population} < 0;
+      $s += @$r[$i]->{population};
+    }
+    return 1 if defined @$r[$i]->{landDescription} && ref @$r[$i]->{landDescription} ne 'ARRAY';
     foreach my $j (@{@$r[$i]->{landDescription}}) {
       $ex = 0;
       foreach (@{&REGION_TYPES}) {
@@ -89,8 +92,10 @@ sub checkRegions {
       }
       return 1 if !$ex;
     }
-    return 1 if ref @$r[$i]->{adjacent} ne 'ARRAY';
+    return 1 if !defined @$r[$i]->{adjacent} || ref @$r[$i]->{adjacent} ne 'ARRAY';
     foreach my $j (@{@$r[$i]->{adjacent}}) {
+
+      return 1 if !defined @$r[$j-1]->{adjacent} || ref @$r[$j-1]->{adjacent} ne 'ARRAY';
       #регион граничет с недопустимым регионом или самим собой
       return 1 if $j< 1 || $j > $l || $j == $i + 1;
 
@@ -127,44 +132,36 @@ sub checkJsonCmd {
     return $self->errorCode($_) if ( !defined $val );
 
     # если тип параметра -- строка
-    if ( $_->{type} eq "unicode" ) {
+    if ( $_->{type} eq 'unicode' ) {
       # если длина строки не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne "SCALAR";
+      return $self->errorCode($_) if ref(\$val) ne 'SCALAR';
       if ( defined $_->{min} && length $val < $_->{min} ||
           defined $_->{max} && length $val > $_->{max} ) {
         return $self->errorCode($_);
       }
     }
-    elsif ( $_->{type} eq "int" ) {
+    elsif ( $_->{type} eq 'int' ) {
       # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne "SCALAR" || $val !~ /^[+-]?\d+\z/;
+      return $self->errorCode($_) if ref(\$val) ne 'SCALAR' || $val !~ /^[+-]?\d+\z/;
       if ( defined $_->{min} && $val < $_->{min} ||
           defined $_->{max} && $val > $_->{max} ) {
         return $self->errorCode($_);
       }
     }
-    elsif ( $_->{type} eq "float" ) {
-      # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne "SCALAR" || $val !~ /^-?(?:\d+\.?|\.\d)\d*\z/;
-      if ( defined $_->{min} && $val < $_->{min} ||
-          defined $_->{max} && $val > $_->{max} ) {
-        return $self->errorCode($_);
-      }
-    }
-    elsif ( $_->{type} eq "list" ) {
-      return $self->errorCode($_) if ref($val) ne "ARRAY";
+    elsif ( $_->{type} eq 'list' ) {
+      return $self->errorCode($_) if ref($val) ne 'ARRAY';
     }
 
   }
 
   my $errorHandlers = {
     &R_ALREADY_IN_GAME  => sub { $self->checkInGame(); },
-    &R_BAD_GAME_ID      => sub { !$self->{db}->dbExists("games", "id", $self->{json}->{gameId}); },
-    &R_BAD_GAME_NAME    => sub { $self->{db}->dbExists("games", "name", $self->{json}->{gameName}); },
+    &R_BAD_GAME_ID      => sub { !$self->{db}->dbExists('games', 'id', $self->{json}->{gameId}); },
+    &R_GAME_NAME_TAKEN  => sub { $self->{db}->dbExists('games', 'name', $self->{json}->{gameName}); },
     &R_BAD_GAME_STATE   => sub { $self->checkIsStarted($self->{json}); },
     &R_BAD_LOGIN        => sub { $self->checkLoginAndPassword(); },
     &R_BAD_MAP_ID       => sub { !$self->{db}->dbExists("maps", "id", $self->{json}->{mapId}); },
-    &R_BAD_MAP_NAME     => sub { $self->{db}->dbExists("maps", "name", $self->{json}->{mapName}); },
+    &R_MAP_NAME_TAKEN   => sub { $self->{db}->dbExists('maps', 'name', $self->{json}->{mapName}); },
     &R_BAD_PASSWORD     => sub { $self->{json}->{password} !~ m/^.{6,18}$/; },
     &R_BAD_REGIONS      => sub { $self->checkRegions(); },
     &R_BAD_SID          => sub { defined $self->{json}->{sid} && !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
@@ -196,12 +193,12 @@ sub cmd_resetServer {
 
 sub cmd_register {
   my ($self, $result) = @_;
-  $self->{db}->addPlayer($self->{json}->{username}, $self->{json}->{password});
+  $self->{db}->addPlayer( @{$self->{json}}{qw/username password/} );
 }
 
 sub cmd_login {
   my ($self, $result) = @_;
-  $result->{sid} = $self->{db}->makeSid($self->{json}->{username}, $self->{json}->{password});
+  $result->{sid} = $self->{db}->makeSid( @{$self->{json}}{qw/username password/} );
 }
 
 sub cmd_logout {
@@ -211,43 +208,53 @@ sub cmd_logout {
 
 sub cmd_sendMessage {
   my ($self, $result) = @_;
-  $self->{db}->addMessage($self->{json}->{sid}, $self->{json}->{text});
+  $self->{db}->addMessage( @{$self->{json}}{qw/sid text/} );
 }
 
 sub cmd_getMessages {
   my ($self, $result) = @_;
-  my $ref = $self->{db}->getMessages(int($self->{json}->{since}));
-  $result->{messages} = ();
+  my $ref = $self->{db}->getMessages($self->{json}->{since});
+  my @a = ();
   my $n = @$ref;
-  for (my $i = 0; $i < $n; $i += 3){
-    push @{$result->{messages}}, { 'time' => @$ref[$i], 'text' => @$ref[$i+1], 'userId' => @$ref[$i+2] };
+  for (my $i = 0; $i < $n; $i += 4){
+    push @a, { 'id' => @$ref[$i], 'text' => @$ref[$i+1], 'userId' => @$ref[$i+2], 'time' => TEST_MODE ? @$ref[$i] : @$ref[$i+3] };
   }
+  @{$result->{messages}} = reverse @a;
 }
 
 sub cmd_createDefaultMaps {
   my ($self, $result) = @_;
   foreach (@{&DEFAULT_MAPS}){
-    $self->{db}->addMap($_->{mapName}, $_->{playersNum}, $_->{turnsNum},
-                        exists($_->{regions}) ? encode_json($_->{regions}) : "[]");
+    $self->{db}->addMap( @{$_}{ qw/mapName playersNum turnsNum/}, exists($_->{regions}) ? encode_json($_->{regions}) : "[]");
   }
 }
 
 sub cmd_uploadMap {
   my ($self, $result) = @_;
-  $result->{mapId} = $self->{db}->addMap($self->{json}->{mapName}, $self->{json}->{playersNum},
-                                         $self->{json}->{turnsNum}, encode_json($self->{json}->{regions}));
+  $result->{mapId} = $self->{db}->addMap( @{$self->{json}}{qw/mapName playersNum turnsNum/}, encode_json($self->{json}->{regions}));
 }
 
 sub cmd_createGame {
   my ($self, $result) = @_;
-  $result->{gameId} = $self->{db}->createGame($self->{json}->{sid}, $self->{json}->{gameName},
-                                              $self->{json}->{mapId}, $self->{json}->{gameDescr})
+  $result->{gameId} = $self->{db}->createGame( @{$self->{json}}{qw/sid gameName mapId gameDescr/} );
 }
 
 
 sub cmd_getGameList {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
+  my $ref = $self->{db}->getGames();
+  $result->{games} = [];
+  foreach my $row ( @{$ref} ) {
+    push @{$result->{games}}, { 'gameId' => $row->{ID}, 'gameName' => $row->{NAME}, 'gameDescription' => $row->{DESCRIPTION},
+                                'mapId' => $row->{MAPID}, 'state' => $row->{ISSTARTED} + 1};
+   # добавить "state" после уточнений
+    my $pl = $self->{db}->getPlayers($row->{ID});
+    my @players = ();
+    foreach ( @{$pl} ) {
+      push @players, { 'userId' => $_->{ID}, 'userName' => $_->{USERNAME}, 'isReady' => $_->{ISREADY} };
+    }
+    push @{$result->{games}}, { 'players' => \@players };
+  }
 }
 
 sub cmd_getMapList {
@@ -262,7 +269,7 @@ sub cmd_getMapList {
 
 sub cmd_joinGame {
   my ($self, $result) = @_;
-  $self->{db}->joinGame($self->{json}->{gameId}, $self->{json}->{sid});
+  $self->{db}->joinGame( @{$self->{json}}{qw/gameId sid/} );
 }
 
 sub cmd_leaveGame {
@@ -272,7 +279,7 @@ sub cmd_leaveGame {
 
 sub cmd_setReadinessStatus {
   my ($self, $result) = @_;
-  $self->{db}->setIsReady( $self->{json}->{readinessStatus}, $self->{json}->{sid} );
+  $self->{db}->setIsReady( @{$self->{json}}{qw/isReady sid/} );
   #TO DO
   $self->{json}->{visibleRaces};
   $self->{json}->{visiblePowers};
