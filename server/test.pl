@@ -26,8 +26,8 @@ sub load {
     next if ! -d $_;
 
     my $class = $_;
-    $class =~ s/(.*)\/.._(.*)/$1::$2/;
-    push(@{$self->{tests}},  { dir => $_, class => $class });
+    $class =~ s/(.*)\/(..)_(.*)/$1::$3/;
+    push(@{$self->{tests}},  { dir => $_, class => $class }) if !@ARGV || grep { $_ == $2 } @ARGV ;
   }
 }
 
