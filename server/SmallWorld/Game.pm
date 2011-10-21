@@ -28,7 +28,6 @@ sub new {
 sub load {
   my ($self, $sid) = @_;
   my $game = $self->{db}->getGameState($sid);
-  use Data::Dumper; print Dumper($game);
   my $gs = decode_json($game->{state} || '');
   my $map = $self->{db}->getMap($game->{mapId});
   $self->{gameState} = {
