@@ -227,8 +227,17 @@
             "action": "uploadMap",
             "mapName": "map 1",
             "playersNum": 3,
-            "turnsNum": 6
+            "turnsNum": 6,
+            "regions": [
+              {
+                "population": 1,
+                "landDescription": "border",
+                "adjacent": []
+              }
+            ]
         },
+
+
         {
             "Xaction": "uploadMap",
             "mapName": "map 3",

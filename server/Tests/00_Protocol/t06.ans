@@ -54,7 +54,7 @@
         "result": "ok"
     },
     {
-        "result": "badGameName"
+        "result": "gameNameTaken"
     },
 
 

@@ -101,7 +101,7 @@ sub compare {
   return 1 if !defined $eth && !defined $cnt;
   return 0 if ref $cnt ne ref $eth;
 
-  my $res;
+  my $res = 1;
   if ( ref $eth eq "HASH" ) {
     foreach (keys %{ $eth }) {
       $res = $self->compare($eth->{$_}, $cnt->{$_});
