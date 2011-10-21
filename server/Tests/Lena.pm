@@ -16,6 +16,10 @@ sub new {
   return $self;
 }
 
+sub getInFiles {
+  return <$_[1]/*.in>;
+}
+
 1;
 
 __END__

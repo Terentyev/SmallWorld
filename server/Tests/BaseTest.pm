@@ -21,11 +21,15 @@ sub new {
   return $self;
 }
 
+sub getInFiles {
+  return <$_[1]/*._in>;
+}
+
 sub run {
   my ($self, $dir) = @_;
   print "$self->{desc}:\n  Директория: $dir\n";
 
-  foreach ( <$dir/*._in> ) {
+  foreach ( $self->getInFiles($dir) ) {
     $self->check($_);
   }
 }
@@ -33,7 +37,7 @@ sub run {
 sub check {
   my ($self, $in) = @_;
   my $ans = $in;
-  $ans =~ s/\._in$/.ans/;
+  $ans =~ s/\.[^\.]+$/.ans/;
 
   my $answers = decode_json($self->readFile($ans));
   my $inTest = decode_json($self->readFile($in));
