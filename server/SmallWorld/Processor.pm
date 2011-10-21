@@ -11,6 +11,7 @@ use Scalar::Util;
 use SmallWorld::Consts;
 use SmallWorld::Config;
 use SmallWorld::DB;
+use SmallWorld::Game;
 
 sub new {
   my $class = shift;
@@ -66,7 +67,7 @@ sub checkPlayersNum {
 sub checkIsStarted {
   my ($self, $h) = @_;
   my $gameId = exists($h->{gameId}) ? $h->{gameId} : $self->{db}->getGameId($h->{sid});
-  $self->{db}->getGameState($gameId);
+  $self->{db}->getGameIsStarted($gameId);
 }
 
 sub checkRegions {
@@ -164,13 +165,14 @@ sub checkJsonCmd {
     &R_BAD_LOGIN        => sub { $self->checkLoginAndPassword(); },
     &R_BAD_MAP_ID       => sub { !$self->{db}->dbExists("maps", "id", $self->{json}->{mapId}); },
     &R_BAD_MAP_NAME     => sub { $self->{db}->dbExists("maps", "name", $self->{json}->{mapName}); },
-    &R_BAD_PASSWORD     => sub { $self->{json}->{password} !~ m/^.{6,18}$/;},
-    &R_BAD_REGIONS      => sub { $self->checkRegions();},
+    &R_BAD_PASSWORD     => sub { $self->{json}->{password} !~ m/^.{6,18}$/; },
+    &R_BAD_REGIONS      => sub { $self->checkRegions(); },
     &R_BAD_SID          => sub { defined $self->{json}->{sid} && !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
-    &R_BAD_USERNAME     => sub { $self->{json}->{username} !~ m/^[A-Za-z][\w\-]*$/;},
+    &R_BAD_USERNAME     => sub { $self->{json}->{username} !~ m/^[A-Za-z][\w\-]*$/; },
     &R_NOT_IN_GAME      => sub { !defined $self->{db}->getGameId($self->{json}->{sid}); },
     &R_TOO_MANY_PLAYERS => sub { $self->checkPlayersNum(); },
-    &R_USERNAME_TAKEN   => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username});}
+    &R_USERNAME_TAKEN   => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username}); },
+    &R_BAD_REGION_ID    => sub { $self->{json}->{regionId} > SmallWorld::Game->new($self->{db}, $self->{json}->{sid})->regionsNum(); }
   };
 
   my $errorList = CMD_ERRORS->{$cmd};
@@ -205,10 +207,6 @@ sub cmd_login {
 sub cmd_logout {
   my ($self, $result) = @_;
   $self->{db}->logout($self->{json}->{sid});
-}
-
-sub cmd_doSmth {
-  return;
 }
 
 sub cmd_sendMessage {
@@ -288,9 +286,8 @@ sub cmd_selectRace {
 
 sub cmd_conquer {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
   $self->{json}->{regionId};
-  $self->{json}->{raceId};
+  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
 }
 
 sub cmd_decline {
@@ -336,6 +333,11 @@ sub cmd_throwDice {
   my ($self, $result) = @_;
   $self->{json}->{sid};
   $self->{json}->{dice};
+}
+
+sub cmd_getGameState {
+  my ($self, $result) = @_;
+  $result->{gameState} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid})->getGameStateForPlayer($self->{json}->{sid});
 }
 
 1;

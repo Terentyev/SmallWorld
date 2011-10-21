@@ -5,99 +5,64 @@ use utf8;
 
 use SmallWorld::Consts;
 
-# либо ничего не принимает (например, при инициализации во время покупки расы)
-# либо принимает состояние:
-#  - нападающая сторона:  количество фигурок "на руках", способность
-#  - принимающая сторона: идентификатор региона, на который нападают
+# конструктор
 sub new {
   my $class = shift;
-  my $self = { tokensNum => 0 };
+  my $self = { };
 
   bless $self, $class;
-
-  $self->init(@_ || {});
 
   return $self;
 }
 
-# инициализация объекта
-sub init {
-  my ($self, $h) = @_;
-
-  if ( !$h->{tokensNum}  ) {
-    $self->{tokensNum} = $self->getInitalTokensNum();
-    return;
-  }
-
-  $self->{tokensNum} = $h->{tokensNum};
-  $self->{regions} = $h->{regions};
-  $self->{region} = $h->{region};
-  $self->{player} = $h->{player};
-}
-
 # возвращает количество первоначальных фигурок для каждой расы
-sub getInitalTokensNum {
+sub initialTokens {
   return 0;
 }
 
-# определяет, можно ли напасть в принципе
-sub canBeAttacked {
-  return $_[0]->{region}->{type} eq REGION_TYPE_BORDER;
+# возвращает количество бонусных фигурок перед завоеваний
+sub conquestTokensBonus {
+  return 0;
 }
 
-# определяет, может ли раса напасть без каких-либо ограничений
-sub canAttackAnyway {
-  return $_[0]->{player}->{power}->canAttackAnyway();
+# возвращает количество бонусных фигурок перед реорганизацией войск
+sub redeployTokensBonus {
+  return 0;
 }
 
-# предпринимаем попытку напасть
-sub tryConquer {
-  my ($self, $opponent) = @_;
-  # если на оппонента можно напасть и количество наших фигурок больше количества
-  # фигурок оппонента, то регион получилось захватить
-  if ( ($self->canAttackAnyway() || $opponent->canBeAttacked()) &&
-      $self->{tokensNum} > 0 &&
-      $self->totalTokensForConquer( $opponent ) >= $opponent->totalTokensForDefend() ) {
-    $self->conquerRegion( $opponent->looseRegion() );
-    return R_ALL_OK;
-  }
-  return R_CANNOT_CONQUER;
-}
-
-# полное количество фигурок, которыми мы располагаем на данный момент, для
-# нападения
-sub totalTokensForConquer {
-  return $_[0]->{tokensNum};
-}
-
-# полное количество фигурок, которые "закреплены" за данным регионам
-sub totalTokensForDefend {
-  return $_[0]->{tokensNum} + $_[0]->{region}->{type}->defendTokensNum();
-}
-
-# действия по окончанию хода
-sub finishTurn {
-  $_[0]->{player}->{coins} += $_[0]->getCoinsInEndTurn();
-}
-
-# количество регионов, которыми владеет игрок
-sub getOwnedRegionsNum {
-  my ($self, $regionType) = @_;
-  my $res = 0;
-  foreach ( @{ $self->{regions} } ) {
-    ++$res if $_->{ownerId} == $_->{player}->{Id} && (!$regionType || $regionType == $_->{type});
-  }
-  return $res;
+# возвращает количество фигурок, которых теряет игрок, когда защищается
+sub looseTokensBonus {
+  return LOOSE_TOKENS_NUM;
 }
 
 # возвращает количество монет, которые игрок получит в конце игры
-sub getCoinsInEndTurn {
-  return $_[0]->getOwnedRegionsNum();
+sub coinsBonus {
+# TODO
+  return 0;
 }
 
-# предварительные действия перед реорганизацией войск 
-sub startRedeploy {
+# возвращает количество бонусных фигурок для атакуемого региона
+sub conquestRegionTokensBonus {
+  return 0;
 }
+
+# возвращает может ли игрок разместить объект в регион
+sub canPlaceObj2Region {
+  return 0;
+}
+
+# возвращает может ли игрок на первом завоевании завоевать эту территорию (может
+# ли вообще пытаться -- типа граница и все такое)
+sub canFirstConquer {
+  my ($self, $region) = @_;
+  return grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} };
+}
+
+# приводим расу в упадок в регионе
+sub declineRegion {
+  my ($self, $region) = @_;
+}
+
 
 package SmallWorld::RaceAmazons;
 use strict;
@@ -108,12 +73,16 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return AMAZONS_TOKENS_NUM;
 }
 
-sub totalTokensForConquer {
-  return AMAZONS_CONQ_TOKENS_NUM + $_[0]->BaseRace::totalTokensForConquer();
+sub conquestTokensBonus {
+  return AMAZONS_CONQ_TOKENS_NUM;
+}
+
+sub redeployTokensBonus {
+  return - AMAZONS_CONQ_TOKENS_NUM;
 }
 
 
@@ -126,12 +95,12 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return DWARVES_TOKENS_NUM;
 }
 
-sub getCoinsInEndTurn {
-  return $_[0]->BaseRace::getCoinsInEndTurn() + $_[0]->getOwnedRegionsNum(REGION_TYPE_MINE);
+sub coinsBonus {
+  return $_[0]->BaseRace::coinsBonus() + $_[0]->getOwnedRegionsNum(REGION_TYPE_MINE);
 }
 
 
@@ -144,12 +113,12 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return ELVES_TOKENS_NUM;
 }
 
-sub totalTokensForDefend {
-  return ELVES_DEF_TOKENS_NUM + $_[0]->BaseRace::totalTokensForDefend();
+sub looseTokensBonus {
+  return ELVES_LOOSE_TOKENS_NUM;
 }
 
 
@@ -162,16 +131,24 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return GIANTS_TOKENS_NUM;
 }
 
-sub totalTokensForConquer {
-  my ($self, $opponent) = @_;
-  my $num = ($opponent->{region}->{type} == REGION_TYPE_MOUNTAIN )
-    ? GIANTS_CONQ_TOKENS_NUM  
+sub conquestRegionTokensBonus {
+  my ($self, $player, $region, $regions) = @_;
+  # для гигантов бонус в 1 фигурку, если они нападают на регион, который
+  # граничит с регионом, на котором находятся горы и который принадлежит
+  # гигантам
+  return grep {
+      # регион принадлежит игроку
+      $_->{currentRegionState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} && (
+        # регион граничит с регионом, на который мы нападаем
+        grep { $_ == $region->{currentRegionState}->{regionIdId} } $_->{adjacentRegions}
+      )
+    } @{ $regions }
+    ? 1
     : 0;
-  return $num + $self->BaseRace::totalTokensForConquer();
 }
 
 
@@ -184,16 +161,27 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return HALFLINGS_TOKENS_NUM;
 }
 
-sub canAttackAnyway {
-  return $_[0]->{turnNum} == 0 || $_[0]->BaseRace::canAttackAnyway();
+sub canPlaceObj2Region {
+  my ($self, $player, $region) = @_;
+  return $region->{currentBadgeState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+    !defined $region->{currentRegionState}->{holeInTheGround} &&
+    $region->{currentRegionState}->{conquestIdx} < 2;
 }
 
-sub canBeAttacked {
-  return $_[0]->{holes} != 2 && $_[0]->BaseRace::canBeAttacked();
+sub canFirstConquer {
+  my ($self, $region) = @_;
+  # полурослики на первом завоевании могут пытаться захватить любую сушу
+  return !grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} };
+}
+
+sub declineRegion {
+  my ($self, $region) = @_;
+  # у полуросликов после упадка исчезают норы
+  $region->{holeInTheGround} = undef;
 }
 
 
@@ -206,12 +194,12 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return HUMANS_TOKENS_NUM;
 }
 
-sub getCoinsInEndTurn {
-  return $_[0]->BaseRace::getCoinsInEndTurn() + $_[0]->getOwnedRegionsNum(REGION_TYPE_FARMLAND);
+sub coinsBonus {
+  return $_[0]->BaseRace::coinsBonus() + $_[0]->getOwnedRegionsNum(REGION_TYPE_FARMLAND);
 }
 
 
@@ -224,13 +212,13 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return ORCS_TOKENS_NUM;
 }
 
-sub getCoinsInEndTurn {
+sub coinsBonus {
 # TODO: дописать получение дополнительных монет за захваченные территории
-#  return $_[0]->BaseRace::getCoinsInEndTurn() + $_[0]->getOwnedRegionsNum();
+#  return $_[0]->BaseRace::coinsBonus() + $_[0]->getOwnedRegionsNum();
 }
 
 
@@ -243,7 +231,7 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return RATMEN_TOKENS_NUM;
 }
 
@@ -257,15 +245,14 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return SKELETONS_TOKENS_NUM;
 }
 
-sub startRedeploy {
-  $_[0]->BaseRace::startRedeploy();
-# TODO: дописать получение фигурок затерритории
-#$_[0]->{tokensNum} += 1;
+sub redeployTokensBonus {
+  return SKELETONS_RED_TOKENS_NUM;
 }
+
 
 package SmallWorld::RaceSorcerers;
 use strict;
@@ -276,7 +263,7 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return SORCERERS_TOKENS_NUM;
 }
 
@@ -290,16 +277,16 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return TRITONS_TOKENS_NUM;
 }
 
-sub totalTokensForConquer {
-  my ($self, $opponent) = @_;
-  my $num = ($opponent->{region}->{type} == REGION_TYPE_MOUNTAIN )
-    ? TRITONS_CONQ_TOKENS_NUM
-    : 0;
-  return $num + $self->BaseRace::totalTokensForConquer();
+sub conquestRegionTokensBonus {
+  my ($self, $player, $region, $regions) = @_;
+  foreach ( @{ $region->{constRegionState} } ) {
+    return 1 if $_ eq REGION_TYPE_COAST;
+  }
+  return 0;
 }
 
 
@@ -312,15 +299,14 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return TROLLS_TOKENS_NUM;
 }
 
-sub totalTokensForDefend {
-  my $num = ($_[0]->{region}->{lair})
-    ? TROLLS_DEF_TOKENS_NUM
-    : 0;
-  return $num + $_[0]->BaseRace::totalTokensForDefend();
+sub canPlaceObj2Region {
+  my ($self, $player, $region) = @_;
+  return $region->{currentBadgeState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+    !defined $region->{currentRegionState}->{lair};
 }
 
 
@@ -333,12 +319,12 @@ use base ("SmallWorld::BaseRace");
 
 use SmallWorld::Consts;
 
-sub getInitalTokensNum {
+sub initialTokens {
   return WIZARDS_TOKENS_NUM;
 }
 
-sub getCoinsInEndTurn {
-  return $_[0]->getOwnedRegions(REGION_TYPE_MAGIC) + $_[0]->BaseRace::getCoinsInEndTurn();
+sub coinsBonus {
+  return $_[0]->getOwnedRegions(REGION_TYPE_MAGIC) + $_[0]->BaseRace::coinsBonus();
 }
 
 __END__

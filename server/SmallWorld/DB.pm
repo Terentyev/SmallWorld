@@ -127,7 +127,7 @@ sub readyCount {
   return $self->query("SELECT COUNT(*) FROM PLAYERS WHERE isReady = 1 AND gameId = ?", $_[0]);
 }
 
-sub getGameState {
+sub getGameIsStarted {
   my $self = shift;
   return $self->query("SELECT isStarted FROM GAMES WHERE id = ?", $_[0]);
 }
@@ -171,6 +171,29 @@ sub getMaps {
   my $self = shift;
   return $self->{dbh}->selectcol_arrayref("SELECT id, name, playersNum, turnsNum FROM MAPS",
                                           { Columns => [1, 2, 3, 4] }) or dbError;
+}
+
+sub getGameState {
+  my $self = shift;
+  return $self->{dbh}->selectcol_arrayref('SELECT g.id, g.name, g.description, g.mapId, g.state, COUNT(p.id) AS currentPlayersNum FROM GAMES g INNER JOIN PLAYERS p ON p.gameId = g.id WHERE p.sid = ? GROUP BY 1, 2, 3, 4, 5',
+      { Columns => [1, 2, 3, 4, 5, 6] }, $_[0]);
+}
+
+sub saveGameState {
+  my $self = shift;
+  $self->{dbh}->_do('UPDATE GAMES SET state = ? WHERE id = ?', @_);
+}
+
+sub getMap {
+  my $self = shift;
+  return $self->{dbh}->selectcol_arrayref('SELECT id, name, playersNum, turnsNum, regions FROM MAPS WHERE id = ?',
+      { Columns => [1, 2, 3, 4, 5] }, $_[0]);
+}
+
+sub getPlayers {
+  my $self = shift;
+  return $self->{dbh}->selectcol_arrayref('SELECT id, username, isReady FROM PLAYERS WHERE gameId = ?',
+      { Columns => [1, 2, 3] }, $_[0]);
 }
 
 1;
