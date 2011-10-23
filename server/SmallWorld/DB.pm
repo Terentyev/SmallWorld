@@ -175,8 +175,8 @@ sub getMaps {
 
 sub getGameState {
   my $self = shift;
-  return $self->{dbh}->selectcol_arrayref('SELECT g.id, g.name, g.description, g.mapId, g.state, COUNT(p.id) AS currentPlayersNum FROM GAMES g INNER JOIN PLAYERS p ON p.gameId = g.id WHERE p.sid = ? GROUP BY 1, 2, 3, 4, 5',
-      { Columns => [1, 2, 3, 4, 5, 6] }, $_[0]);
+  return $self->{dbh}->selectrow_hashref('SELECT g.id, g.name, g.description, g.mapId, g.state, COUNT(p.id) AS currentPlayersNum FROM GAMES g INNER JOIN PLAYERS p ON p.gameId = g.id WHERE g.id = 1 OR 0 = ? GROUP BY 1, 2, 3, 4, 5',
+      undef,  $_[0]) or dbError;
 }
 
 sub saveGameState {
@@ -186,8 +186,8 @@ sub saveGameState {
 
 sub getMap {
   my $self = shift;
-  return $self->{dbh}->selectcol_arrayref('SELECT id, name, playersNum, turnsNum, regions FROM MAPS WHERE id = ?',
-      { Columns => [1, 2, 3, 4, 5] }, $_[0]);
+  return $self->{dbh}->selectrow_hashref('SELECT id, name, playersNum, turnsNum, regions FROM MAPS WHERE id = ?',
+      undef, $_[0]) or dbError;
 }
 
 sub getGames {

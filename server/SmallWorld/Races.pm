@@ -142,9 +142,9 @@ sub conquestRegionTokensBonus {
   # гигантам
   return grep {
       # регион принадлежит игроку
-      $_->{currentRegionState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} && (
+      $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} && (
         # регион граничит с регионом, на который мы нападаем
-        grep { $_ == $region->{currentRegionState}->{regionIdId} } $_->{adjacentRegions}
+        grep { $_ == $region->{regionIdId} } $_->{adjacentRegions}
       )
     } @{ $regions }
     ? 1
@@ -168,8 +168,8 @@ sub initialTokens {
 sub canPlaceObj2Region {
   my ($self, $player, $region) = @_;
   return $region->{currentBadgeState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-    !defined $region->{currentRegionState}->{holeInTheGround} &&
-    $region->{currentRegionState}->{conquestIdx} < 2;
+    !defined $region->{holeInTheGround} &&
+    $region->{conquestIdx} < 2;
 }
 
 sub canFirstConquer {
@@ -306,7 +306,7 @@ sub initialTokens {
 sub canPlaceObj2Region {
   my ($self, $player, $region) = @_;
   return $region->{currentBadgeState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-    !defined $region->{currentRegionState}->{lair};
+    !defined $region->{lair};
 }
 
 

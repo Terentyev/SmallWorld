@@ -5,7 +5,8 @@ use strict;
 use warnings;
 use utf8;
 
-use JSON qw(decode_json encode_json);
+use JSON qw( decode_json encode_json );
+use List::Util qw( min );
 
 use SmallWorld::Consts;
 use SmallWorld::DB;
@@ -28,20 +29,22 @@ sub new {
 sub load {
   my ($self, $sid) = @_;
   my $game = $self->{db}->getGameState($sid);
-  my $gs = decode_json($game->{state} || '');
-  my $map = $self->{db}->getMap($game->{mapId});
+  my $gs = defined $game->{STATE}
+    ? decode_json($game->{STATE})
+    : {};
+  my $map = $self->{db}->getMap($game->{MAPID});
   $self->{gameState} = {
     gameInfo           => {
-      gameId            => $game->{id},
-      gameName          => $game->{name},
-      gameDescription   => $game->{description},
-      currentPlayersNum => $game->{currentPlayersNum}
+      gameId            => $game->{ID},
+      gameName          => $game->{NAME},
+      gameDescription   => $game->{DESCRIPTION},
+      currentPlayersNum => $game->{CURRENTPLAYERSNUM}
     },
     map                => {
-      mapId      => $game->{mapId},
-      mapName    => $map->{name},
-      turnsNum   => $map->{turnsNum},
-      playersNum => $map->{playersNum},
+      mapId      => $game->{MAPID},
+      mapName    => $map->{NAME},
+      turnsNum   => $map->{TURNSNUM},
+      playersNum => $map->{PLAYERSNUM},
     },
     activePlayerId     => $gs->{activePlayerId},
     state              => $gs->{state},
@@ -52,41 +55,41 @@ sub load {
   };
 
   if ( !defined $self->{gameState}->{regions} ) {
-    my $regions = decode_json($map->{regions});
+    my $regions = decode_json($map->{REGIONS});
     my $i = 0;
     $self->{gameState}->{regions} = [
       map { {
-        regionId           => $i++,
-        constRegionState   => $_->{landDescription},
-        adjacentRegions    => $_->{adjacent},
-        currentRegionState => {
-          ownerId         => undef,            # идентификатор игрока-владельца
-          tokenBadgeId    => undef,            # идентификатор расы игрока-владельца
-          tokensNum       => $_->{population}, # количество фигурок
-          conquered       => undef,            # 1 если завоеван на этом ходу
-          holeInTheGround => undef,            # 1 если присутствует нора полуросликов
-          lair            => undef,            # кол-во пещер троллей
-          encampment      => undef,            # кол-во лагерей (какая осень в лагерях...)
-          dragon          => undef,            # 1 если присутствует дракон
-          fortiefied      => undef,            # кол-во фортов
-          hero            => undef,            # 1 если присутствует герой
-          inDecline       => undef             # 1 если раса tokenBadgeId в упадке
-        }
+        regionId         => ++$i,
+        constRegionState => $_->{landDescription},
+        adjacentRegions  => $_->{adjacent},
+
+        ownerId          => undef,            # идентификатор игрока-владельца
+        tokenBadgeId     => undef,            # идентификатор расы игрока-владельца
+        tokensNum        => $_->{population}, # количество фигурок
+        conquestIdx      => undef,            # порядковый номер завоевания (обнуляется по окончанию хода)
+        holeInTheGround  => undef,            # 1 если присутствует нора полуросликов
+        lair             => undef,            # кол-во пещер троллей
+        encampment       => undef,            # кол-во лагерей (какая осень в лагерях...)
+        dragon           => undef,            # 1 если присутствует дракон
+        fortiefied       => undef,            # кол-во фортов
+        hero             => undef,            # 1 если присутствует герой
+        inDecline        => undef             # 1 если раса tokenBadgeId в упадке
      } } @{$regions}
     ];
   }
 
   if ( !defined $self->{gameState}->{players} ) {
-    my $players = $self->{db}->getPlayers($game->{id});
+    my $players = $self->{db}->getPlayers($game->{ID});
     my $i = 0;
     $self->{gameState}->{players} = [
       map { {
-        userId             => $_->{id},
-        username           => $_->{username},
-        isReady            => $_->{isReady},
+        userId             => $_->{ID},
+        username           => $_->{USERNAME},
+        isReady            => $_->{ISREADY},
         coins              => INITIAL_COINS_NUM,
         tokensInHand       => INITIAL_TOKENS_NUM,
         priority           => $i++,
+        finishConquest     => undef,              # 1 если продолжать атаковать игрок не может
         currentTokenBadge  => {
           tokenBadgeId     => undef,
           totalTokensNum   => undef,
@@ -102,7 +105,7 @@ sub load {
 # сохраняет состояние игры в БД
 sub save {
   my $self = shift;
-  my $gs = %{ $self->{gameState} };
+  my $gs = \%{ $self->{gameState} };
   $gs->{tokenBadges} = $gs->{visibleTokenBadges};
   delete $gs->{visibleTokenBadges};
   delete $gs->{gameInfo};
@@ -113,10 +116,73 @@ sub save {
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
 sub getGameStateForPlayer {
   my $self = shift;
-  my $gs = %{ $self->{gameState} };
-  grep {delete $_->{coins}} @{ $gs->{players} };
+  my $gs = \%{ $self->{gameState} };
   $gs->{visibleTokenBadges} = @{ $gs->{visibleTokenBadges} }[0..5];
-  return $gs;
+  my $result = {
+    gameId            => $gs->{gameInfo}->{gameId},
+    gameName          => $gs->{gameInfo}->{gameName},
+    gameDescription   => $gs->{gameInfo}->{gameDescription},
+    currentPlayersNum => $gs->{gameInfo}->{currentPlayersNum},
+    activePlayerId    => $gs->{activuPlayerId},
+    state             => $gs->{state},
+    currentTurn       => $gs->{currentTurn},
+    map               => \%{ $gs->{map} },
+    visibleTokenBadge => \@{ $gs->{visibleTokenBadge} }
+  };
+  $result->{map}->{regions} = [];
+  grep {
+    push @{ $result->{map}->{regions} }, {
+      regionId           => $_->{regionId},
+      constRegionState   => \@{ $_->{constRegionState} },
+      adjacentRegions    => \@{ $_->{adjacentRegions} },
+      currentRegionState => {
+        ownerId         => $_->{ownerId},
+        tokenBadgeId    => $_->{tokenBadgeId},
+        tokensNum       => $_->{tokensNum},
+        holeInTheGround => $_->{holeInTheGround},
+        lair            => $_->{lair},
+        encampment      => $_->{encampment},
+        dragon          => $_->{dragon},
+        fortified       => $_->{fortified},
+        hero            => $_->{hero},
+        inDecline       => $_->{inDecline}
+      }
+    }
+  } @{ $gs->{regions} };
+  $result->{players} = [];
+  grep {
+    push @{ $result->{players} }, {
+      userId => $_->{userId},
+      username => $_->{username},
+      isReady  => $_->{isReady},
+      coins    => $_->{coins},
+      tokensInHand => $_->{tokensInHand},
+      priority     => $_->{priority},
+      currentTokenBadge => \%{ $_->{currentTokenBadge} },
+      declineTokenBadge => \%{ $_->{declineTokenBadge} }
+    }
+  } @{ $gs->{players} };
+  grep {delete $_->{coins}} @{ $result->{players} };
+  $self->removeNull($result);
+  return $result;
+}
+
+# удаляет из хеша _все_ ключи, значения которых неопределены
+sub removeNull {
+  my ($self, $o) = @_;
+  if ( ref $o eq 'HASH' ) {
+    foreach ( keys %{ $o } ) {
+      if ( defined $o->{$_} ) {
+        $self->removeNull($o->{$_});
+      }
+      else {
+        delete $o->{$_};
+      }
+    }
+  }
+  elsif ( ref $o eq 'ARRAY' ) {
+    grep { $self->removeNull($_) } @{ $o };
+  }
 }
 
 # возвращает кол-во регионов в игре
@@ -200,16 +266,31 @@ sub createSpecialPower {
   return $powers{ $badge->{specialPowerName} }->new();
 }
 
+# возвращает первое ли это нападение (есть ли на карте регионы с это 
 sub isFirstConquer {
   my $playerId = $_[0]->{gameState}->{activePlayerId};
-  foreach ( @{ $_[0]->{gameState}->{regions} } ) {
-    return 0 if $_->{ownerId} == $playerId;
-  }
-  return 1;
+  return grep {
+    $_->{ownerId} == $playerId && !$_->{inDecline}
+  } @{ $_[0]->{gameState}->{regions} };
+}
+
+# возвращает есть ли у региона иммунитет к нападению
+sub isImmuneRegion {
+  my $region = $_[1];
+  return grep {
+    $region->{$_}
+  } qw( holeInTheGround dragon hero );
+}
+
+# возвращает следующий порядковый номер завоевания регионов
+sub nextConquestIdx {
+  my $result = -1;
+  grep { $result = max( $result, $_->conquestIdx ) } @{ $_[0]->{regions} };
+  return $result + 1;
 }
 
 sub conquer {
-  my ($self, $regionId) = @_;
+  my ($self, $regionId, $result) = @_;
   my $player = $self->getPlayer();
   my $region = $self->getRegion($regionId);
   my $regions = $self->{gameState}->{regions};
@@ -219,32 +300,54 @@ sub conquer {
   # 1. свои регионы с активной расой захватывать нельзя
   # 2. на первом завоевании можно захватывать далеко не все регионы
   # 3. а вдруг у территории иммунитет?
-  return R_BAD_REGION if ($region->{ownerId} != $player->{playerId} || $region->{inDecline}) &&
-    !($self->isFirstConquer() && $race->canFirstConquer($region)) &&
-    !$sp->canAttack($player, $region, $regions);
+  # 4. и вообще есть куча правил нападения на регионы (если это не первое нападение)
+  if ( ($region->{ownerId} == $player->{playerId} && !$region->{inDecline}) ||
+    $self->isFirstConquer() && !$race->canFirstConquer($region) ||
+    $self->isImmuneRegion($region) ||
+    $sp->canAttack($player, $region, $regions)
+  ) {
+    $result->{result} = R_BAD_REGION;
+    return;
+  }
 
-  my $realTokens = $player->{tokensInHand} + $race->conquestTokensBonus();
-  return R_BAD_STAGE if $realTokens < 1;
-  my $conqNum = $realTokens +
-    $race->conquestRegionTokensBonus($player, $region, $regions);
+  my $conqNum = $player->{tokensInHand};
+  # игрок обязан на руках иметь хотя бы одну фигурку и он не должен был
+  # совершать последнее завоевание с бросанием кубиков
+  if ( $conqNum < 1 && !$player->{finishConquest} ) {
+    $result->{result} = R_BAD_STAGE;
+    return;
+  }
+
+  $conqNum += $race->conquestRegionTokensBonus($player, $region, $regions);
   my $defendNum = $region->{tokensNum} +
     $self->defendRegionTokensBonus() +
     $sp->conquestRegionTokensBonus($region);
 
-  if ( $conqNum < $defendNum ) {
-#$conqNum =
+  my $dice = 0;
+  if ( $defendNum - $conqNum > 0 && $defendNum - $conqNum <= 3 ) {
+    # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости
+    $dice = $self->random();
+    $result->{dice} = $dice;
   }
 
-  return R_BAD_REGION if $conqNum < $defendNum;
+  # если игроку не хватает фигурок даже с подкреплением
+  if ( $conqNum + $dice < $defendNum ) {
+    $result->{result} = R_BAD_REGION;
+    $player->{finishConquest} = 1;
+    return;
+  }
 
+  # если регион принадлежал активной расе
   if ( defined $region->{ownerId} ) {
+    # то надо вернуть ему какие-то фигурки
     my $defender = $self->getPlayer( { id => $region->{ownerId} } );
     my $defRace = $self->createRace($defender->{currentTokenBadge}->{raceName});
     $defender->{tokensNum} += $region->{tokensNum} + $defRace->looseTokensBonus();
   }
 
-#$region->{tokensNum} = $defendNum
-  return R_ALL_OK;
+  $region->{tokensNum} = min($defendNum, $conqNum); # размещаем в регионе все фигурки, которые использовались для завоевания
+  $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
+  $region->{conquestIdx} = $self->nextCotquestIdx();
 }
 
 sub decline {
@@ -257,7 +360,7 @@ sub decline {
   foreach ( grep { $_->{ownerId} == $player->{playerId} } @{ $regions } ) {
     if ( $_->{inDecline} ) {
       $_->{inDecline} = undef;
-      $_->{currentRegionState}->{qw( ownerId tokenBadgeId tokensNum )} = (undef, undef, undef );
+      $_->{qw( ownerId tokenBadgeId tokensNum )} = (undef, undef, undef );
     }
     else {
       $_->{qw( inDecline tokensNum )} = (1, DECLINED_TOKENS_NUM);

@@ -23,7 +23,7 @@ sub _init {
   $self->{player} = $player;
   # извлекаем только свои регионы (остальные скорее всего не понадобятся)
   $self->{regions} = grep {
-    $_->{currentRegionState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId}
+    $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId}
   } @{ $regions };
 }
 
@@ -42,8 +42,6 @@ sub canAttack {
   my ($self, $region) = @_;
 
   return
-    # нельзя нападать на свои регионы (сравниваем по активной расе)
-    $region->{currentRogionState}->{tokenBadgeId} != $self->{player}->{currentTokenBadge}->{tokenBadgeId} &&
     # нельзя нападать на моря и озера
     !grep {
       $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE
@@ -148,8 +146,10 @@ use SmallWorld::Consts;
 
 sub canAttack {
   my ($self, $region, $regions) = @_;
-  # если не море. Регион не обязательно должен быть соседним
-  return !grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions };
+  return
+    base::canAttack(@_) ||
+    # если не море. Регион не обязательно должен быть соседним
+    !grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions };
 }
 
 
@@ -165,7 +165,7 @@ use SmallWorld::Consts;
 sub coinsBonus {
   return 1 * grep {
     # за каждую оккупированную территорию,..
-    $_->{currentRegionState}->{tokensNum} > 0 &&
+    $_->{tokensNum} > 0 &&
       # на которой расположен лес получаем по монетке
       grep { $_ eq REGION_TYPE_FOREST } $_->{constRegionState}
   } @{ $_[0]->{regions} };
@@ -182,10 +182,10 @@ use base ('SmallWorld::BaseSp');
 sub declineRegion {
   my ($self, $region) = @_;
   base::declineRegion(@_);
-  if ( !defined $region->{currentRegionState}->{inDecline} ) {
+  if ( !defined $region->{inDecline} ) {
     # видимо, если мы второй раз приводим расу в упадок после расстановки
     # фортов, то надо их удалить
-    $region->{currentRegionState}->{fortified} = undef;
+    $region->{fortified} = undef;
   }
 }
 
@@ -199,7 +199,7 @@ use base ('SmallWorld::BaseSp');
 
 sub declineRegion {
   my ($self, $region) = @_;
-  $region->{currentRegionState}->{hero} = undef;
+  $region->{hero} = undef;
 }
 
 
@@ -215,7 +215,7 @@ use SmallWorld::Consts;
 sub coinsBonus {
   return 1 * grep {
     # за каждую оккупированную территорию,..
-    $_->{currentRegionState}->{tokensNum} > 0 &&
+    $_->{tokensNum} > 0 &&
       # на которой расположен холм получаем по монетке
       grep { $_ eq REGION_TYPE_HILL } $_->{constRegionState}
   } @{ $_[0]->{regions} };
@@ -232,7 +232,7 @@ use base ('SmallWorld::BaseSp');
 sub coinsBonus {
   return 1 * grep {
     # за каждый оккупированный регион получаем по монетке
-    $_->{currentRegionState}->{tokensNum} > 0
+    $_->{tokensNum} > 0
   } @{ $_[0]->{regions} };
 }
 
@@ -262,9 +262,7 @@ use utf8;
 use base ('SmallWorld::BaseSp');
 
 sub coinsBonus {
-  return 1 * grep {
-    defined $_->{currentRegionState}->{conquered}
-  } @{ $_[0]->{regions} };
+  return 1 * grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} };
 }
 
 
@@ -279,8 +277,6 @@ sub canAttack {
   my ($self, $region) = @_;
 
   return
-    # нельзя нападать на свои регионы (сравниваем по активной расе)
-    $region->{currentRogionState}->{tokenBadgeId} != $self->{player}->{currentTokenBadge}->{tokenBadgeId} &&
     # можно нападать, если мы имеем регион, граничащий с регионом-жертвой
     grep {
       grep { $_ == $region->{regionId} } $_->{adjacentRegions}
@@ -308,7 +304,7 @@ use SmallWorld::Consts;
 sub coinsBonus {
   return 1 * grep {
     # за каждый оккупированный регион
-    $_->{currentRegionState}->{tokensNum} > 0 &&
+    $_->{tokensNum} > 0 &&
       # на котором есть болота (?)
       grep { $_ eq REGION_TYPE_SWAMP } @{ $_->{constRegionState} }
   } @{ $_[0]->{regions} };

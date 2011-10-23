@@ -89,7 +89,7 @@ use constant CMD_ERRORS => {
   resetServer        => [],
   getMapList         => [R_BAD_SID],
   getGameList        => [R_BAD_SID],
-  getGameState       => [R_BAD_SID],
+  getGameState       => [R_BAD_SID, R_NOT_IN_GAME],
   conquer            => [R_BAD_SID, R_BAD_REGION_ID]
 };
 
