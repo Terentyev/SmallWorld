@@ -97,6 +97,7 @@ sub outReport {
 sub compare {
   my ($self, $eth, $cnt) = @_;
 
+  return 1 if ! defined $eth && ! defined $cnt;
   return 0 if ! defined $eth || ! defined $cnt;
   return 0 if ref $eth ne ref $cnt;
 
