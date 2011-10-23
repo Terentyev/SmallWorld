@@ -10,7 +10,7 @@ use JSON qw(encode_json decode_json);
 use SmallWorld::Consts;
 use SmallWorld::Config;
 use SmallWorld::DB;
-use SmallWorld::Cheker;
+use SmallWorld::Checker;
 use SmallWorld::Game;
 
 sub new {
