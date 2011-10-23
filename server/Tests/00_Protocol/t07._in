@@ -4,51 +4,34 @@
             "action": "resetServer"
         },
         {
-            "action": "register",
-            "username": "username1",
-            "password": "1234567"
+            "action": "getMapList"
         },
         {
-            "action": "login",
-            "username": "username1",
-            "password": "1234567"
-        },
-
-
-        {
-            "action": "getGameList"
+            "action": "uploadMap",
+            "mapName": "map 1",
+            "playersNum": 3,
+            "turnsNum": 8,
+            "regions": []
         },
         {
-            "action": "getGameList",
-            "sid": -1
+            "action": "uploadMap",
+            "mapName": "map 2",
+            "playersNum": 2,
+            "turnsNum": 6,
+            "regions": []
         },
         {
-            "action": "getGameList",
-            "sid": 1
+            "action": "getMapList"
         },
-
+        {
+            "action": "resetServer"
+        },
         {
             "action": "createDefaultMaps"
         },
         {
-            "action": "createGame",
-            "sid": 1,
-            "gameName": "game name 1",
-            "mapId": 1
-        },
-        {
-            "action": "getGameList"
-        },
-
-
-        {
-            "Xaction": "getGameList",
-            "sid": 1
-        },
-        {
-            "action": "XgetGameList",
-            "sid": 1
+            "action": "getMapList"
         }
     ],
-    "description": "test getGameList function"
+    "description": "test getMapList function"
 }

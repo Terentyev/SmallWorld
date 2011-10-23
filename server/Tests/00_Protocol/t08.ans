@@ -22,8 +22,23 @@
     {
         "result": "ok"
     },
+    {
+        "result": "ok",
+        "sid": 3
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 4
+    },
 
 
+    {
+        "result": "ok",
+        "gameId": 1
+    },
     {
         "result": "badSid"
     },
@@ -38,6 +53,27 @@
     },
     {
         "result": "ok"
+    },
+    {
+        "result": "alreadyInGame"
+    },
+    {
+        "result": "tooManyPlayers"
+    },
+
+
+    {
+        "result": "ok",
+        "gameId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "alreadyInGame"
+    },
+    {
+        "result": "alreadyInGame"
     },
 
 

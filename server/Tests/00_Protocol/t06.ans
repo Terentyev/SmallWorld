@@ -39,7 +39,8 @@
         "result": "badGameDescription"
     },
     {
-        "result": "ok"
+        "result": "ok",
+        "gameId": 1
     },
     {
         "result": "gameNameTaken"
@@ -51,7 +52,8 @@
         "result": "ok"
     },
     {
-        "result": "ok"
+        "result": "ok",
+        "gameId": 2
     },
     {
         "result": "gameNameTaken"
