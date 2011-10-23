@@ -97,18 +97,19 @@ sub outReport {
 sub compare {
   my ($self, $eth, $cnt) = @_;
 
-  return 0 if defined $eth != defined $cnt && defined $eth;
-  return 1 if !defined $eth && !defined $cnt;
-  return 0 if ref $cnt ne ref $eth;
+  return 0 if ! defined $eth || ! defined $cnt;
+  return 0 if ref $eth ne ref $cnt;
 
   my $res = 1;
   if ( ref $eth eq "HASH" ) {
+    return 0 if scalar(keys %$eth) != scalar(keys %$cnt);
     foreach (keys %{ $eth }) {
       $res = $self->compare($eth->{$_}, $cnt->{$_});
       return 0 if !$res;
     }
   }
   elsif ( ref $eth eq "ARRAY" ) {
+    return 0 if scalar(@$eth) != scalar(@$cnt);
     for (my $i = 0; $i < @$eth; ++$i) {
       $res = $self->compare($eth->[$i], $cnt->[$i]);
       return 0 if !$res;
