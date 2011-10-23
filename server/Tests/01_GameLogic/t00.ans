@@ -1,0 +1,22 @@
+[
+
+    { "result": "ok" },
+    { "result": "ok" },
+    { "result": "ok", "sid": 1 },
+    { "result": "ok", "mapId": 1 },
+
+
+    { "result": "ok", "gameId": 1 },
+
+
+    {
+        "result": "ok",
+        "gameState": {
+            "gameId": 1,
+            "gameName": "game1",
+            "gameDescription": "description1",
+            "currentPlayersNum": 1,
+            "state": ""
+        }
+    }
+]
