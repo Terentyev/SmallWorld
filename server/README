@@ -1,7 +1,7 @@
 I. INSTALL
 
-install libapreq2, firebird
-perl require File::Base, JSON, DBI, DBD::InterBase
+install libapreq2, firebird, mod_perl
+perl require File::Basename, JSON, DBI, DBD::InterBase
 
 
 II. CONFIGURE
