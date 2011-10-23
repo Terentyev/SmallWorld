@@ -35,9 +35,6 @@
         "result": "notInGame"
     },
     {
-        "result": "alreadyInGame"
-    },
-    {
         "result": "ok"
     },
     {

@@ -32,6 +32,16 @@
             "username": "username2",
             "password": "1234567"
         },
+        {
+            "action": "register",
+            "username": "username3",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username3",
+            "password": "1234567"
+        },
 
 
         {
@@ -75,7 +85,16 @@
             "sid": 2,
             "isReady": 1
         },
-
+        {
+            "action": "setReadinessStatus",
+            "sid": 2,
+            "isReady": 1
+        },
+        {
+            "action": "joinGame",
+            "sid": 3,
+            "gameId": 1
+        },
 
 
         {

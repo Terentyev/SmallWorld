@@ -23,7 +23,13 @@
         "result": "ok",
         "sid": 2
     },
-
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 3
+    },
 
     {
         "result": "badSid"
@@ -52,7 +58,12 @@
     {
         "result": "ok"
     },
-
+    {
+        "result": "badGameState"
+    },
+    {
+        "result": "badGameState"
+    },
 
     {
         "result": "badJson"

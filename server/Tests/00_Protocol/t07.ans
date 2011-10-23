@@ -3,42 +3,41 @@
         "result": "ok"
     },
     {
+        "result": "ok",
+        "maps": []
+    },
+    {
+        "result": "ok",
+        "mapId": 1
+    },
+    {
+        "result": "ok",
+        "mapId": 2
+    },
+    {
+        "result": "ok",
+        "maps": [ 
+          {"mapId" : 1, "mapName": "map 1", "playersNum": 3, "turnsNum": 8},
+          {"mapId" : 2, "mapName": "map 2", "playersNum": 2, "turnsNum": 6} 
+        ]
+    },
+    {
+        "result": "ok"
+    },
+    {
         "result": "ok"
     },
     {
         "result": "ok",
-        "sid": 1
-    },
-
-
-    {
-        "result": "ok",
-        "games": []
-    },
-    {
-        "result": "badSid"
-    },
-    {
-        "result": "ok"
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok",
-        "gameId": 1
-    },
-    {
-        "result": "ok",
-        "games": []
-    },
-
-
-    {
-        "result": "badJson"
-    },
-    {
-        "result": "badAction"
+        "maps": [ 
+          {"mapId" : 1, "mapName": "defaultMap1", "playersNum": 2, "turnsNum": 5},
+          {"mapId" : 2, "mapName": "defaultMap2", "playersNum": 3, "turnsNum": 5},
+          {"mapId" : 3, "mapName": "defaultMap3", "playersNum": 4, "turnsNum": 5},
+          {"mapId" : 4, "mapName": "defaultMap4", "playersNum": 5, "turnsNum": 5},
+          {"mapId" : 5, "mapName": "defaultMap5", "playersNum": 2, "turnsNum": 5},
+          {"mapId" : 6, "mapName": "defaultMap6", "playersNum": 2, "turnsNum": 7},
+          {"mapId" : 7, "mapName": "defaultMap7", "playersNum": 2, "turnsNum": 5}
+        ]
     }
+
 ]

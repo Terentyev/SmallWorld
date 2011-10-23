@@ -4,121 +4,145 @@
             "action": "resetServer"
         },
         {
+            "action": "register",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username1",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "username2",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username2",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "username3",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username3",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "username4",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username4",
+            "password": "1234567"
+        },
+        {
+            "action": "register",
+            "username": "username5",
+            "password": "1234567"
+        },
+        {
+            "action": "login",
+            "username": "username5",
+            "password": "1234567"
+        },
+
+
+
+        {
+            "action": "getGameList"
+        },
+        {
+            "action": "getGameList",
+            "sid": -1
+        },
+        {
+            "action": "getGameList",
+            "sid": 1
+        },
+
+        {
             "action": "createDefaultMaps"
         },
         {
-            "action": "register",
-            "username": "username1",
-            "password": "1234567"
-        },
-        {
-            "action": "login",
-            "username": "username1",
-            "password": "1234567"
-        },
-        {
-            "action": "register",
-            "username": "username2",
-            "password": "1234567"
-        },
-        {
-            "action": "login",
-            "username": "username2",
-            "password": "1234567"
-        },
-        {
-            "action": "register",
-            "username": "username3",
-            "password": "1234567"
-        },
-        {
-            "action": "login",
-            "username": "username3",
-            "password": "1234567"
-        },
-        {
-            "action": "register",
-            "username": "username4",
-            "password": "1234567"
-        },
-        {
-            "action": "login",
-            "username": "username4",
-            "password": "1234567"
-        },
-
-
-        {
             "action": "createGame",
-            "sid": 2,
+            "sid": 1,
             "gameName": "game name 1",
-            "mapId": 1
-        },
-        {
-            "action": "joinGame"
+            "mapId": 2
         },
         {
             "action": "joinGame",
-            "sid": -1,
+            "sid": 3,
             "gameId": 1
         },
         {
             "action": "joinGame",
+            "sid": 2,
+            "gameId": 1
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": 2,
+            "isReady": 1
+        },
+        {
+            "action": "logout",
             "sid": 1
         },
         {
-            "action": "joinGame",
-            "sid": 1,
-            "gameId": -1
+            "action": "login",
+            "username": "username1",
+            "password": "1234567"
         },
-        {
-            "action": "joinGame",
-            "sid": 1,
-            "gameId": 1
-        },
-        {
-            "action": "joinGame",
-            "sid": 1,
-            "gameId": 1
-        },
-        {
-            "action": "joinGame",
-            "sid": 3,
-            "gameId": 1
-        },
-
-
         {
             "action": "createGame",
-            "sid": 3,
+            "sid": 4,
             "gameName": "game name 2",
             "mapId": 1
         },
         {
             "action": "joinGame",
-            "sid": 4,
+            "sid": 6,
             "gameId": 2
         },
         {
-            "action": "joinGame",
-            "sid": 3,
-            "gameId": 1
-        },
-        {
-            "action": "joinGame",
+            "action": "setReadinessStatus",
             "sid": 4,
+            "isReady": 1
+        },
+        {
+            "action": "setReadinessStatus",
+            "sid": 6,
+            "isReady": 1
+        },
+        {
+            "action": "joinGame",
+            "sid": 5,
             "gameId": 1
         },
 
 
         {
-            "Xaction": "joinGame",
+            "action": "getGameList"
+        },
+
+
+        {
+            "Xaction": "getGameList",
             "sid": 1
         },
         {
-            "action": "XjoinGame",
+            "action": "XgetGameList",
             "sid": 1
         }
     ],
-    "description": "test joinGame function"
+    "description": "test getGameList function"
 }
+

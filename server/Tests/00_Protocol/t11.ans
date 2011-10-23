@@ -1,0 +1,116 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 3
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 4
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 5
+    },
+
+
+    {
+        "result": "ok",
+        "games": []
+    },
+    {
+        "result": "badSid"
+    },
+    {
+        "result": "ok",
+        "games": []
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameId": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "sid": 6
+    },
+    {
+        "result": "ok",
+        "gameId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+      "result": "ok",
+      "games":[ {"gameId": 1, "gameName": "game name 1", "gameDescription": "", "mapId": 2, "maxPlayersNum": 3,
+                 "turnsNum": 5, "turn": 0, "activePlayerId": null, "state": 1,
+                 "players": [ {"userId": 3, "userName": "username3", "isReady": 1},
+                              {"userId": 2, "userName": "username2", "isReady": 0},
+                              {"userId": 5, "userName": "username5", "isReady": 0} ]
+                },
+                {"gameId": 2, "gameName": "game name 2", "gameDescription": "", "mapId": 1, "maxPlayersNum": 2,
+                 "turnsNum": 5, "turn": 0, "activePlayerId": 4, "state": 2,
+                 "players": [ {"userId": 4, "userName": "username4", "isReady": 1},
+                              {"userId": 1, "userName": "username1", "isReady": 1} ]
+                }
+              ]
+    },
+
+
+    {
+        "result": "badJson"
+    },
+    {
+        "result": "badAction"
+    }
+]
