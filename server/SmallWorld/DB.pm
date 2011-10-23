@@ -55,7 +55,7 @@ sub getPlayerId {
 
 sub getGameId {
   my $self = shift;
-  return $self->query('SELECT gameId FROM PLAYERS WHERE sid = ?', @_);
+  return $self->query('SELECT c.gameId FROM CONNECTIONS c INNER JOIN PLAYERS p ON p.id = c.playerId WHERE p.sid = ?', @_);
 }
 
 sub query {
@@ -94,16 +94,17 @@ sub addPlayer {
 sub createGame {
   my $self = shift;
   my ($sid, $gameName, $mapId, $gameDescr) = @_;
-  $gameDescr = "" if !defined $gameDescr;
-  $self->_do('INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)', $gameName, $mapId, $gameDescr);
-  my $game_id = $self->_getId('GAME');
-  $self->_do('UPDATE PLAYERS SET gameId = ? WHERE sid = ?', $game_id, $sid);
-  return $game_id;
+  $self->_do('INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)',
+             $gameName, $mapId, !defined $gameDescr ? '' : $gameDescr);
+  my $gameId = $self->_getId('GAME');
+  $self->_do('INSERT INTO CONNECTIONS (gameId, playerId) VALUES (?, ?)', $gameId, $self->getPlayerId($sid));
+  return $gameId;
 }
 
 sub joinGame {
   my $self = shift;
-  $self->_do('UPDATE PLAYERS SET gameId = ? WHERE sid = ?', @_);
+  my ($gameId, $sid) = @_;
+  $self->_do('INSERT INTO CONNECTIONS (gameId, playerId) VALUES (?, ?)', $gameId, $self->getPlayerId($sid));
 }
 
 sub makeSid {
@@ -119,12 +120,13 @@ sub logout {
 
 sub playersCount {
   my $self = shift;
-  return $self->query('SELECT COUNT(*) FROM PLAYERS WHERE gameId = ?', $_[0]);
+  return $self->query('SELECT COUNT(*) FROM CONNECTIONS WHERE gameId = ?', $_[0]);
 }
 
 sub readyCount {
   my $self = shift;
-  return $self->query('SELECT COUNT(*) FROM PLAYERS WHERE isReady = 1 AND gameId = ?', $_[0]);
+  return $self->query('SELECT COUNT(c.id) FROM CONNECTIONS c INNER JOIN PLAYERS p ON p.id = c.playerId
+                       WHERE p.isReady = 1 AND c.gameId = ?', $_[0]);
 }
 
 sub getGameIsStarted {
@@ -136,7 +138,8 @@ sub leaveGame {
   my $self = shift;
   my $gameId = $self->getGameId($_[0]);
   if (defined $gameId) {
-    $self->_do('UPDATE PLAYERS SET isReady = 0, gameId = NULL WHERE sid = ?', $_[0]);
+    $self->_do('UPDATE PLAYERS SET isReady = 0 WHERE sid = ?', $_[0]);
+    $self->_do('DELETE FROM CONNECTIONS WHERE playerId = ?', $self->getPlayerId($_[0]));
     $self->_do('DELETE FROM GAMES WHERE id = ?', $gameId) if !$self->playersCount($gameId);
   }
 }
@@ -163,20 +166,20 @@ sub addMessage {
 
 sub getMessages {
   my $self = shift;
-  return $self->{dbh}->selectcol_arrayref('SELECT FIRST 100 id, text, playerId, t FROM MESSAGES WHERE id > ? ORDER BY id DESC',
-                                          { Columns => [1, 2, 3, 4] }, $_[0]) or dbError;
+  return $self->{dbh}->selectall_arrayref('SELECT FIRST 100 m.id, m.text, m.t, p.username FROM MESSAGES m INNER JOIN PLAYERS p ON
+                                           m.playerId = p.id WHERE m.id > ? ORDER BY id DESC', { Slice => {} }, $_[0]) or dbError;
 }
 
 sub getMaps {
   my $self = shift;
-  return $self->{dbh}->selectcol_arrayref('SELECT id, name, playersNum, turnsNum FROM MAPS',
-                                          { Columns => [1, 2, 3, 4] }) or dbError;
+  return $self->{dbh}->selectall_arrayref('SELECT id, name, playersNum, turnsNum FROM MAPS', { Slice => {} }) or dbError;
 }
 
 sub getGameState {
   my $self = shift;
-  return $self->{dbh}->selectcol_arrayref('SELECT g.id, g.name, g.description, g.mapId, g.state, COUNT(p.id) AS currentPlayersNum FROM GAMES g INNER JOIN PLAYERS p ON p.gameId = g.id WHERE p.sid = ? GROUP BY 1, 2, 3, 4, 5',
-      { Columns => [1, 2, 3, 4, 5, 6] }, $_[0]);
+  return $self->{dbh}->selectcol_arrayref('SELECT g.id, g.name, g.description, g.mapId, g.state, COUNT(p.id) AS currentPlayersNum 
+                                           FROM GAMES g INNER JOIN PLAYERS p ON p.gameId = g.id WHERE p.sid = ? GROUP BY 1, 2, 3, 4, 5',
+                                           { Columns => [1, 2, 3, 4, 5, 6] }, $_[0]);
 }
 
 sub saveGameState {
@@ -186,19 +189,20 @@ sub saveGameState {
 
 sub getMap {
   my $self = shift;
-  return $self->{dbh}->selectcol_arrayref('SELECT id, name, playersNum, turnsNum, regions FROM MAPS WHERE id = ?',
-      { Columns => [1, 2, 3, 4, 5] }, $_[0]);
+  return $self->{dbh}->selectall_arrayref('SELECT id, name, playersNum, turnsNum, regions FROM MAPS WHERE id = ?',
+                                          { Slice => {} }, $_[0]);
 }
 
 sub getGames {
   my $self = shift;
-  return $self->{dbh}->selectall_arrayref('SELECT * FROM GAMES', { Slice => {} } ) or dbError;
+  return $self->{dbh}->selectall_arrayref('SELECT g.id, g.name, g.description, g.mapId, g.isStarted, g.state, m.playersNum, m.turnsNum
+                                           FROM GAMES g INNER JOIN MAPS m ON g.mapId = m.id', { Slice => {} } ) or dbError;
 }
 
 sub getPlayers {
   my $self = shift;
-  return $self->{dbh}->selectall_arrayref('SELECT id, userName, isReady FROM PLAYERS WHERE gameId = ?',
-                                          { Slice => {} }, @_ ) or dbError;
+  return $self->{dbh}->selectall_arrayref('SELECT p.id, p.userName, p.isReady FROM PLAYERS p INNER JOIN CONNECTIONS c
+                                           ON p.id = c.playerId WHERE c.gameId = ? ORDER by c.id', { Slice => {} }, @_ ) or dbError;
 }
 
 1;
