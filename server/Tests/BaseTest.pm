@@ -6,6 +6,8 @@ use warnings;
 use utf8;
 use open qw( :std :utf8 ); # нужно, чтобы не выдавалось предупреждение "Wide character in print"
 
+use File::Basename qw( dirname );
+use File::Spec;
 use JSON qw( decode_json encode_json );
 use LWP::UserAgent;
 use URI::Escape;
@@ -34,6 +36,15 @@ sub run {
   }
 }
 
+sub include {
+  my ($self, $file, $dir) = @_;
+  my $include = decode_json($self->readFile(File::Spec->catfile($dir, $file)));
+  foreach ( @{ $include } ) {
+    my $result = $self->sendRequest(encode_json($_));
+    die "Failed include '$file'" if decode_json($result)->{result} ne 'ok';
+  }
+}
+
 sub check {
   my ($self, $in) = @_;
   my $ans = $in;
@@ -46,18 +57,21 @@ sub check {
     $inTest->{description} = $in;
   }
   print "   $inTest->{description}: ";
+  foreach ( @{ $inTest->{include} } ) {
+    $self->include($_, dirname($in));
+  }
   foreach ( @{ $inTest->{test} } ) {
     my $req = encode_json($_);
     my $cnt = $self->sendRequest($req);
+    my $diff = ' ';
 
-    if ( $self->compare($answers->[$i], eval { return decode_json($cnt) || {}; }) ) {
-      print ".";
+    if ( $self->compare($answers->[$i], eval { return decode_json($cnt) || {}; }, $diff) ) {
+      print '.';
     }
     else {
-      print "X";
-      $self->addReport($in, $i, $req, encode_json($answers->[$i]), $cnt);
+      print 'X';
+      $self->addReport($in, $i, $req, encode_json($answers->[$i]), $cnt, $diff);
     }
-    #printf("%d: %s != %s\n", $i + 1, $cnt, encode_json($answers->[$i]));
     $i++;
   }
   print "\n";
@@ -81,49 +95,64 @@ sub sendRequest {
 }
 
 sub addReport {
-  my ($self, $file, $num, $query, $ethalon, $content) = @_;
-  push(@{ $self->{report}->{$file} }, { num => $num + 1, query => $query, ethalon => $ethalon, content => $content });
+  my ($self, $file, $num, $query, $ethalon, $content, $diff) = @_;
+  push(@{ $self->{report}->{$file} }, { num => $num + 1, query => $query, ethalon => $ethalon, content => $content, diff => $diff});
 }
 
 sub outReport {
   my ($self) = @_;
-#use Data::Dumper; print Dumper($self);
   foreach my $file (sort keys %{ $self->{report} }) {
     print "  $file:\n";
     foreach ( @{ $self->{report}->{$file} } ) {
       print "    $_->{num}: Request:  $_->{query}\n";
       print "       Expected: $_->{ethalon}\n";
       print "       Get:      $_->{content}\n";
+      print "       Diff:     $_->{diff}\n";
     }
   }
 }
 
 sub compare {
-  my ($self, $eth, $cnt) = @_;
+  my ($self, $eth, $cnt, $diff) = @_;
 
   return 1 if ! defined $eth && ! defined $cnt;
   return 0 if ! defined $eth || ! defined $cnt;
   return 0 if ref $eth ne ref $cnt;
 
-  my $res = 1;
   if ( ref $eth eq "HASH" ) {
-    return 0 if scalar(keys %$eth) != scalar(keys %$cnt);
+# не поддерживаю идею точного совпадения результата сервера и эталонного ответа.
+# Сервер должен только содержать ответ, но может быть более полным.
+#return 0 if scalar(keys %$eth) != scalar(keys %$cnt);
+    if ( !$self->compare([sort keys %$eth], [sort keys %$cnt], $_[3]) ) {
+      $_[3] .= ':different keys';
+      return 0;
+    }
     foreach (keys %{ $eth }) {
-      $res = $self->compare($eth->{$_}, $cnt->{$_});
-      return 0 if !$res;
+      my $tmpDiff = "$diff/$_";
+      if ( !$self->compare($eth->{$_}, $cnt->{$_}, $tmpDiff) ) {
+        $_[3] = $tmpDiff;
+        return 0;
+      }
     }
   }
   elsif ( ref $eth eq "ARRAY" ) {
-    return 0 if scalar(@$eth) != scalar(@$cnt);
+    if ( scalar(@$eth) != scalar(@$cnt) ) {
+      $_[3] .= ':different array length';
+      return 0;
+    }
     for (my $i = 0; $i < @$eth; ++$i) {
-      $res = $self->compare($eth->[$i], $cnt->[$i]);
-      return 0 if !$res;
+      my $tmpDiff = "$diff [ $i ]";
+      if ( !$self->compare($eth->[$i], $cnt->[$i], $tmpDiff) ) {
+        $_[3] = $tmpDiff;
+        return 0;
+      }
     }
   }
-  else {
-    $res = $eth eq $cnt;
+  elsif ( $eth ne $cnt ) {
+    $_[3] .= ":{'$eth' vs '$cnt'}";
+    return 0;
   }
-  return $res;
+  return 1;
 }
 
 1;

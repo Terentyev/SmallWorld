@@ -1,14 +1,4 @@
 [
-
-    { "result": "ok" },
-    { "result": "ok" },
-    { "result": "ok", "sid": 1 },
-    { "result": "ok", "mapId": 1 },
-
-
-    { "result": "ok", "gameId": 1 },
-
-
     {
         "result": "ok",
         "gameState": {
@@ -16,7 +6,35 @@
             "gameName": "game1",
             "gameDescription": "description1",
             "currentPlayersNum": 1,
-            "state": ""
+            "map": {
+                "mapId": 1,
+                "mapName": "map1",
+                "turnsNum": 5,
+                "playersNum": 2,
+                "regions": [
+                    {
+                        "constRegionState": [ "border", "coast" ],
+                        "adjacentRegions": [ 2 ],
+                        "currentRegionState": { "tokensNum": 1 }
+                    },
+                    {
+                        "constRegionState": [ "border" ],
+                        "adjacentRegions": [ 1 ],
+                        "currentRegionState": { "tokensNum": 0 }
+                    }
+                ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "isReady": 0,
+                    "priority": 0,
+                    "currentTokenBadge": {},
+                    "declineTokenBadge": {}
+                }
+            ],
+            "visibleTokenBadges": []
         }
     }
 ]

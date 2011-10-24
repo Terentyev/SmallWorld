@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use File::Basename;
+use File::Basename qw( dirname );
 
 $ENV{WIN32} = ($^O =~ m/MSWin32/i);
 $ENV{DEBUG} = 1;

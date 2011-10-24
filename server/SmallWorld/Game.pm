@@ -34,24 +34,24 @@ sub load {
     : {};
   my $map = $self->{db}->getMap($game->{MAPID});
   $self->{gameState} = {
-    gameInfo           => {
+    gameInfo       => {
       gameId            => $game->{ID},
       gameName          => $game->{NAME},
       gameDescription   => $game->{DESCRIPTION},
       currentPlayersNum => $game->{CURRENTPLAYERSNUM}
     },
-    map                => {
+    map            => {
       mapId      => $game->{MAPID},
       mapName    => $map->{NAME},
       turnsNum   => $map->{TURNSNUM},
       playersNum => $map->{PLAYERSNUM},
     },
-    activePlayerId     => $gs->{activePlayerId},
-    state              => $gs->{state},
-    currentTurn        => $gs->{currentTurn},
-    regions            => $gs->{regions},
-    players            => $gs->{players},
-    visibleTokenBadges => $gs->{tokenBadges},
+    activePlayerId => $gs->{activePlayerId},
+    state          => $gs->{state},
+    currentTurn    => $gs->{currentTurn},
+    regions        => $gs->{regions},
+    players        => $gs->{players},
+    tokenBadges    => $gs->{tokenBadges},
   };
 
   if ( !defined $self->{gameState}->{regions} ) {
@@ -63,17 +63,17 @@ sub load {
         constRegionState => $_->{landDescription},
         adjacentRegions  => $_->{adjacent},
 
-        ownerId          => undef,            # идентификатор игрока-владельца
-        tokenBadgeId     => undef,            # идентификатор расы игрока-владельца
-        tokensNum        => $_->{population}, # количество фигурок
-        conquestIdx      => undef,            # порядковый номер завоевания (обнуляется по окончанию хода)
-        holeInTheGround  => undef,            # 1 если присутствует нора полуросликов
-        lair             => undef,            # кол-во пещер троллей
-        encampment       => undef,            # кол-во лагерей (какая осень в лагерях...)
-        dragon           => undef,            # 1 если присутствует дракон
-        fortiefied       => undef,            # кол-во фортов
-        hero             => undef,            # 1 если присутствует герой
-        inDecline        => undef             # 1 если раса tokenBadgeId в упадке
+        ownerId          => undef,                # идентификатор игрока-владельца
+        tokenBadgeId     => undef,                # идентификатор расы игрока-владельца
+        tokensNum        => 1 * $_->{population}, # количество фигурок
+        conquestIdx      => undef,                # порядковый номер завоевания (обнуляется по окончанию хода)
+        holeInTheGround  => undef,                # 1 если присутствует нора полуросликов
+        lair             => undef,                # кол-во пещер троллей
+        encampment       => undef,                # кол-во лагерей (какая осень в лагерях...)
+        dragon           => undef,                # 1 если присутствует дракон
+        fortiefied       => undef,                # кол-во фортов
+        hero             => undef,                # 1 если присутствует герой
+        inDecline        => undef                 # 1 если раса tokenBadgeId в упадке
      } } @{$regions}
     ];
   }
@@ -85,9 +85,9 @@ sub load {
       map { {
         userId             => $_->{ID},
         username           => $_->{USERNAME},
-        isReady            => $_->{ISREADY},
-        coins              => INITIAL_COINS_NUM,
-        tokensInHand       => INITIAL_TOKENS_NUM,
+        isReady            => 1 * $_->{ISREADY},
+        coins              => undef,
+        tokensInHand       => undef,
         priority           => $i++,
         finishConquest     => undef,              # 1 если продолжать атаковать игрок не может
         currentTokenBadge  => {
@@ -106,8 +106,6 @@ sub load {
 sub save {
   my $self = shift;
   my $gs = \%{ $self->{gameState} };
-  $gs->{tokenBadges} = $gs->{visibleTokenBadges};
-  delete $gs->{visibleTokenBadges};
   delete $gs->{gameInfo};
   delete $gs->{map};
   $self->{db}->saveGameState(encode_json($gs), $self->{gameState}->{gameInfo}->{gameId});
@@ -117,22 +115,22 @@ sub save {
 sub getGameStateForPlayer {
   my $self = shift;
   my $gs = \%{ $self->{gameState} };
-  $gs->{visibleTokenBadges} = @{ $gs->{visibleTokenBadges} }[0..5];
+  $gs->{visibleTokenBadges} = @{ $gs->{tokenBadges} }[0..5];
   my $result = {
-    gameId            => $gs->{gameInfo}->{gameId},
-    gameName          => $gs->{gameInfo}->{gameName},
-    gameDescription   => $gs->{gameInfo}->{gameDescription},
-    currentPlayersNum => $gs->{gameInfo}->{currentPlayersNum},
-    activePlayerId    => $gs->{activuPlayerId},
-    state             => $gs->{state},
-    currentTurn       => $gs->{currentTurn},
-    map               => \%{ $gs->{map} },
-    visibleTokenBadge => \@{ $gs->{visibleTokenBadge} }
+    gameId             => $gs->{gameInfo}->{gameId},
+    gameName           => $gs->{gameInfo}->{gameName},
+    gameDescription    => $gs->{gameInfo}->{gameDescription},
+    currentPlayersNum  => $gs->{gameInfo}->{currentPlayersNum},
+    activePlayerId     => $gs->{activuPlayerId},
+    state              => $gs->{state},
+    currentTurn        => $gs->{currentTurn},
+    map                => \%{ $gs->{map} },
+    visibleTokenBadges => \@{ $gs->{visibleTokenBadges} }
   };
   $result->{map}->{regions} = [];
   grep {
     push @{ $result->{map}->{regions} }, {
-      regionId           => $_->{regionId},
+#regionId           => $_->{regionId},
       constRegionState   => \@{ $_->{constRegionState} },
       adjacentRegions    => \@{ $_->{adjacentRegions} },
       currentRegionState => {
