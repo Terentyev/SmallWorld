@@ -63,7 +63,7 @@ sub check {
   foreach ( @{ $inTest->{test} } ) {
     my $req = encode_json($_);
     my $cnt = $self->sendRequest($req);
-    my $diff = ' ';
+    my $diff = '';
 
     if ( $self->compare($answers->[$i], eval { return decode_json($cnt) || {}; }, $diff) ) {
       print '.';
@@ -141,7 +141,7 @@ sub compare {
       return 0;
     }
     for (my $i = 0; $i < @$eth; ++$i) {
-      my $tmpDiff = "$diff [ $i ]";
+      my $tmpDiff = "$diff [$i]";
       if ( !$self->compare($eth->[$i], $cnt->[$i], $tmpDiff) ) {
         $_[3] = $tmpDiff;
         return 0;

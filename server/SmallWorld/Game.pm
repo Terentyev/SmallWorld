@@ -147,7 +147,7 @@ sub getGameStateForPlayer {
       }
     }
   } @{ $gs->{regions} };
-  $result->{players} = [];
+  $result->{players} = undef;
   grep {
     push @{ $result->{players} }, {
       userId => $_->{userId},
@@ -285,6 +285,11 @@ sub nextConquestIdx {
   my $result = -1;
   grep { $result = max( $result, $_->conquestIdx ) } @{ $_[0]->{regions} };
   return $result + 1;
+}
+
+# бросаем кубик (возвращает число от 1 до 6)
+sub random {
+  return int(rand(5)) + 1;
 }
 
 sub conquer {

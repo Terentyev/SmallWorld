@@ -106,7 +106,7 @@ sub cmd_getGameList {
   $result->{games} = [];
   foreach ( @{$ref} ) {
     my $pl = $self->{db}->getPlayers($_->{ID});
-    my @players = [
+    my $players = [
       map { {
         'userId' => $_->{ID},
         'userName' => $_->{USERNAME},
@@ -118,7 +118,7 @@ sub cmd_getGameList {
     push @{$result->{games}}, { 'gameId' => $_->{ID}, 'gameName' => $_->{NAME}, 'gameDescription' => $_->{DESCRIPTION},
                                 'mapId' => $_->{MAPID}, 'maxPlayersNum' => $_->{PLAYERSNUM}, 'turnsNum' => $_->{TURNSNUM},
                                 'state' => $_->{ISSTARTED} + 1, 'activePlayerId' => $activePlayerId, 'turn' => $turn,
-                                'players' => \@players };
+                                'players' => $players };
   }
 }
 
@@ -206,7 +206,8 @@ sub cmd_throwDice {
 
 sub cmd_getGameState {
   my ($self, $result) = @_;
-  $result->{gameState} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid})->getGameStateForPlayer($self->{json}->{sid});
+  $result->{gameState} = SmallWorld::Game->new(
+      $self->{db}, $self->{json}->{sid})->getGameStateForPlayer($self->{json}->{sid});
 }
 
 1;

@@ -125,8 +125,8 @@ sub playersCount {
 
 sub readyCount {
   my $self = shift;
-  return $self->query('SELECT COUNT(c.id) FROM CONNECTIONS c INNER JOIN PLAYERS p ON p.id = c.playerId
-                       WHERE p.isReady = 1 AND c.gameId = ?', $_[0]);
+  return $self->query('SELECT COUNT(c.id) FROM CONNECTIONS c
+                       WHERE c.isReady = 1 AND c.gameId = ?', $_[0]);
 }
 
 sub getGameIsStarted {
@@ -138,7 +138,6 @@ sub leaveGame {
   my $self = shift;
   my $gameId = $self->getGameId($_[0]);
   if (defined $gameId) {
-    $self->_do('UPDATE PLAYERS SET isReady = 0 WHERE sid = ?', $_[0]);
     $self->_do('DELETE FROM CONNECTIONS WHERE playerId = ?', $self->getPlayerId($_[0]));
     $self->_do('DELETE FROM GAMES WHERE id = ?', $gameId) if !$self->playersCount($gameId);
   }
@@ -148,7 +147,7 @@ sub setIsReady {
   my $self = shift;
   my ($isReady, $sid) = @_;
   my $gameId = $self->getGameId($sid);
-  $self->_do('UPDATE PLAYERS SET isReady = ? WHERE sid = ?', $isReady, $sid);
+  $self->_do('UPDATE CONNECTIONS SET isReady = ? WHERE playerId = ?', $isReady, $self->getPlayerId($sid));
   $self->_do('UPDATE GAMES SET isStarted = 1 WHERE id = ?', $gameId)
     if $self->readyCount($gameId) == $self->getMaxPlayers($gameId);
 }
@@ -206,7 +205,7 @@ sub getGames {
 
 sub getPlayers {
   my $self = shift;
-  return $self->{dbh}->selectall_arrayref('SELECT p.id, p.userName, p.isReady FROM PLAYERS p INNER JOIN CONNECTIONS c
+  return $self->{dbh}->selectall_arrayref('SELECT p.id, p.userName, c.isReady FROM PLAYERS p INNER JOIN CONNECTIONS c
                                            ON p.id = c.playerId WHERE c.gameId = ? ORDER by c.id', { Slice => {} }, @_ ) or dbError;
 }
 
