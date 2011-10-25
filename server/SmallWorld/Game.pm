@@ -52,6 +52,7 @@ sub load {
     regions        => $gs->{regions},
     players        => $gs->{players},
     tokenBadges    => $gs->{tokenBadges},
+    storage        => $gs->{storage},
   };
 
   if ( !defined $self->{gameState}->{regions} ) {
@@ -99,6 +100,12 @@ sub load {
         declinedTokenBadge => undef
       } } @{$players}
     ];
+  }
+
+  if ( !defined $self->{gameState}->{storage} ) {
+    $self->{gameState}->{storage} = {
+      &RACE_SORCERERS => SORCERERS_TOKENS_MAX,
+    };
   }
 }
 
@@ -292,6 +299,11 @@ sub random {
   return int(rand(5)) + 1;
 }
 
+# возвращает количество фигурок в хранилище для определенной расы
+sub tokensInStorage {
+  return $_[0]->{gameState}->{storage}->{$_[1]};
+}
+
 sub conquer {
   my ($self, $regionId, $result) = @_;
   my $player = $self->getPlayer();
@@ -300,28 +312,8 @@ sub conquer {
   my $race = $self->createRace($player->{currentTokenBadge}->{raceName});
   my $sp = $self->createSpecialPower($player->{currentTokenBadge}->{specialPowerName});
 
-  # 1. свои регионы с активной расой захватывать нельзя
-  # 2. на первом завоевании можно захватывать далеко не все регионы
-  # 3. а вдруг у территории иммунитет?
-  # 4. и вообще есть куча правил нападения на регионы (если это не первое нападение)
-  if ( ($region->{ownerId} == $player->{playerId} && !$region->{inDecline}) ||
-    $self->isFirstConquer() && !$race->canFirstConquer($region) ||
-    $self->isImmuneRegion($region) ||
-    $sp->canAttack($player, $region, $regions)
-  ) {
-    $result->{result} = R_BAD_REGION;
-    return;
-  }
-
-  my $conqNum = $player->{tokensInHand};
-  # игрок обязан на руках иметь хотя бы одну фигурку и он не должен был
-  # совершать последнее завоевание с бросанием кубиков
-  if ( $conqNum < 1 && !$player->{finishConquest} ) {
-    $result->{result} = R_BAD_STAGE;
-    return;
-  }
-
-  $conqNum += $race->conquestRegionTokensBonus($player, $region, $regions);
+  my $conqNum = $player->{tokensInHand} +
+    $race->conquestRegionTokensBonus($player, $region, $regions);
   my $defendNum = $region->{tokensNum} +
     $self->defendRegionTokensBonus() +
     $sp->conquestRegionTokensBonus($region);
@@ -336,7 +328,7 @@ sub conquer {
   # если игроку не хватает фигурок даже с подкреплением
   if ( $conqNum + $dice < $defendNum ) {
     $result->{result} = R_BAD_REGION;
-    $player->{finishConquest} = 1;
+    $self->{gameState}->{state} = GS_FINISH_TURN;
     return;
   }
 

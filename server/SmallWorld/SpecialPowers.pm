@@ -21,6 +21,7 @@ sub new {
 sub _init {
   my ($self, $player, $regions) = @_;
   $self->{player} = $player;
+  $self->{allRegions} = $regions;
   # извлекаем только свои регионы (остальные скорее всего не понадобятся)
   $self->{regions} = grep {
     $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId}
@@ -178,6 +179,11 @@ use warnings;
 use utf8;
 
 use base ('SmallWorld::BaseSp');
+
+sub coinsBonus {
+  # за каждый форт мы получаем по дополнительной монетке
+  return 1 * grep { $_->{fortified} } @{ $_[0]->{allRegions} };
+}
 
 sub declineRegion {
   my ($self, $region) = @_;

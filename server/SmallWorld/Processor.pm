@@ -160,8 +160,9 @@ sub cmd_selectRace {
 
 sub cmd_conquer {
   my ($self, $result) = @_;
-  $self->{json}->{regionId};
   my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  $game->conquer($self->{json}->{regionId}, $result);
+  $game->save();
 }
 
 sub cmd_decline {
