@@ -148,8 +148,11 @@ sub setIsReady {
   my ($isReady, $sid) = @_;
   my $gameId = $self->getGameId($sid);
   $self->_do('UPDATE CONNECTIONS SET isReady = ? WHERE playerId = ?', $isReady, $self->getPlayerId($sid));
-  $self->_do('UPDATE GAMES SET isStarted = 1 WHERE id = ?', $gameId)
-    if $self->readyCount($gameId) == $self->getMaxPlayers($gameId);
+  if ( $self->readyCount($gameId) == $self->getMaxPlayers($gameId) ) {
+    $self->_do('UPDATE GAMES SET isStarted = 1 WHERE id = ?', $gameId);
+    return 1;
+  }
+  return 0;
 }
 
 sub getMaxPlayers {
