@@ -19,16 +19,16 @@
 
 
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "badMessageText"
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "ok"

@@ -12,16 +12,16 @@
 
 
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "ok"
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
 
 

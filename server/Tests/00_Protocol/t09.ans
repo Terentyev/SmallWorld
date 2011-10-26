@@ -26,10 +26,10 @@
 
 
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "notInGame"

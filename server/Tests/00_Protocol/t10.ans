@@ -32,7 +32,7 @@
     },
 
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "badReadinessStatus"
@@ -41,7 +41,7 @@
         "result": "badReadinessStatus"
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "badReadinessStatus"

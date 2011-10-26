@@ -40,10 +40,10 @@
         "gameId": 1
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "badGameId"
