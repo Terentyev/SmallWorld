@@ -90,7 +90,7 @@ sub load {
         coins              => undef,
         tokensInHand       => undef,
         priority           => $i++,
-        finishConquest     => undef,              # 1 если продолжать атаковать игрок не может
+#       dice               => undef,              # число, которое выпало при броске костей берсерка
         currentTokenBadge  => {
           tokenBadgeId     => undef,
           totalTokensNum   => undef,
@@ -245,30 +245,31 @@ sub createRace {
 
 # возвращает объект класса, который соответствует способности
 sub createSpecialPower {
-  my ($self, $badge) = @_;
-  return SmallWorld::BaseSp->new() if !defined $badge || !defined $badge->{specialPowerName};
-
-  my %powers = {
-    alchemist    => 'SmallWorld::SpAlchemist',
-    berserk      => 'SmallWorld::SpBerserk',
-    bivouacking  => 'SmallWorld::SpBivouacking',
-    commando     => 'SmallWorld::SpCommado',
-    diplomat     => 'SmallWorld::SpDiplomat',
-    dragonMaster => 'SmallWorld::SpDragonMaster',
-    flying       => 'SmallWorld::SpFlying',
-    forest       => 'SmallWorld::SpForest',
-    fortified    => 'SmallWorld::SpFortified',
-    heroic       => 'SmallWorld::SpHeroic',
-    hill         => 'SmallWorld::SpHill',
-    merchant     => 'SmallWorld::SpMerchant',
-    pillaging    => 'SmallWorld::SpPillaging',
-    seafaring    => 'SmallWorld::SpSeafaring',
-    stout        => 'SmallWorld::SpStout',
-    swamp        => 'SmallWorld::SpSwamp',
-    underworld   => 'SmallWorld::SpUnderworld',
-    wealthy      => 'SmallWorld::SpWealthy'
-  };
-  return $powers{ $badge->{specialPowerName} }->new();
+  my ($self, $badge, $player) = @_;
+  my $power = 'SmallWorld::BaseSp';
+  if ( defined $badge && defined ($badge = $player->{$badge}) && defined $badge->{specialPowerName} ) {
+    $power = {
+      alchemist    => 'SmallWorld::SpAlchemist',
+      berserk      => 'SmallWorld::SpBerserk',
+      bivouacking  => 'SmallWorld::SpBivouacking',
+      commando     => 'SmallWorld::SpCommado',
+      diplomat     => 'SmallWorld::SpDiplomat',
+      dragonMaster => 'SmallWorld::SpDragonMaster',
+      flying       => 'SmallWorld::SpFlying',
+      forest       => 'SmallWorld::SpForest',
+      fortified    => 'SmallWorld::SpFortified',
+      heroic       => 'SmallWorld::SpHeroic',
+      hill         => 'SmallWorld::SpHill',
+      merchant     => 'SmallWorld::SpMerchant',
+      pillaging    => 'SmallWorld::SpPillaging',
+      seafaring    => 'SmallWorld::SpSeafaring',
+      stout        => 'SmallWorld::SpStout',
+      swamp        => 'SmallWorld::SpSwamp',
+      underworld   => 'SmallWorld::SpUnderworld',
+      wealthy      => 'SmallWorld::SpWealthy'
+    }->{ $badge->{specialPowerName} };
+  }
+  return $power->new($player, $self->{gameStage}->{regions}, $badge);
 }
 
 # возвращает первое ли это нападение (есть ли на карте регионы с это 
@@ -310,7 +311,7 @@ sub conquer {
   my $region = $self->getRegion($regionId);
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge}->{raceName});
-  my $sp = $self->createSpecialPower($player->{currentTokenBadge}->{specialPowerName});
+  my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
   my $conqNum = $player->{tokensInHand} +
     $race->conquestRegionTokensBonus($player, $region, $regions);

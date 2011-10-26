@@ -65,12 +65,14 @@ sub declineRegion {
 
 # можем ли мы с этим умением выполнить эту команду
 sub canCmd {
-  my $js = $_->[1];
+  my $js = $_[1];
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/лагеря/форты
   # или команда атаки с ненулевым числом фигурок на руках
-  return $js->{action} eq 'redeploy' && !grep { defined $js->{$_} } qw( heroic encampments fortified ) ||
-    $js->{action} eq 'conquer' && $_[2] >= 1;
+  # или команда окончания хода с нулевым числом фигурок на руках
+  return ($js->{action} eq 'redeploy') && (!grep { defined $js->{$_} } qw( heroic encampments fortified )) ||
+    ($js->{action} eq 'conquer') && ($_[2] >= 1) ||
+    ($js->{action} eq 'finishTurn') && ($_[2] == 0);
 }
 
 
@@ -95,10 +97,22 @@ use utf8;
 
 use base ('SmallWorld::BaseSp');
 
+sub _init {
+  base::_init(@_);
+  my ($self, $player, $regions, $badge) = @_;
+  $self->{dice} = $badge->{dice} if exists $badge->{dice};
+}
+
+sub conquestRegionTokensBonus {
+  return exists $_[0]->{dice} && defined $_[0]->{dice}
+    ? $_[0]->{dice}
+    : base::conquestRegionTokensBonus(@_);
+}
+
 sub canCmd {
   my $js = $_->[1];
-  # базовый класс + бросить кости
-  return base::canCmd(@_) || $js->{action} eq 'throwDice';
+  # базовый класс + бросить кости (если мы их еще не бросали)
+  return base::canCmd(@_) || $js->{action} eq 'throwDice' && !exists $_[0]->{dice};
 }
 
 

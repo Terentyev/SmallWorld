@@ -108,7 +108,7 @@ sub getGameVariables {
     ? $game->getRegion($js->{regionId})
     : undef;
   my $race = $game->createRace($player->{currentTokenBadge}->{raceName});
-  my $sp = $game->createSpecialPower($player->{currentTokenBadge}->{specialPower});
+  my $sp = $game->createSpecialPower('currentTokenBadge', $player);
 
   return [$game, $player, $race, $sp];
 }
