@@ -6,7 +6,6 @@
             { "population": 1, "landDescription": ["mountain", "border"], "adjacent": [1, 4] },
             { "landDescription": ["lake", "border"], "adjacent": [3] },
             { "population": 1, "landDescription": ["hill", "mine"], "adjacent": [3] } ] 
- ] 
         },
         { "action": "register", "username": "username1", "password": "password" },
         { "action": "login", "username": "username1", "password": "password" },
