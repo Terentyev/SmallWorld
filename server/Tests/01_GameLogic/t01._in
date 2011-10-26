@@ -1,0 +1,47 @@
+{
+    "include": [ "_makeGame1.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 1, "isReady": 1, 
+          "visibleRaces":        ["Amazons",   "Dwarves", "Elves",      "Giants",   "Halflings", "Humans"],  
+          "visibleSpecialPower": ["Alchemist", "Berserk", "Bivouaking", "Commando", "Diplomat",  "Dragon Master"]
+        },
+        {
+            "action": "selectRace"
+        },
+        {
+            "action": "selectRace",
+            "sid": 4,
+            "position": 0
+        },
+        {
+            "action": "selectRace",
+            "sid": 3,
+            "position": 0
+        },
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 0
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": -1
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 6
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 0
+        },
+        {
+            "action": "getGameState",
+            "gameId": 1
+        }
+    ],
+    "description": "test first selectRace"
+}

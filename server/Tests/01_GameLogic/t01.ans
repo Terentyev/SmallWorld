@@ -1,0 +1,43 @@
+[
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badPosition"
+    },
+    {
+        "result": "badPosition"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "gameId": 1,
+            "players": [
+                {
+                    "userId": 1,
+                    "coins": 0,
+                    "currentTokenBadge": {
+                        "raceName": "Amazons",
+                        "specialPowerName": "Alchemist"
+                    } 
+                },
+                {
+                    "userId": 2
+                }
+            ]
+        }
+    }
+
+]

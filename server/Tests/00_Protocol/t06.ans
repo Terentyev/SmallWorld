@@ -15,7 +15,7 @@
 
 
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "badGameName"
@@ -33,7 +33,7 @@
         "result": "badMapId"
     },
     {
-        "result": "badSid"
+        "result": "badUserSid"
     },
     {
         "result": "badGameDescription"
