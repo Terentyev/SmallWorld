@@ -1,0 +1,41 @@
+{
+    "include": [ "_makeGame1.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 1, "isReady": 1, 
+          "visibleRaces":        ["Humans",   "Dwarves", "Elves",      "Giants",   "Halflings", "Amazons"],  
+          "visibleSpecialPower": ["Alchemist", "Berserk", "Bivouaking", "Commando", "Diplomat",  "Dragon Master"]
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 0
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 5
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 5
+        }
+
+    ],
+    "description": "test following conquests"
+}

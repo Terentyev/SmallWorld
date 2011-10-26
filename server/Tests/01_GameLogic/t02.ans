@@ -1,0 +1,35 @@
+[
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    }
+]
