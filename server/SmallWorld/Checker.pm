@@ -64,7 +64,7 @@ sub checkRegions {
   my $ex;
   for (my $i = 0; $i < $l; ++$i){
     if (exists @$r[$i]->{population}) {
-      return 1 if @$r[$i]->{population} !~ /^[+-]?\d+\z/ || @$r[$i]->{population} < 0;
+      return 1 if @$r[$i]->{population} !~ /^[+-]?\d+\z/ || @$r[$i]->{population} < 0 || @$r[$i]->{population} > 1;
       $s += @$r[$i]->{population};
     }
     return 1 if defined @$r[$i]->{landDescription} && ref @$r[$i]->{landDescription} ne 'ARRAY';

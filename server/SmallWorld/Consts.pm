@@ -48,7 +48,7 @@ use constant R_BAD_REGION                   => "badRegion"                      
 use constant R_BAD_REGION_ID                => "badRegionId"                        ;
 use constant R_BAD_REGIONS                  => "badRegions"                         ;
 use constant R_BAD_SET_HERO_CMD             => "badSetHeroCommand"                  ;
-use constant R_BAD_SID                      => "badSid"                             ;
+use constant R_BAD_SID                      => "badUserSid"                         ;
 use constant R_BAD_SINCE                    => "badSince"                           ;
 use constant R_BAD_STAGE                    => "badStage"                           ;
 use constant R_BAD_TOKENS_NUM               => "badTokensNum"                       ;
@@ -97,7 +97,7 @@ use constant CMD_ERRORS => {
   enchant            => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID, R_BAD_REGION, R_BAD_ATTACKED_RACE, R_NOTHING_TO_ENCHANT, R_CANNOT_ENCHANT, R_NO_MORE_TOKENS_IN_STORAGE],
   finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE],
   getGameList        => [R_BAD_SID],
-  getGameState       => [R_BAD_SID, R_NOT_IN_GAME],
+  getGameState       => [],
   getMapList         => [R_BAD_SID],
   getMessages        => [],
   joinGame           => [R_BAD_SID, R_BAD_GAME_ID, R_BAD_GAME_STATE, R_ALREADY_IN_GAME, R_TOO_MANY_PLAYERS],
@@ -353,9 +353,6 @@ use constant PATTERN => {
     {name => 'sid', type => 'int', mandatory => 1},
     {name => 'regionId', type => 'int', mandatory => 1}
   ],
-  getVisibleTokenBadges => [
-    {name => 'gameId', type => 'int', mandatory => 1}
-  ],
   resetServer => [ {name => 'sid', type => 'int', mandatory => 0} ],
   throwDice => [
     {name => "sid", type => "int", mandatory => 1},
@@ -363,10 +360,10 @@ use constant PATTERN => {
   ],
   getGameState => [
     {
-      name => "sid",
+      name => "gameId",
       type => "int",
       mandatory => 1,
-      errorCode => R_BAD_SID
+      errorCode => R_BAD_GAME_ID
     }
   ]
 };
