@@ -63,6 +63,16 @@ sub declineRegion {
   my ($self, $region) = @_;
 }
 
+# можем ли мы с этим умением выполнить эту команду
+sub canCmd {
+  my $js = $_->[1];
+  # только команда реорганизация войск при условии, что в команде не пытаются
+  # установить героев/лагеря/форты
+  # или команда атаки с ненулевым числом фигурок на руках
+  return $js->{action} eq 'redeploy' && !grep { defined $js->{$_} } qw( heroic encampments fortified ) ||
+    $js->{action} eq 'conquer' && $_[2] >= 1;
+}
+
 
 package SmallWorld::SpAlchemist;
 use strict;
@@ -85,6 +95,12 @@ use utf8;
 
 use base ('SmallWorld::BaseSp');
 
+sub canCmd {
+  my $js = $_->[1];
+  # базовый класс + бросить кости
+  return base::canCmd(@_) || $js->{action} eq 'throwDice';
+}
+
 
 package SmallWorld::SpBivouacking;
 use strict;
@@ -97,6 +113,14 @@ sub declineRegion {
   my ($self, $region) = @_;
   base::declineRegion(@_);
   $region->{encampment} = undef;
+}
+
+sub canCmd {
+  my $js = $_->[1];
+  # только команда реорганизация войск при условии, что в команде не пытаются
+  # установить героев/форты
+  return $js->{action} eq 'redeploy' &&
+    !grep { defined $js->{$_} } qw( heroic fortified );
 }
 
 
@@ -121,6 +145,12 @@ use utf8;
 
 use base ('SmallWorld::BaseSp');
 
+sub canCmd {
+  my $js = $_->[1];
+  # базовый класс + подружить
+  return base::canCmd(@_) || $js->{action} eq 'selectFriend';
+}
+
 
 package SmallWorld::SpDragonMaster;
 use strict;
@@ -133,6 +163,12 @@ sub declineRegion {
   my ($self, $region) = @_;
   base::declineRegion(@_);
   $region->{dragon} = undef;
+}
+
+sub canCmd {
+  my $js = $_->[1];
+  # базовый класс + атаковать драконом
+  return base::canCmd(@_) || $js->{action} eq 'dragonAttack';
 }
 
 
@@ -195,6 +231,14 @@ sub declineRegion {
   }
 }
 
+sub canCmd {
+  my $js = $_->[1];
+  # только команда реорганизация войск при условии, что в команде не пытаются
+  # установить героев/лагеря
+  return $js->{action} eq 'redeploy' &&
+    !grep { defined $js->{$_} } qw( heroic encampments );
+}
+
 
 package SmallWorld::SpHeroic;
 use strict;
@@ -206,6 +250,14 @@ use base ('SmallWorld::BaseSp');
 sub declineRegion {
   my ($self, $region) = @_;
   $region->{hero} = undef;
+}
+
+sub canCmd {
+  my $js = $_->[1];
+  # только команда реорганизация войск при условии, что в команде не пытаются
+  # установить лагеря/форты
+  return $js->{action} eq 'redeploy' &&
+    !grep { defined $js->{$_} } qw( encampments fortified );
 }
 
 

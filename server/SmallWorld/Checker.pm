@@ -324,43 +324,7 @@ sub checkStage {
   my $func = $self->can("checkStage_$js->{action}"); # see UNIVERSAL::can
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } } ||
-    !defined $func || &$func(@_);
-}
-
-sub checkStage_conquer {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
-  return $player->{tokensInHand} < 1;
-}
-
-sub checkStage_throwDice {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
-  return $player->{currentTokenBadge}->{specialPowerName} ne SP_BERSERK;
-}
-
-sub checkStage_dragonAttack {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
-  return $player->{currentTokenBadge}->{specialPowerName} ne SP_DRAGON_MASTER;
-}
-
-sub checkStage_enchant {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
-  return $player->{currentTokenBadge}->{raceName} ne RACE_SORCERERS;
-}
-
-sub checkStage_redeploy {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
-  my $js = $_[0]->{json};
-
-  # пытаются установить форт/героя/лвгерь, значит должно быть специальное умение
-  return
-    grep {
-      $js->{$_[0]} && $player->{currentTokenBadge}->{specialPowerName} ne $_[1]
-    } [ [qw( fortified heroes encampments )], [SP_FORTIFIED, SP_HEROIC, SP_BIVOUACKING] ];
-}
-
-sub checkStage_selectFriend {
-  my ($game, $player) = $_[0]->getGameVariables();
-  return $player->{currentTokenBadge}->{specialPowerName} ne SP_DIPLOMAT;
+    !$sp->canCmd($js, $player->{tokensInHand});
 }
 
 sub checkEnoughTokens {
