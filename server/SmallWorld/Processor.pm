@@ -31,7 +31,8 @@ sub process {
   my ($self) = @_;
   $self->{db}->connect(DB_NAME, DB_LOGIN, DB_PASSWORD, DB_MAX_BLOB_SIZE);
 
-  my $result = { result => $self->checkJsonCmd() };
+  my $result = { result => R_ALL_OK };
+  $self->checkJsonCmd($result);
 
   if ( $result->{result} eq R_ALL_OK ) {
     no strict 'refs';
@@ -161,7 +162,7 @@ sub cmd_selectRace {
 sub cmd_conquer {
   my ($self, $result) = @_;
   my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
-  $game->conquer($self->{json}->{regionId}, $result);
+  $game->conquer($self->{json}->{regionId});
   $game->save();
 }
 
@@ -186,6 +187,9 @@ sub cmd_defend {
   my ($self, $result) = @_;
   $self->{json}->{sid};
   $self->{json}->{regions};
+  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  $game->defend($self->{json}->{regions});
+  $game->save();
 }
 
 sub cmd_enchant {

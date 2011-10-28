@@ -99,20 +99,6 @@ sub checkRegions {
   return $s > LOSTTRIBES_TOKENS_MAX;
 }
 
-sub getGameVariables {
-  my $self = shift;
-  my $js = $self->{json};
-  my $game = SmallWorld::Game->new($js->{sid});
-  my $player = $game->getPlayer();
-  my $region = defined $js->{regionId}
-    ? $game->getRegion($js->{regionId})
-    : undef;
-  my $race = $game->createRace($player->{currentTokenBadge}->{raceName});
-  my $sp = $game->createSpecialPower('currentTokenBadge', $player);
-
-  return [$game, $player, $race, $sp];
-}
-
 sub checkErrorHandlers {
   my ($self, $errorHandlers) = @_;
   my $errorList = CMD_ERRORS->{ $self->{json}->{action} };
@@ -125,13 +111,19 @@ sub checkErrorHandlers {
 }
 
 sub checkJsonCmd {
-  my ($self) = @_;
+  my ($self, $result) = @_;
   my $json = $self->{json};
   my $cmd = $json->{action};
-  return R_BAD_JSON if !defined $cmd;
+  if ( !defined $cmd ) {
+    $result->{result} = R_BAD_JSON;
+    return;
+  }
 
   my $pattern = PATTERN->{$cmd};
-  return R_BAD_ACTION if !$pattern;
+  if ( !$pattern ) {
+    $result->{result} = R_BAD_ACTION;
+    return;
+  }
   foreach ( @$pattern ) {
     my $val = $json->{ $_->{name} };
     # если это необязательное поле и оно пустое, то пропускаем его
@@ -140,32 +132,45 @@ sub checkJsonCmd {
     }
 
     # если это обязательное поле и оно пустое, то ошибка
-    return $self->errorCode($_) if ( !defined $val );
+    if ( !defined $val ) {
+      $result->{result} = $self->errorCode($_);
+      return;
+    }
 
     # если тип параметра -- строка
     if ( $_->{type} eq 'unicode' ) {
       # если длина строки не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne 'SCALAR';
+      if ( ref(\$val) ne 'SCALAR' ) {
+        $result->{result} = $self->errorCode($_);
+        return;
+      }
       if ( defined $_->{min} && length $val < $_->{min} ||
           defined $_->{max} && length $val > $_->{max} ) {
-        return $self->errorCode($_);
+        $result->{result} = $self->errorCode($_);
+        return;
       }
     }
     elsif ( $_->{type} eq 'int' ) {
       # если число, передаваемое в параметре не удовлетворяет требованиям, то ошибка
-      return $self->errorCode($_) if ref(\$val) ne 'SCALAR' || $val !~ /^[+-]?\d+\z/;
+      if ( ref(\$val) ne 'SCALAR' || $val !~ /^[+-]?\d+\z/ ) {
+        $result->{result} = $self->errorCode($_);
+        return;
+      }
       if ( defined $_->{min} && $val < $_->{min} ||
           defined $_->{max} && $val > $_->{max} ) {
-        return $self->errorCode($_);
+        $result->{result} = $self->errorCode($_);
+        return;
       }
     }
     elsif ( $_->{type} eq 'list' ) {
-      return $self->errorCode($_) if ref($val) ne 'ARRAY';
+      if ( ref($val) ne 'ARRAY' ) {
+        $result->{result} = $self->errorCode($_);
+        return;
+      }
     }
-
   }
 
-  my $res = $self->checkErrorHandlers({
+  $result->{result} = $self->checkErrorHandlers({
     &R_ALREADY_IN_GAME              => sub { $self->checkInGame(); },
     &R_BAD_GAME_ID                  => sub { !$self->{db}->dbExists('games', 'id', $self->{json}->{gameId}); },
     &R_BAD_GAME_STATE               => sub { $self->checkIsStarted($self->{json}); },
@@ -182,10 +187,37 @@ sub checkJsonCmd {
     &R_USERNAME_TAKEN               => sub { $self->{db}->dbExists("players", "username", $self->{json}->{username}); },
   });
 
-  return $res if $res ne R_ALL_OK;
-  return $self->checkGameCommand()
-    if grep { $_ eq $cmd } qw( defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn );
-  return R_ALL_OK;
+  if (
+      $result->{result} eq R_ALL_OK &&
+      grep { $_ eq $cmd } qw( defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn )
+  ) {
+    $self->checkGameCommand($result);
+  }
+}
+
+sub getGameVariables {
+  my $self = shift;
+  my $js = $self->{json};
+  my $game = SmallWorld::Game->new($js->{sid});
+  my $player = $game->getPlayer();
+  my $region = defined $js->{regionId}
+    ? $game->getRegion($js->{regionId})
+    : undef;
+  my $race = $game->createRace($player->{currentTokenBadge}->{raceName});
+  my $sp = $game->createSpecialPower('currentTokenBadge', $player);
+
+  return [$game, $player, $race, $sp];
+}
+
+sub existsDuplicates {
+  my ($self, $ref) = @_;
+  my %h = {};
+
+  foreach ( @$ref ) {
+    return 1 if exists $h{$_->{regionId}};
+    $h{$_->{regionId}} = 1;
+  }
+  return 0;
 }
 
 sub checkRegionId {
@@ -224,7 +256,7 @@ sub checkRegionId {
 }
 
 sub checkRegion {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
   my $js = $self->{json};
   my $races = $game->{gameState}->{regions};
 
@@ -233,7 +265,7 @@ sub checkRegion {
 }
 
 sub checkRegion_defend {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
   my $regions = $game->{gameState}->{regions};
   my $lostRegion = undef;
   my $lastIdx = 0;
@@ -259,24 +291,29 @@ sub checkRegion_defend {
 }
 
 sub checkRegion_conquer {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
 
   # 1. свои регионы с активной расой захватывать нельзя
   # 2. на первом завоевании можно захватывать далеко не все регионы
   # 3. и вообще есть куча правил нападения на регионы (если это не первое нападение)
-  # 4. у игрока на руках должна быть хотя бы одна фигурка
-  return 1 if $region->{currentTokenBadge}->{tokenBadgeId} != $player->{currentTokenBadge}->{tokenBadgeId} ||
+  if ( $region->{currentTokenBadge}->{tokenBadgeId} != $player->{currentTokenBadge}->{tokenBadgeId} ||
     $game->isFirstConquer() && !$race->canFirstConquer($region) ||
-    !$sp->canAttack($player, $region, $game->{gameState}->{regions});
+    !$sp->canAttack($player, $region, $game->{gameState}->{regions}) ||
+    $game->canAttack($player, $region)
+  ) {
+    $result->{dice} = $player->{dice} if defined $player->{dice};
+    return 1;
+  }
+  return 0;
 }
 
 sub checkRegion_dragonAttack {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
   return $player->{currentTokenBadge}->{tokenBadgeId} == $region->{currentTokenBadge}->{tokenBadgeId};
 }
 
 sub checkRegion_enchant {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
 
   # 1. это должен быть не наш регион
   # 2. регион с активной расой
@@ -287,14 +324,27 @@ sub checkRegion_enchant {
 }
 
 sub checkRegion_redeploy {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
   my $js = $self->{json};
 
-  # ставить войска/лагеря/форты/героев можно только на свои регионы
-  foreach my $reg ( (@{ $js->{regions} }, @{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
+  # в каждом массиве не должны повторяться регионы
+  return 1 if $self->existsDuplicates($js->{regions}) ||
+    $self->existsDuplicates($js->{encampments}) ||
+    $self->existsDuplicates(map { regionId => $_ }, @{ $js->{heroes} });
+
+  # войска можно ставить только на свои территории
+  foreach my $reg ( @{ $js->{regions} } ) {
     return 1 if grep {
       $_->{regionId} == $reg->{regionId} && $_->{ownerId} != $player->{playerId}
     } @{ $game->{regions} };
+  }
+
+  # ставить лагеря/форты/героев можно только на свои регионы, на которых есть
+  # наши фигурки
+  foreach my $reg ( (@{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
+    return 1 if grep {
+      $_->{regionId} == $reg->{regionId} && $_->{ownerId} != $player->{playerId}
+    } @{ $js->{regions} };
   }
 }
 
@@ -311,11 +361,11 @@ sub checkStage {
   my $js = $self->{json};
 
   my %states = {
-    &GS_DEFEND      => [ "defend" ],
-    &GS_SELECT_RACE => [ "selectRace" ],
-    &GS_CONQUEST    => [ "conquer", "throwDice", "dragonAttack", "enchant", "redeploy", "selectFriend", "finishTurn" ],
-    &GS_REDEPLOY    => [ "redeploy", "selectFriend", "finishTurn" ],
-    &GS_FINISH_TURN => [ "finishTurn" ]
+    &GS_DEFEND      => [ 'defend' ],
+    &GS_SELECT_RACE => [ 'selectRace' ],
+    &GS_CONQUEST    => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'selectFriend', 'finishTurn' ],
+    &GS_REDEPLOY    => [ 'redeploy', 'selectFriend', 'finishTurn' ],
+    &GS_FINISH_TURN => [ 'finishTurn' ]
   };
 
   # 1. пользователь, который послал команду, != активный пользователь
@@ -324,7 +374,8 @@ sub checkStage {
   my $func = $self->can("checkStage_$js->{action}"); # see UNIVERSAL::can
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } } ||
-    !$sp->canCmd($js, $player->{tokensInHand});
+    !$sp->canCmd($js, $player->{tokensInHand}) ||
+    !$race->canCmd($js);
 }
 
 sub checkEnoughTokens {
@@ -344,10 +395,7 @@ sub checkTokensInHand {
 sub checkTokensNum {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # только для redeploy
-  my $tokensNum = $player->{tokensInHand};
-  grep { $tokensNum += $_->{tokensNum} } @{ $game->{gameState}->{regions} };
-  grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
-  return $tokensNum;
+  return grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} };
 }
 
 sub checkForts {
@@ -372,6 +420,15 @@ sub checkEnoughEncamps {
   return $encampsNum > ENCAMPMENTS_MAX;
 }
 
+sub checkTokensForRedeployment {
+  my ($self, $game, $player, $region, $race, $sp) = @_;
+  # только для redeploy
+  my $tokensNum = $player->{tokensInHand};
+  grep { $tokensNum += $_->{tokensNum} } @{ $game->{gameState}->{regions} };
+  grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
+  return $tokensNum;
+}
+
 sub checkFriend {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # мы не можем подружиться с тем, на регион с активной расой которого нападали
@@ -382,19 +439,19 @@ sub checkFriend {
 }
 
 sub checkGameCommand {
-  my ($self) = @_;
+  my ($self, $result) = @_;
   my $js = $self->{json};
   my $cmd = $js->{action};
   my @gameVariables = $self->getGameVariables();
   my ($game, $player, $region, $race, $sp) = @gameVariables;
   my $regions = $game->{gameState}->{regions};
 
-  my $errorHandlers = {
+  $result->{result} = $self->checkErrorHandlers({
     &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == $region->{ownerId}; },
     &R_BAD_FRIEND                   => sub { $self->checkFriend(@gameVariables); },
     &R_BAD_FRIEND_ID                => sub { !grep { $_->{playerId} == $js->{friendId} && $_->{playerId} != $player->{playerId} } @{ $game->{gameState}->{players} }; },
     &R_BAD_MONEY_AMOUNT             => sub { $player->{coins} < $js->{position}; },
-    &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables); },
+    &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables, $result); },
     &R_BAD_REGION_ID                => sub { $self->checkRegionId(@gameVariables); },
     &R_BAD_SET_HERO_CMD             => sub { HEROES_MAX < $@{ $js->{heroes} }; },
     &R_BAD_SID                      => sub { $self->{db}->getPlayerId($js->{sid}) != $game->{activePlayerId}; },
@@ -402,6 +459,7 @@ sub checkGameCommand {
     &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables); },
     &R_CANNOT_ENCHANT               => sub { $region->{inDecline}; },
     &R_NO_MORE_TOKENS_IN_STORAGE    => sub { $game->tokensInStorage(RACE_SORCERERS) == 0; },
+    &R_NO_TOKENS_FOR_REDEPLOYMENT   => sub { $self->checkTokensForRedeployment(@gameVariables); },
     &R_NOT_ENOUGH_ENCAMPS           => sub { $self->checkEnoughEncamps(@gameVariables); },
     &R_NOT_ENOUGH_TOKENS            => sub { $self->checkEnoughTokens(@gameVariables); },
     &R_NOTHING_TO_ENCHANT           => sub { $region->{tokensNum} == 0; },
@@ -410,13 +468,7 @@ sub checkGameCommand {
     &R_TOO_MANY_FORTS               => sub { $self->checkForts(@gameVariables); },
     &R_TOO_MANY_FORTS_IN_REGION     => sub { $self->checkFortsInRegion(@gameVariables); },
     &R_USER_HAS_NO_REGIONS          => sub { !grep { $_->{currentTokenBadge}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} } @{ $regions }; },
-  };
-
-  my $errorList = CMD_ERRORS->{$cmd};
-  foreach ( @$errorList ) {
-    return $_ if $errorHandlers->{$_}->();
-  }
-  return R_ALL_OK;
+  });
 }
 
 1;

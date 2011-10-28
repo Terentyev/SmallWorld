@@ -305,33 +305,38 @@ sub tokensInStorage {
   return $_[0]->{gameState}->{storage}->{$_[1]};
 }
 
+# возвращает может ли игрок атаковать регион (делает конечный подсчет фигурок,
+# бросает кубик, если надо)
+sub canAttack {
+  my ($self, $player, $region, $race, $sp) = shift;
+  my $regions = $self->{gameState}->{regions};
+  $self->{conqNum} = $player->{tokensInHand} +
+    $race->conquestRegionTokensBonus($player, $region, $regions);
+  $self->{defendNum} = $region->{tokensNum} +
+    $self->defendRegionTokensBonus() +
+    $sp->conquestRegionTokensBonus($region);
+
+  if ( $self->{defendNum} - $self->{conqNum} > 0 && $self->{defendNum} - $self->{conqNum} <= 3 ) {
+    # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости
+    $player->{dice} = $self->random();
+  }
+
+  # если игроку не хватает фигурок даже с подкреплением
+  if ( $self->{conqNum} + $player->{dice} < $self->{defendNum} ) {
+    $self->{gameState}->{state} = GS_FINISH_TURN;
+    return 0;
+  }
+  return 1;
+}
+
 sub conquer {
-  my ($self, $regionId, $result) = @_;
+  my ($self, $regionId) = @_;
   my $player = $self->getPlayer();
   my $region = $self->getRegion($regionId);
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge}->{raceName});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
-
-  my $conqNum = $player->{tokensInHand} +
-    $race->conquestRegionTokensBonus($player, $region, $regions);
-  my $defendNum = $region->{tokensNum} +
-    $self->defendRegionTokensBonus() +
-    $sp->conquestRegionTokensBonus($region);
-
-  my $dice = 0;
-  if ( $defendNum - $conqNum > 0 && $defendNum - $conqNum <= 3 ) {
-    # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости
-    $dice = $self->random();
-    $result->{dice} = $dice;
-  }
-
-  # если игроку не хватает фигурок даже с подкреплением
-  if ( $conqNum + $dice < $defendNum ) {
-    $result->{result} = R_BAD_REGION;
-    $self->{gameState}->{state} = GS_FINISH_TURN;
-    return;
-  }
+  my $dice = 1 * $player->{dice};
 
   # если регион принадлежал активной расе
   if ( defined $region->{ownerId} ) {
@@ -341,7 +346,7 @@ sub conquer {
     $defender->{tokensNum} += $region->{tokensNum} + $defRace->looseTokensBonus();
   }
 
-  $region->{tokensNum} = min($defendNum, $conqNum); # размещаем в регионе все фигурки, которые использовались для завоевания
+  $region->{tokensNum} = min($self->{defendNum}, $self->{conqNum}); # размещаем в регионе все фигурки, которые использовались для завоевания
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
   $region->{conquestIdx} = $self->nextCotquestIdx();
 }

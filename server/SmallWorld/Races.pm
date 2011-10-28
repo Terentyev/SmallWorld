@@ -63,6 +63,13 @@ sub declineRegion {
   my ($self, $region) = @_;
 }
 
+# может ли раса выполнить это действие
+sub canCmd {
+  my ($self, $js) = @_;
+  # любая раса может выполнять любую команду кроме зачарования
+  return $js->{action} ne 'enchant';
+}
+
 
 package SmallWorld::RaceAmazons;
 use strict;
@@ -265,6 +272,13 @@ use SmallWorld::Consts;
 
 sub initialTokens {
   return SORCERERS_TOKENS_NUM;
+}
+
+sub canCmd {
+  my ($self, $js) = @_;
+  # чародеи могут ещё и зачаровывать
+  return $js->{action} eq 'enchant' ||
+    base::canCmd(@_);
 }
 
 
