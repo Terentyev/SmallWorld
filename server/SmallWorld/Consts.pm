@@ -23,52 +23,53 @@ sub BEGIN {
   our @EXPORT = @export_list;
 }
 
-use constant R_ALL_OK                       => "ok"                                 ;
-use constant R_ALREADY_IN_GAME              => "alreadyInGame"                      ;
-use constant R_BAD_ACTION                   => "badAction"                          ;
-use constant R_BAD_ATTACKED_RACE            => "badAttackedRace"                    ;
-use constant R_BAD_FRIEND                   => "badFriend"                          ;
-use constant R_BAD_FRIEND_ID                => "badFriendId"                        ;
-use constant R_BAD_GAME_DESC                => "badGameDescription"                 ;
-use constant R_BAD_GAME_ID                  => "badGameId"                          ;
-use constant R_BAD_GAME_NAME                => "badGameName"                        ;
-use constant R_BAD_GAME_STATE               => "badGameState"                       ;
-use constant R_BAD_JSON                     => "badJson"                            ;
-use constant R_BAD_LOGIN                    => "badUsernameOrPassword"              ;
-use constant R_BAD_MAP_ID                   => "badMapId"                           ;
-use constant R_BAD_MAP_NAME                 => "badMapName"                         ;
-use constant R_BAD_MESSAGE_TEXT             => "badMessageText"                     ;
-use constant R_BAD_MONEY_AMOUNT             => "badMoneyAmount"                     ;
-use constant R_BAD_NUM_OF_PLAYERS           => "badNumberOfPlayers"                 ;
-use constant R_BAD_PASSWORD                 => "badPassword"                        ;
-use constant R_BAD_PLAYERS_NUM              => "badPlayersNum"                      ;
-use constant R_BAD_POSITION                 => "badPosition"                        ;
-use constant R_BAD_READINESS_STATUS         => "badReadinessStatus"                 ;
-use constant R_BAD_REGION                   => "badRegion"                          ;
-use constant R_BAD_REGION_ID                => "badRegionId"                        ;
-use constant R_BAD_REGIONS                  => "badRegions"                         ;
-use constant R_BAD_SET_HERO_CMD             => "badSetHeroCommand"                  ;
-use constant R_BAD_SID                      => "badUserSid"                         ;
-use constant R_BAD_SINCE                    => "badSince"                           ;
-use constant R_BAD_STAGE                    => "badStage"                           ;
-use constant R_BAD_TOKENS_NUM               => "badTokensNum"                       ;
-use constant R_BAD_TURNS_NUM                => "badTurnsNum"                        ;
-use constant R_BAD_USERNAME                 => "badUsername"                        ;
-use constant R_CANNOT_ENCHANT               => "cannotEnchantDeclinedRace"          ;
-use constant R_GAME_NAME_TAKEN              => "gameNameTaken"                      ;
-use constant R_MAP_NAME_TAKEN               => "mapNameTaken"                       ;
-use constant R_NO_MORE_TOKENS_IN_STORAGE    => "noMoreTokensInStorageTray"          ;
-use constant R_NOT_ENOUGH_ENCAMPS           => "notEnoughEncampmentsForRedeployment";
-use constant R_NOT_ENOUGH_TOKENS            => "notEnoughTokens"                    ;
-use constant R_NOT_IN_GAME                  => "notInGame"                          ;
-use constant R_NOTHING_TO_ENCHANT           => "nothingToEnchant"                   ;
-use constant R_REGION_IS_IMMUNE             => "regionIsImmune"                     ;
-use constant R_THERE_ARE_TOKENS_IN_THE_HAND => "thereAreTokensInTheHand"            ;
-use constant R_TOO_MANY_FORTS               => "tooManyFortifieds"                  ;
-use constant R_TOO_MANY_FORTS_IN_REGION     => "tooManyFortifiedsInRegion"          ;
-use constant R_TOO_MANY_PLAYERS             => "tooManyPlayers"                     ;
-use constant R_USER_HAS_NO_REGIONS          => "userHasNoRegions"                   ;
-use constant R_USERNAME_TAKEN               => "usernameTaken"                      ;
+use constant R_ALL_OK                       => 'ok'                                 ;
+use constant R_ALREADY_IN_GAME              => 'alreadyInGame'                      ;
+use constant R_BAD_ACTION                   => 'badAction'                          ;
+use constant R_BAD_ATTACKED_RACE            => 'badAttackedRace'                    ;
+use constant R_BAD_FRIEND                   => 'badFriend'                          ;
+use constant R_BAD_FRIEND_ID                => 'badFriendId'                        ;
+use constant R_BAD_GAME_DESC                => 'badGameDescription'                 ;
+use constant R_BAD_GAME_ID                  => 'badGameId'                          ;
+use constant R_BAD_GAME_NAME                => 'badGameName'                        ;
+use constant R_BAD_GAME_STATE               => 'badGameState'                       ;
+use constant R_BAD_JSON                     => 'badJson'                            ;
+use constant R_BAD_LOGIN                    => 'badUsernameOrPassword'              ;
+use constant R_BAD_MAP_ID                   => 'badMapId'                           ;
+use constant R_BAD_MAP_NAME                 => 'badMapName'                         ;
+use constant R_BAD_MESSAGE_TEXT             => 'badMessageText'                     ;
+use constant R_BAD_MONEY_AMOUNT             => 'badMoneyAmount'                     ;
+use constant R_BAD_NUM_OF_PLAYERS           => 'badNumberOfPlayers'                 ;
+use constant R_BAD_PASSWORD                 => 'badPassword'                        ;
+use constant R_BAD_PLAYERS_NUM              => 'badPlayersNum'                      ;
+use constant R_BAD_POSITION                 => 'badPosition'                        ;
+use constant R_BAD_READINESS_STATUS         => 'badReadinessStatus'                 ;
+use constant R_BAD_REGION                   => 'badRegion'                          ;
+use constant R_BAD_REGION_ID                => 'badRegionId'                        ;
+use constant R_BAD_REGIONS                  => 'badRegions'                         ;
+use constant R_BAD_SET_HERO_CMD             => 'badSetHeroCommand'                  ;
+use constant R_BAD_SID                      => 'badUserSid'                         ;
+use constant R_BAD_SINCE                    => 'badSince'                           ;
+use constant R_BAD_STAGE                    => 'badStage'                           ;
+use constant R_BAD_TOKENS_NUM               => 'badTokensNum'                       ;
+use constant R_BAD_TURNS_NUM                => 'badTurnsNum'                        ;
+use constant R_BAD_USERNAME                 => 'badUsername'                        ;
+use constant R_CANNOT_ENCHANT               => 'cannotEnchantDeclinedRace'          ;
+use constant R_GAME_NAME_TAKEN              => 'gameNameTaken'                      ;
+use constant R_MAP_NAME_TAKEN               => 'mapNameTaken'                       ;
+use constant R_NO_MORE_TOKENS_IN_STORAGE    => 'noMoreTokensInStorageTray'          ;
+use constant R_NO_TOKENS_FOR_REDEPLOYMENT   => 'noTokensForRedeployment'            ;
+use constant R_NOT_ENOUGH_ENCAMPS           => 'notEnoughEncampmentsForRedeployment';
+use constant R_NOT_ENOUGH_TOKENS            => 'notEnoughTokens'                    ;
+use constant R_NOT_IN_GAME                  => 'notInGame'                          ;
+use constant R_NOTHING_TO_ENCHANT           => 'nothingToEnchant'                   ;
+use constant R_REGION_IS_IMMUNE             => 'regionIsImmune'                     ;
+use constant R_THERE_ARE_TOKENS_IN_THE_HAND => 'thereAreTokensInTheHand'            ;
+use constant R_TOO_MANY_FORTS               => 'tooManyFortifieds'                  ;
+use constant R_TOO_MANY_FORTS_IN_REGION     => 'tooManyFortifiedsInRegion'          ;
+use constant R_TOO_MANY_PLAYERS             => 'tooManyPlayers'                     ;
+use constant R_USER_HAS_NOT_REGIONS         => 'userHasNotRegions'                  ;
+use constant R_USERNAME_TAKEN               => 'usernameTaken'                      ;
 
 use constant MAX_GAMEDESCR_LEN  => 300;
 use constant MAX_GAMENAME_LEN   => 50 ;
@@ -89,12 +90,25 @@ use constant RACE_NUM           => 14 ;
 use constant VISIBLE_BADGES_NUM => 6  ;
 
 use constant CMD_ERRORS => {
-  conquer            => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID, R_BAD_REGION, R_REGION_IS_IMMUNE],
+  conquer            => [
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_REGION, R_REGION_IS_IMMUNE
+  ],
   createDefaultMaps  => [],
   createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
-  defend             => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID, R_BAD_REGION, R_NOT_ENOUGH_TOKENS, R_THERE_ARE_TOKENS_IN_THE_HAND],
-  dragonAttack       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID, R_BAD_REGION],
-  enchant            => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID, R_BAD_REGION, R_BAD_ATTACKED_RACE, R_NOTHING_TO_ENCHANT, R_CANNOT_ENCHANT, R_NO_MORE_TOKENS_IN_STORAGE],
+  defend             => [
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_REGION, R_NOT_ENOUGH_TOKENS, R_THERE_ARE_TOKENS_IN_THE_HAND
+  ],
+  dragonAttack       => [
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_REGION
+  ],
+  enchant            => [
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_REGION, R_BAD_ATTACKED_RACE, R_NOTHING_TO_ENCHANT, R_CANNOT_ENCHANT,
+    R_NO_MORE_TOKENS_IN_STORAGE
+  ],
   finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE],
   getGameList        => [R_BAD_SID],
   getGameState       => [],
@@ -104,7 +118,12 @@ use constant CMD_ERRORS => {
   leaveGame          => [R_BAD_SID, R_NOT_IN_GAME],
   login              => [R_BAD_LOGIN],
   logout             => [R_BAD_SID],
-  redeploy           => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID, R_BAD_REGION, R_USER_HAS_NO_REGIONS, R_BAD_TOKENS_NUM, R_TOO_MANY_FORTS_IN_REGION, R_TOO_MANY_FORTS, R_NOT_ENOUGH_ENCAMPS, R_BAD_SET_HERO_CMD],
+  redeploy           => [
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_REGION, R_USER_HAS_NOT_REGIONS, R_BAD_TOKENS_NUM,
+    R_TOO_MANY_FORTS_IN_REGION, R_TOO_MANY_FORTS, R_NOT_ENOUGH_ENCAMPS,
+    R_BAD_SET_HERO_CMD, R_NO_TOKENS_FOR_REDEPLOYMENT
+  ],
   register           => [R_BAD_USERNAME, R_BAD_PASSWORD, R_USERNAME_TAKEN],
   resetServer        => [],
   selectFriend       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_FRIEND_ID, R_BAD_FRIEND],
@@ -326,20 +345,20 @@ use constant PATTERN => {
   ],
   conquer => [
     {
-      name => "sid",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1
     },
     {
-      name => "regionId",
-      type => "int",
+      name => 'regionId',
+      type => 'int',
       min => 1, # нумерация регионов начинается с 1 (stupid youth!!!)
       mandatory => 1,
       errorCode => R_BAD_REGION_ID
     }
   ],
-  decline =>[ {name => "sid", type => "int", mandatory => 1} ],
-  finishTurn => [ {name => "sid", type => "int", mandatory => 1} ],
+  decline =>[ {name => 'sid', type => 'int', mandatory => 1} ],
+  finishTurn => [ {name => 'sid', type => 'int', mandatory => 1} ],
   redeploy => [
     {name => 'sid', type => 'int', mandatory => 1},
     {name => 'raceId', type => 'int', mandatory => 0},
@@ -355,15 +374,15 @@ use constant PATTERN => {
   ],
   resetServer => [ {name => 'sid', type => 'int', mandatory => 0} ],
   throwDice => [
-    {name => "sid", type => "int", mandatory => 1},
-    {name => "dice", type => "int", mandatory => 0}
+    {name => 'sid', type => 'int', mandatory => 1},
+    {name => 'dice', type => 'int', mandatory => 0}
   ],
   getGameState => [
     {
-      name => "gameId",
-      type => "int",
+      name => 'sid',
+      type => 'int',
       mandatory => 1,
-      errorCode => R_BAD_GAME_ID
+      errorCode => R_BAD_SID
     }
   ]
 };
@@ -471,29 +490,29 @@ use constant WIZARDS_TOKENS_NUM         => 5 ;
 use constant WIZARDS_TOKENS_MAX         => 10;
 
 # типы регионов
-use constant REGION_TYPE_BORDER   => "border"  ;
-use constant REGION_TYPE_CAVERN   => "cavern"  ;
-use constant REGION_TYPE_COAST    => "coast"   ;
-use constant REGION_TYPE_FARMLAND => "farmland";
-use constant REGION_TYPE_FOREST   => "forest"  ;
-use constant REGION_TYPE_HILL     => "hill"    ;
-use constant REGION_TYPE_LAKE     => "lake"    ;
-use constant REGION_TYPE_MAGIC    => "magic"   ;
-use constant REGION_TYPE_MINE     => "mine"    ;
-use constant REGION_TYPE_MOUNTAIN => "mountain";
-use constant REGION_TYPE_SEA      => "sea"     ;
-use constant REGION_TYPE_SWAMP    => "swamp"   ;
+use constant REGION_TYPE_BORDER   => 'border'  ;
+use constant REGION_TYPE_CAVERN   => 'cavern'  ;
+use constant REGION_TYPE_COAST    => 'coast'   ;
+use constant REGION_TYPE_FARMLAND => 'farmland';
+use constant REGION_TYPE_FOREST   => 'forest'  ;
+use constant REGION_TYPE_HILL     => 'hill'    ;
+use constant REGION_TYPE_LAKE     => 'lake'    ;
+use constant REGION_TYPE_MAGIC    => 'magic'   ;
+use constant REGION_TYPE_MINE     => 'mine'    ;
+use constant REGION_TYPE_MOUNTAIN => 'mountain';
+use constant REGION_TYPE_SEA      => 'sea'     ;
+use constant REGION_TYPE_SWAMP    => 'swamp'   ;
 
 # расы
-use constant RACE_SORCERERS => "sorcerers";
+use constant RACE_SORCERERS => 'sorcerers';
 
 # специальные способности
-use constant SP_BERSERK       => "berserk"     ;
-use constant SP_BIVOUACKING   => "bivouacking" ;
-use constant SP_DIPLOMAT      => "diplomat"    ;
-use constant SP_DRAGON_MASTER => "dragonMaster";
-use constant SP_FORTIFIED     => "fortified"   ;
-use constant SP_HEROIC        => "heroic"      ;
+use constant SP_BERSERK       => 'berserk'     ;
+use constant SP_BIVOUACKING   => 'bivouacking' ;
+use constant SP_DIPLOMAT      => 'diplomat'    ;
+use constant SP_DRAGON_MASTER => 'dragonMaster';
+use constant SP_FORTIFIED     => 'fortified'   ;
+use constant SP_HEROIC        => 'heroic'      ;
 
 use constant REGION_TYPES => [
   REGION_TYPE_BORDER, REGION_TYPE_CAVERN, REGION_TYPE_COAST, REGION_TYPE_FARMLAND,
@@ -502,11 +521,11 @@ use constant REGION_TYPES => [
 ];
 
 # внутриигровые состояния игры
-use constant GS_DEFEND      => "defend"     ;
-use constant GS_SELECT_RACE => "selectRace" ;
-use constant GS_CONQUEST    => "conquest"   ;
-use constant GS_REDEPLOY    => "redeploy"   ;
-use constant GS_FINISH_TURN => "finishTurn" ;
+use constant GS_DEFEND      => 'defend'     ;
+use constant GS_SELECT_RACE => 'selectRace' ;
+use constant GS_CONQUEST    => 'conquest'   ;
+use constant GS_REDEPLOY    => 'redeploy'   ;
+use constant GS_FINISH_TURN => 'finishTurn' ;
 
 __END__
 
