@@ -41,7 +41,8 @@ sub include {
   my $include = decode_json($self->readFile(File::Spec->catfile($dir, $file)));
   foreach ( @{ $include } ) {
     my $result = $self->sendRequest(encode_json($_));
-    die "Failed include '$file'" if decode_json($result)->{result} ne 'ok';
+    die "Failed include '$file'
+Request: " . encode_json($_)  if decode_json($result)->{result} ne 'ok';
   }
 }
 
@@ -57,6 +58,10 @@ sub check {
     $inTest->{description} = $in;
   }
   print "   $inTest->{description}: ";
+  if ( @{ $inTest->{test} } != @{ $answers } ) {
+    print "count of answers not equal count of tests\n";
+    return;
+  }
   foreach ( @{ $inTest->{include} } ) {
     $self->include($_, dirname($in));
   }

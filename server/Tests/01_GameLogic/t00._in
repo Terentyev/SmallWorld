@@ -3,7 +3,7 @@
     "test": [
         {
             "action": "getGameState",
-            "gameId": 1
+            "sid": 1
         }
     ],
     "description": "test getGameState function"
