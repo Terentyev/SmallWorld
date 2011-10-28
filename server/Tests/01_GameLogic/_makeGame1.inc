@@ -2,9 +2,9 @@
         { "action": "resetServer" },
         { "action": "uploadMap", "mapName": "map1", "playersNum": 2, "turnsNum": 5, "regions": [
             { "population": 1, "landDescription": ["coast"], "adjacent": [2, 3] },
-            { "landDescription": ["sea", "border"], "adjacent": [1] },
-            { "population": 1, "landDescription": ["mountain", "border"], "adjacent": [1, 4] },
-            { "landDescription": ["lake", "border"], "adjacent": [3] },
+            { "population": 0, "landDescription": ["sea", "border"], "adjacent": [1] },
+            { "population": 1, "landDescription": ["mountain", "border"], "adjacent": [1, 4, 5] },
+            { "population": 0, "landDescription": ["lake", "border"], "adjacent": [3] },
             { "population": 1, "landDescription": ["hill", "mine"], "adjacent": [3] } ] 
         },
         { "action": "register", "username": "username1", "password": "password" },

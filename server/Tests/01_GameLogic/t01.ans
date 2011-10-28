@@ -21,6 +21,9 @@
         "result": "ok"
     },
     {
+        "result": "ok"
+    },
+    {
         "result": "ok",
         "gameState": {
             "gameId": 1,
