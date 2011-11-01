@@ -8,7 +8,7 @@ use SmallWorld::Consts;
 # конструктор. В качестве параметра принимает player и regions
 sub new {
   my $class = shift;
-  my $self = { player => undef, regions => undef };
+  my $self = { player => undef, regions => undef, allRegions => undef };
 
   bless $self, $class;
 

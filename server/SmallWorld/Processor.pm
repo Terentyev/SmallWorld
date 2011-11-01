@@ -148,7 +148,7 @@ sub cmd_leaveGame {
 sub cmd_setReadinessStatus {
   my ($self, $result) = @_;
   $self->{db}->setIsReady( @{$self->{json}}{qw/isReady sid/} );
-  #TO DO
+  #TODO
   $self->{json}->{visibleRaces};
   $self->{json}->{visiblePowers};
 }
@@ -157,6 +157,9 @@ sub cmd_selectRace {
   my ($self, $result) = @_;
   $self->{json}->{sid};
   $self->{json}->{position};
+  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  $game->selectRace($self->{json}->{position});
+  $game->save();
 }
 
 sub cmd_conquer {
@@ -168,25 +171,27 @@ sub cmd_conquer {
 
 sub cmd_decline {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
+  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  $game->decline();
+  $game->save();
 }
 
 sub cmd_finishTurn {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
+  my $game = SmallWord::Game->new($self->{db}, $self->{json}->{sid});
+  $game->finishTurn();
+  $game->save();
 }
 
 sub cmd_redeploy {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{raceId};
-  $self->{json}->{regions};
+  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  $game->redeploy($self->{json}->{qw( regions encampments fortified heroes )});
+  $game->save();
 }
 
 sub cmd_defend {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{regions};
   my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
   $game->defend($self->{json}->{regions});
   $game->save();
@@ -194,8 +199,9 @@ sub cmd_defend {
 
 sub cmd_enchant {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{regionId};
+  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  $game->enchant($self->{json}->{regionId});
+  $game->save();
 }
 
 sub cmd_getVisibleTokenBadges {

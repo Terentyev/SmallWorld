@@ -8,11 +8,21 @@ use SmallWorld::Consts;
 # конструктор
 sub new {
   my $class = shift;
-  my $self = { };
+  my $self = { regions => undef, allRegions => undef };
 
   bless $self, $class;
 
+  $self->_init(@_);
+
   return $self;
+}
+
+sub _init {
+  my ($self, $regions, $badge) = @_;
+  $self->{allRegions} = $regions;
+  $self->{regions} = grep {
+    $_->{tokenBadgeId} == $badge->{tokenBadgeId}
+  } @{ $regions };
 }
 
 # возвращает количество первоначальных фигурок для каждой расы
@@ -35,7 +45,7 @@ sub looseTokensBonus {
   return LOOSE_TOKENS_NUM;
 }
 
-# возвращает количество монет, которые игрок получит в конце игры
+# возвращает количество бонусных монет, которые игрок получит в конце игры
 sub coinsBonus {
 # TODO
   return 0;
@@ -68,6 +78,13 @@ sub canCmd {
   my ($self, $js) = @_;
   # любая раса может выполнять любую команду кроме зачарования
   return $js->{action} ne 'enchant';
+}
+
+sub getOwnedRegionsNum {
+  my ($self, $regType) = @_;
+  return 1 * grep {
+    grep { $_ eq $regType } @{ $_->{constRegionState} }
+  } @{ $self->{regions} };
 }
 
 
@@ -151,7 +168,7 @@ sub conquestRegionTokensBonus {
       # регион принадлежит игроку
       $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} && (
         # регион граничит с регионом, на который мы нападаем
-        grep { $_ == $region->{regionIdId} } $_->{adjacentRegions}
+        grep { $_ == $region->{regionId} } $_->{adjacentRegions}
       )
     } @{ $regions }
     ? 1
@@ -224,8 +241,9 @@ sub initialTokens {
 }
 
 sub coinsBonus {
-# TODO: дописать получение дополнительных монет за захваченные территории
-#  return $_[0]->BaseRace::coinsBonus() + $_[0]->getOwnedRegionsNum();
+  # получение дополнительных монет за захваченные территории
+  return $_[0]->BaseRace::coinsBonus() +
+    1 * grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} };
 }
 
 
@@ -338,7 +356,7 @@ sub initialTokens {
 }
 
 sub coinsBonus {
-  return $_[0]->getOwnedRegions(REGION_TYPE_MAGIC) + $_[0]->BaseRace::coinsBonus();
+  return $_[0]->getOwnedRegionsNum(REGION_TYPE_MAGIC) + $_[0]->BaseRace::coinsBonus();
 }
 
 __END__
