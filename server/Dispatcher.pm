@@ -14,14 +14,16 @@ use Apache2::Const -compile => qw(OK);
 use SmallWorld::Server ();
 
 sub handler {
-	my $rr = shift;
-	my $r = Apache2::Request->new($rr);
-	my $rs = SmallWorld::Server->new();
-	
-	$rr->content_type('text/plain');
-	$rs->process($r);
-	
-	return Apache2::Const::OK;
+  my $rr = shift;
+  my $r = Apache2::Request->new($rr);
+  my $rs = SmallWorld::Server->new();
+
+  $rr->content_type('text/plain');
+  $rs->process($r);
+
+  return Apache2::Const::OK;
 }
 
 1;
+
+__END__
