@@ -47,6 +47,15 @@ sub debug {
   use Data::Dumper; print Dumper(@_);
 }
 
+sub getGame {
+  my $self = shift;
+  if ( !defined $self->{game} ||
+      $self->{_game}->{_version} != $self->{_game}->getGameVersion($self->{json}->{sid}) ) {
+    $self->{_game} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  }
+  return $self->{game};
+}
+
 # Команды, которые приходят от клиента
 sub cmd_resetServer {
   my ($self, $result) = @_;
@@ -155,70 +164,63 @@ sub cmd_setReadinessStatus {
 
 sub cmd_selectRace {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{position};
-  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  my $game = $self->getGame();
   $game->selectRace($self->{json}->{position});
   $game->save();
 }
 
 sub cmd_conquer {
   my ($self, $result) = @_;
-  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  my $game = $self->getGame();
   $game->conquer($self->{json}->{regionId});
   $game->save();
 }
 
 sub cmd_decline {
   my ($self, $result) = @_;
-  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  my $game = $self->getGame();
   $game->decline();
   $game->save();
 }
 
 sub cmd_finishTurn {
   my ($self, $result) = @_;
-  my $game = SmallWord::Game->new($self->{db}, $self->{json}->{sid});
+  my $game = $self->getGame();
   $game->finishTurn();
   $game->save();
 }
 
 sub cmd_redeploy {
   my ($self, $result) = @_;
-  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  my $game = $self->getGame();
   $game->redeploy($self->{json}->{qw( regions encampments fortified heroes )});
   $game->save();
 }
 
 sub cmd_defend {
   my ($self, $result) = @_;
-  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  my $game = $self->getGame();
   $game->defend($self->{json}->{regions});
   $game->save();
 }
 
 sub cmd_enchant {
   my ($self, $result) = @_;
-  my $game = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+  my $game = $self->getGame();
   $game->enchant($self->{json}->{regionId});
   $game->save();
 }
 
-sub cmd_getVisibleTokenBadges {
-  my ($self, $result) = @_;
-  $self->{json}->{gameId};
-}
-
 sub cmd_throwDice {
   my ($self, $result) = @_;
-  $self->{json}->{sid};
-  $self->{json}->{dice};
+  my $game = $self->getGame();
+  $result->{dice} = $game->throwDice();
+  $game->save();
 }
 
 sub cmd_getGameState {
   my ($self, $result) = @_;
-  $result->{gameState} = SmallWorld::Game->new(
-      $self->{db}, $self->{json}->{sid})->getGameStateForPlayer($self->{json}->{sid});
+  $result->{gameState} = $self->getGame()->getGameStateForPlayer($self->{json}->{sid});
 }
 
 1;

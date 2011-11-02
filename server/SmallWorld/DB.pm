@@ -180,18 +180,18 @@ sub getMaps {
 sub getGameState {
   my $self = shift;
   return $self->{dbh}->selectrow_hashref('
-      SELECT g.id, g.name, g.description, g.mapId, g.state, COUNT(p.id) AS currentPlayersNum
+      SELECT g.id, g.name, g.description, g.mapId, g.state, g.version, COUNT(p.id) AS currentPlayersNum
       FROM GAMES g
       INNER JOIN CONNECTIONS c ON c.gameId = g.id
       INNER JOIN PLAYERS p ON p.id = c.playerId
       WHERE p.sid = ?
-      GROUP BY 1, 2, 3, 4, 5',
+      GROUP BY 1, 2, 3, 4, 5, 6',
       undef,  $_[0]) or dbError;
 }
 
 sub saveGameState {
   my $self = shift;
-  $self->{dbh}->_do('UPDATE GAMES SET state = ? WHERE id = ?', @_);
+  $self->{dbh}->_do('UPDATE GAMES SET state = ?, version = version + 1 WHERE id = ?', @_);
 }
 
 sub getMap {

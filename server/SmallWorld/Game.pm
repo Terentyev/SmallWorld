@@ -25,6 +25,12 @@ sub new {
   return $self;
 }
 
+# возвращает версию состояния игры
+sub getGameVersion {
+  my ($self, $sid) = @_;
+  return $self->{db}->getGameState($sid)->{VERSION};
+}
+
 sub mergeGameState {
   my ($self, $gs) = @_;
   grep { $self->{gameState}->{$_} = $gs->{$_} } keys %$gs;
@@ -36,6 +42,7 @@ sub load {
   my $game = $self->{db}->getGameState($sid);
   my $map = $self->{db}->getMap($game->{MAPID});
 
+  $self->{_version} = $game->{VERSION};
   $self->{gameState} = {
     gameInfo       => {
       gameId            => $game->{ID},
@@ -135,6 +142,7 @@ sub save {
   delete $gs->{gameInfo};
   delete $gs->{map};
   $self->{db}->saveGameState(encode_json($gs), $self->{gameState}->{gameInfo}->{gameId});
+  $self->{_version}++;
 }
 
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
@@ -432,7 +440,7 @@ sub finishTurn {
   $player->{coins} += 1 * grep {
     $_->{ownerId} == $player->{playerId}
   } @{ $regions } + $sp->coinsBonus() + $race->coinsBonus() + $sp->coinsBonus();
-  $player->{dice} = undef;
+  delete $player->{dice};
   grep { $_->{conquestIdx} = undef } @{ $self->{gameState}->{regions} };
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
     ($player->{priority} + 1) / $self->{gameState}->{players} ]->{playerId};
@@ -476,7 +484,16 @@ sub defend {
 
 sub enchant {
   my ($self, $regionId) = @_;
-  $self->getRegion($regionId)->{qw( ownerId tokenBadgeId conquestIdx )} = ();
+  my $player = $self->getPlayer();
+  $self->getRegion($regionId)->{qw( ownerId tokenBadgeId conquestIdx )} = [
+      $player->{playerId}, $player->{currentTokenBadgeId}->{tokenBadgeId}, $self->nextConquestIdx() ];
+}
+
+sub throwDice {
+  my $self = shift;
+  my $player = $self->getPlayer();
+  $player->{dice} = $self->random();
+  return $player->{dice};
 }
 
 1;
