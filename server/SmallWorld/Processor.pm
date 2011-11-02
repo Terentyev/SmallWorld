@@ -16,20 +16,20 @@ use SmallWorld::Game;
 sub new {
   my $class = shift;
   my $self = { json => undef, db => undef };
-  my ($r) = @_;
-  if ( !$r ) {
-    $r = '{}';
-  }
-  $self->{json} = eval { return decode_json($r) or {}; };
-  $self->{db} = SmallWorld::DB->new;
+
+  $self->{db} = SmallWorld::DB->new();
+  $self->{db}->connect(DB_NAME, DB_LOGIN, DB_PASSWORD, DB_MAX_BLOB_SIZE);
 
   bless $self, $class;
   return $self;
 }
 
 sub process {
-  my ($self) = @_;
-  $self->{db}->connect(DB_NAME, DB_LOGIN, DB_PASSWORD, DB_MAX_BLOB_SIZE);
+  my ($self, $r) = @_;
+  if ( !defined $r ) {
+    $r = '{}';
+  }
+  $self->{json} = eval { return decode_json($r) or {}; };
 
   my $result = { result => R_ALL_OK };
   $self->checkJsonCmd($result);
@@ -38,7 +38,6 @@ sub process {
     no strict 'refs';
     &{"cmd_$self->{json}->{action}"}($self, $result);
   }
-  $self->{db}->disconnect;
   print encode_json($result)."\n" or die "Can not encode JSON-object\n";
 }
 

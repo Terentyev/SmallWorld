@@ -13,13 +13,21 @@ use Apache2::Const -compile => qw(OK);
 
 use SmallWorld::Server ();
 
+our $server = undef;
+
+sub getServer {
+  if ( !defined $server ) {
+    $server = SmallWorld::Server->new();
+  }
+  return $server;
+}
+
 sub handler {
   my $rr = shift;
   my $r = Apache2::Request->new($rr);
-  my $rs = SmallWorld::Server->new();
 
   $rr->content_type('text/plain');
-  $rs->process($r);
+  getServer()->process($r);
 
   return Apache2::Const::OK;
 }
