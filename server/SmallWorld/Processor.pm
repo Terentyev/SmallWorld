@@ -155,10 +155,12 @@ sub cmd_leaveGame {
 
 sub cmd_setReadinessStatus {
   my ($self, $result) = @_;
-  $self->{db}->setIsReady( @{$self->{json}}{qw/isReady sid/} );
-  #TODO
-  $self->{json}->{visibleRaces};
-  $self->{json}->{visiblePowers};
+  if ( $ENV{DEBUG} && $self->{db}->setIsReady( @{$self->{json}}{qw/isReady sid/} ) ) {
+    my $game = $self->getGame();
+    $game->setTokenBadge('raceName', $self->{json}->{visibleRaces});
+    $game->setTokenBadge('specialPowerName', $self->{json}->{visibleSpecialPowers});
+    $game->save();
+  }
 }
 
 sub cmd_selectRace {

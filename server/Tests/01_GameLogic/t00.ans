@@ -37,7 +37,38 @@
                     "declineTokenBadge": {}
                 }
             ],
-            "visibleTokenBadges": []
+            "visibleTokenBadges": [
+                {
+                    "tokenBadgeId": 0,
+                    "specialPowerName": "",
+                    "raceName": ""
+                },
+                {
+                    "tokenBadgeId": 1,
+                    "specialPowerName": "",
+                    "raceName": ""
+                },
+                {
+                    "tokenBadgeId": 2,
+                    "specialPowerName": "",
+                    "raceName": ""
+                },
+                {
+                    "tokenBadgeId": 3,
+                    "specialPowerName": "",
+                    "raceName": ""
+                },
+                {
+                    "tokenBadgeId": 4,
+                    "specialPowerName": "",
+                    "raceName": ""
+                },
+                {
+                    "tokenBadgeId": 5,
+                    "specialPowerName": "",
+                    "raceName": ""
+                }
+            ]
         }
     }
 ]

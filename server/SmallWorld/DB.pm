@@ -191,7 +191,7 @@ sub getGameState {
 
 sub saveGameState {
   my $self = shift;
-  $self->{dbh}->_do('UPDATE GAMES SET state = ?, version = version + 1 WHERE id = ?', @_);
+  $self->_do('UPDATE GAMES SET state = ?, version = version + 1 WHERE id = ?', @_);
 }
 
 sub getMap {

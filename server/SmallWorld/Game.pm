@@ -156,11 +156,25 @@ sub initStorage {
 # сохраняет состояние игры в БД
 sub save {
   my $self = shift;
-  my $gs = \%{ $self->{gameState} };
-  delete $gs->{gameInfo};
-  delete $gs->{map};
-  $self->{db}->saveGameState(encode_json($gs), $self->{gameState}->{gameInfo}->{gameId});
+  my $gs = $self->{gameState};
+  $self->{db}->saveGameState(encode_json($gs), $gs->{gameInfo}->{gameId});
   $self->{_version}++;
+}
+
+# устанавливает определенные карточки рас и умений
+sub setTokenBadge {
+  my ($self, $name, $tokens) = @_;
+  return if !defined $tokens;
+  my $myTokens = $self->{gameState}->{tokenBadges};
+  for ( my $i = 0; $i < scalar(@{ $tokens }); ++$i ) {
+    foreach ( @{ $myTokens } ) {
+      if ( $_->{$name} eq $tokens->[$i] ) {
+        $_->{$name} = $myTokens->[$i]->{$name};
+        $myTokens->[$i]->{$name} = $tokens->[$i];
+        last;
+      }
+    }
+  }
 }
 
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
