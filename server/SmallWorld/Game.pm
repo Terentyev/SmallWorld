@@ -126,24 +126,21 @@ sub init {
 # начальное состояние пар раса/умение
 sub initTokenBadges {
   my $self = shift;
-  my @sp = SPECIAL_POWERS;
-  my @races = RACES;
-  my @result = [];
+  my @sp = @{ &SPECIAL_POWERS };
+  my @races = @{ &RACES };
+  my @result = ();
 
   my $j = 0;
   while ( @sp ) {
-    my $i = rand(${ @sp });
     push @result, {
-      tokenBadgeId     => $j,
-      specialPowerName => delete $sp[$i],
-      raceName         => undef,
+      tokenBadgeId     => $j++,
+      specialPowerName => splice(@sp, rand(scalar(@sp)), 1),
     };
   }
 
   $j = 0;
   while ( @races ) {
-    my $i = rand(${ @races });
-    $result[$j++]->{raceName} = delete $races[$i];
+    $result[$j++]->{raceName} = splice(@races, rand(scalar(@races)), 1);
   }
 
   return \@result;
@@ -170,7 +167,7 @@ sub save {
 sub getGameStateForPlayer {
   my $self = shift;
   my $gs = \%{ $self->{gameState} };
-  $gs->{visibleTokenBadges} = @{ $gs->{tokenBadges} }[0..5];
+  $gs->{visibleTokenBadges} = [ @{ $gs->{tokenBadges} }[0..5] ];
   my $result = {
     gameId             => $gs->{gameInfo}->{gameId},
     gameName           => $gs->{gameInfo}->{gameName},
@@ -180,7 +177,7 @@ sub getGameStateForPlayer {
     state              => $gs->{state},
     currentTurn        => $gs->{currentTurn},
     map                => \%{ $gs->{map} },
-    visibleTokenBadges => \@{ $gs->{visibleTokenBadges} }
+    visibleTokenBadges => $gs->{visibleTokenBadges}
   };
   $result->{map}->{regions} = [];
   grep {
