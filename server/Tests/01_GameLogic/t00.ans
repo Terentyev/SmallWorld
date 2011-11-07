@@ -6,6 +6,9 @@
             "gameName": "game1",
             "gameDescription": "description1",
             "currentPlayersNum": 1,
+            "activePlayerId": 1,
+            "state": "selectRace",
+            "currentTurn": 0,
             "map": {
                 "mapId": 1,
                 "mapName": "map1",

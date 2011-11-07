@@ -365,7 +365,8 @@ sub checkStage {
     &GS_SELECT_RACE => [ 'selectRace' ],
     &GS_CONQUEST    => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'selectFriend', 'finishTurn' ],
     &GS_REDEPLOY    => [ 'redeploy', 'selectFriend', 'finishTurn' ],
-    &GS_FINISH_TURN => [ 'finishTurn' ]
+    &GS_FINISH_TURN => [ 'finishTurn' ],
+    &GS_IS_OVER     => [],
   };
 
   # 1. пользователь, который послал команду, != активный пользователь

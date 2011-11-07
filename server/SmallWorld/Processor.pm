@@ -15,7 +15,7 @@ use SmallWorld::Game;
 
 sub new {
   my $class = shift;
-  my $self = { json => undef, db => undef };
+  my $self = { json => undef, db => undef, _game => undef };
 
   $self->{db} = SmallWorld::DB->new();
   $self->{db}->connect(DB_NAME, DB_LOGIN, DB_PASSWORD, DB_MAX_BLOB_SIZE);
@@ -48,11 +48,11 @@ sub debug {
 
 sub getGame {
   my $self = shift;
-  if ( !defined $self->{game} ||
+  if ( !defined $self->{_game} ||
       $self->{_game}->{_version} != $self->{_game}->getGameVersion($self->{json}->{sid}) ) {
     $self->{_game} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
   }
-  return $self->{game};
+  return $self->{_game};
 }
 
 # Команды, которые приходят от клиента

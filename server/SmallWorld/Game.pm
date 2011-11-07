@@ -96,7 +96,7 @@ sub init {
   $i = 0;
   $self->{gameState}->{players} = [
     map { {
-      userId             => $_->{ID},
+      playerId           => $_->{ID},
       username           => $_->{USERNAME},
       isReady            => 1 * $_->{ISREADY},
       coins              => undef,
@@ -125,7 +125,28 @@ sub init {
 
 # начальное состояние пар раса/умение
 sub initTokenBadges {
-  return [];
+  my $self = shift;
+  my @sp = SPECIAL_POWERS;
+  my @races = RACES;
+  my @result = [];
+
+  my $j = 0;
+  while ( @sp ) {
+    my $i = rand(${ @sp });
+    push @result, {
+      tokenBadgeId     => $j,
+      specialPowerName => delete $sp[$i],
+      raceName         => undef,
+    };
+  }
+
+  $j = 0;
+  while ( @races ) {
+    my $i = rand(${ @races });
+    $result[$j++]->{raceName} = delete $races[$i];
+  }
+
+  return \@result;
 }
 
 # начальное состояние хранилища фигурок и карточек
@@ -155,7 +176,7 @@ sub getGameStateForPlayer {
     gameName           => $gs->{gameInfo}->{gameName},
     gameDescription    => $gs->{gameInfo}->{gameDescription},
     currentPlayersNum  => $gs->{gameInfo}->{currentPlayersNum},
-    activePlayerId     => $gs->{activuPlayerId},
+    activePlayerId     => $gs->{activePlayerId},
     state              => $gs->{state},
     currentTurn        => $gs->{currentTurn},
     map                => \%{ $gs->{map} },
@@ -184,7 +205,7 @@ sub getGameStateForPlayer {
   $result->{players} = undef;
   grep {
     push @{ $result->{players} }, {
-      userId => $_->{userId},
+      userId => $_->{playerId},
       username => $_->{username},
       isReady  => $_->{isReady},
       coins    => $_->{coins},
@@ -254,19 +275,19 @@ sub createRace {
   
   if ( defined $badge && defined $badge->{raceName} ) {
     $race = {
-      amazons   => 'SmallWorld::RaceAmazons',
-      dwarves   => 'SmallWorld::RaceDwarves',
-      elves     => 'SmallWorld::RaceElves',
-      giants    => 'SmallWorld::RaceGiants',
-      halflings => 'SmallWorld::RaceHalflings',
-      humans    => 'SmallWorld::RaceHumans',
-      orcs      => 'SmallWorld::RaceOrcs',
-      ratmen    => 'SmallWorld::RaceRatmen',
-      skeletens => 'SmallWorld::RaceSkeletons',
-      sorcerers => 'SmallWorld::RaceSorcerers',
-      tritons   => 'SmallWorld::RaceTritons',
-      trolls    => 'SmallWorld::RaceTrolls',
-      wizards   => 'SmallWorld::RaceWizards'
+      &RACE_AMAZONS   => 'SmallWorld::RaceAmazons',
+      &RACE_DWARVES   => 'SmallWorld::RaceDwarves',
+      &RACE_ELVES     => 'SmallWorld::RaceElves',
+      &RACE_GIANTS    => 'SmallWorld::RaceGiants',
+      &RACE_HALFLINGS => 'SmallWorld::RaceHalflings',
+      &RACE_HUMANS    => 'SmallWorld::RaceHumans',
+      &RACE_ORCS      => 'SmallWorld::RaceOrcs',
+      &RACE_RATMEN    => 'SmallWorld::RaceRatmen',
+      &RACE_SKELETENS => 'SmallWorld::RaceSkeletons',
+      &RACE_SORCERERS => 'SmallWorld::RaceSorcerers',
+      &RACE_TRITONS   => 'SmallWorld::RaceTritons',
+      &RACE_TROLLS    => 'SmallWorld::RaceTrolls',
+      &RACE_WIZARDS   => 'SmallWorld::RaceWizards'
     }->{ $badge->{raceName} };
   }
   return $race->new($self->{gameState}->{regions}, $badge);
@@ -278,24 +299,24 @@ sub createSpecialPower {
   my $power = 'SmallWorld::BaseSp';
   if ( defined $badge && defined ($badge = $player->{$badge}) && defined $badge->{specialPowerName} ) {
     $power = {
-      alchemist    => 'SmallWorld::SpAlchemist',
-      berserk      => 'SmallWorld::SpBerserk',
-      bivouacking  => 'SmallWorld::SpBivouacking',
-      commando     => 'SmallWorld::SpCommado',
-      diplomat     => 'SmallWorld::SpDiplomat',
-      dragonMaster => 'SmallWorld::SpDragonMaster',
-      flying       => 'SmallWorld::SpFlying',
-      forest       => 'SmallWorld::SpForest',
-      fortified    => 'SmallWorld::SpFortified',
-      heroic       => 'SmallWorld::SpHeroic',
-      hill         => 'SmallWorld::SpHill',
-      merchant     => 'SmallWorld::SpMerchant',
-      pillaging    => 'SmallWorld::SpPillaging',
-      seafaring    => 'SmallWorld::SpSeafaring',
-      stout        => 'SmallWorld::SpStout',
-      swamp        => 'SmallWorld::SpSwamp',
-      underworld   => 'SmallWorld::SpUnderworld',
-      wealthy      => 'SmallWorld::SpWealthy'
+      &SP_ALCHEMIST     => 'SmallWorld::SpAlchemist',
+      &SP_BERSERK       => 'SmallWorld::SpBerserk',
+      &SP_BIVOUACKING   => 'SmallWorld::SpBivouacking',
+      &SP_COMMANDO      => 'SmallWorld::SpCommado',
+      &SP_DIPLOMAT      => 'SmallWorld::SpDiplomat',
+      &SP_DRAGON_MASTER => 'SmallWorld::SpDragonMaster',
+      &SP_FLYING        => 'SmallWorld::SpFlying',
+      &SP_FOREST        => 'SmallWorld::SpForest',
+      &SP_FORTIFIED     => 'SmallWorld::SpFortified',
+      &SP_HEROIC        => 'SmallWorld::SpHeroic',
+      &SP_HILL          => 'SmallWorld::SpHill',
+      &SP_MERCHANT      => 'SmallWorld::SpMerchant',
+      &SP_PILLAGING     => 'SmallWorld::SpPillaging',
+      &SP_SEAFARING     => 'SmallWorld::SpSeafaring',
+      &SP_STOUT         => 'SmallWorld::SpStout',
+      &SP_SWAMP         => 'SmallWorld::SpSwamp',
+      &SP_UNDERWORLD    => 'SmallWorld::SpUnderworld',
+      &SP_WEALTHY       => 'SmallWorld::SpWealthy'
     }->{ $badge->{specialPowerName} };
   }
   return $power->new($player, $self->{gameState}->{regions}, $badge);
@@ -407,16 +428,16 @@ sub decline {
   foreach ( grep { $_->{ownerId} == $player->{playerId} } @{ $regions } ) {
     if ( $_->{inDecline} ) {
       $_->{inDecline} = undef;
-      $_->{qw( ownerId tokenBadgeId tokensNum )} = (undef, undef, undef );
+      $_->{qw( ownerId tokenBadgeId tokensNum )} = [undef, undef, undef];
     }
     else {
-      $_->{qw( inDecline tokensNum )} = (1, DECLINED_TOKENS_NUM);
+      $_->{qw( inDecline tokensNum )} = [1, DECLINED_TOKENS_NUM];
     }
     $race->declineRegion($_);
     $sp->declineRegion($_);
   }
   my $badge = $player->{currentTokenBadge};
-  $player->{qw( tokensInHand currentTokenBadge declineTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
+  $player->{qw( tokensInHand currentTokenBadge declineTokenBadge )} = [INITIAL_TOKENS_NUM, undef, $badge];
 }
 
 sub selectRace {
@@ -445,9 +466,17 @@ sub finishTurn {
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
     ($player->{priority} + 1) / $self->{gameState}->{players} ]->{playerId};
   $player = $self->getPlayer();
-  $self->{gameState}->{state} = defined $player->{currentTokenBadge}->{tokenBadgeId}
-    ? GS_CONQUEST
-    : GS_SELECT_RACE;
+  if ( $player->{priority} == 0 ) {
+    $self->{gameState}->{currentTurn}++;
+  }
+  if ( $self->{gameState}->{currentTurn} ) {
+    $self->{gameState}->{state} = GS_IS_OVER;
+  }
+  else {
+    $self->{gameState}->{state} = defined $player->{currentTokenBadge}->{tokenBadgeId}
+      ? GS_CONQUEST
+      : GS_SELECT_RACE;
+  }
 }
 
 sub redeploy {
@@ -487,6 +516,7 @@ sub enchant {
   my $player = $self->getPlayer();
   $self->getRegion($regionId)->{qw( ownerId tokenBadgeId conquestIdx )} = [
       $player->{playerId}, $player->{currentTokenBadgeId}->{tokenBadgeId}, $self->nextConquestIdx() ];
+  $self->{gameState}->{storage}->{&RACE_SORCERERS}--;
 }
 
 sub throwDice {

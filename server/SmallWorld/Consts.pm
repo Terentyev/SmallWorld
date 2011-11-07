@@ -504,15 +504,53 @@ use constant REGION_TYPE_SEA      => 'sea'     ;
 use constant REGION_TYPE_SWAMP    => 'swamp'   ;
 
 # расы
+use constant RACE_AMAZONS   => 'amazons'  ;
+use constant RACE_DRAWERS   => 'drawers'  ;
+use constant RACE_ELVES     => 'elves'    ;
+use constant RACE_GIANTS    => 'giants'   ;
+use constant RACE_HALFLINGS => 'halflings';
+use constant RACE_HUMANS    => 'humans'   ;
+use constant RACE_ORCS      => 'orcs'     ;
+use constant RACE_RATMEN    => 'ratmen'   ;
+use constant RACE_SKELETONS => 'skeletons';
 use constant RACE_SORCERERS => 'sorcerers';
+use constant RACE_TRITONS   => 'tritons'  ;
+use constant RACE_TROLLS    => 'trolls'   ;
+use constant RACE_WIZARDS   => 'wizards'  ;
+
+use constant RACES => [
+  RACE_AMAZONS, RACE_DRAWERS, RACE_ELVES, RACE_GIANTS, RACE_HALFLINGS,
+  RACE_HUMANS, RACE_ORCS, RACE_RATMEN, RACE_SKELETONS, RACE_SORCERERS,
+  RACE_TRITONS, RACE_TROLLS, RACE_WIZARDS
+];
 
 # специальные способности
+use constant SP_ALCHEMIST     => 'alchemist'   ;
 use constant SP_BERSERK       => 'berserk'     ;
 use constant SP_BIVOUACKING   => 'bivouacking' ;
+use constant SP_COMMANDO      => 'commando'    ;
 use constant SP_DIPLOMAT      => 'diplomat'    ;
 use constant SP_DRAGON_MASTER => 'dragonMaster';
+use constant SP_FLYING        => 'flying'      ;
+use constant SP_FOREST        => 'forest'      ;
 use constant SP_FORTIFIED     => 'fortified'   ;
 use constant SP_HEROIC        => 'heroic'      ;
+use constant SP_HILL          => 'hill'        ;
+use constant SP_MERCHANT      => 'merchant'    ;
+use constant SP_MOUNTED       => 'mounted'     ;
+use constant SP_PILLAGING     => 'pillaging'   ;
+use constant SP_SEAFARING     => 'seafaring'   ;
+use constant SP_STOUT         => 'stout'       ;
+use constant SP_SWAMP         => 'swamp'       ;
+use constant SP_UNDERWORLD    => 'underworld'  ;
+use constant SP_WEALTHY       => 'wealthy'     ;
+
+use constant SPECIAL_POWERS => [
+  SP_ALCHEMIST, SP_BERSERK, SP_BIVOUACKING, SP_COMMANDO, SP_DIPLOMAT,
+  SP_DRAGON_MASTER, SP_FLYING, SP_FOREST, SP_FORTIFIED, SP_HEROIC, SP_HILL,
+  SP_MERCHANT, SP_MOUNTED, SP_PILLAGING, SP_SEAFARING, SP_STOUT, SP_SWAMP,
+  SP_UNDERWORLD, SP_WEALTHY
+];
 
 use constant REGION_TYPES => [
   REGION_TYPE_BORDER, REGION_TYPE_CAVERN, REGION_TYPE_COAST, REGION_TYPE_FARMLAND,
@@ -526,6 +564,7 @@ use constant GS_SELECT_RACE => 'selectRace' ;
 use constant GS_CONQUEST    => 'conquest'   ;
 use constant GS_REDEPLOY    => 'redeploy'   ;
 use constant GS_FINISH_TURN => 'finishTurn' ;
+use constant GS_IS_OVER     => 'gameOver'   ;
 
 __END__
 
