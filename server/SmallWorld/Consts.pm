@@ -361,8 +361,10 @@ use constant PATTERN => {
   finishTurn => [ {name => 'sid', type => 'int', mandatory => 1} ],
   redeploy => [
     {name => 'sid', type => 'int', mandatory => 1},
-    {name => 'raceId', type => 'int', mandatory => 0},
-    {name => 'regions', type => 'list', mandatory => 1}
+    {name => 'regions', type => 'list', mandatory => 1},
+    {name => 'encampments', type => 'list', mandatory => 0},
+    {name => 'fortified', type => 'hash', mandatory => 0},
+    {name => 'heroes', type => 'list', mandatory => 0}
   ],
   defend => [
     {name => 'sid', type => 'int', mandatory => 1},
@@ -376,6 +378,14 @@ use constant PATTERN => {
   throwDice => [
     {name => 'sid', type => 'int', mandatory => 1},
     {name => 'dice', type => 'int', mandatory => 0}
+  ],
+  dragonAttack => [
+    {name => 'sid', type => 'int', mandatory => 1},
+    {name => 'regionId', type => 'int', mandatory => 1}
+  ],
+  selectFriend => [
+    {name => 'sid', type => 'int', mandatory => 1},
+    {name => 'friendId', type => 'int', mandatory => 1}
   ],
   getGameState => [
     {
@@ -443,51 +453,51 @@ use constant DEFAULT_MAPS => [
 ];
 
 # игровые бонусы и штрафы
-use constant ALCHEMIST_COINS_BONUS      => 2 ;
-use constant AMAZONS_CONQ_TOKENS_NUM    => 4 ;
-use constant AMAZONS_TOKENS_NUM         => 6 ;
-use constant AMAZONS_TOKENS_MAX         => 15;
-use constant COMMANDO_CONQ_TOKENS_NUM   => -1;
-use constant DECLINED_TOKENS_NUM        => 1 ;
-use constant DWARVES_TOKENS_NUM         => 3 ;
-use constant DWARVES_TOKENS_MAX         => 8 ;
-use constant ELVES_LOOSE_TOKENS_NUM     => 1 ;
-use constant ELVES_TOKENS_NUM           => 6 ;
-use constant ELVES_TOKENS_MAX           => 11;
-use constant ENCAMPMENTS_MAX            => 5 ;
-use constant FORTRESS_MAX               => 6 ;
-use constant GIANTS_CONQ_TOKENS_NUM     => 1 ;
-use constant GIANTS_TOKENS_NUM          => 6 ;
-use constant GIANTS_TOKENS_MAX          => 11;
-use constant HALFLINGS_TOKENS_NUM       => 6 ;
-use constant HALFLINGS_TOKENS_MAX       => 11;
-use constant HEROES_MAX                 => 2 ;
-use constant HUMANS_TOKENS_NUM          => 5 ;
-use constant HUMANS_TOKENS_MAX          => 10;
-use constant INITIAL_COINS_NUM          => 0 ;
-use constant INITIAL_TOKENS_NUM         => 0 ;
-use constant LOOSE_TOKENS_NUM           => -1;
-use constant LOSTTRIBES_TOKENS_MAX      => 18;
-use constant MOUNTED_CONQ_TOKENS_NUM    => -1;
-use constant ORCS_TOKENS_NUM            => 5 ;
-use constant ORCS_TOKENS_MAX            => 10;
-use constant RATMEN_TOKENS_NUM          => 8 ;
-use constant RATMEN_TOKENS_MAX          => 13;
-use constant SKELETONS_RED_TOKENS_NUM   => 1 ;
-use constant SKELETONS_TOKENS_NUM       => 6 ;
-use constant SKELETONS_TOKENS_MAX       => 20;
-use constant SORCERERS_TOKENS_NUM       => 5 ;
-use constant SORCERERS_TOKENS_MAX       => 18;
-use constant TRITONS_CONQ_TOKENS_NUM    => 1 ;
-use constant TRITONS_TOKENS_NUM         => 6 ;
-use constant TRITONS_TOKENS_MAX         => 11;
-use constant TROLLS_DEF_TOKENS_NUM      => 1 ;
-use constant TROLLS_TOKENS_NUM          => 5 ;
-use constant TROLLS_TOKENS_MAX          => 10;
-use constant UNDERWORLD_CONQ_TOKENS_NUM => -1;
-use constant WEALTHY_COINS_NUM          => 7 ;
-use constant WIZARDS_TOKENS_NUM         => 5 ;
-use constant WIZARDS_TOKENS_MAX         => 10;
+use constant ALCHEMIST_COINS_BONUS      => 2    ;
+use constant AMAZONS_CONQ_TOKENS_NUM    => 4    ;
+use constant AMAZONS_TOKENS_NUM         => 6    ;
+use constant AMAZONS_TOKENS_MAX         => 15   ;
+use constant COMMANDO_CONQ_TOKENS_NUM   => -1   ;
+use constant DECLINED_TOKENS_NUM        => 1    ;
+use constant DWARVES_TOKENS_NUM         => 3    ;
+use constant DWARVES_TOKENS_MAX         => 8    ;
+use constant ELVES_LOOSE_TOKENS_NUM     => 1    ;
+use constant ELVES_TOKENS_NUM           => 6    ;
+use constant ELVES_TOKENS_MAX           => 11   ;
+use constant ENCAMPMENTS_MAX            => 5    ;
+use constant FORTRESS_MAX               => 6    ;
+use constant GIANTS_CONQ_TOKENS_NUM     => 1    ;
+use constant GIANTS_TOKENS_NUM          => 6    ;
+use constant GIANTS_TOKENS_MAX          => 11   ;
+use constant HALFLINGS_TOKENS_NUM       => 6    ;
+use constant HALFLINGS_TOKENS_MAX       => 11   ;
+use constant HEROES_MAX                 => 2    ;
+use constant HUMANS_TOKENS_NUM          => 5    ;
+use constant HUMANS_TOKENS_MAX          => 10   ;
+use constant INITIAL_COINS_NUM          => 5    ;
+use constant INITIAL_TOKENS_NUM         => undef;
+use constant LOOSE_TOKENS_NUM           => -1   ;
+use constant LOSTTRIBES_TOKENS_MAX      => 18   ;
+use constant MOUNTED_CONQ_TOKENS_NUM    => -1   ;
+use constant ORCS_TOKENS_NUM            => 5    ;
+use constant ORCS_TOKENS_MAX            => 10   ;
+use constant RATMEN_TOKENS_NUM          => 8    ;
+use constant RATMEN_TOKENS_MAX          => 13   ;
+use constant SKELETONS_RED_TOKENS_NUM   => 1    ;
+use constant SKELETONS_TOKENS_NUM       => 6    ;
+use constant SKELETONS_TOKENS_MAX       => 20   ;
+use constant SORCERERS_TOKENS_NUM       => 5    ;
+use constant SORCERERS_TOKENS_MAX       => 18   ;
+use constant TRITONS_CONQ_TOKENS_NUM    => 1    ;
+use constant TRITONS_TOKENS_NUM         => 6    ;
+use constant TRITONS_TOKENS_MAX         => 11   ;
+use constant TROLLS_DEF_TOKENS_NUM      => 1    ;
+use constant TROLLS_TOKENS_NUM          => 5    ;
+use constant TROLLS_TOKENS_MAX          => 10   ;
+use constant UNDERWORLD_CONQ_TOKENS_NUM => -1   ;
+use constant WEALTHY_COINS_NUM          => 7    ;
+use constant WIZARDS_TOKENS_NUM         => 5    ;
+use constant WIZARDS_TOKENS_MAX         => 10   ;
 
 # типы регионов
 use constant REGION_TYPE_BORDER   => 'border'  ;
@@ -505,7 +515,7 @@ use constant REGION_TYPE_SWAMP    => 'swamp'   ;
 
 # расы
 use constant RACE_AMAZONS   => 'amazons'  ;
-use constant RACE_DRAWERS   => 'dwarves'  ;
+use constant RACE_DWARVES   => 'dwarves'  ;
 use constant RACE_ELVES     => 'elves'    ;
 use constant RACE_GIANTS    => 'giants'   ;
 use constant RACE_HALFLINGS => 'halflings';
@@ -519,7 +529,7 @@ use constant RACE_TROLLS    => 'trolls'   ;
 use constant RACE_WIZARDS   => 'wizards'  ;
 
 use constant RACES => [
-  RACE_AMAZONS, RACE_DRAWERS, RACE_ELVES, RACE_GIANTS, RACE_HALFLINGS,
+  RACE_AMAZONS, RACE_DWARVES, RACE_ELVES, RACE_GIANTS, RACE_HALFLINGS,
   RACE_HUMANS, RACE_ORCS, RACE_RATMEN, RACE_SKELETONS, RACE_SORCERERS,
   RACE_TRITONS, RACE_TROLLS, RACE_WIZARDS
 ];

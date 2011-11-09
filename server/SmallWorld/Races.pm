@@ -21,6 +21,8 @@ sub _init {
   my ($self, $regions, $badge) = @_;
   $self->{allRegions} = $regions;
   $self->{regions} = grep {
+#    !defined $_->{tokenBadgeId} && !defined $badge->{tokenBadgeId} ||
+    defined $_->{tokenBadgeId} && defined $badge->{tokenBadgeId} &&
     $_->{tokenBadgeId} == $badge->{tokenBadgeId}
   } @{ $regions };
 }
@@ -199,7 +201,7 @@ sub canPlaceObj2Region {
 sub canFirstConquer {
   my ($self, $region) = @_;
   # полурослики на первом завоевании могут пытаться захватить любую сушу
-  return !grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} };
+  return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} });
 }
 
 sub declineRegion {
@@ -359,6 +361,7 @@ sub coinsBonus {
   return $_[0]->getOwnedRegionsNum(REGION_TYPE_MAGIC) + $_[0]->BaseRace::coinsBonus();
 }
 
-__END__
 
 1;
+
+__END__

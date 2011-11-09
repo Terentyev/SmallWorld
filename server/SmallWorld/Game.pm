@@ -10,6 +10,8 @@ use List::Util qw( min );
 
 use SmallWorld::Consts;
 use SmallWorld::DB;
+use SmallWorld::Races;
+use SmallWorld::SpecialPowers;
 
 # принимает параметры:
 #   db  -- объект класса SmallWorld::DB
@@ -93,8 +95,8 @@ sub init {
       playerId           => $_->{ID},
       username           => $_->{USERNAME},
       isReady            => 1 * $_->{ISREADY},
-      coins              => 0,
-      tokensInHand       => undef,
+      coins              => INITIAL_COINS_NUM,
+      tokensInHand       => INITIAL_TOKENS_NUM,
       priority           => $i++,
 #      dice               => undef,              # число, которое выпало при броске костей берсерка
       currentTokenBadge  => {
@@ -289,14 +291,14 @@ sub createRace {
       &RACE_HUMANS    => 'SmallWorld::RaceHumans',
       &RACE_ORCS      => 'SmallWorld::RaceOrcs',
       &RACE_RATMEN    => 'SmallWorld::RaceRatmen',
-      &RACE_SKELETENS => 'SmallWorld::RaceSkeletons',
+      &RACE_SKELETONS => 'SmallWorld::RaceSkeletons',
       &RACE_SORCERERS => 'SmallWorld::RaceSorcerers',
       &RACE_TRITONS   => 'SmallWorld::RaceTritons',
       &RACE_TROLLS    => 'SmallWorld::RaceTrolls',
       &RACE_WIZARDS   => 'SmallWorld::RaceWizards'
     }->{ $badge->{raceName} };
   }
-  return eval "use $race; return $race->new($self->{gameState}->{regions}, $badge);";
+  return $race->new($self->{gameState}->{regions}, $badge);
 }
 
 # возвращает объект класса, который соответствует способности
@@ -325,7 +327,7 @@ sub createSpecialPower {
       &SP_WEALTHY       => 'SmallWorld::SpWealthy'
     }->{ $badge->{specialPowerName} };
   }
-  return eval "use $power; return $power->new($player, $self->{gameState}->{regions}, $badge);";
+  return $power->new($player, $self->{gameState}->{regions}, $badge);
 }
 
 # возвращает первое ли это нападение (есть ли на карте регионы с это 
@@ -452,7 +454,7 @@ sub selectRace {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  $player->{currentTokenBadge} = delete $self->{gameState}->{tokenBadges}->[$p];
+  $player->{currentTokenBadge} = splice @{ $self->{gameState}->{tokenBadges} }, $p, 1;
   $player->{coins} -= $p;
   $self->{gameState}->{state} = GS_CONQUEST;
 }

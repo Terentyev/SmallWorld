@@ -129,10 +129,10 @@ sub compare {
 # не поддерживаю идею точного совпадения результата сервера и эталонного ответа.
 # Сервер должен только содержать ответ, но может быть более полным.
 #return 0 if scalar(keys %$eth) != scalar(keys %$cnt);
-    if ( !$self->compare([sort keys %$eth], [sort keys %$cnt], $_[3]) ) {
-      $_[3] .= ':different keys';
-      return 0;
-    }
+#    if ( !$self->compare([sort keys %$eth], [sort keys %$cnt], $_[3]) ) {
+#      $_[3] .= ':different keys';
+#      return 0;
+#    }
     foreach (keys %{ $eth }) {
       my $tmpDiff = "$diff/$_";
       if ( !$self->compare($eth->{$_}, $cnt->{$_}, $tmpDiff) ) {
