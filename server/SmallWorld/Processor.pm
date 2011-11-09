@@ -48,8 +48,10 @@ sub debug {
 
 sub getGame {
   my $self = shift;
+  my ($version, $id) = $self->{db}->getGameVersionAndId($self->{json}->{sid});
   if ( !defined $self->{_game} ||
-      $self->{_game}->{_version} != $self->{_game}->getGameVersion($self->{json}->{sid}) ) {
+      $self->{_game}->{gameState}->{gameInfo}->{gameInfo} != $id ||
+      $self->{_game}->{_version} != $version ) {
     $self->{_game} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid}, $self->{json}->{action});
   }
   return $self->{_game};

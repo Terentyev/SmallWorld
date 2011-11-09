@@ -25,12 +25,6 @@ sub new {
   return $self;
 }
 
-# возвращает версию состояния игры
-sub getGameVersion {
-  my ($self, $sid) = @_;
-  return $self->{db}->getGameState($sid)->{VERSION};
-}
-
 sub mergeGameState {
   my ($self, $gs) = @_;
   grep { $self->{gameState}->{$_} = $gs->{$_} } keys %$gs;

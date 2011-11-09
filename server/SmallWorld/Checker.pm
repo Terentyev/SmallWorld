@@ -206,7 +206,7 @@ sub getGameVariables {
   my $race = $game->createRace($player->{currentTokenBadge});
   my $sp = $game->createSpecialPower('currentTokenBadge', $player);
 
-  return [$game, $player, $race, $sp];
+  return ($game, $player, $race, $sp);
 }
 
 sub existsDuplicates {
@@ -449,7 +449,7 @@ sub checkGameCommand {
 
   my $js = $self->{json};
   my $cmd = $js->{action};
-  my @gameVariables = @{ $self->getGameVariables() };
+  my @gameVariables = $self->getGameVariables();
   my ($game, $player, $region, $race, $sp) = @gameVariables;
   my $regions = $game->{gameState}->{regions};
 

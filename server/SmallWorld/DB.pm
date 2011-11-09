@@ -211,5 +211,18 @@ sub getPlayers {
                                            ON p.id = c.playerId WHERE c.gameId = ? ORDER by c.id', { Slice => {} }, @_ ) or dbError;
 }
 
+# возвращает версию состояния игры и ее id по sid'у игрока
+sub getGameVersionAndId {
+  my $self = shift;
+  return $self->{dbh}->selectrow_arrayref('
+      SELECT g.version, g.id FROM GAMES g
+      INNER JOIN CONNECTIONS c ON c.gameId = g.id
+      INNER JOIN PLAYERS p ON p.id = c.playerId
+      WHERE p.sid = ?',
+      undef, $_[0]);
+}
+
+
 1;
 
+__END__
