@@ -50,7 +50,7 @@ sub getGame {
   my $self = shift;
   if ( !defined $self->{_game} ||
       $self->{_game}->{_version} != $self->{_game}->getGameVersion($self->{json}->{sid}) ) {
-    $self->{_game} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid});
+    $self->{_game} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid}, $self->{json}->{action});
   }
   return $self->{_game};
 }

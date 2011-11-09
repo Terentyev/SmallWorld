@@ -5,7 +5,7 @@
             "gameId": 1,
             "gameName": "game1",
             "gameDescription": "description1",
-            "currentPlayersNum": 1,
+            "currentPlayersNum": 2,
             "activePlayerId": 1,
             "state": "selectRace",
             "currentTurn": 0,
@@ -31,8 +31,17 @@
                 {
                     "userId": 1,
                     "username": "username1",
-                    "isReady": 0,
+                    "isReady": 1,
                     "priority": 0,
+                    "coins": 0,
+                    "currentTokenBadge": {},
+                    "declineTokenBadge": {}
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "isReady": 1,
+                    "priority": 1,
                     "currentTokenBadge": {},
                     "declineTokenBadge": {}
                 }
@@ -40,35 +49,38 @@
             "visibleTokenBadges": [
                 {
                     "tokenBadgeId": 0,
-                    "specialPowerName": "",
-                    "raceName": ""
+                    "specialPowerName": "alchemist",
+                    "raceName": "amazons"
                 },
                 {
                     "tokenBadgeId": 1,
-                    "specialPowerName": "",
-                    "raceName": ""
+                    "specialPowerName": "berserk",
+                    "raceName": "dwarves"
                 },
                 {
                     "tokenBadgeId": 2,
-                    "specialPowerName": "",
-                    "raceName": ""
+                    "specialPowerName": "bivouacking",
+                    "raceName": "elves"
                 },
                 {
                     "tokenBadgeId": 3,
-                    "specialPowerName": "",
-                    "raceName": ""
+                    "specialPowerName": "commando",
+                    "raceName": "giants"
                 },
                 {
                     "tokenBadgeId": 4,
-                    "specialPowerName": "",
-                    "raceName": ""
+                    "specialPowerName": "diplomat",
+                    "raceName": "halflings"
                 },
                 {
                     "tokenBadgeId": 5,
-                    "specialPowerName": "",
-                    "raceName": ""
+                    "specialPowerName": "dragonMaster",
+                    "raceName": "humans"
                 }
             ]
         }
+    },
+    {
+        "result": "badStage"
     }
 ]

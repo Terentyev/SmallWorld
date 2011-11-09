@@ -42,7 +42,8 @@ sub include {
   foreach ( @{ $include } ) {
     my $result = $self->sendRequest(encode_json($_));
     die "Failed include '$file'
-Request: " . encode_json($_)  if decode_json($result)->{result} ne 'ok';
+Request: " . encode_json($_) . "
+Result: $result" if eval { return decode_json($result)->{result} or ''; } ne 'ok';
   }
 }
 

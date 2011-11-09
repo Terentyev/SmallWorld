@@ -91,25 +91,25 @@ use constant VISIBLE_BADGES_NUM => 6  ;
 
 use constant CMD_ERRORS => {
   conquer            => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_REGION_IS_IMMUNE
   ],
   createDefaultMaps  => [],
   createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
   defend             => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_NOT_ENOUGH_TOKENS, R_THERE_ARE_TOKENS_IN_THE_HAND
   ],
   dragonAttack       => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION
   ],
   enchant            => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_BAD_ATTACKED_RACE, R_NOTHING_TO_ENCHANT, R_CANNOT_ENCHANT,
     R_NO_MORE_TOKENS_IN_STORAGE
   ],
-  finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE],
+  finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE], # R_BAD_GAME_STATE
   getGameList        => [R_BAD_SID],
   getGameState       => [],
   getMapList         => [R_BAD_SID],
@@ -119,18 +119,18 @@ use constant CMD_ERRORS => {
   login              => [R_BAD_LOGIN],
   logout             => [R_BAD_SID],
   redeploy           => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_USER_HAS_NOT_REGIONS, R_BAD_TOKENS_NUM,
     R_TOO_MANY_FORTS_IN_REGION, R_TOO_MANY_FORTS, R_NOT_ENOUGH_ENCAMPS,
     R_BAD_SET_HERO_CMD, R_NO_TOKENS_FOR_REDEPLOYMENT
   ],
   register           => [R_BAD_USERNAME, R_BAD_PASSWORD, R_USERNAME_TAKEN],
   resetServer        => [],
-  selectFriend       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_FRIEND_ID, R_BAD_FRIEND],
-  selectRace         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_MONEY_AMOUNT, R_BAD_STAGE], # R_BAD_POSITION
+  selectFriend       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_FRIEND_ID, R_BAD_FRIEND], # R_BAD_GAME_STATE
+  selectRace         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_MONEY_AMOUNT, R_BAD_STAGE], # R_BAD_POSITION R_BAD_GAME_STATE
   sendMessage        => [R_BAD_SID],
   setReadinessStatus => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE],
-  throwDice          => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE],
+  throwDice          => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE], # R_BAD_GAME_STATE
   uploadMap          => [R_MAP_NAME_TAKEN, R_BAD_REGIONS],
 };
 
@@ -505,7 +505,7 @@ use constant REGION_TYPE_SWAMP    => 'swamp'   ;
 
 # расы
 use constant RACE_AMAZONS   => 'amazons'  ;
-use constant RACE_DRAWERS   => 'drawers'  ;
+use constant RACE_DRAWERS   => 'dwarves'  ;
 use constant RACE_ELVES     => 'elves'    ;
 use constant RACE_GIANTS    => 'giants'   ;
 use constant RACE_HALFLINGS => 'halflings';

@@ -4,6 +4,11 @@
         {
             "action": "getGameState",
             "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 1
         }
     ],
     "description": "test getGameState function"

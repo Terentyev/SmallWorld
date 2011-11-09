@@ -38,7 +38,7 @@ sub mergeGameState {
 
 # загружает информацию об игре из БД
 sub load {
-  my ($self, $sid) = @_;
+  my ($self, $sid, $act) = @_;
   my $game = $self->{db}->getGameState($sid);
   my $map = $self->{db}->getMap($game->{MAPID});
 
@@ -48,7 +48,7 @@ sub load {
       gameId            => $game->{ID},
       gameName          => $game->{NAME},
       gameDescription   => $game->{DESCRIPTION},
-      currentPlayersNum => $game->{CURRENTPLAYERSNUM}
+      currentPlayersNum => $self->{db}->playersCount($game->{ID}),
     },
     map            => {
       mapId      => $game->{MAPID},
@@ -99,7 +99,7 @@ sub init {
       playerId           => $_->{ID},
       username           => $_->{USERNAME},
       isReady            => 1 * $_->{ISREADY},
-      coins              => undef,
+      coins              => 0,
       tokensInHand       => undef,
       priority           => $i++,
 #      dice               => undef,              # число, которое выпало при броске костей берсерка
@@ -168,7 +168,7 @@ sub setTokenBadge {
   my $myTokens = $self->{gameState}->{tokenBadges};
   for ( my $i = 0; $i < scalar(@{ $tokens }); ++$i ) {
     foreach ( @{ $myTokens } ) {
-      if ( $_->{$name} eq $tokens->[$i] ) {
+      if ( defined $_->{$name} && $_->{$name} eq $tokens->[$i] ) {
         $_->{$name} = $myTokens->[$i]->{$name};
         $myTokens->[$i]->{$name} = $tokens->[$i];
         last;
@@ -180,6 +180,7 @@ sub setTokenBadge {
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
 sub getGameStateForPlayer {
   my $self = shift;
+  my $playerId = $self->{db}->getPlayerId(shift);
   my $gs = \%{ $self->{gameState} };
   $gs->{visibleTokenBadges} = [ @{ $gs->{tokenBadges} }[0..5] ];
   my $result = {
@@ -226,7 +227,7 @@ sub getGameStateForPlayer {
       declineTokenBadge => \%{ $_->{declineTokenBadge} }
     }
   } @{ $gs->{players} };
-  grep {delete $_->{coins}} @{ $result->{players} };
+  grep {delete $_->{coins} if $_->{userId} != $playerId} @{ $result->{players} };
   $self->removeNull($result);
   return $result;
 }
@@ -257,8 +258,8 @@ sub regionsNum {
 # возвращает игрока из массива игроков по id или sid
 sub getPlayer {
   my ($self, $param) = @_;
-  my $id = $param->{id};
-  if ( defined $param->{sid} ) {
+  my $id = defined $param ? $param->{id} : undef;
+  if ( defined $param && defined $param->{sid} ) {
     $id = $self->{db}->getPlayerId($param->{sid});
   }
   elsif ( !defined $id ) {
@@ -267,7 +268,7 @@ sub getPlayer {
 
   # находим в массиве игроков текущего игрока
   foreach ( @{ $self->{gameState}->{players} } ) {
-    return $_ if $_->{userId} == $id;
+    return $_ if $_->{playerId} == $id;
   }
 }
 
@@ -282,7 +283,7 @@ sub getRegion {
 # возвращает объект класса, который соответсвует расе
 sub createRace {
   my ($self, $badge) = @_;
-  my $race = 'SmallWorld::BaseRace->';
+  my $race = 'SmallWorld::BaseRace';
   
   if ( defined $badge && defined $badge->{raceName} ) {
     $race = {
@@ -301,7 +302,7 @@ sub createRace {
       &RACE_WIZARDS   => 'SmallWorld::RaceWizards'
     }->{ $badge->{raceName} };
   }
-  return $race->new($self->{gameState}->{regions}, $badge);
+  return eval "use $race; return $race->new($self->{gameState}->{regions}, $badge);";
 }
 
 # возвращает объект класса, который соответствует способности
@@ -330,7 +331,7 @@ sub createSpecialPower {
       &SP_WEALTHY       => 'SmallWorld::SpWealthy'
     }->{ $badge->{specialPowerName} };
   }
-  return $power->new($player, $self->{gameState}->{regions}, $badge);
+  return eval "use $power; return $power->new($player, $self->{gameState}->{regions}, $badge);";
 }
 
 # возвращает первое ли это нападение (есть ли на карте регионы с это 
