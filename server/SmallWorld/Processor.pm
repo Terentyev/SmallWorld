@@ -61,6 +61,7 @@ sub cmd_register {
 sub cmd_login {
   my ($self, $result) = @_;
   $result->{sid} = $self->{db}->makeSid( @{$self->{json}}{qw/username password/} );
+  $result->{playerId} = $self->{db}->getPlayerId($result->{sid});
 }
 
 sub cmd_logout {
