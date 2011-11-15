@@ -53,7 +53,7 @@ sub checkPlayersNum {
 sub checkIsStarted {
   my ($self, $h) = @_;
   my $gameId = exists($h->{gameId}) ? $h->{gameId} : $self->{db}->getGameId($h->{sid});
-  $self->{db}->getGameIsStarted($gameId);
+  return $self->{db}->getGameIsStarted($gameId);
 }
 
 sub checkRegions {
@@ -104,7 +104,7 @@ sub checkErrorHandlers {
   my $errorList = CMD_ERRORS->{ $self->{json}->{action} };
 
   foreach ( @$errorList ) {
-    return $_ if $errorHandlers->{$_}->();
+    return $_ if exists $errorHandlers->{$_} && $errorHandlers->{$_}->();
   }
 
   return R_ALL_OK;
@@ -168,6 +168,12 @@ sub checkJsonCmd {
         return;
       }
     }
+    elsif ( $_->{type} eq 'hash' ) {
+      if ( ref($val) ne 'HASH' ) {
+        $result->{result} = $self->errorCode($_);
+        return;
+      }
+    }
   }
 
   $result->{result} = $self->checkErrorHandlers({
@@ -198,20 +204,20 @@ sub checkJsonCmd {
 sub getGameVariables {
   my $self = shift;
   my $js = $self->{json};
-  my $game = SmallWorld::Game->new($js->{sid});
+  my $game = $self->getGame();
   my $player = $game->getPlayer();
   my $region = defined $js->{regionId}
     ? $game->getRegion($js->{regionId})
     : undef;
-  my $race = $game->createRace($player->{currentTokenBadge}->{raceName});
+  my $race = $game->createRace($player->{currentTokenBadge});
   my $sp = $game->createSpecialPower('currentTokenBadge', $player);
 
-  return [$game, $player, $race, $sp];
+  return ($game, $player, $region, $race, $sp);
 }
 
 sub existsDuplicates {
   my ($self, $ref) = @_;
-  my %h = {};
+  my %h = ();
 
   foreach ( @$ref ) {
     return 1 if exists $h{$_->{regionId}};
@@ -227,28 +233,28 @@ sub checkRegionId {
   my $regions = $game->{gameState}->{regions};
 
   if ( defined $js->{regionId} ) {
-    return !grep { $_->{regionId} == $js->{regionId} } @{ $regions };
+    return !(grep { $_->{regionId} == $js->{regionId} } @{ $regions });
   }
 
   if ( defined $js->{regions} ) {
     foreach my $reg ( @{ $js->{regions} } ) {
-      return 1 if !grep { $reg->{regionId} == $_->{regionId} } @{ $regions };
+      return 1 if !(grep { $reg->{regionId} == $_->{regionId} } @{ $regions });
     }
   }
 
   if ( defined $js->{encampments} ) {
     foreach my $reg ( @{ $js->{encampments} } ) {
-      return 1 if !grep { $reg->{regionId} == $_->{regionId} } @{ $regions };
+      return 1 if !(grep { $reg->{regionId} == $_->{regionId} } @{ $regions });
     }
   }
 
   if ( defined $js->{fortified} ) {
-    return 1 if !grep { $_->{regionId} == $js->{fortified}->{regionId} } @{ $regions };
+    return 1 if !(grep { $_->{regionId} == $js->{fortified}->{regionId} } @{ $regions });
   }
 
   if ( defined $js->{heroes} ) {
     foreach my $reg ( @{ $js->{heroes} } ) {
-      return 1 if !grep { $reg == $_->{regionId} } @{ $regions };
+      return 1 if !(grep { $reg == $_->{regionId} } @{ $regions });
     }
   }
 
@@ -284,7 +290,7 @@ sub checkRegion_defend {
     foreach ( @{ $regions } ) {
       my $regionId = $_->{regionId};
       return 1 if $_->{currentTokenBadge}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-        !grep { $_ == $regionId  } @{ $_->{adjacentRegions} };
+        !(grep { $_ == $regionId  } @{ $_->{adjacentRegions} });
     }
   }
   return 0;
@@ -360,20 +366,21 @@ sub checkStage {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $js = $self->{json};
 
-  my %states = {
+  my %states = (
     &GS_DEFEND      => [ 'defend' ],
     &GS_SELECT_RACE => [ 'selectRace' ],
     &GS_CONQUEST    => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'selectFriend', 'finishTurn' ],
     &GS_REDEPLOY    => [ 'redeploy', 'selectFriend', 'finishTurn' ],
-    &GS_FINISH_TURN => [ 'finishTurn' ]
-  };
+    &GS_FINISH_TURN => [ 'finishTurn' ],
+    &GS_IS_OVER     => [],
+  );
 
   # 1. пользователь, который послал команду, != активный пользователь
   # 2. действие, которое запрашивает пользователь, не соответствует текущему
   #    состоянию игры
   my $func = $self->can("checkStage_$js->{action}"); # see UNIVERSAL::can
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
-    !grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } } ||
+    !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
     !$sp->canCmd($js, $player->{tokensInHand}) ||
     !$race->canCmd($js);
 }
@@ -440,6 +447,12 @@ sub checkFriend {
 
 sub checkGameCommand {
   my ($self, $result) = @_;
+  # если игра не начата, то выдаем ошибку
+  if ( !$self->checkIsStarted($self->{json}) ) {
+    $result->{result} = R_BAD_GAME_STATE;
+    return;
+  }
+
   my $js = $self->{json};
   my $cmd = $js->{action};
   my @gameVariables = $self->getGameVariables();
@@ -449,12 +462,12 @@ sub checkGameCommand {
   $result->{result} = $self->checkErrorHandlers({
     &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == $region->{ownerId}; },
     &R_BAD_FRIEND                   => sub { $self->checkFriend(@gameVariables); },
-    &R_BAD_FRIEND_ID                => sub { !grep { $_->{playerId} == $js->{friendId} && $_->{playerId} != $player->{playerId} } @{ $game->{gameState}->{players} }; },
+    &R_BAD_FRIEND_ID                => sub { !(grep { $_->{playerId} == $js->{friendId} && $_->{playerId} != $player->{playerId} } @{ $game->{gameState}->{players} }); },
     &R_BAD_MONEY_AMOUNT             => sub { $player->{coins} < $js->{position}; },
     &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables, $result); },
     &R_BAD_REGION_ID                => sub { $self->checkRegionId(@gameVariables); },
     &R_BAD_SET_HERO_CMD             => sub { HEROES_MAX < $@{ $js->{heroes} }; },
-    &R_BAD_SID                      => sub { $self->{db}->getPlayerId($js->{sid}) != $game->{activePlayerId}; },
+    &R_BAD_SID                      => sub { $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId}; },
     &R_BAD_STAGE                    => sub { $self->checkStage(@gameVariables); },
     &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables); },
     &R_CANNOT_ENCHANT               => sub { $region->{inDecline}; },
@@ -467,7 +480,7 @@ sub checkGameCommand {
     &R_THERE_ARE_TOKENS_IN_THE_HAND => sub { $self->checkTokensInHand(@gameVariables); },
     &R_TOO_MANY_FORTS               => sub { $self->checkForts(@gameVariables); },
     &R_TOO_MANY_FORTS_IN_REGION     => sub { $self->checkFortsInRegion(@gameVariables); },
-    &R_USER_HAS_NO_REGIONS          => sub { !grep { $_->{currentTokenBadge}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} } @{ $regions }; },
+    &R_USER_HAS_NOT_REGIONS         => sub { !(grep { $_->{currentTokenBadge}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} } @{ $regions }); },
   });
 }
 

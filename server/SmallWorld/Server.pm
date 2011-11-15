@@ -19,15 +19,16 @@ use constant IOBUFSIZE => 8192;
 
 sub new {
 	my $class = shift;
-	my $self = {};
+	my $self = { processor => SmallWorld::Processor->new() };
+
 	bless $self, $class;
-	return $self
+
+	return $self;
 }
 
 sub process {
-	my ($this, $r) = @_;
-	my $processor = SmallWorld::Processor->new(content($r));
-	$processor->process();
+	my ($self, $r) = @_;
+	$self->{processor}->process(content($r));
 }
 
 # код по выдергиванию json-запроса взят из примера по адресу:

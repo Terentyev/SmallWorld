@@ -180,18 +180,17 @@ sub getMaps {
 sub getGameState {
   my $self = shift;
   return $self->{dbh}->selectrow_hashref('
-      SELECT g.id, g.name, g.description, g.mapId, g.state, COUNT(p.id) AS currentPlayersNum
+      SELECT g.id, g.name, g.description, g.mapId, g.state, g.version
       FROM GAMES g
       INNER JOIN CONNECTIONS c ON c.gameId = g.id
       INNER JOIN PLAYERS p ON p.id = c.playerId
-      WHERE p.sid = ?
-      GROUP BY 1, 2, 3, 4, 5',
+      WHERE p.sid = ?',
       undef,  $_[0]) or dbError;
 }
 
 sub saveGameState {
   my $self = shift;
-  $self->{dbh}->_do('UPDATE GAMES SET state = ? WHERE id = ?', @_);
+  $self->_do('UPDATE GAMES SET state = ?, version = version + 1 WHERE id = ?', @_);
 }
 
 sub getMap {
@@ -212,5 +211,18 @@ sub getPlayers {
                                            ON p.id = c.playerId WHERE c.gameId = ? ORDER by c.id', { Slice => {} }, @_ ) or dbError;
 }
 
+# возвращает версию состояния игры и ее id по sid'у игрока
+sub getGameVersionAndId {
+  my $self = shift;
+  return $self->{dbh}->selectrow_arrayref('
+      SELECT g.version, g.id FROM GAMES g
+      INNER JOIN CONNECTIONS c ON c.gameId = g.id
+      INNER JOIN PLAYERS p ON p.id = c.playerId
+      WHERE p.sid = ?',
+      undef, $_[0]);
+}
+
+
 1;
 
+__END__

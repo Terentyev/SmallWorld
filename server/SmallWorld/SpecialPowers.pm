@@ -24,6 +24,8 @@ sub _init {
   $self->{allRegions} = $regions;
   # извлекаем только свои регионы (остальные скорее всего не понадобятся)
   $self->{regions} = grep {
+#    !defined $_->{tokenBadgeId} && !defined $player->{currentTokenBadge}->{tokenBadgeId} ||
+    defined $_->{tokenBadgeId} && defined $player->{currentTokenBadge}->{tokenBadgeId} &&
     $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId}
   } @{ $regions };
 }
@@ -44,9 +46,9 @@ sub canAttack {
 
   return
     # нельзя нападать на моря и озера
-    !grep {
+    !(grep {
       $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE
-    } @{ $region->{constRegionState} } &&
+    } @{ $region->{constRegionState} }) &&
     # можно нападать, если мы имеем регион, граничащий с регионом-жертвой
     grep {
       grep { $_ == $region->{regionId} } $_->{adjacentRegions}
@@ -70,9 +72,11 @@ sub canCmd {
   # установить героев/лагеря/форты
   # или команда атаки с ненулевым числом фигурок на руках
   # или команда окончания хода с нулевым числом фигурок на руках
-  return ($js->{action} eq 'redeploy') && (!grep { defined $js->{$_} } qw( heroic encampments fortified )) ||
-    ($js->{action} eq 'conquer') && ($_[2] >= 1) ||
-    ($js->{action} eq 'finishTurn') && ($_[2] == 0);
+  # или команда выбора расы при условии, что раса не выбрана
+  return ($js->{action} eq 'redeploy') && (!(grep { defined $js->{$_} } qw( heroic encampments fortified ))) ||
+    ($js->{action} eq 'conquer') && (defined $_[2] && $_[2] >= 1) ||
+    ($js->{action} eq 'finishTurn') && (!defined $_[2] || $_[2] == 0) ||
+    ($js->{action} eq 'selectRace') && (!defined $_[2]);
 }
 
 
@@ -134,7 +138,7 @@ sub canCmd {
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/форты
   return $js->{action} eq 'redeploy' &&
-    !grep { defined $js->{$_} } qw( heroic fortified );
+    !(grep { defined $js->{$_} } qw( heroic fortified ));
 }
 
 
@@ -200,7 +204,7 @@ sub canAttack {
   return
     base::canAttack(@_) ||
     # если не море. Регион не обязательно должен быть соседним
-    !grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions };
+    !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions });
 }
 
 
@@ -250,7 +254,7 @@ sub canCmd {
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/лагеря
   return $js->{action} eq 'redeploy' &&
-    !grep { defined $js->{$_} } qw( heroic encampments );
+    !(grep { defined $js->{$_} } qw( heroic encampments ));
 }
 
 
@@ -271,7 +275,7 @@ sub canCmd {
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить лагеря/форты
   return $js->{action} eq 'redeploy' &&
-    !grep { defined $js->{$_} } qw( encampments fortified );
+    !(grep { defined $js->{$_} } qw( encampments fortified ));
 }
 
 
@@ -432,3 +436,8 @@ sub coinsBonus {
     ? WEALTHY_COINS_NUM
     : base::coinsBonus(@_);
 }
+
+
+1;
+
+__END__

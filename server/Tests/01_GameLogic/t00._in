@@ -4,6 +4,60 @@
         {
             "action": "getGameState",
             "sid": 1
+        },
+
+
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": []
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 1
+        },
+        {
+            "action": "throwDice",
+            "sid": 1
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": 1
+        },
+        {
+            "action": "enchant",
+            "sid": 1,
+            "regionId": 1
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [
+                { "regionId": 1, "tokensNum": 1 },
+                { "regionId": 2, "tokensNum": 1 }
+            ]
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": 2
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 0
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
         }
     ],
     "description": "test getGameState function"

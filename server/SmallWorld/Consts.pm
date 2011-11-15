@@ -91,25 +91,25 @@ use constant VISIBLE_BADGES_NUM => 6  ;
 
 use constant CMD_ERRORS => {
   conquer            => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_REGION_IS_IMMUNE
   ],
   createDefaultMaps  => [],
   createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
   defend             => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_NOT_ENOUGH_TOKENS, R_THERE_ARE_TOKENS_IN_THE_HAND
   ],
   dragonAttack       => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION
   ],
   enchant            => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_BAD_ATTACKED_RACE, R_NOTHING_TO_ENCHANT, R_CANNOT_ENCHANT,
     R_NO_MORE_TOKENS_IN_STORAGE
   ],
-  finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE],
+  finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE], # R_BAD_GAME_STATE
   getGameList        => [R_BAD_SID],
   getGameState       => [],
   getMapList         => [R_BAD_SID],
@@ -119,18 +119,18 @@ use constant CMD_ERRORS => {
   login              => [R_BAD_LOGIN],
   logout             => [R_BAD_SID],
   redeploy           => [
-    R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_REGION_ID,
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_USER_HAS_NOT_REGIONS, R_BAD_TOKENS_NUM,
     R_TOO_MANY_FORTS_IN_REGION, R_TOO_MANY_FORTS, R_NOT_ENOUGH_ENCAMPS,
     R_BAD_SET_HERO_CMD, R_NO_TOKENS_FOR_REDEPLOYMENT
   ],
   register           => [R_BAD_USERNAME, R_BAD_PASSWORD, R_USERNAME_TAKEN],
   resetServer        => [],
-  selectFriend       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE, R_BAD_FRIEND_ID, R_BAD_FRIEND],
-  selectRace         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_MONEY_AMOUNT, R_BAD_STAGE], # R_BAD_POSITION
+  selectFriend       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_FRIEND_ID, R_BAD_FRIEND], # R_BAD_GAME_STATE
+  selectRace         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_MONEY_AMOUNT, R_BAD_STAGE], # R_BAD_POSITION R_BAD_GAME_STATE
   sendMessage        => [R_BAD_SID],
   setReadinessStatus => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE],
-  throwDice          => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE, R_BAD_STAGE],
+  throwDice          => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE], # R_BAD_GAME_STATE
   uploadMap          => [R_MAP_NAME_TAKEN, R_BAD_REGIONS],
 };
 
@@ -361,8 +361,10 @@ use constant PATTERN => {
   finishTurn => [ {name => 'sid', type => 'int', mandatory => 1} ],
   redeploy => [
     {name => 'sid', type => 'int', mandatory => 1},
-    {name => 'raceId', type => 'int', mandatory => 0},
-    {name => 'regions', type => 'list', mandatory => 1}
+    {name => 'regions', type => 'list', mandatory => 1},
+    {name => 'encampments', type => 'list', mandatory => 0},
+    {name => 'fortified', type => 'hash', mandatory => 0},
+    {name => 'heroes', type => 'list', mandatory => 0}
   ],
   defend => [
     {name => 'sid', type => 'int', mandatory => 1},
@@ -376,6 +378,14 @@ use constant PATTERN => {
   throwDice => [
     {name => 'sid', type => 'int', mandatory => 1},
     {name => 'dice', type => 'int', mandatory => 0}
+  ],
+  dragonAttack => [
+    {name => 'sid', type => 'int', mandatory => 1},
+    {name => 'regionId', type => 'int', mandatory => 1}
+  ],
+  selectFriend => [
+    {name => 'sid', type => 'int', mandatory => 1},
+    {name => 'friendId', type => 'int', mandatory => 1}
   ],
   getGameState => [
     {
@@ -443,51 +453,51 @@ use constant DEFAULT_MAPS => [
 ];
 
 # игровые бонусы и штрафы
-use constant ALCHEMIST_COINS_BONUS      => 2 ;
-use constant AMAZONS_CONQ_TOKENS_NUM    => 4 ;
-use constant AMAZONS_TOKENS_NUM         => 6 ;
-use constant AMAZONS_TOKENS_MAX         => 15;
-use constant COMMANDO_CONQ_TOKENS_NUM   => -1;
-use constant DECLINED_TOKENS_NUM        => 1 ;
-use constant DWARVES_TOKENS_NUM         => 3 ;
-use constant DWARVES_TOKENS_MAX         => 8 ;
-use constant ELVES_LOOSE_TOKENS_NUM     => 1 ;
-use constant ELVES_TOKENS_NUM           => 6 ;
-use constant ELVES_TOKENS_MAX           => 11;
-use constant ENCAMPMENTS_MAX            => 5 ;
-use constant FORTRESS_MAX               => 6 ;
-use constant GIANTS_CONQ_TOKENS_NUM     => 1 ;
-use constant GIANTS_TOKENS_NUM          => 6 ;
-use constant GIANTS_TOKENS_MAX          => 11;
-use constant HALFLINGS_TOKENS_NUM       => 6 ;
-use constant HALFLINGS_TOKENS_MAX       => 11;
-use constant HEROES_MAX                 => 2 ;
-use constant HUMANS_TOKENS_NUM          => 5 ;
-use constant HUMANS_TOKENS_MAX          => 10;
-use constant INITIAL_COINS_NUM          => 0 ;
-use constant INITIAL_TOKENS_NUM         => 0 ;
-use constant LOOSE_TOKENS_NUM           => -1;
-use constant LOSTTRIBES_TOKENS_MAX      => 18;
-use constant MOUNTED_CONQ_TOKENS_NUM    => -1;
-use constant ORCS_TOKENS_NUM            => 5 ;
-use constant ORCS_TOKENS_MAX            => 10;
-use constant RATMEN_TOKENS_NUM          => 8 ;
-use constant RATMEN_TOKENS_MAX          => 13;
-use constant SKELETONS_RED_TOKENS_NUM   => 1 ;
-use constant SKELETONS_TOKENS_NUM       => 6 ;
-use constant SKELETONS_TOKENS_MAX       => 20;
-use constant SORCERERS_TOKENS_NUM       => 5 ;
-use constant SORCERERS_TOKENS_MAX       => 18;
-use constant TRITONS_CONQ_TOKENS_NUM    => 1 ;
-use constant TRITONS_TOKENS_NUM         => 6 ;
-use constant TRITONS_TOKENS_MAX         => 11;
-use constant TROLLS_DEF_TOKENS_NUM      => 1 ;
-use constant TROLLS_TOKENS_NUM          => 5 ;
-use constant TROLLS_TOKENS_MAX          => 10;
-use constant UNDERWORLD_CONQ_TOKENS_NUM => -1;
-use constant WEALTHY_COINS_NUM          => 7 ;
-use constant WIZARDS_TOKENS_NUM         => 5 ;
-use constant WIZARDS_TOKENS_MAX         => 10;
+use constant ALCHEMIST_COINS_BONUS      => 2    ;
+use constant AMAZONS_CONQ_TOKENS_NUM    => 4    ;
+use constant AMAZONS_TOKENS_NUM         => 6    ;
+use constant AMAZONS_TOKENS_MAX         => 15   ;
+use constant COMMANDO_CONQ_TOKENS_NUM   => -1   ;
+use constant DECLINED_TOKENS_NUM        => 1    ;
+use constant DWARVES_TOKENS_NUM         => 3    ;
+use constant DWARVES_TOKENS_MAX         => 8    ;
+use constant ELVES_LOOSE_TOKENS_NUM     => 1    ;
+use constant ELVES_TOKENS_NUM           => 6    ;
+use constant ELVES_TOKENS_MAX           => 11   ;
+use constant ENCAMPMENTS_MAX            => 5    ;
+use constant FORTRESS_MAX               => 6    ;
+use constant GIANTS_CONQ_TOKENS_NUM     => 1    ;
+use constant GIANTS_TOKENS_NUM          => 6    ;
+use constant GIANTS_TOKENS_MAX          => 11   ;
+use constant HALFLINGS_TOKENS_NUM       => 6    ;
+use constant HALFLINGS_TOKENS_MAX       => 11   ;
+use constant HEROES_MAX                 => 2    ;
+use constant HUMANS_TOKENS_NUM          => 5    ;
+use constant HUMANS_TOKENS_MAX          => 10   ;
+use constant INITIAL_COINS_NUM          => 5    ;
+use constant INITIAL_TOKENS_NUM         => undef;
+use constant LOOSE_TOKENS_NUM           => -1   ;
+use constant LOSTTRIBES_TOKENS_MAX      => 18   ;
+use constant MOUNTED_CONQ_TOKENS_NUM    => -1   ;
+use constant ORCS_TOKENS_NUM            => 5    ;
+use constant ORCS_TOKENS_MAX            => 10   ;
+use constant RATMEN_TOKENS_NUM          => 8    ;
+use constant RATMEN_TOKENS_MAX          => 13   ;
+use constant SKELETONS_RED_TOKENS_NUM   => 1    ;
+use constant SKELETONS_TOKENS_NUM       => 6    ;
+use constant SKELETONS_TOKENS_MAX       => 20   ;
+use constant SORCERERS_TOKENS_NUM       => 5    ;
+use constant SORCERERS_TOKENS_MAX       => 18   ;
+use constant TRITONS_CONQ_TOKENS_NUM    => 1    ;
+use constant TRITONS_TOKENS_NUM         => 6    ;
+use constant TRITONS_TOKENS_MAX         => 11   ;
+use constant TROLLS_DEF_TOKENS_NUM      => 1    ;
+use constant TROLLS_TOKENS_NUM          => 5    ;
+use constant TROLLS_TOKENS_MAX          => 10   ;
+use constant UNDERWORLD_CONQ_TOKENS_NUM => -1   ;
+use constant WEALTHY_COINS_NUM          => 7    ;
+use constant WIZARDS_TOKENS_NUM         => 5    ;
+use constant WIZARDS_TOKENS_MAX         => 10   ;
 
 # типы регионов
 use constant REGION_TYPE_BORDER   => 'border'  ;
@@ -504,15 +514,53 @@ use constant REGION_TYPE_SEA      => 'sea'     ;
 use constant REGION_TYPE_SWAMP    => 'swamp'   ;
 
 # расы
+use constant RACE_AMAZONS   => 'amazons'  ;
+use constant RACE_DWARVES   => 'dwarves'  ;
+use constant RACE_ELVES     => 'elves'    ;
+use constant RACE_GIANTS    => 'giants'   ;
+use constant RACE_HALFLINGS => 'halflings';
+use constant RACE_HUMANS    => 'humans'   ;
+use constant RACE_ORCS      => 'orcs'     ;
+use constant RACE_RATMEN    => 'ratmen'   ;
+use constant RACE_SKELETONS => 'skeletons';
 use constant RACE_SORCERERS => 'sorcerers';
+use constant RACE_TRITONS   => 'tritons'  ;
+use constant RACE_TROLLS    => 'trolls'   ;
+use constant RACE_WIZARDS   => 'wizards'  ;
+
+use constant RACES => [
+  RACE_AMAZONS, RACE_DWARVES, RACE_ELVES, RACE_GIANTS, RACE_HALFLINGS,
+  RACE_HUMANS, RACE_ORCS, RACE_RATMEN, RACE_SKELETONS, RACE_SORCERERS,
+  RACE_TRITONS, RACE_TROLLS, RACE_WIZARDS
+];
 
 # специальные способности
+use constant SP_ALCHEMIST     => 'alchemist'   ;
 use constant SP_BERSERK       => 'berserk'     ;
 use constant SP_BIVOUACKING   => 'bivouacking' ;
+use constant SP_COMMANDO      => 'commando'    ;
 use constant SP_DIPLOMAT      => 'diplomat'    ;
 use constant SP_DRAGON_MASTER => 'dragonMaster';
+use constant SP_FLYING        => 'flying'      ;
+use constant SP_FOREST        => 'forest'      ;
 use constant SP_FORTIFIED     => 'fortified'   ;
 use constant SP_HEROIC        => 'heroic'      ;
+use constant SP_HILL          => 'hill'        ;
+use constant SP_MERCHANT      => 'merchant'    ;
+use constant SP_MOUNTED       => 'mounted'     ;
+use constant SP_PILLAGING     => 'pillaging'   ;
+use constant SP_SEAFARING     => 'seafaring'   ;
+use constant SP_STOUT         => 'stout'       ;
+use constant SP_SWAMP         => 'swamp'       ;
+use constant SP_UNDERWORLD    => 'underworld'  ;
+use constant SP_WEALTHY       => 'wealthy'     ;
+
+use constant SPECIAL_POWERS => [
+  SP_ALCHEMIST, SP_BERSERK, SP_BIVOUACKING, SP_COMMANDO, SP_DIPLOMAT,
+  SP_DRAGON_MASTER, SP_FLYING, SP_FOREST, SP_FORTIFIED, SP_HEROIC, SP_HILL,
+  SP_MERCHANT, SP_MOUNTED, SP_PILLAGING, SP_SEAFARING, SP_STOUT, SP_SWAMP,
+  SP_UNDERWORLD, SP_WEALTHY
+];
 
 use constant REGION_TYPES => [
   REGION_TYPE_BORDER, REGION_TYPE_CAVERN, REGION_TYPE_COAST, REGION_TYPE_FARMLAND,
@@ -526,6 +574,7 @@ use constant GS_SELECT_RACE => 'selectRace' ;
 use constant GS_CONQUEST    => 'conquest'   ;
 use constant GS_REDEPLOY    => 'redeploy'   ;
 use constant GS_FINISH_TURN => 'finishTurn' ;
+use constant GS_IS_OVER     => 'gameOver'   ;
 
 __END__
 
