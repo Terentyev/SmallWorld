@@ -23,11 +23,11 @@ sub _init {
   $self->{player} = $player;
   $self->{allRegions} = $regions;
   # извлекаем только свои регионы (остальные скорее всего не понадобятся)
-  $self->{regions} = grep {
+  $self->{regions} = (grep {
 #    !defined $_->{tokenBadgeId} && !defined $player->{currentTokenBadge}->{tokenBadgeId} ||
     defined $_->{tokenBadgeId} && defined $player->{currentTokenBadge}->{tokenBadgeId} &&
     $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId}
-  } @{ $regions };
+  } @{ $regions }) || [];
 }
 
 # бонус монетками для способности

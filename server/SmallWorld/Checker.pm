@@ -282,14 +282,14 @@ sub checkRegion_defend {
   }
 
   # 1. ставить можно только на регион своей активной расы
-  return 1 if $region->{currentTokenBadge}->{tokenBadgeId} != $player->{currentTokenBadge}->{tokenBadgeId};
+  return 1 if !$player->activeConq($region);
 
   # если мы перемещаем войска на смежный с потерянным регионом
   if ( grep { $_ == $region->{regionId} } @{ $lostRegion->{adjacentRegions} } ) {
     # надо убедиться, что несмежных нет, иначе ошибка
     foreach ( @{ $regions } ) {
       my $regionId = $_->{regionId};
-      return 1 if $_->{currentTokenBadge}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+      return 1 if $player->activeConq($_) &&
         !(grep { $_ == $regionId  } @{ $_->{adjacentRegions} });
     }
   }
@@ -302,10 +302,10 @@ sub checkRegion_conquer {
   # 1. свои регионы с активной расой захватывать нельзя
   # 2. на первом завоевании можно захватывать далеко не все регионы
   # 3. и вообще есть куча правил нападения на регионы (если это не первое нападение)
-  if ( $region->{currentTokenBadge}->{tokenBadgeId} != $player->{currentTokenBadge}->{tokenBadgeId} ||
-    $game->isFirstConquer() && !$race->canFirstConquer($region) ||
-    !$sp->canAttack($player, $region, $game->{gameState}->{regions}) ||
-    $game->canAttack($player, $region)
+  if ( $player->activeConq($region) ||
+    (!$game->isFirstConquer() || !$race->canFirstConquer($region)) &&
+    !$sp->canAttack($player, $region, $game->{gameState}->{regions}) &&
+    !$game->canAttack($player, $region)
   ) {
     $result->{dice} = $player->{dice} if defined $player->{dice};
     return 1;
@@ -315,7 +315,7 @@ sub checkRegion_conquer {
 
 sub checkRegion_dragonAttack {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
-  return $player->{currentTokenBadge}->{tokenBadgeId} == $region->{currentTokenBadge}->{tokenBadgeId};
+  return $player->activeConq($region);
 }
 
 sub checkRegion_enchant {
@@ -324,7 +324,7 @@ sub checkRegion_enchant {
   # 1. это должен быть не наш регион
   # 2. регион с активной расой
   # 3. количество фигурок должно быть == 1
-  return $player->{currentTokenBadge}->{tokenBadgeId} == $region->{currentTokenBadge}->{tokenBadgeId} ||
+  return $player->activeConq($region) ||
     $region->{inDeclune} ||
     $region->{tokensNum} == 1;
 }
@@ -340,9 +340,10 @@ sub checkRegion_redeploy {
 
   # войска можно ставить только на свои территории
   foreach my $reg ( @{ $js->{regions} } ) {
-    return 1 if grep {
+    return 1 if (grep {
       $_->{regionId} == $reg->{regionId} && $_->{ownerId} != $player->{playerId}
-    } @{ $game->{regions} };
+    } @{ $game->{regions} }) ||
+    !(grep { $_->{ownerId} == $player->{playerId} } @{ $game->{regions} });
   }
 
   # ставить лагеря/форты/героев можно только на свои регионы, на которых есть
@@ -431,9 +432,9 @@ sub checkTokensForRedeployment {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # только для redeploy
   my $tokensNum = $player->{tokensInHand};
-  grep { $tokensNum += $_->{tokensNum} } @{ $game->{gameState}->{regions} };
+  grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
   grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
-  return $tokensNum;
+  return $tokensNum < 0;
 }
 
 sub checkFriend {
@@ -480,7 +481,7 @@ sub checkGameCommand {
     &R_THERE_ARE_TOKENS_IN_THE_HAND => sub { $self->checkTokensInHand(@gameVariables); },
     &R_TOO_MANY_FORTS               => sub { $self->checkForts(@gameVariables); },
     &R_TOO_MANY_FORTS_IN_REGION     => sub { $self->checkFortsInRegion(@gameVariables); },
-    &R_USER_HAS_NOT_REGIONS         => sub { !(grep { $_->{currentTokenBadge}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} } @{ $regions }); },
+    &R_USER_HAS_NOT_REGIONS         => sub { !(grep { $player->activeConq($_) } @{ $regions }); },
   });
 }
 
