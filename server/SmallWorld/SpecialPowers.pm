@@ -79,6 +79,11 @@ sub canCmd {
     ($js->{action} eq 'selectRace') && (!defined $_[2]);
 }
 
+# возвращает количество первоначальных фигурок для каждого умения
+sub initialTokens {
+  return 0;
+}
+
 
 package SmallWorld::SpAlchemist;
 use strict;
@@ -93,6 +98,10 @@ sub coinsBonus {
   return ALCHEMIST_COINS_BONUS;
 }
 
+sub initialTokens {
+  return ALCHEMIST_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpBerserk;
 use strict;
@@ -100,6 +109,8 @@ use warnings;
 use utf8;
 
 use base ('SmallWorld::BaseSp');
+
+use SmallWorld::Consts;
 
 sub _init {
   base::_init(@_);
@@ -119,6 +130,10 @@ sub canCmd {
   return base::canCmd(@_) || $js->{action} eq 'throwDice' && !exists $_[0]->{dice};
 }
 
+sub initialTokens {
+  return BERSERK_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpBivouacking;
 use strict;
@@ -126,6 +141,8 @@ use warnings;
 use utf8;
 
 use base ('SmallWorld::BaseSp');
+
+use SmallWorld::Consts;
 
 sub declineRegion {
   my ($self, $region) = @_;
@@ -139,6 +156,10 @@ sub canCmd {
   # установить героев/форты
   return $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( heroic fortified ));
+}
+
+sub initialTokens {
+  return BIVOUACKING_TOKENS_NUM;
 }
 
 
@@ -155,6 +176,10 @@ sub conquestRegionTokensBonus {
   return COMMANDO_CONQ_TOKENS_NUM;
 }
 
+sub initialTokens {
+  return COMMANDO_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpDiplomat;
 use strict;
@@ -163,10 +188,16 @@ use utf8;
 
 use base ('SmallWorld::BaseSp');
 
+use SmallWorld::Consts;
+
 sub canCmd {
   my $js = $_->[1];
   # базовый класс + подружить
   return base::canCmd(@_) || $js->{action} eq 'selectFriend';
+}
+
+sub initialTokens {
+  return DIPLOMAT_TOKENS_NUM;
 }
 
 
@@ -176,6 +207,8 @@ use warnings;
 use utf8;
 
 use base ('SmallWorld::BaseSp');
+
+use SmallWorld::Consts;
 
 sub declineRegion {
   my ($self, $region) = @_;
@@ -187,6 +220,10 @@ sub canCmd {
   my $js = $_->[1];
   # базовый класс + атаковать драконом
   return base::canCmd(@_) || $js->{action} eq 'dragonAttack';
+}
+
+sub initialTokens {
+  return DRAGON_MASTER_TOKENS_NUM;
 }
 
 
@@ -205,6 +242,10 @@ sub canAttack {
     base::canAttack(@_) ||
     # если не море. Регион не обязательно должен быть соседним
     !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions });
+}
+
+sub initialTokens {
+  return FLYING_TOKENS_NUM;
 }
 
 
@@ -226,6 +267,10 @@ sub coinsBonus {
   } @{ $_[0]->{regions} };
 }
 
+sub initialTokens {
+  return FOREST_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpFortified;
 use strict;
@@ -233,6 +278,8 @@ use warnings;
 use utf8;
 
 use base ('SmallWorld::BaseSp');
+
+use SmallWorld::Consts;
 
 sub coinsBonus {
   # за каждый форт мы получаем по дополнительной монетке
@@ -257,6 +304,10 @@ sub canCmd {
     !(grep { defined $js->{$_} } qw( heroic encampments ));
 }
 
+sub initialTokens {
+  return FORTIFIED_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpHeroic;
 use strict;
@@ -264,6 +315,8 @@ use warnings;
 use utf8;
 
 use base ('SmallWorld::BaseSp');
+
+use SmallWorld::Consts;
 
 sub declineRegion {
   my ($self, $region) = @_;
@@ -276,6 +329,10 @@ sub canCmd {
   # установить лагеря/форты
   return $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( encampments fortified ));
+}
+
+sub initialTokens {
+  return HEROIC_TOKENS_NUM;
 }
 
 
@@ -297,6 +354,10 @@ sub coinsBonus {
   } @{ $_[0]->{regions} };
 }
 
+sub initialTokens {
+  return HILL_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpMerchant;
 use strict;
@@ -305,11 +366,17 @@ use utf8;
 
 use base ('SmallWorld::BaseSp');
 
+use SmallWorld::Consts;
+
 sub coinsBonus {
   return 1 * grep {
     # за каждый оккупированный регион получаем по монетке
     $_->{tokensNum} > 0
   } @{ $_[0]->{regions} };
+}
+
+sub initialTokens {
+  return MERCHANT_TOKENS_NUM;
 }
 
 
@@ -329,6 +396,10 @@ sub conquestRegionTokensBonus {
     : base::conquestRegionTokensBonus(@_);
 }
 
+sub initialTokens {
+  return MOUNTED_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpPillaging;
 use strict;
@@ -337,8 +408,14 @@ use utf8;
 
 use base ('SmallWorld::BaseSp');
 
+use SmallWorld::Consts;
+
 sub coinsBonus {
   return 1 * grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} };
+}
+
+sub initialTokens {
+  return PILLAGING_TOKENS_NUM;
 }
 
 
@@ -348,6 +425,8 @@ use warnings;
 use utf8;
 
 use base ('SmallWorld::BaseSp');
+
+use SmallWorld::Consts;
 
 sub canAttack {
   my ($self, $region) = @_;
@@ -359,6 +438,10 @@ sub canAttack {
     } @{ $self->{regions} };
 }
 
+sub initialTokens {
+  return SEAFARING_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpStout;
 use strict;
@@ -366,6 +449,12 @@ use warnings;
 use utf8;
 
 use base ('SmallWorld::BaseSp');
+
+use SmallWorld::Consts;
+
+sub initialTokens {
+  return STOUT_TOKENS_NUM;
+}
 
 
 package SmallWorld::SpSwamp;
@@ -384,6 +473,10 @@ sub coinsBonus {
       # на котором есть болота (?)
       grep { $_ eq REGION_TYPE_SWAMP } @{ $_->{constRegionState} }
   } @{ $_[0]->{regions} };
+}
+
+sub initialTokens {
+  return SWAMP_TOKENS_NUM;
 }
 
 
@@ -419,6 +512,10 @@ sub conquestRegionTokensBonus {
       : base::conquestRegionTokensBonus(@_);
 }
 
+sub initialTokens {
+  return UNDERWORLD_TOKENS_NUM;
+}
+
 
 package SmallWorld::SpWealthy;
 use strict;
@@ -435,6 +532,10 @@ sub coinsBonus {
   return $isFirstTurn
     ? WEALTHY_COINS_NUM
     : base::coinsBonus(@_);
+}
+
+sub initialTokens {
+  return WEALTHY_TOKENS_NUM;
 }
 
 

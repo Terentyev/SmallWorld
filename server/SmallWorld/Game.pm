@@ -451,11 +451,13 @@ sub decline {
 sub selectRace {
   my ($self, $p) = @_;
   my $player = $self->getPlayer();
+  $player->{currentTokenBadge} = splice @{ $self->{gameState}->{tokenBadges} }, $p, 1;
+
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  $player->{currentTokenBadge} = splice @{ $self->{gameState}->{tokenBadges} }, $p, 1;
   $player->{coins} -= $p;
+  $player->{tokensInHand} = $race->initialTokens() + $sp->initialTokens();
   $self->{gameState}->{state} = GS_CONQUEST;
 }
 
