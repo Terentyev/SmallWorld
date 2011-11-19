@@ -29,6 +29,7 @@ sub new {
 sub process {
 	my ($self, $r) = @_;
 	$self->{processor}->process(content($r));
+#	$self->{processor}->process($r->param('request'));
 }
 
 # код по выдергиванию json-запроса взят из примера по адресу:
