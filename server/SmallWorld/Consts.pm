@@ -463,6 +463,7 @@ use constant BIVOUACKING_TOKENS_NUM     => 5    ;
 use constant COMMANDO_CONQ_TOKENS_NUM   => -1   ;
 use constant COMMANDO_TOKENS_NUM        => 4    ;
 use constant DECLINED_TOKENS_NUM        => 1    ;
+use constant DEFEND_TOKENS_NUM          => 2    ;
 use constant DIPLOMAT_TOKENS_NUM        => 5    ;
 use constant DRAGON_MASTER_TOKENS_NUM   => 5    ;
 use constant DWARVES_TOKENS_NUM         => 3    ;
