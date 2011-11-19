@@ -10,7 +10,9 @@ use List::Util qw( min );
 
 use SmallWorld::Consts;
 use SmallWorld::DB;
+use SmallWorld::Player;
 use SmallWorld::Races;
+use SmallWorld::Region;
 use SmallWorld::SpecialPowers;
 
 # принимает параметры:
@@ -153,6 +155,10 @@ sub initStorage {
 sub save {
   my $self = shift;
   my $gs = $self->{gameState};
+  # вместо того, чтобы сохранять в json объекты-игроков, сохраняем только
+  # информацию о них
+  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{players} };
+  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{regions} };
   $self->{db}->saveGameState(encode_json($gs), $gs->{gameInfo}->{gameId});
   $self->{_version}++;
 }
@@ -264,7 +270,12 @@ sub getPlayer {
 
   # находим в массиве игроков текущего игрока
   foreach ( @{ $self->{gameState}->{players} } ) {
-    return $_ if $_->{playerId} == $id;
+    if ( $_->{playerId} == $id ) {
+      # если объект-игрока уже создан, то возвращаем его
+      return $_ if UNIVERSAL::can($_, 'can');
+      # иначе создаем новый экземпляр
+      return SmallWorld::Player->new($_);
+    }
   }
 }
 
@@ -272,7 +283,12 @@ sub getPlayer {
 sub getRegion {
   my ($self, $id) = @_;
   foreach ( @{ $self->{gameState}->{regions} } ) {
-    return $_ if $_->{regionId} == $id;
+    if ( $_->{regionId} == $id ) {
+      # если объект-регион уже создан, то возвращаем его
+      return $_ if UNIVERSAL::can($_, 'can');
+      # иначе создаем новый экземпляр
+      return SmallWorld::Region->new($_);
+    }
   }
 }
 
@@ -330,12 +346,13 @@ sub createSpecialPower {
   return $power->new($player, $self->{gameState}->{regions}, $badge);
 }
 
-# возвращает первое ли это нападение (есть ли на карте регионы с это 
+# возвращает первое ли это нападение (есть ли на карте регионы с этой расой)
 sub isFirstConquer {
-  my $playerId = $_[0]->{gameState}->{activePlayerId};
-  return grep {
-    $_->{ownerId} == $playerId && !$_->{inDecline}
-  } @{ $_[0]->{gameState}->{regions} };
+  my ($self) = @_;
+  my $player = $self->getPlayer();
+  return !(grep {
+    $player->activeConq($_)
+  } @{ $_[0]->{gameState}->{regions} });
 }
 
 # возвращает есть ли у региона иммунитет к нападению
@@ -366,12 +383,11 @@ sub tokensInStorage {
 # возвращает может ли игрок атаковать регион (делает конечный подсчет фигурок,
 # бросает кубик, если надо)
 sub canAttack {
-  my ($self, $player, $region, $race, $sp) = shift;
+  my ($self, $player, $region, $race, $sp) = @_;
   my $regions = $self->{gameState}->{regions};
   $self->{conqNum} = $player->{tokensInHand} +
     $race->conquestRegionTokensBonus($player, $region, $regions);
-  $self->{defendNum} = $region->{tokensNum} +
-    $self->defendRegionTokensBonus() +
+  $self->{defendNum} = $region->getDefendTokensNum() +
     $sp->conquestRegionTokensBonus($region);
 
   if ( $self->{defendNum} - $self->{conqNum} > 0 && $self->{defendNum} - $self->{conqNum} <= 3 ) {
@@ -393,7 +409,7 @@ sub canDefend {
   # игрок может защищаться, если у него остались регионы, на которые он может
   # перемещать фигурки
   return grep {
-    $_->{tokenBadgeId} == $defender->{currentTokenBadge}->{tokenBadgeId}
+    $defender->activeConq($_)
   } @{ $self->{gameState}->{regions} };
 }
 
@@ -404,13 +420,12 @@ sub conquer {
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
-  my $dice = 1 * $player->{dice};
 
   # если регион принадлежал активной расе
   if ( defined $region->{ownerId} ) {
     # то надо вернуть ему какие-то фигурки
     my $defender = $self->getPlayer( { id => $region->{ownerId} } );
-    if ( $defender->{currentTokenBadge}->{tokenBadgeId} == $region->{tokenBadgeId} ) {
+    if ( $defender->activeConq($region) ) {
       my $defRace = $self->createRace($defender->{currentTokenBadge});
       $defender->{tokensNum} += $region->{tokensNum} + $defRace->looseTokensBonus();
       if ( $self->canDefend($defender) ) {
@@ -421,9 +436,12 @@ sub conquer {
     }
   }
 
+  $region->{conquestIdx} = $self->nextConquestIdx();
+  $region->{ownerId} = $player->{playerId};
+  $region->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
+  $region->{inDecline} = undef;
   $region->{tokensNum} = min($self->{defendNum}, $self->{conqNum}); # размещаем в регионе все фигурки, которые использовались для завоевания
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
-  $region->{conquestIdx} = $self->nextCotquestIdx();
 }
 
 sub decline {
@@ -451,11 +469,13 @@ sub decline {
 sub selectRace {
   my ($self, $p) = @_;
   my $player = $self->getPlayer();
+  $player->{currentTokenBadge} = splice @{ $self->{gameState}->{tokenBadges} }, $p, 1;
+
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  $player->{currentTokenBadge} = splice @{ $self->{gameState}->{tokenBadges} }, $p, 1;
   $player->{coins} -= $p;
+  $player->{tokensInHand} = $race->initialTokens() + $sp->initialTokens();
   $self->{gameState}->{state} = GS_CONQUEST;
 }
 
