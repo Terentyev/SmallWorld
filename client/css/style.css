@@ -1,0 +1,104 @@
+table {border: 0px solid black; border-collapse: collapse;}
+td {border: 0px solid black; padding: 2px;   }
+th {text-align: center;}
+div {border: 0px solid black; }
+button {padding: 3px;}
+body {font: 14px Verdana, Arial; text-align:left; padding: 30px 0 0 0;}
+
+#divCurrentServer {position: absolute; left: 0; top: 0;  color:#fff; font-weight:bold; height:30px;
+                   line-height:30px; background:url(../pics/header.gif) repeat-x; padding: 0px 8px 0px 8px; cursor: pointer;}
+#divLogout {display:none;}
+
+#divChat {padding: 2px; }
+
+#inputGameDescr { width: 400px; height: 200px; max-width: 400px; max-height: 200px;}
+
+#tableNewGame tr {vertical-align: top;}
+.body {line-height:30px; padding: 4px;}
+
+                   
+.corner-all { border:2px solid #336699; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; }
+.corner-top { border:2px solid #336699; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; border-radius: 10px 10px 0 0; }
+
+.tedit {width: 100%;}
+.error {font-weight:bold; color: #cd0a0a;}
+
+/* tables */
+table.tablesorter {
+  font: 14px Verdana, Arial;
+	background-color: #CDCDCD;
+	margin:2px;
+	width: 100%;
+	text-align: left;
+}
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	background-color: #e6EEEE;
+	border: 1px solid #FFF;
+	font-size: 8pt;
+	padding: 4px;
+  border:1px solid #336699;
+}
+table.tablesorter thead tr .header {
+	background-image: url(./images/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+	border:1px solid #336699;
+}
+table.tablesorter tbody td {
+	color: #3D3D3D;
+	padding: 4px;
+	background-color: #FFF;
+	vertical-align: top;
+  border:1px solid #336699;
+}
+table.tablesorter tbody tr.odd td {
+	background-color:#F0F0F6;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(./images/asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(./images/desc.gif);
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+  background-color: #8dbdd8;
+}
+
+
+#divCurrentGame .header,
+#divCurrentPlayer .header,
+#modal-container .header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:bold;
+                          background:url(../pics/header.gif) repeat-x; -moz-border-radius: 6px 6px 0 0;
+                          -webkit-border-radius: 6px 6px 0 0; border-radius: 6px 6px 0 0; text-align:center;}
+.header span {padding-left:8px;}
+.buttons {line-height:26px; width:180px; float:right; padding: 4px 0 0 0;}
+.buttons div {float:right; margin-left:4px; width:80px; height:26px; color:#666; font-weight:bold;
+              text-align:center; background:url(../pics/button.gif) repeat-x; border:1px solid #336699;
+              cursor:pointer;}
+.tbutton {margin-left:4px; padding-top: 4px; width:80px; height:22px; color:#666; font-weight:bold;
+          text-align:center; background:url(../pics/button.gif) repeat-x; border:1px solid #336699;
+          cursor:pointer;}
+
+#myTable tr {border: 1px solid #336699;}
+
+#tabs {height: 600px;}
+
+.modal {display:none;}
+#modal-overlay {background-color:#eee;}
+#modal-container {height:160px; width:420px; font: 14px Verdana, Arial; text-align:left;
+                  background:#fff; border:2px solid #336699; padding: 0 0 20px 0; -moz-border-radius: 10px;
+                  -webkit-border-radius: 10px;  border-radius: 10px;}
+
+#modal-container .header  {text-align:left;}
+#modal-container .message {color:#333; font-size:14px; margin:0; padding:12px 4px 12px 8px;}
+
+#modal-container a.modal-close,
+#modal-container a.modal-close:link,
+#modal-container a.modal-close:active,
+#modal-container a.modal-close:visited {text-decoration:none; font-weight:bold; position:absolute; right:10px; top:2px; color:#fff;}
+#modal-container a.modal-close:hover {color:#ccc;}
+
+
+.scroll-pane {height: 105px;	overflow: auto;}
+.scroll-pane-arrows {width: 100%;	height: 200px; overflow: auto;}

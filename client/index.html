@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<!--
+
+  <link rel="stylesheet" type="text/css" href="slider-default.css" /> -->
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
+  <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css"/>
+  <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.lozenge.css"/>
+
+
+  <script type="text/javascript" src="js/jquery-1.6.4.min.js"></script>
+  <script type="text/javascript" src="js/jquery.simplemodal.js"></script>
+  <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
+  <script type="text/javascript" src="js/jquery.blockUI.js"></script>
+  <script type="text/javascript" src="js/jquery.cookie.js"></script>
+  <script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
+  <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
+  <script type="text/javascript" src="js/jquery.sprintf.js"></script>
+
+  <script type="text/javascript" src="js/json2.js"></script>
+  <script type="text/javascript" src="js/base.js"></script>
+  <script type="text/javascript" src="js/show.js"></script>
+  <script type="text/javascript" src="js/cmd.js"></script>
+
+  <script type="text/javascript">
+
+  $(document).ready(function() {
+    $("#tableGameList").tablesorter({headers: { 0: { sorter: false } } });
+    $('.scroll-pane').jScrollPane({showArrows:true, scrollbarOnLeft: true});
+    $("#tabs").tabs();
+    if ($.cookie("serverUrl")) {
+      serverUrl = $.cookie("serverUrl");
+      $("#serverUrl").html(serverUrl);
+      with (data) {
+        if ($.cookie("playerId") != null) {
+          playerId = $.cookie("playerId");
+          username = $.cookie("username");
+          sid = $.cookie("sid");
+          if ($.cookie("gameId") != null) {
+            gameId = $.cookie("gameId");
+            mapId = $.cookie("mapId");
+          }
+        }
+      }
+      showLobby();
+    } else
+      showSelectServer();
+  });
+
+  </script>
+  <title>SmallWorld</title>
+</head>
+<body>
+  <div id="divSelectServer" class="modal">
+    <div class="header"><span>SmallWorld server</span></div>
+    <div class="message">
+      <table width="100%">
+        <tr>
+          <td width="170">Current server URL:</td>
+          <td><input class="tedit" type="text" id="serverUrlModal" readonly=1/></td>
+        </tr>
+        <tr>
+          <td>New server URL:</td>
+          <td>
+            <input class="tedit" type="text" id="inputServerUrl"
+                   value="http://server.smallworld/server/" />
+          </td>
+        </tr>
+        <tr><td colspan="2">
+            <div class="buttons">
+      <div class="modal-close">Cancel</div>
+      <div class="modal-close" onclick="saveServerUrl();">Save</div>
+    </div>
+        </td></tr>
+      </table>
+    </div>
+  </div>
+  
+  <div id="divRegister" class="modal">
+    <div class="header"><span>Register</span></div>
+    <div class="message">
+      <table width="100%">
+        <tr>
+          <td colspan="3" align="center">
+            <div id="divRegisterError" class="error"> </div>
+          </td>
+        </tr>
+        <tr>
+          <td width="100">Username:</td>
+          <td><input class="tedit" type="text" id="inputRegisterUsername"/></td>
+          <td width="30">*</td>
+        </tr>
+        <tr>
+          <td>Password:</td>
+          <td><input class="tedit" type="text" id="inputRegisterPassword" /></td>
+          <td>*</td>
+        </tr>
+        <tr>
+          <td colspan="2">
+          <div class="buttons">
+            <div onclick="cmdRegister();">Register</div>
+          </div>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+  
+  <div id="divCurrentServer" class="corner-all" onclick="showSelectServer();">
+    Server URL: <span id="serverUrl"></span>
+  </div>
+  
+   <table align="center" width="990" >
+      <tr valign="top"><td width="680">
+        <div id="tabs" class="corner-all">
+			    <ul>
+			    	<li><a href="#divGameList">Game list</a></li>
+				    <li><a href="#divCreateGame">Create game</a></li>
+				    <li><a href="#divLoadGame">Load game</a></li>
+				    <li><a href="#divUploadMap">Upload map</a></li>
+			    </ul>
+			    <div id="divGameList">
+            <table id="tableGameList" class="tablesorter" width="100%">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Game Name</th>
+                  <th>Players</th>
+                  <th>Map</th>
+                  <th>Turn</th>
+                  <th>Description</th>
+               </tr>
+             </thead>
+             <tbody>
+             </tbody>
+            </table>
+          </div>
+			    <div id="divCreateGame">
+            <table id="tableNewGame">
+              <tr>
+                <td width="100">Name:</td>
+                <td width="400"> <input class="tedit" type="text" id="inputGameName"/> </td>
+              </tr>
+              <tr>
+                <td>MapId:</td>
+                <td> <input class="tedit" type="text" id="inputMapId"/> </td>
+              </tr>
+              <tr>
+                <td>Description:</td>
+                <td> <textarea id="inputGameDescr"></textarea> </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <div class="buttons">
+                    <div id="btnCreateGame" onclick="cmdCreateGame();">Create</div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+			    <div id="divLoadGame">
+			       <textarea id="inputLoadGame"></textarea>
+             <div class="buttons">
+               <div id="btnLoadGame">Load</div>
+             </div>
+          </div>
+			    <div id="divUploadMap">
+
+          </div>
+		    </div>
+     </td><td width="310">
+     
+       <div id="divCurrentPlayer" class="corner-all">
+         <div class="header"><span>Current player</span></div>
+         <div class="body" id="divLogin">
+           <table width="100%">
+             <tr>
+               <td width="100">Login</td>
+               <td>
+                 <input class="tedit" type="text" id="inputLoginUsername" />
+               </td>
+             </tr>
+             <tr>
+               <td>Password</td>
+               <td><input class="tedit" type="text" id="inputLoginPassword" /></td>
+             </tr>
+             <tr>
+               <td colspan="2">
+                 <div class="buttons">
+                   <div onclick="cmdLogin();">Log in</div>
+                 </div>
+               </td>
+             </tr>
+             <tr>
+               <td colspan="2">
+                 Have no account? Click <a href="#" onclick="showModal('#divRegister');">here</a> to register
+               </td>
+             </tr>
+           </table>
+         </div>
+         <div class="body" id="divLogout">
+            <table width="100%">
+              <tr>
+                <td>
+                  You have been logged in as <b><span id="playerName"></span></b>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="buttons">
+                   <div onclick="cmdLogout();">Logout</div>
+                 </div>
+                </td>
+              </tr>
+            </table>
+         </div>
+       </div>
+       
+       <br>
+       <div id="divCurrentGame" class="corner-all">
+        <div class="header"><span>Current game</span></div>
+        <div class="body">
+          <table width="100%">
+            <tr><td>Name:</td><td><span id="cgameName"></span></td></tr>
+            <tr ><td>Description:</td><td><span id="cgameDescription"></span></td></tr>
+            <tr><td>Map:</td><td><span id="cgameMap"></span></td></tr>
+            <tr><td>Max turns:</td><td><span id="cgameTurnsNum"></span></td></tr>
+            <tr><td>Players:</td><td><span id="cgamePlayers"></span></td></tr>
+            <tr><td colspan="2">
+              <div class="buttons">
+                <div id="btnUnjoin" onclick="cmdLeaveGame();">Unjoin</div>
+                <div id="btnSetReady">Ready</div>
+              </div>
+            </td></tr>
+          </table>
+        </div>
+      </div>
+     </td></tr>
+
+     <tr><td>
+       <div id="divChat" class="corner-all">
+         <table width="100%">
+           <tr><td colspan="3">
+             <div class="scrollBox"><div id="divMessages" class="scroll-pane"></div></div>
+           </td></tr>
+           <tr>
+             <td width="25"><img src="./pics/refresh.gif" onclick="cmdGetMessages();" /></td>
+             <td><input class="tedit" id="inputMessageText" type="text"  /></td>
+             <td width="100">
+                <div id="btnSend" onclick="cmdSendMessage();" class="tbutton">Send</div>
+              </td>
+           </tr>
+         </table>
+       </div>
+     </td><td>
+     2
+     </td></tr>
+    </table>
+    
+    
+
+</body>
+</html>
