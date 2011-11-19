@@ -1,46 +1,84 @@
 [
     {
-        "result": "badUserSid"
-    },
-    {
-        "result": "badUserSid"
-    },
-    {
-        "result": "notInGame"
+        "result": "badStage"
     },
     {
         "result": "badStage"
     },
     {
-        "result": "badPosition"
+        "result": "badStage"
     },
     {
-        "result": "badPosition"
+        "result": "badStage"
     },
     {
-        "result": "ok"
+        "result": "badStage"
     },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+
     {
         "result": "ok"
     },
     {
         "result": "ok",
         "gameState": {
-            "gameId": 1,
+            "map": {
+                "mapId": 1,
+                "mapName": "map1",
+                "turnsNum": 5,
+                "playersNum": 2,
+                "regions": [
+                    {
+                        "constRegionState": [ "border", "coast" ],
+                        "adjacentRegions": [ 2 ],
+                        "currentRegionState": {
+                            "tokensNum": 3,
+                            "tokenBadgeId": 0,
+                            "ownerId": 1
+                        }
+                    },
+                    {
+                        "constRegionState": [ "border" ],
+                        "adjacentRegions": [ 1 ],
+                        "currentRegionState": { "tokensNum": 0 }
+                    }
+                ]
+            },
             "players": [
                 {
                     "userId": 1,
-                    "coins": 0,
+                    "username": "username1",
+                    "isReady": 1,
+                    "priority": 0,
+                    "coins": 5,
+                    "tokensInHand": 7,
                     "currentTokenBadge": {
-                        "raceName": "Amazons",
-                        "specialPowerName": "Alchemist"
-                    } 
+                        "tokenBadgeId": 0,
+                        "specialPowerName": "alchemist",
+                        "raceName": "amazons"
+                    },
+                    "declineTokenBadge": {}
                 },
                 {
-                    "userId": 2
+                    "userId": 2,
+                    "username": "username2",
+                    "isReady": 1,
+                    "priority": 1,
+                    "currentTokenBadge": {},
+                    "declineTokenBadge": {}
                 }
             ]
         }
+    },
+    {
+        "result": "badRegion"
     }
-
 ]

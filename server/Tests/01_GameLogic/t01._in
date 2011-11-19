@@ -1,47 +1,61 @@
 {
-    "include": [ "_makeGame1.inc" ],
     "test": [
-        { "action": "setReadinessStatus", "sid": 1, "isReady": 1, 
-          "visibleRaces":        ["Amazons",   "Dwarves", "Elves",      "Giants",   "Halflings", "Humans"],  
-          "visibleSpecialPower": ["Alchemist", "Berserk", "Bivouaking", "Commando", "Diplomat",  "Dragon Master"]
-        },
-        {
-            "action": "selectRace"
-        },
-        {
-            "action": "selectRace",
-            "sid": 4,
-            "position": 0
-        },
-        {
-            "action": "selectRace",
-            "sid": 3,
-            "position": 0
-        },
-        {
-            "action": "selectRace",
-            "sid": 2,
-            "position": 0
-        },
-        {
-            "action": "selectRace",
-            "sid": 1,
-            "position": -1
-        },
-        {
-            "action": "selectRace",
-            "sid": 1,
-            "position": 6
-        },
         {
             "action": "selectRace",
             "sid": 1,
             "position": 0
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": []
+        },
+        {
+            "action": "throwDice",
+            "sid": 1
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": 1
+        },
+        {
+            "action": "enchant",
+            "sid": 1,
+            "regionId": 1
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [
+                { "regionId": 1, "tokensNum": 1 },
+                { "regionId": 2, "tokensNum": 1 }
+            ]
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": 2
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 1
         },
         {
             "action": "getGameState",
-            "gameId": 1
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 1
         }
     ],
-    "description": "test first selectRace"
+    "description": "test first turn after selecting race"
 }

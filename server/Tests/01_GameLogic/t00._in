@@ -60,5 +60,5 @@
             "sid": 1
         }
     ],
-    "description": "test getGameState function"
+    "description": "test first stage in game (first turn of first player)"
 }
