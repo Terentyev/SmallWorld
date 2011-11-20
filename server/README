@@ -17,7 +17,7 @@ II. CONFIGURE
     Include /etc/apache2/vhosts.d/server.smallworld.include
 </VirtualHost>
 
-* configure apache2 (/etc/apache2/vhosts.d/smallworld.include):
+* configure apache2 (/etc/apache2/vhosts.d/server.smallworld.include):
 DocumentRoot "/var/www/SmallWorld/server"
 PerlRequire "/var/www/SmallWorld/server/startup.pl"
 <Directory "/var/www/SmallWorld/server">
