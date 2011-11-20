@@ -36,13 +36,13 @@ function sendRequest(query, callback) {
 			  return;
 		  }
 		  //alert(JSON.stringify(response));
-		  callback(response);
-		 	$.unblockUI();
-	  },
-	  error: function(jqXHR, textStatus, errorThrown) {
+      callback(response);
+       $.unblockUI();
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
       $.unblockUI();
-	  	alert(textStatus);
-   	}
+      alert(textStatus);
+     }
   });
 }
 
@@ -50,5 +50,3 @@ function _setCookie(key, value) {
   for (var i in key)
     $.cookie(key[i], value[i]);
 }
-
-

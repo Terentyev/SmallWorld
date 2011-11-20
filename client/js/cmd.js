@@ -171,4 +171,3 @@ function hdlLeaveGame(ans) {
     showLobby();
   }
 }
-
