@@ -3,6 +3,8 @@ I. INSTALL
 install libapreq2, firebird, mod_perl
 perl require File::Basename, JSON, DBI, DBD::InterBase, List::Util
 
+Perl must be compiled with 'ithreads' support
+
 
 II. CONFIGURE
 
@@ -10,7 +12,9 @@ II. CONFIGURE
 ...
 <VirtualHost *:80>
     ServerName server.smallworld
-    Include /etc/apache2/vhosts.d/smallworld.include
+	PerlOptions +Parent
+	PerlSwitches -I/var/www/SmallWorld/server/
+    Include /etc/apache2/vhosts.d/server.smallworld.include
 </VirtualHost>
 
 * configure apache2 (/etc/apache2/vhosts.d/smallworld.include):

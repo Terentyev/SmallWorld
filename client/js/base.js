@@ -23,11 +23,10 @@ var data = {
 function sendRequest(query, callback) {
   $.ajax({
   	type: "POST",
-	  url: serverUrl,
+	  url: "http://client.smallworld",
 	  dataType: "JSON",
 	  timeout: 10000,
-    data: {request: JSON.stringify(query)},
-    //data: query,
+    data: {request: JSON.stringify(query), address: serverUrl},
     beforeSend: function() {
       $.blockUI({ message: '<h3><img src="/client/pics/loading.gif" /> Loading...</h3>' });
     },

@@ -7,6 +7,7 @@ use utf8;
 
 use APR::Brigade ();
 use APR::Bucket ();
+use Apache2::Connection ();
 use Apache2::Filter ();
 
 use Apache2::Const -compile => qw(MODE_READBYTES);

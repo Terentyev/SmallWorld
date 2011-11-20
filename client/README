@@ -1,0 +1,36 @@
+I. INSTALL
+
+install libapreq2, mod_perl
+perl require File::Basename, JSON, HTTP::Request, LWP::UserAgent, URI::Escape
+
+Perl must be compiled with 'ithreads' support
+
+
+II. CONFIGURE
+
+* configure apache2 (/etc/apache2/vhosts.d/00_default_vhost.conf):
+...
+<VirtualHost *:80>
+    ServerName client.smallworld
+	PerlOptions +Parent
+	PerlSwitches -I/var/www/SmallWorld/client/
+    Include /etc/apache2/vhosts.d/client.smallworld.include
+</VirtualHost>
+
+* configure apache2 (/etc/apache2/vhosts.d/client.smallworld.include):
+DocumentRoot "/var/www/SmallWorld/client"
+PerlRequire "/var/www/SmallWorld/client/startup.pl"
+<Directory "/var/www/SmallWorld/client">
+    SetHandler perl-script
+    PerlResponseHandler Dispatcher
+    Options ExecCGI FollowSymLinks -Indexes
+    AllowOverride all
+    Order deny,allow
+    Allow from all
+	<Files ~ "\.(html|css|js|gif|png)$">
+		SetHandler None
+	</Files>
+</Directory>
+
+* do not forget add record to hosts-file (/etc/hosts || %SystemRoot%\system32\drivers\etc\hosts):
+127.0.0.1   localhost client.smallworld

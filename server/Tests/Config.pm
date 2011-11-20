@@ -13,6 +13,6 @@ our @EXPORT = qw(
 
 use constant SERVER_ADDRESS => "server.smallworld";
 
-__END__
-
 1;
+
+__END__
