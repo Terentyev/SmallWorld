@@ -97,6 +97,9 @@ use constant CMD_ERRORS => {
   ],
   createDefaultMaps  => [],
   createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
+  decline            => [
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID # R_BAD_GAME_STATE
+  ],
   defend             => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_NOT_ENOUGH_TOKENS, R_THERE_ARE_TOKENS_IN_THE_HAND

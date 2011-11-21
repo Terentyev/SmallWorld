@@ -219,7 +219,7 @@ sub getGameVersionAndId {
       INNER JOIN CONNECTIONS c ON c.gameId = g.id
       INNER JOIN PLAYERS p ON p.id = c.playerId
       WHERE p.sid = ?',
-      undef, $_[0]);
+      undef, $_[0]) || [];
 }
 
 
