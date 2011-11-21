@@ -23,11 +23,7 @@ sub _init {
   $self->{player} = $player;
   $self->{allRegions} = $regions;
   # извлекаем только свои регионы (остальные скорее всего не понадобятся)
-  $self->{regions} = (grep {
-#    !defined $_->{tokenBadgeId} && !defined $player->{currentTokenBadge}->{tokenBadgeId} ||
-    defined $_->{tokenBadgeId} && defined $player->{currentTokenBadge}->{tokenBadgeId} &&
-    $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId}
-  } @{ $regions }) || [];
+  $self->{regions} = [grep { $player->activeConq($_) } @{ $regions }] || [];
 }
 
 # бонус монетками для способности
@@ -73,7 +69,7 @@ sub canCmd {
   # или команда атаки с ненулевым числом фигурок на руках
   # или команда окончания хода с нулевым числом фигурок на руках
   # или команда выбора расы при условии, что раса не выбрана
-  return ($js->{action} eq 'redeploy') && (!(grep { defined $js->{$_} } qw( heroic encampments fortified ))) ||
+  return ($js->{action} eq 'redeploy') && (!(grep { defined $js->{$_} } qw( heroes encampments fortified ))) ||
     ($js->{action} eq 'conquer') && (defined $_[2] && $_[2] >= 1) ||
     ($js->{action} eq 'finishTurn') && (!defined $_[2] || $_[2] == 0) ||
     ($js->{action} eq 'selectRace') && (!defined $_[2]);
@@ -155,7 +151,7 @@ sub canCmd {
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/форты
   return $js->{action} eq 'redeploy' &&
-    !(grep { defined $js->{$_} } qw( heroic fortified ));
+    !(grep { defined $js->{$_} } qw( heroes fortified ));
 }
 
 sub initialTokens {
@@ -301,7 +297,7 @@ sub canCmd {
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/лагеря
   return $js->{action} eq 'redeploy' &&
-    !(grep { defined $js->{$_} } qw( heroic encampments ));
+    !(grep { defined $js->{$_} } qw( heroes encampments ));
 }
 
 sub initialTokens {

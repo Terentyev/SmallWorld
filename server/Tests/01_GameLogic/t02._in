@@ -1,9 +1,59 @@
 {
     "test": [
         {
-            "action": "getGameState",
-            "sid": 1
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [
+                { "regionId": 1, "tokensNum": 1 },
+                { "regionId": 2, "tokensNum": 1 }
+            ]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [
+                { "regionId": 2, "tokensNum": 1 }
+            ]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [
+                { "regionId": 2, "tokensNum": 0 }
+            ]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [],
+            "heroes": [1]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [],
+            "fortified": { "regionId": 1 }
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [],
+            "encampments": [ { "regionId": 1, "encampmentsNum": 1 } ]
+        },
+
+
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": []
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [
+                { "regionId": 1, "tokensNum": 1 }
+            ]
         }
     ],
-    "description": "first turn after conquer"
+    "description": "first turn redeploy"
 }

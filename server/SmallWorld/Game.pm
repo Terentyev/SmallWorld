@@ -396,7 +396,7 @@ sub canAttack {
   }
 
   # если игроку не хватает фигурок даже с подкреплением
-  if ( $self->{conqNum} + $player->{dice} < $self->{defendNum} ) {
+  if ( $self->{conqNum} + $player->safe('dice') < $self->{defendNum} ) {
     $self->{gameState}->{state} = GS_FINISH_TURN;
     return 0;
   }
@@ -510,10 +510,16 @@ sub finishTurn {
 sub redeploy {
   my ($self, $regs, $encampments, $fortified, $heroes) = @_;
   my $player = $self->getPlayer();
+  my $lastRegion = undef;
 
   foreach ( @{ $regs } ) {
-    $self->getRegion($_->{regionId})->{tokensNum} = $_->{tokensNum};
+    $lastRegion = $self->getRegion($_->{regionId});
+    $lastRegion->{tokensNum} = $_->{tokensNum};
     $player->{tokensInHand} -= $_->{tokensNum};
+  }
+  if ( defined $lastRegion ) {
+    $lastRegion->{tokensNum} += $player->{tokensInHand};
+    $player->{tokensInHand} = 0;
   }
 
   foreach ( @{ $encampments } ) {

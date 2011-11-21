@@ -1,5 +1,28 @@
 [
     {
+        "result": "badRegion"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+
+
+    {
+        "result": "ok"
+    },
+    {
         "result": "ok"
     }
 ]

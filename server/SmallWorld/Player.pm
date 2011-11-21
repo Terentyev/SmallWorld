@@ -5,15 +5,7 @@ use strict;
 use warnings;
 use utf8;
 
-# конструктор, на вход принимает ссылку на хэш с информацией о игроке
-sub new {
-  my $class = shift;
-  my $self = shift;
-
-  bless $self, $class;
-
-  return $self;
-}
+use base ('SmallWorld::SafeObj');
 
 # определяет принадлежит ли регион активной расе
 sub activeConq {

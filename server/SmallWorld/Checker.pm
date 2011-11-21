@@ -336,21 +336,23 @@ sub checkRegion_redeploy {
   # в каждом массиве не должны повторяться регионы
   return 1 if $self->existsDuplicates($js->{regions}) ||
     $self->existsDuplicates($js->{encampments}) ||
-    $self->existsDuplicates(map { regionId => $_ }, @{ $js->{heroes} });
+    $self->existsDuplicates([map { regionId => $_ }, @{ $js->{heroes} }]);
+
+  # у нас должны быть регионы, чтобы расставлять фигурки
+  return 1 if !(grep { $player->activeConq($_) } @{ $game->{gameState}->{regions} });
 
   # войска можно ставить только на свои территории
   foreach my $reg ( @{ $js->{regions} } ) {
     return 1 if (grep {
-      $_->{regionId} == $reg->{regionId} && $_->{ownerId} != $player->{playerId}
-    } @{ $game->{regions} }) ||
-    !(grep { $_->{ownerId} == $player->{playerId} } @{ $game->{regions} });
+      $_->{regionId} == $reg->{regionId} && !$player->activeConq($_)
+    } @{ $game->{gameState}->{regions} });
   }
 
   # ставить лагеря/форты/героев можно только на свои регионы, на которых есть
   # наши фигурки
   foreach my $reg ( (@{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
-    return 1 if grep {
-      $_->{regionId} == $reg->{regionId} && $_->{ownerId} != $player->{playerId}
+    return 1 if defined $reg && grep {
+      $_->{regionId} == $reg->{regionId} && !$player->activeConq($_)
     } @{ $js->{regions} };
   }
 }
@@ -415,15 +417,16 @@ sub checkForts {
 sub checkFortsInRegion {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # можно ставить только один форт в регион
-  return grep {
-    $_->{regionId} == $self->{json}->{fortified}->{regionId} && defined $_->{fortified}
-  } @{ $game->{gameState}->{regions} };
+  return $self->{json}->{fortified} &&
+    grep {
+      $_->{regionId} == $self->{json}->{fortified}->{regionId} && defined $_->{fortified}
+    } @{ $game->{gameState}->{regions} };
 }
 
 sub checkEnoughEncamps {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $encampsNum = 0;
-  grep { $encampsNum += $_->{encampment} } @{ $game->{gameState}->{regions} };
+  grep { $encampsNum += $game->getRegion($_->{regionId})->safe('encampment') } @{ $game->{gameState}->{regions} };
   grep { $encampsNum += $_->{encampmentsNum} } @{ $self->{json}->{encampments} };
   return $encampsNum > ENCAMPMENTS_MAX;
 }
@@ -467,7 +470,7 @@ sub checkGameCommand {
     &R_BAD_MONEY_AMOUNT             => sub { $player->{coins} < $js->{position}; },
     &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables, $result); },
     &R_BAD_REGION_ID                => sub { $self->checkRegionId(@gameVariables); },
-    &R_BAD_SET_HERO_CMD             => sub { HEROES_MAX < $@{ $js->{heroes} }; },
+    &R_BAD_SET_HERO_CMD             => sub { defined $js->{heroes} && HEROES_MAX < scalar(@{ $js->{heroes} }); },
     &R_BAD_SID                      => sub { $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId}; },
     &R_BAD_STAGE                    => sub { $self->checkStage(@gameVariables); },
     &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables); },
