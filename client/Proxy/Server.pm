@@ -33,6 +33,7 @@ sub process {
 
   my $req = HTTP::Request->new(POST => $address);
   $req->add_content_utf8($request);
+#  $req->content_type('application/x-www-form-urlencoded');
 #  $req->content("request=" . uri_escape($request)); # вот это надо раскоментировать, чтобы работало у Паши
   print $self->{ua}->request($req)->content;
 
