@@ -297,7 +297,7 @@ sub canCmd {
   my ($self, $js) = @_;
   # чародеи могут ещё и зачаровывать
   return $js->{action} eq 'enchant' ||
-    base::canCmd(@_);
+    $self->SUPER::canCmd($js);
 }
 
 

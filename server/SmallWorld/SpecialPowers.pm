@@ -109,21 +109,22 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub _init {
-  base::_init(@_);
   my ($self, $player, $regions, $badge) = @_;
+  $self->SUPER::_init($player, $regions, $badge);
   $self->{dice} = $badge->{dice} if exists $badge->{dice};
 }
 
 sub conquestRegionTokensBonus {
-  return exists $_[0]->{dice} && defined $_[0]->{dice}
-    ? $_[0]->{dice}
-    : base::conquestRegionTokensBonus(@_);
+  my ($self, $region) = @_;
+  return exists $self->{dice} && defined $self->{dice}
+    ? $self->{dice}
+    : $self->SUPER::conquestRegionTokensBonus($region);
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js) = @_;
   # базовый класс + бросить кости (если мы их еще не бросали)
-  return base::canCmd(@_) || $js->{action} eq 'throwDice' && !exists $_[0]->{dice};
+  return $self->SUPER::canCmd($js) || $js->{action} eq 'throwDice' && !exists $self->{dice};
 }
 
 sub initialTokens {
@@ -142,7 +143,7 @@ use SmallWorld::Consts;
 
 sub declineRegion {
   my ($self, $region) = @_;
-  base::declineRegion(@_);
+  $self->SUPER::declineRegion($region);
   $region->{encampment} = undef;
 }
 
@@ -187,9 +188,9 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js) = @_;
   # базовый класс + подружить
-  return base::canCmd(@_) || $js->{action} eq 'selectFriend';
+  return $self->SUPER::canCmd($js) || $js->{action} eq 'selectFriend';
 }
 
 sub initialTokens {
@@ -208,14 +209,14 @@ use SmallWorld::Consts;
 
 sub declineRegion {
   my ($self, $region) = @_;
-  base::declineRegion(@_);
+  $self->SUPER::declineRegion($region);
   $region->{dragon} = undef;
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js) = @_;
   # базовый класс + атаковать драконом
-  return base::canCmd(@_) || $js->{action} eq 'dragonAttack';
+  return $self->SUPER::canCmd(@_) || $js->{action} eq 'dragonAttack';
 }
 
 sub initialTokens {
@@ -235,7 +236,7 @@ use SmallWorld::Consts;
 sub canAttack {
   my ($self, $region, $regions) = @_;
   return
-    base::canAttack(@_) ||
+    $self->SUPER::canAttack($region, $regions) ||
     # если не море. Регион не обязательно должен быть соседним
     !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions });
 }
@@ -284,7 +285,7 @@ sub coinsBonus {
 
 sub declineRegion {
   my ($self, $region) = @_;
-  base::declineRegion(@_);
+  $self->SUPER::declineRegion($region);
   if ( !defined $region->{inDecline} ) {
     # видимо, если мы второй раз приводим расу в упадок после расстановки
     # фортов, то надо их удалить
@@ -389,7 +390,7 @@ sub conquestRegionTokensBonus {
   my ($self, $region) = @_;
   return (grep { $_ eq REGION_TYPE_FARMLAND || $_ eq REGION_TYPE_HILL } @{ $region->{constRegionState} })
     ? MOUNTED_CONQ_TOKENS_NUM
-    : base::conquestRegionTokensBonus(@_);
+    : $self->SUPER::conquestRegionTokensBonus($region);
 }
 
 sub initialTokens {
@@ -490,7 +491,7 @@ sub canAttack {
 
   return
     # либо мы можем атаковать регион по стандартным правилам
-    base::canAttack(@_) ||
+    $self->SUPER::canAttack($region) ||
     # либо на атакуемом регионе есть природная пещера
     (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} }) &&
     # и у нас есть регион с такой же природной пещерой
@@ -505,7 +506,7 @@ sub conquestRegionTokensBonus {
     # если атакуемый регион с пещерой (природная пещера, а не пещера тролля)
     (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} })
       ? UNDERWORLD_CONQ_TOKENS_NUM
-      : base::conquestRegionTokensBonus(@_);
+      : $self->SUPER::conquestRegionTokensBonus($region);
 }
 
 sub initialTokens {
@@ -527,7 +528,7 @@ sub coinsBonus {
   die 'Stupid monkey forget pass parameter "isFirstTurn" to ' . __PACKAGE__ if !defined $isFirstTurn;
   return $isFirstTurn
     ? WEALTHY_COINS_NUM
-    : base::coinsBonus(@_);
+    : $self->SUPER::coinsBonus($isFirstTurn);
 }
 
 sub initialTokens {
