@@ -1,0 +1,57 @@
+{
+    "test": [
+        {
+            "action": "defend",
+            "sid": 2,
+            "regions": []
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 1
+        },
+        {
+            "action": "throwDice",
+            "sid": 2
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 2,
+            "regionId": 1
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 1
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [
+                { "regionId": 1, "tokensNum": 1 },
+                { "regionId": 2, "tokensNum": 1 }
+            ]
+        },
+        {
+            "action": "selectFriend",
+            "sid": 2,
+            "friendId": 2
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 1
+        },
+        {
+            "action": "getGameState",
+            "sid": 2
+        }
+    ],
+    "description": "first turn second player"
+}

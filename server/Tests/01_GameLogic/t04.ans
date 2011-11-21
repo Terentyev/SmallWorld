@@ -1,0 +1,96 @@
+[
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "isReady": 1,
+                    "priority": 0,
+                    "tokensInHand": 0,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 0,
+                        "specialPowerName": "alchemist",
+                        "raceName": "amazons"
+                    },
+                    "declineTokenBadge": {}
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "isReady": 1,
+                    "priority": 1,
+                    "tokensInHand": 11,
+                    "coins": 4,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 2,
+                        "specialPowerName": "bivouacking",
+                        "raceName": "elves"
+                    },
+                    "declineTokenBadge": {}
+                }
+            ],
+            "visibleTokenBadges": [
+                {
+                    "tokenBadgeId": 1,
+                    "specialPowerName": "berserk",
+                    "raceName": "dwarves"
+                },
+                {
+                    "tokenBadgeId": 3,
+                    "specialPowerName": "commando",
+                    "raceName": "giants"
+                },
+                {
+                    "tokenBadgeId": 4,
+                    "specialPowerName": "diplomat",
+                    "raceName": "halflings"
+                },
+                {
+                    "tokenBadgeId": 5,
+                    "specialPowerName": "dragonMaster",
+                    "raceName": "humans"
+                },
+                {
+                    "tokenBadgeId": 6,
+                    "specialPowerName": "flying",
+                    "raceName": "orcs"
+                },
+                {
+                    "tokenBadgeId": 7,
+                    "specialPowerName": "forest",
+                    "raceName": "ratmen"
+                }
+            ]
+        }
+    }
+]
