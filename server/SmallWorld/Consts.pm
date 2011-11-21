@@ -27,6 +27,7 @@ use constant R_ALL_OK                       => 'ok'                             
 use constant R_ALREADY_IN_GAME              => 'alreadyInGame'                      ;
 use constant R_BAD_ACTION                   => 'badAction'                          ;
 use constant R_BAD_ATTACKED_RACE            => 'badAttackedRace'                    ;
+use constant R_BAD_ENCAMPMENTS_NUM          => 'badEncampmentsNum'                  ;
 use constant R_BAD_FRIEND                   => 'badFriend'                          ;
 use constant R_BAD_FRIEND_ID                => 'badFriendId'                        ;
 use constant R_BAD_GAME_DESC                => 'badGameDescription'                 ;
@@ -122,7 +123,7 @@ use constant CMD_ERRORS => {
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_USER_HAS_NOT_REGIONS, R_BAD_TOKENS_NUM,
     R_TOO_MANY_FORTS_IN_REGION, R_TOO_MANY_FORTS, R_NOT_ENOUGH_ENCAMPS,
-    R_BAD_SET_HERO_CMD, R_NO_TOKENS_FOR_REDEPLOYMENT
+    R_BAD_SET_HERO_CMD, R_NO_TOKENS_FOR_REDEPLOYMENT, R_BAD_ENCAMPMENTS_NUM
   ],
   register           => [R_BAD_USERNAME, R_BAD_PASSWORD, R_USERNAME_TAKEN],
   resetServer        => [],

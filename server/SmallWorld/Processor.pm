@@ -59,6 +59,7 @@ sub getGame {
 
 # Команды, которые приходят от клиента
 sub cmd_resetServer {
+  return if !$ENV{DEBUG};
   my ($self, $result) = @_;
   $self->{db}->clear();
 }
@@ -176,7 +177,7 @@ sub cmd_selectRace {
 sub cmd_conquer {
   my ($self, $result) = @_;
   my $game = $self->getGame();
-  $game->conquer($self->{json}->{regionId});
+  $game->conquer($self->{json}->{regionId}, $result);
   $game->save();
 }
 

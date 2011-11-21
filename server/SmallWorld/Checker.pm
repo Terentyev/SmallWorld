@@ -353,7 +353,7 @@ sub checkRegion_redeploy {
   foreach my $reg ( (@{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
     return 1 if defined $reg && (grep {
       $_->{regionId} == $reg->{regionId} && !$player->activeConq($_)
-    } @{ $js->{regions} });
+    } @{ $game->{gameState}->{regions} });
   }
 }
 
@@ -381,7 +381,6 @@ sub checkStage {
   # 1. пользователь, который послал команду, != активный пользователь
   # 2. действие, которое запрашивает пользователь, не соответствует текущему
   #    состоянию игры
-  my $func = $self->can("checkStage_$js->{action}"); # see UNIVERSAL::can
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
     !$sp->canCmd($js, $player->{tokensInHand}) ||
@@ -465,6 +464,7 @@ sub checkGameCommand {
 
   $result->{result} = $self->checkErrorHandlers({
     &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == $region->{ownerId}; },
+    &R_BAD_ENCAMPMENTS_NUM          => sub { grep { !defined $_->{encampmentsNum} || $_->{encampmentsNum} <= 0 } @{ $js->{encampments} }; },
     &R_BAD_FRIEND                   => sub { $self->checkFriend(@gameVariables); },
     &R_BAD_FRIEND_ID                => sub { !(grep { $_->{playerId} == $js->{friendId} && $_->{playerId} != $player->{playerId} } @{ $game->{gameState}->{players} }); },
     &R_BAD_MONEY_AMOUNT             => sub { $player->{coins} < $js->{position}; },

@@ -370,9 +370,11 @@ sub nextConquestIdx {
   return $result + 1;
 }
 
-# бросаем кубик (возвращает число от 1 до 6)
+# бросаем кубик (возвращает число от 0 до 3) (кубик имеет три нулевых грани и
+# три грани 1,2,3)
 sub random {
-  return int(rand(5)) + 1;
+  return 0 if $ENV{DEBUG};
+  return int(rand(1)) * (int(rand(2)) + 1);
 }
 
 # возвращает количество фигурок в хранилище для определенной расы
@@ -414,12 +416,16 @@ sub canDefend {
 }
 
 sub conquer {
-  my ($self, $regionId) = @_;
+  my ($self, $regionId, $result) = @_;
   my $player = $self->getPlayer();
   my $region = $self->getRegion($regionId);
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
+
+  if ( defined $player->{dice} ) {
+    $result->{dice} = $player->{dice};
+  }
 
   # если регион принадлежал активной расе
   if ( defined $region->{ownerId} ) {

@@ -63,16 +63,16 @@ sub declineRegion {
 
 # можем ли мы с этим умением выполнить эту команду
 sub canCmd {
-  my $js = $_[1];
+  my ($self, $js, $tokensInHand) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/лагеря/форты
   # или команда атаки с ненулевым числом фигурок на руках
   # или команда окончания хода с нулевым числом фигурок на руках
   # или команда выбора расы при условии, что раса не выбрана
   return ($js->{action} eq 'redeploy') && (!(grep { defined $js->{$_} } qw( heroes encampments fortified ))) ||
-    ($js->{action} eq 'conquer') && (defined $_[2] && $_[2] >= 1) ||
-    ($js->{action} eq 'finishTurn') && (!defined $_[2] || $_[2] == 0) ||
-    ($js->{action} eq 'selectRace') && (!defined $_[2]);
+    ($js->{action} eq 'conquer') && (defined $tokensInHand && $tokensInHand >= 1) ||
+    ($js->{action} eq 'finishTurn') && (!defined $tokensInHand || $tokensInHand == 0) ||
+    ($js->{action} eq 'selectRace') && (!defined $tokensInHand);
 }
 
 # возвращает количество первоначальных фигурок для каждого умения
@@ -122,9 +122,9 @@ sub conquestRegionTokensBonus {
 }
 
 sub canCmd {
-  my ($self, $js) = @_;
+  my ($self, $js, $tokensInHand) = @_;
   # базовый класс + бросить кости (если мы их еще не бросали)
-  return $self->SUPER::canCmd($js) || $js->{action} eq 'throwDice' && !exists $self->{dice};
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'throwDice' && !exists $self->{dice};
 }
 
 sub initialTokens {
@@ -148,10 +148,10 @@ sub declineRegion {
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/форты
-  return $js->{action} eq 'redeploy' &&
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( heroes fortified ));
 }
 
@@ -188,9 +188,9 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub canCmd {
-  my ($self, $js) = @_;
+  my ($self, $js, $tokensInHand) = @_;
   # базовый класс + подружить
-  return $self->SUPER::canCmd($js) || $js->{action} eq 'selectFriend';
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'selectFriend';
 }
 
 sub initialTokens {
@@ -214,9 +214,9 @@ sub declineRegion {
 }
 
 sub canCmd {
-  my ($self, $js) = @_;
+  my ($self, $js, $tokensInHand) = @_;
   # базовый класс + атаковать драконом
-  return $self->SUPER::canCmd(@_) || $js->{action} eq 'dragonAttack';
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'dragonAttack';
 }
 
 sub initialTokens {
@@ -294,10 +294,10 @@ sub declineRegion {
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/лагеря
-  return $js->{action} eq 'redeploy' &&
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( heroes encampments ));
 }
 
@@ -321,10 +321,10 @@ sub declineRegion {
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить лагеря/форты
-  return $js->{action} eq 'redeploy' &&
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( encampments fortified ));
 }
 
