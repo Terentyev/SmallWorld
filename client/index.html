@@ -30,6 +30,9 @@
   $(document).ready(function() {
     $("#tableGameList").tablesorter({headers: { 0: { sorter: false } } });
     $('.scroll-pane').jScrollPane({showArrows:true, scrollbarOnLeft: true});
+    $('#mapList').change(function () {
+      changeMap($(this).val());
+    });
     $("#tabs").tabs();
     if ($.cookie("serverUrl")) {
       serverUrl = $.cookie("serverUrl");
@@ -66,14 +69,14 @@
           <td>New server URL:</td>
           <td>
             <input class="tedit" type="text" id="inputServerUrl"
-                   value="http://server.smallworld/server/" />
+                   value="http://server.smallworld" />
           </td>
         </tr>
         <tr><td colspan="2">
-            <div class="buttons">
-      <div class="modal-close">Cancel</div>
-      <div class="modal-close" onclick="saveServerUrl();">Save</div>
-    </div>
+          <div class="buttons">
+            <div class="modal-close">Cancel</div>
+            <div class="modal-close" onclick="saveServerUrl();">Save</div>
+          </div>
         </td></tr>
       </table>
     </div>
@@ -118,17 +121,17 @@
    <table align="center" width="990" >
       <tr valign="top"><td width="680">
         <div id="tabs" class="corner-all">
-			    <ul>
-			    	<li><a href="#divGameList">Game list</a></li>
-				    <li><a href="#divCreateGame">Create game</a></li>
-				    <li><a href="#divLoadGame">Load game</a></li>
-				    <li><a href="#divUploadMap">Upload map</a></li>
-			    </ul>
-			    <div id="divGameList">
+          <ul>
+            <li><a href="#divGameList">Game list</a></li>
+            <li><a href="#divCreateGame">Create game</a></li>
+            <li><a href="#divLoadGame">Load game</a></li>
+            <li><a href="#divUploadMap">Upload map</a></li>
+          </ul>
+          <div id="divGameList">
             <table id="tableGameList" class="tablesorter" width="100%">
               <thead>
                 <tr>
-                  <th></th>
+                  <th width="20"></th>
                   <th>Game Name</th>
                   <th>Players</th>
                   <th>Map</th>
@@ -139,16 +142,27 @@
              <tbody>
              </tbody>
             </table>
+              <div class="buttons">
+                <div id="btnJoin" onclick="cmdJoinGame();">Join</div>
+              </div>
           </div>
-			    <div id="divCreateGame">
+          <div id="divCreateGame">
             <table id="tableNewGame">
               <tr>
-                <td width="100">Name:</td>
+                <td width="150">Name:</td>
                 <td width="400"> <input class="tedit" type="text" id="inputGameName"/> </td>
               </tr>
               <tr>
-                <td>MapId:</td>
-                <td> <input class="tedit" type="text" id="inputMapId"/> </td>
+                <td>Map:</td>
+                <td> <select id="mapList" > </select></td>
+              </tr>
+              <tr>
+                <td>Max turns:</td>
+                <td><span id="spanMaxTurns"></span> </td>
+              </tr>
+              <tr>
+                <td>Max players:</td>
+                <td><span id="spanMaxPlayers"></span> </td>
               </tr>
               <tr>
                 <td>Description:</td>
@@ -163,16 +177,16 @@
               </tr>
             </table>
           </div>
-			    <div id="divLoadGame">
-			       <textarea id="inputLoadGame"></textarea>
+          <div id="divLoadGame">
+             <textarea id="inputLoadGame"></textarea>
              <div class="buttons">
                <div id="btnLoadGame">Load</div>
              </div>
           </div>
-			    <div id="divUploadMap">
+          <div id="divUploadMap">
 
           </div>
-		    </div>
+        </div>
      </td><td width="310">
      
        <div id="divCurrentPlayer" class="corner-all">
@@ -180,7 +194,7 @@
          <div class="body" id="divLogin">
            <table width="100%">
              <tr>
-               <td width="100">Login</td>
+               <td width="100">Username</td>
                <td>
                  <input class="tedit" type="text" id="inputLoginUsername" />
                </td>
@@ -188,6 +202,11 @@
              <tr>
                <td>Password</td>
                <td><input class="tedit" type="text" id="inputLoginPassword" /></td>
+             </tr>
+             <tr>
+               <td colspan="2" align="center">
+                 <div id="divLoginError" class="error"> </div>
+               </td>
              </tr>
              <tr>
                <td colspan="2">
@@ -226,14 +245,14 @@
         <div class="header"><span>Current game</span></div>
         <div class="body">
           <table width="100%">
-            <tr><td>Name:</td><td><span id="cgameName"></span></td></tr>
+            <tr><td width="100">Name:</td><td><span id="cgameName"></span></td></tr>
             <tr ><td>Description:</td><td><span id="cgameDescription"></span></td></tr>
             <tr><td>Map:</td><td><span id="cgameMap"></span></td></tr>
             <tr><td>Max turns:</td><td><span id="cgameTurnsNum"></span></td></tr>
             <tr><td>Players:</td><td><span id="cgamePlayers"></span></td></tr>
             <tr><td colspan="2">
               <div class="buttons">
-                <div id="btnUnjoin" onclick="cmdLeaveGame();">Unjoin</div>
+                <div id="btnLeave" onclick="cmdLeaveGame();">Leave</div>
                 <div id="btnSetReady">Ready</div>
               </div>
             </td></tr>
