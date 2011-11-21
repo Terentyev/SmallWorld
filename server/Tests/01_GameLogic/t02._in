@@ -53,6 +53,10 @@
             "regions": [
                 { "regionId": 1, "tokensNum": 1 }
             ]
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
         }
     ],
     "description": "first turn redeploy"

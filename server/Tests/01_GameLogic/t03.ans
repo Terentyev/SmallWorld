@@ -1,33 +1,13 @@
 [
     {
-        "result": "badRegion"
-    },
-    {
-        "result": "badRegion"
-    },
-    {
-        "result": "badRegion"
-    },
-    {
-        "result": "badStage"
-    },
-    {
-        "result": "badStage"
-    },
-    {
-        "result": "badStage"
-    },
-
-
-    {
-        "result": "ok"
-    },
-    {
         "result": "ok"
     },
     {
         "result": "ok",
         "gameState": {
+            "activePlayerId": 2,
+            "state": "selectRace",
+            "currentTurn": 0,
             "map": {
                 "mapId": 1,
                 "mapName": "map1",
@@ -56,7 +36,7 @@
                     "username": "username1",
                     "isReady": 1,
                     "priority": 0,
-                    "coins": 5,
+                    "coins": 8,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
@@ -75,5 +55,9 @@
                 }
             ]
         }
+    },
+
+    {
+        "result": "badUserSid"
     }
 ]

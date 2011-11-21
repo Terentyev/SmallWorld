@@ -487,12 +487,12 @@ sub finishTurn {
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
   $player->{coins} += 1 * (grep {
-    $_->{ownerId} == $player->{playerId}
-  } @{ $regions }) + $sp->coinsBonus() + $race->coinsBonus() + $sp->coinsBonus();
+    defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}
+  } @{ $regions }) + $sp->coinsBonus() + $race->coinsBonus();
   delete $player->{dice};
   grep { $_->{conquestIdx} = undef } @{ $self->{gameState}->{regions} };
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
-    ($player->{priority} + 1) / $self->{gameState}->{players} ]->{playerId};
+    ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
   $player = $self->getPlayer();
   if ( $player->{priority} == 0 ) {
     $self->{gameState}->{currentTurn}++;
