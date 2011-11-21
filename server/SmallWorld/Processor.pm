@@ -197,7 +197,7 @@ sub cmd_finishTurn {
 sub cmd_redeploy {
   my ($self, $result) = @_;
   my $game = $self->getGame();
-  $game->redeploy($self->{json}->{qw( regions encampments fortified heroes )});
+  $game->redeploy(@{ $self->{json} }{qw( regions encampments fortified heroes )});
   $game->save();
 }
 

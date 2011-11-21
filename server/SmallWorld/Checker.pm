@@ -195,7 +195,7 @@ sub checkJsonCmd {
 
   if (
       $result->{result} eq R_ALL_OK &&
-      grep { $_ eq $cmd } qw( defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn )
+      (grep { $_ eq $cmd } qw( defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn ))
   ) {
     $self->checkGameCommand($result);
   }
@@ -351,9 +351,9 @@ sub checkRegion_redeploy {
   # ставить лагеря/форты/героев можно только на свои регионы, на которых есть
   # наши фигурки
   foreach my $reg ( (@{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
-    return 1 if defined $reg && grep {
+    return 1 if defined $reg && (grep {
       $_->{regionId} == $reg->{regionId} && !$player->activeConq($_)
-    } @{ $js->{regions} };
+    } @{ $js->{regions} });
   }
 }
 
@@ -411,16 +411,16 @@ sub checkTokensNum {
 sub checkForts {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   return defined $self->{json}->{fortified} && defined $self->{json}->{fortified}->{regionId} &&
-    FORTRESS_MAX >= 1 * grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} };
+    FORTRESS_MAX >= 1 * (grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} });
 }
 
 sub checkFortsInRegion {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # можно ставить только один форт в регион
   return $self->{json}->{fortified} &&
-    grep {
+    (grep {
       $_->{regionId} == $self->{json}->{fortified}->{regionId} && defined $_->{fortified}
-    } @{ $game->{gameState}->{regions} };
+    } @{ $game->{gameState}->{regions} });
 }
 
 sub checkEnoughEncamps {

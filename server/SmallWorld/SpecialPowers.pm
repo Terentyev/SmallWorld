@@ -46,9 +46,9 @@ sub canAttack {
       $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE
     } @{ $region->{constRegionState} }) &&
     # можно нападать, если мы имеем регион, граничащий с регионом-жертвой
-    grep {
+    (grep {
       grep { $_ == $region->{regionId} } $_->{adjacentRegions}
-    } @{ $self->{regions} };
+    } @{ $self->{regions} });
 }
 
 # возвращает количество бонусных фигурок при завоевании у оппонента
@@ -255,12 +255,12 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep {
+  return 1 * (grep {
     # за каждую оккупированную территорию,..
     $_->{tokensNum} > 0 &&
       # на которой расположен лес получаем по монетке
       grep { $_ eq REGION_TYPE_FOREST } $_->{constRegionState}
-  } @{ $_[0]->{regions} };
+  } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -279,7 +279,7 @@ use SmallWorld::Consts;
 
 sub coinsBonus {
   # за каждый форт мы получаем по дополнительной монетке
-  return 1 * grep { $_->{fortified} } @{ $_[0]->{allRegions} };
+  return 1 * (grep { $_->{fortified} } @{ $_[0]->{allRegions} });
 }
 
 sub declineRegion {
@@ -342,12 +342,12 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep {
+  return 1 * (grep {
     # за каждую оккупированную территорию,..
     $_->{tokensNum} > 0 &&
       # на которой расположен холм получаем по монетке
       grep { $_ eq REGION_TYPE_HILL } $_->{constRegionState}
-  } @{ $_[0]->{regions} };
+  } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -365,10 +365,10 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep {
+  return 1 * (grep {
     # за каждый оккупированный регион получаем по монетке
     $_->{tokensNum} > 0
-  } @{ $_[0]->{regions} };
+  } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -387,7 +387,7 @@ use SmallWorld::Consts;
 
 sub conquestRegionTokensBonus {
   my ($self, $region) = @_;
-  return grep { $_ eq REGION_TYPE_FARMLAND || $_ eq REGION_TYPE_HILL } @{ $region->{constRegionState} }
+  return (grep { $_ eq REGION_TYPE_FARMLAND || $_ eq REGION_TYPE_HILL } @{ $region->{constRegionState} })
     ? MOUNTED_CONQ_TOKENS_NUM
     : base::conquestRegionTokensBonus(@_);
 }
@@ -407,7 +407,7 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} };
+  return 1 * (grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -463,12 +463,12 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep {
+  return 1 * (grep {
     # за каждый оккупированный регион
     $_->{tokensNum} > 0 &&
       # на котором есть болота (?)
       grep { $_ eq REGION_TYPE_SWAMP } @{ $_->{constRegionState} }
-  } @{ $_[0]->{regions} };
+  } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -492,18 +492,18 @@ sub canAttack {
     # либо мы можем атаковать регион по стандартным правилам
     base::canAttack(@_) ||
     # либо на атакуемом регионе есть природная пещера
-    grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} } &&
+    (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} }) &&
     # и у нас есть регион с такой же природной пещерой
-    grep {
+    (grep {
       grep { $_ eq REGION_TYPE_CAVERN } @{ $_->{consRegionState} }
-    } @{ $self->{regions} };
+    } @{ $self->{regions} });
 }
 
 sub conquestRegionTokensBonus {
   my ($self, $region) = @_;
   return
     # если атакуемый регион с пещерой (природная пещера, а не пещера тролля)
-    grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} }
+    (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} })
       ? UNDERWORLD_CONQ_TOKENS_NUM
       : base::conquestRegionTokensBonus(@_);
 }

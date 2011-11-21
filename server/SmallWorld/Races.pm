@@ -83,9 +83,9 @@ sub canCmd {
 
 sub getOwnedRegionsNum {
   my ($self, $regType) = @_;
-  return 1 * grep {
+  return 1 * (grep {
     grep { $_ eq $regType } @{ $_->{constRegionState} }
-  } @{ $self->{regions} };
+  } @{ $self->{regions} });
 }
 
 
@@ -165,13 +165,13 @@ sub conquestRegionTokensBonus {
   # для гигантов бонус в 1 фигурку, если они нападают на регион, который
   # граничит с регионом, на котором находятся горы и который принадлежит
   # гигантам
-  return grep {
+  return (grep {
       # регион принадлежит игроку
       $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} && (
         # регион граничит с регионом, на который мы нападаем
         grep { $_ == $region->{regionId} } $_->{adjacentRegions}
       )
-    } @{ $regions }
+    } @{ $regions })
     ? 1
     : 0;
 }
@@ -244,7 +244,7 @@ sub initialTokens {
 sub coinsBonus {
   # получение дополнительных монет за захваченные территории
   return $_[0]->BaseRace::coinsBonus() +
-    1 * grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} };
+    1 * (grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} });
 }
 
 
