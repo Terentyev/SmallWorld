@@ -1,27 +1,34 @@
 [
     {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
         "result": "badRegion"
     },
     {
-        "result": "badRegion"
-    },
-    {
-        "result": "badTokensNum"
-    },
-    {
         "result": "badStage"
     },
     {
         "result": "badStage"
     },
     {
-        "result": "badStage"
+        "result": "badRegion",
+        "dice": 0
     },
 
 
-    {
-        "result": "ok"
-    },
     {
         "result": "ok"
     },
@@ -46,7 +53,11 @@
                     {
                         "constRegionState": [ "border" ],
                         "adjacentRegions": [ 1 ],
-                        "currentRegionState": { "tokensNum": 0 }
+                        "currentRegionState": {
+                            "tokensNum": 2,
+                            "tokenBadgeId": 2,
+                            "ownerId": 2
+                        }
                     }
                 ]
             },
@@ -56,7 +67,6 @@
                     "username": "username1",
                     "isReady": 1,
                     "priority": 0,
-                    "coins": 5,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
@@ -70,10 +80,21 @@
                     "username": "username2",
                     "isReady": 1,
                     "priority": 1,
-                    "currentTokenBadge": {},
+                    "tokensInHand": 9,
+                    "coins": 4,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 2,
+                        "specialPowerName": "bivouacking",
+                        "raceName": "elves"
+                    },
                     "declineTokenBadge": {}
                 }
             ]
         }
+    },
+
+
+    {
+        "result": "badRegion"
     }
 ]
