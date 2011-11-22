@@ -14,13 +14,14 @@ use Apache2::Const -compile => qw(MODE_READBYTES);
 use APR::Const    -compile => qw(SUCCESS BLOCK_READ);
 
 use SmallWorld::Processor;
+use SmallWorld::Uploader;
 
 use constant IOBUFSIZE => 8192;
 
 
 sub new {
 	my $class = shift;
-	my $self = { processor => SmallWorld::Processor->new() };
+	my $self = { processor => SmallWorld::Processor->new(), uploader => SmallWorld::Uploader->new() };
 
 	bless $self, $class;
 
@@ -29,7 +30,12 @@ sub new {
 
 sub process {
 	my ($self, $r) = @_;
-	$self->{processor}->process(content($r));
+  if ( $r->uri() eq '/upload_map' ) {
+    $self->{uploader}->map_upload($r);
+  }
+  else {
+	  $self->{processor}->process(content($r));
+  }
 #	$self->{processor}->process($r->param('request'));
 }
 

@@ -82,7 +82,10 @@ sub clear {
 
 sub addMap {
   my $self = shift;
-  $self->_do('INSERT INTO MAPS (name, playersNum, turnsNum, regions) VALUES (?, ?, ?, ?)', @_);
+  $self->_do('
+      INSERT INTO MAPS (name, playersNum, turnsNum, regions)
+      VALUES (?, ?, ?, ?)',
+      @_);
   return $self->_getId('MAP');
 }
 

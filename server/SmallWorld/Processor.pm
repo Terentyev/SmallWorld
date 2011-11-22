@@ -96,6 +96,7 @@ sub cmd_getMessages {
 }
 
 sub cmd_createDefaultMaps {
+  return if !$ENV{DEBUG};
   my ($self, $result) = @_;
   foreach (@{&DEFAULT_MAPS}){
     $self->{db}->addMap( @{$_}{ qw/mapName playersNum turnsNum/}, exists($_->{regions}) ? encode_json($_->{regions}) : "[]");
@@ -104,7 +105,9 @@ sub cmd_createDefaultMaps {
 
 sub cmd_uploadMap {
   my ($self, $result) = @_;
-  $result->{mapId} = $self->{db}->addMap( @{$self->{json}}{qw/mapName playersNum turnsNum/}, encode_json($self->{json}->{regions}));
+  $result->{mapId} = $self->{db}->addMap(
+    @{$self->{json}}{qw/mapName playersNum turnsNum/},
+    encode_json($self->{json}->{regions}));
 }
 
 sub cmd_createGame {

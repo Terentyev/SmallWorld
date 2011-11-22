@@ -5,6 +5,8 @@ perl require File::Basename, JSON, DBI, DBD::InterBase, List::Util
 
 Perl must be compiled with 'ithreads' support
 
+Do not forget give permissions for apache write to directory 'public/imgs/'
+
 
 II. CONFIGURE
 
@@ -28,6 +30,9 @@ PerlRequire "/var/www/SmallWorld/server/startup.pl"
     AllowOverride all
     Order deny,allow
     Allow from all
+    <Files ~ "\.(png|jpeg|jpg)$">
+        SetHandler None
+    </Files>
 </Directory>
 
 * do not forget add record to hosts-file (/etc/hosts || %SystemRoot%\system32\drivers\etc\hosts):

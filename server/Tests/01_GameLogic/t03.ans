@@ -10,7 +10,7 @@
             "currentTurn": 0,
             "map": {
                 "mapId": 1,
-                "mapName": "map1",
+                "mapName": "Are you lucky?",
                 "turnsNum": 5,
                 "playersNum": 2,
                 "regions": [

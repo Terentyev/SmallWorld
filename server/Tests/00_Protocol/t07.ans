@@ -29,14 +29,9 @@
     },
     {
         "result": "ok",
-        "maps": [ 
-          {"mapId" : 1, "mapName": "defaultMap1", "playersNum": 2, "turnsNum": 5},
-          {"mapId" : 2, "mapName": "defaultMap2", "playersNum": 3, "turnsNum": 5},
-          {"mapId" : 3, "mapName": "defaultMap3", "playersNum": 4, "turnsNum": 5},
-          {"mapId" : 4, "mapName": "defaultMap4", "playersNum": 5, "turnsNum": 5},
-          {"mapId" : 5, "mapName": "defaultMap5", "playersNum": 2, "turnsNum": 5},
-          {"mapId" : 6, "mapName": "defaultMap6", "playersNum": 2, "turnsNum": 7},
-          {"mapId" : 7, "mapName": "defaultMap7", "playersNum": 2, "turnsNum": 5}
+        "maps":[
+          {"turnsNum": 5, "playersNum": 2, "mapName": "Are you lucky?", "mapId": 1},
+          {"turnsNum": 5, "playersNum": 3, "mapName": "Cheburashka",    "mapId": 2}
         ]
     }
 
