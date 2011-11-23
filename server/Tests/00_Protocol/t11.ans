@@ -93,13 +93,13 @@
     {
       "result": "ok",
       "games":[ {"gameId": 1, "gameName": "game name 1", "gameDescription": "", "mapId": 2, "maxPlayersNum": 3,
-                 "turnsNum": 5, "turn": 0, "activePlayerId": null, "state": 1,
+                 "turnsNum": 5, "turn": 0, "activePlayerId": null, "state": 1, "url": "/public/imgs/map_2.png",
                  "players": [ {"userId": 3, "userName": "username3", "isReady": 0},
                               {"userId": 2, "userName": "username2", "isReady": 1},
                               {"userId": 5, "userName": "username5", "isReady": 0} ]
                 },
                 {"gameId": 2, "gameName": "game name 2", "gameDescription": "", "mapId": 1, "maxPlayersNum": 2,
-                 "turnsNum": 5, "turn": 0, "activePlayerId": null, "state": 2,
+                 "turnsNum": 5, "turn": 0, "activePlayerId": 4, "state": 2, "url": "/public/imgs/map_1.png",
                  "players": [ {"userId": 4, "userName": "username4", "isReady": 1},
                               {"userId": 1, "userName": "username1", "isReady": 1} ]
                 }

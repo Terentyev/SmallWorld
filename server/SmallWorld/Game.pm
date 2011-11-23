@@ -159,7 +159,7 @@ sub save {
   # информацию о них
   grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{players} };
   grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{regions} };
-  $self->{db}->saveGameState(encode_json($gs), $gs->{gameInfo}->{gameId});
+  $self->{db}->saveGameState(encode_json($gs), $gs->{activePlayerId}, $gs->{currentTurn}, $gs->{gameInfo}->{gameId});
   $self->{_version}++;
 }
 
@@ -370,9 +370,11 @@ sub nextConquestIdx {
   return $result + 1;
 }
 
-# бросаем кубик (возвращает число от 1 до 6)
+# бросаем кубик (возвращает число от 0 до 3) (кубик имеет три нулевых грани и
+# три грани 1,2,3)
 sub random {
-  return int(rand(5)) + 1;
+  return 0 if $ENV{DEBUG};
+  return int(rand(1)) * (int(rand(2)) + 1);
 }
 
 # возвращает количество фигурок в хранилище для определенной расы
@@ -396,7 +398,7 @@ sub canAttack {
   }
 
   # если игроку не хватает фигурок даже с подкреплением
-  if ( $self->{conqNum} + $player->{dice} < $self->{defendNum} ) {
+  if ( $self->{conqNum} + $player->safe('dice') < $self->{defendNum} ) {
     $self->{gameState}->{state} = GS_FINISH_TURN;
     return 0;
   }
@@ -414,12 +416,16 @@ sub canDefend {
 }
 
 sub conquer {
-  my ($self, $regionId) = @_;
+  my ($self, $regionId, $result) = @_;
   my $player = $self->getPlayer();
   my $region = $self->getRegion($regionId);
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
+
+  if ( defined $player->{dice} ) {
+    $result->{dice} = $player->{dice};
+  }
 
   # если регион принадлежал активной расе
   if ( defined $region->{ownerId} ) {
@@ -454,16 +460,16 @@ sub decline {
   foreach ( grep { $_->{ownerId} == $player->{playerId} } @{ $regions } ) {
     if ( $_->{inDecline} ) {
       $_->{inDecline} = undef;
-      $_->{qw( ownerId tokenBadgeId tokensNum )} = [undef, undef, undef];
+      @{ $_ }{qw( ownerId tokenBadgeId tokensNum )} = (undef, undef, undef);
     }
     else {
-      $_->{qw( inDecline tokensNum )} = [1, DECLINED_TOKENS_NUM];
+      @{ $_ }{qw( inDecline tokensNum )} = (1, DECLINED_TOKENS_NUM);
     }
     $race->declineRegion($_);
     $sp->declineRegion($_);
   }
   my $badge = $player->{currentTokenBadge};
-  $player->{qw( tokensInHand currentTokenBadge declineTokenBadge )} = [INITIAL_TOKENS_NUM, undef, $badge];
+  @{ $player }{qw( tokensInHand currentTokenBadge declineTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
 }
 
 sub selectRace {
@@ -486,13 +492,13 @@ sub finishTurn {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  $player->{coins} += 1 * grep {
-    $_->{ownerId} == $player->{playerId}
-  } @{ $regions } + $sp->coinsBonus() + $race->coinsBonus() + $sp->coinsBonus();
+  $player->{coins} += 1 * (grep {
+    defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}
+  } @{ $regions }) + $sp->coinsBonus() + $race->coinsBonus();
   delete $player->{dice};
   grep { $_->{conquestIdx} = undef } @{ $self->{gameState}->{regions} };
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
-    ($player->{priority} + 1) / $self->{gameState}->{players} ]->{playerId};
+    ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
   $player = $self->getPlayer();
   if ( $player->{priority} == 0 ) {
     $self->{gameState}->{currentTurn}++;
@@ -510,10 +516,22 @@ sub finishTurn {
 sub redeploy {
   my ($self, $regs, $encampments, $fortified, $heroes) = @_;
   my $player = $self->getPlayer();
+  my $race = $self->createRace($player->{currentTokenBadge});
+  my $lastRegion = undef;
+
+  foreach ( @{ $race->{regions} } ) {
+    $player->{tokensInHand} += $_->{tokensNum};
+    $_->{tokensNum} = 0;
+  }
 
   foreach ( @{ $regs } ) {
-    $self->getRegion($_->{regionId})->{tokensNum} = $_->{tokensNum};
+    $lastRegion = $self->getRegion($_->{regionId});
+    $lastRegion->{tokensNum} = $_->{tokensNum};
     $player->{tokensInHand} -= $_->{tokensNum};
+  }
+  if ( defined $lastRegion ) {
+    $lastRegion->{tokensNum} += $player->{tokensInHand};
+    $player->{tokensInHand} = 0;
   }
 
   foreach ( @{ $encampments } ) {
@@ -542,9 +560,9 @@ sub defend {
 sub enchant {
   my ($self, $regionId) = @_;
   my $player = $self->getPlayer();
-  $self->getRegion($regionId)->{qw( ownerId tokenBadgeId conquestIdx )} = [
-      $player->{playerId}, $player->{currentTokenBadgeId}->{tokenBadgeId}, $self->nextConquestIdx() ];
-  $self->{gameState}->{storage}->{&RACE_SORCERERS}--;
+  @{ $self->getRegion($regionId) }{qw( ownerId tokenBadgeId conquestIdx )} = (
+      $player->{playerId}, $player->{currentTokenBadgeId}->{tokenBadgeId}, $self->nextConquestIdx() );
+  $self->{gameState}->{storage}->{&RACE_SORCERERS} -= 1;
 }
 
 sub throwDice {

@@ -27,6 +27,8 @@ use constant R_ALL_OK                       => 'ok'                             
 use constant R_ALREADY_IN_GAME              => 'alreadyInGame'                      ;
 use constant R_BAD_ACTION                   => 'badAction'                          ;
 use constant R_BAD_ATTACKED_RACE            => 'badAttackedRace'                    ;
+use constant R_BAD_COORDINATES              => 'badCoordinates'                     ;
+use constant R_BAD_ENCAMPMENTS_NUM          => 'badEncampmentsNum'                  ;
 use constant R_BAD_FRIEND                   => 'badFriend'                          ;
 use constant R_BAD_FRIEND_ID                => 'badFriendId'                        ;
 use constant R_BAD_GAME_DESC                => 'badGameDescription'                 ;
@@ -43,6 +45,8 @@ use constant R_BAD_NUM_OF_PLAYERS           => 'badNumberOfPlayers'             
 use constant R_BAD_PASSWORD                 => 'badPassword'                        ;
 use constant R_BAD_PLAYERS_NUM              => 'badPlayersNum'                      ;
 use constant R_BAD_POSITION                 => 'badPosition'                        ;
+use constant R_BAD_POWER_COORDINATES        => 'badPowerCoordinates'                ;
+use constant R_BAD_RACE_COORDINATES         => 'badRaceCoordinates'                 ;
 use constant R_BAD_READINESS_STATUS         => 'badReadinessStatus'                 ;
 use constant R_BAD_REGION                   => 'badRegion'                          ;
 use constant R_BAD_REGION_ID                => 'badRegionId'                        ;
@@ -96,6 +100,9 @@ use constant CMD_ERRORS => {
   ],
   createDefaultMaps  => [],
   createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
+  decline            => [
+    R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID # R_BAD_GAME_STATE
+  ],
   defend             => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_NOT_ENOUGH_TOKENS, R_THERE_ARE_TOKENS_IN_THE_HAND
@@ -122,7 +129,7 @@ use constant CMD_ERRORS => {
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_USER_HAS_NOT_REGIONS, R_BAD_TOKENS_NUM,
     R_TOO_MANY_FORTS_IN_REGION, R_TOO_MANY_FORTS, R_NOT_ENOUGH_ENCAMPS,
-    R_BAD_SET_HERO_CMD, R_NO_TOKENS_FOR_REDEPLOYMENT
+    R_BAD_SET_HERO_CMD, R_NO_TOKENS_FOR_REDEPLOYMENT, R_BAD_ENCAMPMENTS_NUM
   ],
   register           => [R_BAD_USERNAME, R_BAD_PASSWORD, R_USERNAME_TAKEN],
   resetServer        => [],
@@ -240,7 +247,7 @@ use constant PATTERN => {
       min => MIN_TURNS_NUM,
       max => MAX_TURNS_NUM,
       errorCode => R_BAD_TURNS_NUM
-    }
+    },
   ],
   createGame => [
     {
@@ -401,55 +408,46 @@ use constant DB_GENERATORS_NAMES => ['GEN_MAP_ID', 'GEN_GAME_ID', 'GEN_MESSAGE_I
 use constant DB_TABLES_NAMES     => ['PLAYERS', 'MAPS', 'GAMES', 'MESSAGES', 'CONNECTIONS']                                         ;
 
 use constant DEFAULT_MAPS => [
-  {'mapName' => 'defaultMap1', 'playersNum' => 2, 'turnsNum' => 5},
-  {'mapName' => 'defaultMap2', 'playersNum' => 3, 'turnsNum' => 5},
-  {'mapName' => 'defaultMap3', 'playersNum' => 4, 'turnsNum' => 5},
-  {'mapName' => 'defaultMap4', 'playersNum' => 5, 'turnsNum' => 5},
-  {'mapName' => 'defaultMap5', 'playersNum' => 2, 'turnsNum' => 5, 'regions' => [
-    { 'population' => 1, 'landDescription' => ['mountain'], 'adjacent' => [3, 4] },
-    { 'population' => 1, 'landDescription' => ['sea'], 'adjacent' => [1, 4] },
-    { 'population' => 1, 'landDescription' => ['border', 'mountain'], 'adjacent' => [1]},
-    { 'population' => 1, 'landDescription' => ['coast'], 'adjacent' => [1, 2] }
+  {mapName => 'Are you lucky?', playersNum => 2, turnsNum => 5, regions =>[
+    {
+      population  => 1, landDescription => ['border', 'coast'], adjacent => [2],
+      coordinates => [ [255,290], [234,254], [224,213], [239,168], [287,137], [355,135], [395,178], [371,284], [304,279] ],
+      raceCoords  => [267,216],
+      powerCoords => [346,208]
+    },
+    {
+      population  => 0, landDescription => ['border'], adjacent => [1],
+      coordinates => [ [255,290], [234,254], [224,213], [239,168], [287,137], [355,135], [395,178], [371,284], [304,279] ],
+      raceCoords  => [267,216],
+      powerCoords => [346,208]
+    },
   ]},
-  {'mapName' => 'defaultMap6', 'playersNum' => 2, 'turnsNum' => 7, 'regions' => [
-     { 'landDescription' => ['sea', 'border'], 'adjacent' => [2, 17, 18] },                                            # 1
-     { 'landDescription' => ['mine', 'border', 'coast', 'forest'], 'adjacent' => [1, 18, 19, 3] },                     # 2
-     { 'landDescription' => ['border', 'mountain'], 'adjacent' => [2, 19, 21, 4] },                                    # 3
-     { 'landDescription' => ['farmland', 'border'], 'adjacent' => [3, 21, 22, 5] },                                    # 4
-     { 'landDescription' => ['cavern', 'border', 'swamp'], 'adjacent' => [4, 22, 23, 6] },                             # 5
-     { 'population' => 1, 'landDescription' => ['forest', 'border'], 'adjacent' => [5, 23, 7] },                       # 6
-     { 'landDescription' => ['mine', 'border', 'swamp'], 'adjacent' => [6, 23, 8, 24, 26] },                           # 7
-     { 'landDescription' => ['border', 'mountain', 'coast'], 'adjacent' => [7, 26, 10, 9, 24] },                       # 8
-     { 'landDescription' => ['border', 'sea'], 'adjacent' => [8, 10, 11] },                                            # 9
-     { 'population' => 1, 'landDescription' => ['cavern', 'coast'], 'adjacent' => [9, 8, 11, 26] },                    #10
-     { 'population' => 1, 'landDescription' => ['mine', 'coast', 'forest', 'border'], 'adjacent'=> [10, 26, 27, 12] }, #11
-     { 'landDescription' => ['forest', 'border'], 'adjacent' => [11, 27, 30, 13] },                                    #12
-     { 'landDescription' => ['mountain', 'border'], 'adjacent' => [12, 30, 28, 14] },                                  #13
-     { 'landDescription' => ['mountain', 'border'], 'adjacent' => [13, 28, 16, 15] },                                  #14
-     { 'landDescription' => ['hill', 'border'], 'adjacent' => [14, 16] },                                              #15
-     { 'landDescription' => ['farmland', 'magic', 'border'], 'adjacent' => [15, 20, 28, 17] },                         #16
-     { 'landDescription' => ['border', 'mountain', 'cavern', 'mine', 'coast'], 'adjacent' => [16, 20, 1, 18] },        #17
-     { 'population' => 1, 'landDescription' => ['farmland', 'magic', 'coast'], 'adjacent' => [17, 20, 1, 19] },        #18
-     { 'landDescription' => ['swamp'], 'adjacent' => [18, 3, 21, 2, 20] },                                             #19
-     { 'population' => 1, 'landDescription' => ['swamp'], 'adjacent' => [19, 28, 29, 21] },                            #20
-     { 'population' => 1, 'landDescription' => ['hill', 'magic'], 'adjacent' => [20, 29, 3, 4, 22] },                  #21
-     { 'landDescription' => ['mountain', 'mine'], 'adjacent' => [21, 25, 29, 4, 5, 23] },                              #22
-     { 'population' => 1, 'landDescription' => ['farmland'], 'adjacent' => [22, 25, 6, 5, 24] },                       #23
-     { 'landDescription' => ['hill', 'magic'], 'adjacent' => [23, 26, 7, 25, 8] },                                     #24
-     { 'landDescription' => ['mountain', 'cavern'], 'adjacent' => [24, 22, 23, 26] },                                  #25
-     { 'population' => 1, 'landDescription' => ['farmland'], 'adjacent' => [25, 24, 7, 8, 10, 11, 27] },               #26
-     { 'population' => 1, 'landDescription' => ['swamp', 'magic'], 'adjacent' => [26, 11, 12, 30, 29] },               #27
-     { 'population' => 1, 'landDescription' => ['forest', 'cavern'], 'adjacent' => [29, 30, 13, 14, 16, 20] },         #28
-     { 'landDescription' => ['sea'], 'adjacent' => [28, 20, 21, 22, 25, 27, 30] },                                     #29
-     { 'landDescription' => ['hill'], 'adjacent' => [29, 28, 13, 12, 27] }                                             #30
-   ] },
-   { 'mapName' => 'defaultMap7', 'playersNum' => 2, 'turnsNum' => 5, 'regions' => [
-     { 'landDescription' => ['border', 'mountain', 'mine', 'farmland','magic'], 'adjacent' => [2] },
-     { 'landDescription' => ['mountain'], 'adjacent' => [1, 3] },
-     { 'population' => 1, 'landDescription' => ['mountain', 'mine'], 'adjacent' => [2, 4] },
-     { 'population' => 1, 'landDescription' => ['mountain'], 'adjacent' => [3, 5] },
-     { 'landDescription' => ['mountain', 'mine'], 'adjacent' => [4] }
-   ] }
+  {mapName => 'Cheburashka', playersNum => 3, turnsNum => 5, regions => [
+    {
+      population  => 1, landDescription => ['mountain'], adjacent => [2, 3, 4],
+      coordinates => [ [255,290], [234,254], [224,213], [239,168], [287,137], [355,135], [395,178], [371,284], [304,279] ],
+      raceCoords  => [267,216],
+      powerCoords => [346,208]
+    },
+    {
+      population  => 1, landDescription => ['sea'], adjacent => [1, 4],
+      coordinates => [ [224,213], [175,217], [132,184], [113,136], [131,91], [185,69], [242,77], [272,108], [287,137], [239,168] ],
+      raceCoords  => [143,133],
+      powerCoords => [218,117]
+    },
+    {
+      population  => 1, landDescription => ['border', 'mountain'], adjacent => [1],
+      coordinates => [ [269,399], [249,385], [232,360], [230,337], [236,305], [255,290], [304,279], [371,284], [405,303], [418,330], [411,356], [405,387], [396,399] ],
+      raceCoords  => [297,351],
+      powerCoords => [363,345]
+    },
+    {
+      population  => 1, landDescription => ['coast'], adjacent => [1, 2],
+      coordinates => [ [355,135], [365,96], [400,69], [446,62], [505,86], [523,138], [515,187], [487,218], [442,233], [398,234], [395,178] ],
+      raceCoords  => [400,110],
+      powerCoords => [465,172]
+    }
+  ]}
 ];
 
 # игровые бонусы и штрафы

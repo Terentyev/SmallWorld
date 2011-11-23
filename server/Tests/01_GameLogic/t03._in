@@ -1,0 +1,18 @@
+{
+    "test": [
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+
+        {
+            "action": "finishTurn",
+            "sid": 1
+        }
+    ],
+    "description": "finish first turn of first player"
+}

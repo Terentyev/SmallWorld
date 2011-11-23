@@ -195,7 +195,7 @@ sub checkJsonCmd {
 
   if (
       $result->{result} eq R_ALL_OK &&
-      grep { $_ eq $cmd } qw( defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn )
+      (grep { $_ eq $cmd } qw( defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn ))
   ) {
     $self->checkGameCommand($result);
   }
@@ -336,22 +336,24 @@ sub checkRegion_redeploy {
   # в каждом массиве не должны повторяться регионы
   return 1 if $self->existsDuplicates($js->{regions}) ||
     $self->existsDuplicates($js->{encampments}) ||
-    $self->existsDuplicates(map { regionId => $_ }, @{ $js->{heroes} });
+    $self->existsDuplicates([map { regionId => $_ }, @{ $js->{heroes} }]);
+
+  # у нас должны быть регионы, чтобы расставлять фигурки
+  return 1 if !(grep { $player->activeConq($_) } @{ $game->{gameState}->{regions} });
 
   # войска можно ставить только на свои территории
   foreach my $reg ( @{ $js->{regions} } ) {
     return 1 if (grep {
-      $_->{regionId} == $reg->{regionId} && $_->{ownerId} != $player->{playerId}
-    } @{ $game->{regions} }) ||
-    !(grep { $_->{ownerId} == $player->{playerId} } @{ $game->{regions} });
+      $_->{regionId} == $reg->{regionId} && !$player->activeConq($_)
+    } @{ $game->{gameState}->{regions} });
   }
 
   # ставить лагеря/форты/героев можно только на свои регионы, на которых есть
   # наши фигурки
   foreach my $reg ( (@{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
-    return 1 if grep {
-      $_->{regionId} == $reg->{regionId} && $_->{ownerId} != $player->{playerId}
-    } @{ $js->{regions} };
+    return 1 if defined $reg && (grep {
+      $_->{regionId} == $reg->{regionId} && !$player->activeConq($_)
+    } @{ $game->{gameState}->{regions} });
   }
 }
 
@@ -379,7 +381,6 @@ sub checkStage {
   # 1. пользователь, который послал команду, != активный пользователь
   # 2. действие, которое запрашивает пользователь, не соответствует текущему
   #    состоянию игры
-  my $func = $self->can("checkStage_$js->{action}"); # see UNIVERSAL::can
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
     !$sp->canCmd($js, $player->{tokensInHand}) ||
@@ -409,21 +410,22 @@ sub checkTokensNum {
 sub checkForts {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   return defined $self->{json}->{fortified} && defined $self->{json}->{fortified}->{regionId} &&
-    FORTRESS_MAX >= 1 * grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} };
+    FORTRESS_MAX >= 1 * (grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} });
 }
 
 sub checkFortsInRegion {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # можно ставить только один форт в регион
-  return grep {
-    $_->{regionId} == $self->{json}->{fortified}->{regionId} && defined $_->{fortified}
-  } @{ $game->{gameState}->{regions} };
+  return $self->{json}->{fortified} &&
+    (grep {
+      $_->{regionId} == $self->{json}->{fortified}->{regionId} && defined $_->{fortified}
+    } @{ $game->{gameState}->{regions} });
 }
 
 sub checkEnoughEncamps {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $encampsNum = 0;
-  grep { $encampsNum += $_->{encampment} } @{ $game->{gameState}->{regions} };
+  grep { $encampsNum += $game->getRegion($_->{regionId})->safe('encampment') } @{ $game->{gameState}->{regions} };
   grep { $encampsNum += $_->{encampmentsNum} } @{ $self->{json}->{encampments} };
   return $encampsNum > ENCAMPMENTS_MAX;
 }
@@ -462,12 +464,13 @@ sub checkGameCommand {
 
   $result->{result} = $self->checkErrorHandlers({
     &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == $region->{ownerId}; },
+    &R_BAD_ENCAMPMENTS_NUM          => sub { grep { !defined $_->{encampmentsNum} || $_->{encampmentsNum} <= 0 } @{ $js->{encampments} }; },
     &R_BAD_FRIEND                   => sub { $self->checkFriend(@gameVariables); },
     &R_BAD_FRIEND_ID                => sub { !(grep { $_->{playerId} == $js->{friendId} && $_->{playerId} != $player->{playerId} } @{ $game->{gameState}->{players} }); },
     &R_BAD_MONEY_AMOUNT             => sub { $player->{coins} < $js->{position}; },
     &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables, $result); },
     &R_BAD_REGION_ID                => sub { $self->checkRegionId(@gameVariables); },
-    &R_BAD_SET_HERO_CMD             => sub { HEROES_MAX < $@{ $js->{heroes} }; },
+    &R_BAD_SET_HERO_CMD             => sub { defined $js->{heroes} && HEROES_MAX < scalar(@{ $js->{heroes} }); },
     &R_BAD_SID                      => sub { $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId}; },
     &R_BAD_STAGE                    => sub { $self->checkStage(@gameVariables); },
     &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables); },

@@ -6,6 +6,7 @@ use warnings;
 use utf8;
 
 use JSON qw(encode_json decode_json);
+use File::Basename qw(basename);
 
 use SmallWorld::Consts;
 use SmallWorld::Config;
@@ -57,8 +58,24 @@ sub getGame {
   return $self->{_game};
 }
 
+# возвращает url до картинки с изображением карты
+sub getMapUrl {
+  my ($self, $mapId) = @_;
+  opendir(DIR, MAP_IMGS_DIR);
+  my @files = readdir(DIR);
+  my $prefix = MAP_IMG_PREFIX;
+  my $img = undef;
+  foreach my $file ( @files ) {
+    if ( basename($file) =~ m/$prefix$mapId\.(png|jpg|jpeg)/ ) {
+      return MAP_IMG_URL_PREFIX . basename($file);
+    }
+  }
+  return undef;
+}
+
 # Команды, которые приходят от клиента
 sub cmd_resetServer {
+  return if !$ENV{DEBUG};
   my ($self, $result) = @_;
   $self->{db}->clear();
 }
@@ -71,7 +88,7 @@ sub cmd_register {
 sub cmd_login {
   my ($self, $result) = @_;
   $result->{sid} = $self->{db}->makeSid( @{$self->{json}}{qw/username password/} );
-  $result->{playerId} = $self->{db}->getPlayerId($result->{sid});
+  $result->{userId} = $self->{db}->getPlayerId($result->{sid});
 }
 
 sub cmd_logout {
@@ -95,6 +112,7 @@ sub cmd_getMessages {
 }
 
 sub cmd_createDefaultMaps {
+  return if !$ENV{DEBUG};
   my ($self, $result) = @_;
   foreach (@{&DEFAULT_MAPS}){
     $self->{db}->addMap( @{$_}{ qw/mapName playersNum turnsNum/}, exists($_->{regions}) ? encode_json($_->{regions}) : "[]");
@@ -103,7 +121,9 @@ sub cmd_createDefaultMaps {
 
 sub cmd_uploadMap {
   my ($self, $result) = @_;
-  $result->{mapId} = $self->{db}->addMap( @{$self->{json}}{qw/mapName playersNum turnsNum/}, encode_json($self->{json}->{regions}));
+  $result->{mapId} = $self->{db}->addMap(
+    @{$self->{json}}{qw/mapName playersNum turnsNum/},
+    encode_json($self->{json}->{regions}));
 }
 
 sub cmd_createGame {
@@ -126,11 +146,14 @@ sub cmd_getGameList {
       } } @{$pl}
     ];
     my ($activePlayerId, $turn) = (undef, 0);
-    #TO DO сделать для начатых игр
+    if ( $_->{ISSTARTED} )
+    {
+      ($activePlayerId, $turn) = ($_->{ACTIVEPLAYERID}, $_->{CURRENTTURN});
+    }
     push @{$result->{games}}, { 'gameId' => $_->{ID}, 'gameName' => $_->{NAME}, 'gameDescription' => $_->{DESCRIPTION},
                                 'mapId' => $_->{MAPID}, 'maxPlayersNum' => $_->{PLAYERSNUM}, 'turnsNum' => $_->{TURNSNUM},
                                 'state' => $_->{ISSTARTED} + 1, 'activePlayerId' => $activePlayerId, 'turn' => $turn,
-                                'players' => $players };
+                                'players' => $players, 'url' => $self->getMapUrl($_->{MAPID})};
   }
 }
 
@@ -138,10 +161,11 @@ sub cmd_getMapList {
   my ($self, $result) = @_;
   $result->{maps} = [
     map { {
-      'mapId' => $_->{ID},
-      'mapName' => $_->{NAME},
+      'mapId'      => $_->{ID},
+      'mapName'    => $_->{NAME},
       'playersNum' => $_->{PLAYERSNUM},
-      'turnsNum' => $_->{TURNSNUM}
+      'turnsNum'   => $_->{TURNSNUM},
+      'url'        => $self->getMapUrl($_->{ID})
     } } @{$self->{db}->getMaps()}
   ];
 }
@@ -176,7 +200,7 @@ sub cmd_selectRace {
 sub cmd_conquer {
   my ($self, $result) = @_;
   my $game = $self->getGame();
-  $game->conquer($self->{json}->{regionId});
+  $game->conquer($self->{json}->{regionId}, $result);
   $game->save();
 }
 
@@ -197,7 +221,7 @@ sub cmd_finishTurn {
 sub cmd_redeploy {
   my ($self, $result) = @_;
   my $game = $self->getGame();
-  $game->redeploy($self->{json}->{qw( regions encampments fortified heroes )});
+  $game->redeploy(@{ $self->{json} }{qw( regions encampments fortified heroes )});
   $game->save();
 }
 

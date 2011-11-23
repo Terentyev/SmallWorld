@@ -23,11 +23,7 @@ sub _init {
   $self->{player} = $player;
   $self->{allRegions} = $regions;
   # извлекаем только свои регионы (остальные скорее всего не понадобятся)
-  $self->{regions} = (grep {
-#    !defined $_->{tokenBadgeId} && !defined $player->{currentTokenBadge}->{tokenBadgeId} ||
-    defined $_->{tokenBadgeId} && defined $player->{currentTokenBadge}->{tokenBadgeId} &&
-    $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId}
-  } @{ $regions }) || [];
+  $self->{regions} = [grep { $player->activeConq($_) } @{ $regions }] || [];
 }
 
 # бонус монетками для способности
@@ -50,9 +46,9 @@ sub canAttack {
       $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE
     } @{ $region->{constRegionState} }) &&
     # можно нападать, если мы имеем регион, граничащий с регионом-жертвой
-    grep {
+    (grep {
       grep { $_ == $region->{regionId} } $_->{adjacentRegions}
-    } @{ $self->{regions} };
+    } @{ $self->{regions} });
 }
 
 # возвращает количество бонусных фигурок при завоевании у оппонента
@@ -67,16 +63,16 @@ sub declineRegion {
 
 # можем ли мы с этим умением выполнить эту команду
 sub canCmd {
-  my $js = $_[1];
+  my ($self, $js, $tokensInHand) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/лагеря/форты
   # или команда атаки с ненулевым числом фигурок на руках
   # или команда окончания хода с нулевым числом фигурок на руках
   # или команда выбора расы при условии, что раса не выбрана
-  return ($js->{action} eq 'redeploy') && (!(grep { defined $js->{$_} } qw( heroic encampments fortified ))) ||
-    ($js->{action} eq 'conquer') && (defined $_[2] && $_[2] >= 1) ||
-    ($js->{action} eq 'finishTurn') && (!defined $_[2] || $_[2] == 0) ||
-    ($js->{action} eq 'selectRace') && (!defined $_[2]);
+  return ($js->{action} eq 'redeploy') && (!(grep { defined $js->{$_} } qw( heroes encampments fortified ))) ||
+    ($js->{action} eq 'conquer') && (defined $tokensInHand && $tokensInHand >= 1) ||
+    ($js->{action} eq 'finishTurn') && (!defined $tokensInHand || $tokensInHand == 0) ||
+    ($js->{action} eq 'selectRace') && (!defined $tokensInHand);
 }
 
 # возвращает количество первоначальных фигурок для каждого умения
@@ -113,21 +109,22 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub _init {
-  base::_init(@_);
   my ($self, $player, $regions, $badge) = @_;
+  $self->SUPER::_init($player, $regions, $badge);
   $self->{dice} = $badge->{dice} if exists $badge->{dice};
 }
 
 sub conquestRegionTokensBonus {
-  return exists $_[0]->{dice} && defined $_[0]->{dice}
-    ? $_[0]->{dice}
-    : base::conquestRegionTokensBonus(@_);
+  my ($self, $region) = @_;
+  return exists $self->{dice} && defined $self->{dice}
+    ? $self->{dice}
+    : $self->SUPER::conquestRegionTokensBonus($region);
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # базовый класс + бросить кости (если мы их еще не бросали)
-  return base::canCmd(@_) || $js->{action} eq 'throwDice' && !exists $_[0]->{dice};
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'throwDice' && !exists $self->{dice};
 }
 
 sub initialTokens {
@@ -146,16 +143,16 @@ use SmallWorld::Consts;
 
 sub declineRegion {
   my ($self, $region) = @_;
-  base::declineRegion(@_);
+  $self->SUPER::declineRegion($region);
   $region->{encampment} = undef;
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/форты
-  return $js->{action} eq 'redeploy' &&
-    !(grep { defined $js->{$_} } qw( heroic fortified ));
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'redeploy' &&
+    !(grep { defined $js->{$_} } qw( heroes fortified ));
 }
 
 sub initialTokens {
@@ -191,9 +188,9 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # базовый класс + подружить
-  return base::canCmd(@_) || $js->{action} eq 'selectFriend';
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'selectFriend';
 }
 
 sub initialTokens {
@@ -212,14 +209,14 @@ use SmallWorld::Consts;
 
 sub declineRegion {
   my ($self, $region) = @_;
-  base::declineRegion(@_);
+  $self->SUPER::declineRegion($region);
   $region->{dragon} = undef;
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # базовый класс + атаковать драконом
-  return base::canCmd(@_) || $js->{action} eq 'dragonAttack';
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'dragonAttack';
 }
 
 sub initialTokens {
@@ -239,7 +236,7 @@ use SmallWorld::Consts;
 sub canAttack {
   my ($self, $region, $regions) = @_;
   return
-    base::canAttack(@_) ||
+    $self->SUPER::canAttack($region, $regions) ||
     # если не море. Регион не обязательно должен быть соседним
     !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions });
 }
@@ -259,12 +256,12 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep {
+  return 1 * (grep {
     # за каждую оккупированную территорию,..
     $_->{tokensNum} > 0 &&
       # на которой расположен лес получаем по монетке
       grep { $_ eq REGION_TYPE_FOREST } $_->{constRegionState}
-  } @{ $_[0]->{regions} };
+  } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -283,12 +280,12 @@ use SmallWorld::Consts;
 
 sub coinsBonus {
   # за каждый форт мы получаем по дополнительной монетке
-  return 1 * grep { $_->{fortified} } @{ $_[0]->{allRegions} };
+  return 1 * (grep { $_->{fortified} } @{ $_[0]->{allRegions} });
 }
 
 sub declineRegion {
   my ($self, $region) = @_;
-  base::declineRegion(@_);
+  $self->SUPER::declineRegion($region);
   if ( !defined $region->{inDecline} ) {
     # видимо, если мы второй раз приводим расу в упадок после расстановки
     # фортов, то надо их удалить
@@ -297,11 +294,11 @@ sub declineRegion {
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/лагеря
-  return $js->{action} eq 'redeploy' &&
-    !(grep { defined $js->{$_} } qw( heroic encampments ));
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'redeploy' &&
+    !(grep { defined $js->{$_} } qw( heroes encampments ));
 }
 
 sub initialTokens {
@@ -324,10 +321,10 @@ sub declineRegion {
 }
 
 sub canCmd {
-  my $js = $_->[1];
+  my ($self, $js, $tokensInHand) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить лагеря/форты
-  return $js->{action} eq 'redeploy' &&
+  return $self->SUPER::canCmd($js, $tokensInHand) || $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( encampments fortified ));
 }
 
@@ -346,12 +343,12 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep {
+  return 1 * (grep {
     # за каждую оккупированную территорию,..
     $_->{tokensNum} > 0 &&
       # на которой расположен холм получаем по монетке
       grep { $_ eq REGION_TYPE_HILL } $_->{constRegionState}
-  } @{ $_[0]->{regions} };
+  } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -369,10 +366,10 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep {
+  return 1 * (grep {
     # за каждый оккупированный регион получаем по монетке
     $_->{tokensNum} > 0
-  } @{ $_[0]->{regions} };
+  } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -391,9 +388,9 @@ use SmallWorld::Consts;
 
 sub conquestRegionTokensBonus {
   my ($self, $region) = @_;
-  return grep { $_ eq REGION_TYPE_FARMLAND || $_ eq REGION_TYPE_HILL } @{ $region->{constRegionState} }
+  return (grep { $_ eq REGION_TYPE_FARMLAND || $_ eq REGION_TYPE_HILL } @{ $region->{constRegionState} })
     ? MOUNTED_CONQ_TOKENS_NUM
-    : base::conquestRegionTokensBonus(@_);
+    : $self->SUPER::conquestRegionTokensBonus($region);
 }
 
 sub initialTokens {
@@ -411,7 +408,7 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} };
+  return 1 * (grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -467,12 +464,12 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * grep {
+  return 1 * (grep {
     # за каждый оккупированный регион
     $_->{tokensNum} > 0 &&
       # на котором есть болота (?)
       grep { $_ eq REGION_TYPE_SWAMP } @{ $_->{constRegionState} }
-  } @{ $_[0]->{regions} };
+  } @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
@@ -494,22 +491,22 @@ sub canAttack {
 
   return
     # либо мы можем атаковать регион по стандартным правилам
-    base::canAttack(@_) ||
+    $self->SUPER::canAttack($region) ||
     # либо на атакуемом регионе есть природная пещера
-    grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} } &&
+    (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} }) &&
     # и у нас есть регион с такой же природной пещерой
-    grep {
+    (grep {
       grep { $_ eq REGION_TYPE_CAVERN } @{ $_->{consRegionState} }
-    } @{ $self->{regions} };
+    } @{ $self->{regions} });
 }
 
 sub conquestRegionTokensBonus {
   my ($self, $region) = @_;
   return
     # если атакуемый регион с пещерой (природная пещера, а не пещера тролля)
-    grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} }
+    (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} })
       ? UNDERWORLD_CONQ_TOKENS_NUM
-      : base::conquestRegionTokensBonus(@_);
+      : $self->SUPER::conquestRegionTokensBonus($region);
 }
 
 sub initialTokens {
@@ -531,7 +528,7 @@ sub coinsBonus {
   die 'Stupid monkey forget pass parameter "isFirstTurn" to ' . __PACKAGE__ if !defined $isFirstTurn;
   return $isFirstTurn
     ? WEALTHY_COINS_NUM
-    : base::coinsBonus(@_);
+    : $self->SUPER::coinsBonus($isFirstTurn);
 }
 
 sub initialTokens {

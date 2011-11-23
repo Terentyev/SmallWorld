@@ -2,7 +2,7 @@
     "test": [
         {
             "action": "redeploy",
-            "sid": 1,
+            "sid": 2,
             "regions": [
                 { "regionId": 1, "tokensNum": 1 },
                 { "regionId": 2, "tokensNum": 1 }
@@ -10,54 +10,54 @@
         },
         {
             "action": "redeploy",
-            "sid": 1,
-            "regions": [
-                { "regionId": 2, "tokensNum": 1 }
-            ]
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
-            "regions": [
-                { "regionId": 1, "tokensNum": 0 }
-            ]
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
-            "regions": [],
-            "heroes": [1]
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
-            "regions": [],
-            "fortified": { "regionId": 1 }
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
-            "regions": [],
-            "encampments": [ { "regionId": 1, "encampmentsNum": 1 } ]
-        },
-
-
-        {
-            "action": "redeploy",
-            "sid": 1,
-            "regions": []
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
+            "sid": 2,
             "regions": [
                 { "regionId": 1, "tokensNum": 1 }
             ]
         },
         {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [
+                { "regionId": 2, "tokensNum": 0 }
+            ]
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [],
+            "heroes": [1]
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [],
+            "fortified": { "regionId": 1 }
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [],
+            "encampments": [ { "regionId": 1, "encampmentsNum": 1 } ]
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [],
+            "encampments": [ { "regionId": 2, "encampmentsNum": 0 } ]
+        },
+
+
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [ { "regionId": 2, "tokensNum": 1 } ],
+            "encampments": [ { "regionId": 2, "encampmentsNum": 2 } ]
+        },
+        {
             "action": "getGameState",
-            "sid": 1
+            "sid": 2
         }
     ],
-    "description": "first turn redeploy"
+    "description": "second player redeploy tokens"
 }

@@ -15,13 +15,13 @@
         "result": "badStage"
     },
     {
-        "result": "badStage"
+        "result": "badRegion"
     },
-
-
     {
-        "result": "ok"
+        "result": "badEncampmentsNum"
     },
+
+
     {
         "result": "ok"
     },
@@ -46,7 +46,12 @@
                     {
                         "constRegionState": [ "border" ],
                         "adjacentRegions": [ 1 ],
-                        "currentRegionState": { "tokensNum": 0 }
+                        "currentRegionState": {
+                            "tokensNum": 11,
+                            "tokenBadgeId": 2,
+                            "ownerId": 2,
+                            "encampment": 2
+                        }
                     }
                 ]
             },
@@ -56,7 +61,6 @@
                     "username": "username1",
                     "isReady": 1,
                     "priority": 0,
-                    "coins": 5,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
@@ -70,7 +74,13 @@
                     "username": "username2",
                     "isReady": 1,
                     "priority": 1,
-                    "currentTokenBadge": {},
+                    "tokensInHand": 0,
+                    "coins": 4,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 2,
+                        "specialPowerName": "bivouacking",
+                        "raceName": "elves"
+                    },
                     "declineTokenBadge": {}
                 }
             ]
