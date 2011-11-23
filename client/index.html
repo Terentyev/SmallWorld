@@ -136,7 +136,7 @@
                   <th>Players</th>
                   <th>Map</th>
                   <th>Turn</th>
-                  <th>Description</th>
+                  <th width="100">Description</th>
                </tr>
              </thead>
              <tbody>
@@ -246,10 +246,10 @@
         <div class="body">
           <table width="100%">
             <tr><td width="100">Name:</td><td><span id="cgameName"></span></td></tr>
-            <tr ><td>Description:</td><td><span id="cgameDescription"></span></td></tr>
+            <tr><td>Players:</td><td><span id="cgamePlayers"></span></td></tr>
             <tr><td>Map:</td><td><span id="cgameMap"></span></td></tr>
             <tr><td>Max turns:</td><td><span id="cgameTurnsNum"></span></td></tr>
-            <tr><td>Players:</td><td><span id="cgamePlayers"></span></td></tr>
+            <tr><td>Description:</td><td><div id="cgameDescription" class="wrap"></div></td></tr>
             <tr><td colspan="2">
               <div class="buttons">
                 <div id="btnLeave" onclick="cmdLeaveGame();">Leave</div>
@@ -264,7 +264,7 @@
      <tr><td>
        <div id="divChat" class="corner-all">
          <table width="100%">
-           <tr><td colspan="3">
+           <tr><td colspan="3" border="1">
              <div class="scrollBox"><div id="divMessages" class="scroll-pane"></div></div>
            </td></tr>
            <tr>
@@ -277,7 +277,7 @@
          </table>
        </div>
      </td><td>
-     2
+
      </td></tr>
     </table>
     
