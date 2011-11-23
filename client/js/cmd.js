@@ -27,7 +27,7 @@ function cmdLogin() {
 
 function hdlLogin(ans) {
   //"Login accepted. Welcome back, "+ data.username
-  data.playerId = ans.playerId;
+  data.playerId = ans.userId;
   data.sid = ans.sid;
   _setCookie(["playerId", "sid", "username"], [data.playerId, data.sid, data.username]);
   $("#divLoginError").empty();
@@ -64,6 +64,7 @@ function cmdSendMessage() {
 }
 
 function hdlSendMessage(ans) {
+  $("#inputMessageText").val('');
   cmdGetMessages();
 }
 
