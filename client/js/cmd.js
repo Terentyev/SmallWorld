@@ -39,11 +39,6 @@ function cmdLogout() {
     action: "logout",
     sid: data.sid
   };
-  sendRequest(cmd, hdlLogout);
-}
-
-function hdlLogout(ans) {
-  //You have been logged out. Come back soon!
   with (data) {
     playerId = null;
     sid = null;
@@ -51,7 +46,7 @@ function hdlLogout(ans) {
     gameId = null;
   }
   _setCookie(["playerId", "sid", "username", "gameId"], [null, null, null, null]);
-  showLobby();
+  sendRequest(cmd, showLobby);
 }
 
 function cmdSendMessage() {
