@@ -4,12 +4,13 @@
 .jspTrack
 {
   background: #eeeef4;
+  /* border: 1px solid #5588bb;*/
 }
+
 
 .jspDrag
 {
-  background:  #bbd;
-
+  background:  #5588bb;
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
   border-radius: 10px;
@@ -19,7 +20,7 @@
 .jspTrack .jspHover,
 .jspDrag:hover
 {
-  background: #8B8B9F;
+  background: #5588bb;
 }
 
 

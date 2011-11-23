@@ -6,10 +6,16 @@ button {padding: 3px;}
 body {font: 14px Verdana, Arial; text-align:left; padding: 30px 0 0 0;}
 
 #divCurrentServer {position: absolute; left: 0; top: 0;  color:#fff; font-weight:bold; height:30px;
-                   line-height:30px; background:url(../pics/header.gif) repeat-x; padding: 0px 8px 0px 8px; cursor: pointer;}
+                   line-height:30px; background:url(images/header.gif) repeat-x; padding: 0px 8px 0px 8px; cursor: pointer;}
 #divLogout {display:none;}
 
 #divChat {padding: 2px; }
+
+#divCurrentGame tr {vertical-align: top; line-height:30px;}
+#cgameDescription {width:120px;}
+.wrap { white-space: pre-wrap; /* css-3 */ white-space: -moz-pre-wrap; /* Mozilla */
+        white-space: -pre-wrap; /* Opera 4-6 */ white-space: -o-pre-wrap; /* Opera 7 */
+        word-wrap: break-word; /* Internet Explorer 5.5+ */ }
 
 #inputGameDescr { width: 400px; height: 200px; max-width: 400px; max-height: 200px;}
 
@@ -39,7 +45,7 @@ table.tablesorter thead tr th, table.tablesorter tfoot tr th {
   border:1px solid #336699;
 }
 table.tablesorter thead tr .header {
-  background-image: url(./images/bg.gif);
+  background-image: url(images/bg.gif);
   background-repeat: no-repeat;
   background-position: center right;
   cursor: pointer;
@@ -56,28 +62,30 @@ table.tablesorter tbody tr.odd td {
   background-color:#F0F0F6;
 }
 table.tablesorter thead tr .headerSortUp {
-  background-image: url(./images/asc.gif);
+  background-image: url(images/asc.gif);
 }
 table.tablesorter thead tr .headerSortDown {
-  background-image: url(./images/desc.gif);
+  background-image: url(images/desc.gif);
 }
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
   background-color: #8dbdd8;
 }
 
+.scrollBox { border: 1px solid #5588bb;}
+
 
 #divCurrentGame .header,
 #divCurrentPlayer .header,
 #modal-container .header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:bold;
-                          background:url(../pics/header.gif) repeat-x; -moz-border-radius: 6px 6px 0 0;
+                          background:url(images/header.gif) repeat-x; -moz-border-radius: 6px 6px 0 0;
                           -webkit-border-radius: 6px 6px 0 0; border-radius: 6px 6px 0 0; text-align:center;}
 .header span {padding-left:8px;}
 .buttons {line-height:26px; width:180px; float:right; padding: 4px 0 0 0;}
 .buttons div {float:right; margin-left:4px; width:80px; height:26px; color:#666; font-weight:bold;
-              text-align:center; background:url(../pics/button.gif) repeat-x; border:1px solid #336699;
+              text-align:center; background:url(images/button.gif) repeat-x; border:1px solid #336699;
               cursor:pointer;}
 .tbutton {margin-left:4px; padding-top: 4px; width:80px; height:22px; color:#666; font-weight:bold;
-          text-align:center; background:url(../pics/button.gif) repeat-x; border:1px solid #336699;
+          text-align:center; background:url(images/button.gif) repeat-x; border:1px solid #336699;
           cursor:pointer;}
 
 #myTable tr {border: 1px solid #336699;}
