@@ -183,7 +183,7 @@ sub getMaps {
 sub getGameState {
   my $self = shift;
   return $self->{dbh}->selectrow_hashref('
-      SELECT g.id, g.name, g.description, g.mapId, g.state, g.version
+      SELECT g.id, g.name, g.description, g.mapId, g.state, g.version, g.activePlayerId, g.currentTurn
       FROM GAMES g
       INNER JOIN CONNECTIONS c ON c.gameId = g.id
       INNER JOIN PLAYERS p ON p.id = c.playerId
@@ -193,7 +193,11 @@ sub getGameState {
 
 sub saveGameState {
   my $self = shift;
-  $self->_do('UPDATE GAMES SET state = ?, version = version + 1 WHERE id = ?', @_);
+  $self->_do('
+      UPDATE GAMES
+      SET state = ?, version = version + 1, activePlayerId = ?, currentTurn = ?
+      WHERE id = ?',
+      @_);
 }
 
 sub getMap {
@@ -204,8 +208,12 @@ sub getMap {
 
 sub getGames {
   my $self = shift;
-  return $self->{dbh}->selectall_arrayref('SELECT g.id, g.name, g.description, g.mapId, g.isStarted, g.state, m.playersNum, m.turnsNum
-                                           FROM GAMES g INNER JOIN MAPS m ON g.mapId = m.id', { Slice => {} } ) or dbError;
+  return $self->{dbh}->selectall_arrayref('
+      SELECT
+        g.id, g.name, g.description, g.mapId, g.isStarted, g.state, m.playersNum, m.turnsNum, g.activePlayerId,
+        g.currentTurn
+      FROM GAMES g INNER JOIN MAPS m ON g.mapId = m.id',
+      { Slice => {} } ) or dbError;
 }
 
 sub getPlayers {

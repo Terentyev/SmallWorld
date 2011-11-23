@@ -6,6 +6,7 @@ use warnings;
 use utf8;
 
 use JSON qw(encode_json decode_json);
+use File::Basename qw(basename);
 
 use SmallWorld::Consts;
 use SmallWorld::Config;
@@ -55,6 +56,21 @@ sub getGame {
     $self->{_game} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid}, $self->{json}->{action});
   }
   return $self->{_game};
+}
+
+# возвращает url до картинки с изображением карты
+sub getMapUrl {
+  my ($self, $mapId) = @_;
+  opendir(DIR, MAP_IMGS_DIR);
+  my @files = readdir(DIR);
+  my $prefix = MAP_IMG_PREFIX;
+  my $img = undef;
+  foreach my $file ( @files ) {
+    if ( basename($file) =~ m/$prefix$mapId\.(png|jpg|jpeg)/ ) {
+      return MAP_IMG_URL_PREFIX . basename($file);
+    }
+  }
+  return undef;
 }
 
 # Команды, которые приходят от клиента
@@ -130,11 +146,14 @@ sub cmd_getGameList {
       } } @{$pl}
     ];
     my ($activePlayerId, $turn) = (undef, 0);
-    #TO DO сделать для начатых игр
+    if ( $_->{ISSTARTED} )
+    {
+      ($activePlayerId, $turn) = ($_->{ACTIVEPLAYERID}, $_->{CURRENTTURN});
+    }
     push @{$result->{games}}, { 'gameId' => $_->{ID}, 'gameName' => $_->{NAME}, 'gameDescription' => $_->{DESCRIPTION},
                                 'mapId' => $_->{MAPID}, 'maxPlayersNum' => $_->{PLAYERSNUM}, 'turnsNum' => $_->{TURNSNUM},
                                 'state' => $_->{ISSTARTED} + 1, 'activePlayerId' => $activePlayerId, 'turn' => $turn,
-                                'players' => $players };
+                                'players' => $players, 'url' => $self->getMapUrl($_->{MAPID})};
   }
 }
 
@@ -142,10 +161,11 @@ sub cmd_getMapList {
   my ($self, $result) = @_;
   $result->{maps} = [
     map { {
-      'mapId' => $_->{ID},
-      'mapName' => $_->{NAME},
+      'mapId'      => $_->{ID},
+      'mapName'    => $_->{NAME},
       'playersNum' => $_->{PLAYERSNUM},
-      'turnsNum' => $_->{TURNSNUM}
+      'turnsNum'   => $_->{TURNSNUM},
+      'url'        => $self->getMapUrl($_->{ID})
     } } @{$self->{db}->getMaps()}
   ];
 }

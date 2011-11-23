@@ -159,7 +159,7 @@ sub save {
   # информацию о них
   grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{players} };
   grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{regions} };
-  $self->{db}->saveGameState(encode_json($gs), $gs->{gameInfo}->{gameId});
+  $self->{db}->saveGameState(encode_json($gs), $gs->{activePlayerId}, $gs->{currentTurn}, $gs->{gameInfo}->{gameId});
   $self->{_version}++;
 }
 
