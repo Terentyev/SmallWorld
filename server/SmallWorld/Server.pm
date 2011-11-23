@@ -29,14 +29,14 @@ sub new {
 }
 
 sub process {
-	my ($self, $r) = @_;
+  my ($self, $r) = @_;
   if ( $r->uri() eq '/upload_map' ) {
     $self->{uploader}->map_upload($r);
   }
   else {
-	  $self->{processor}->process(content($r));
+    $self->{processor}->process(content($r));
+#    $self->{processor}->process($r->param('request'));
   }
-#	$self->{processor}->process($r->param('request'));
 }
 
 # код по выдергиванию json-запроса взят из примера по адресу:
