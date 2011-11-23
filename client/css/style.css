@@ -9,23 +9,21 @@ body {font: 14px Verdana, Arial; text-align:left; padding: 30px 0 0 0;}
                    line-height:30px; background:url(images/header.gif) repeat-x; padding: 0px 8px 0px 8px; cursor: pointer;}
 #divLogout {display:none;}
 
-#divChat {padding: 2px; }
+#divChat {padding: 2px;}
 
-#divCurrentGame tr {vertical-align: top; line-height:30px;}
+#divCurrentGame tr, #tableNewGame tr, #tableUploadMap tr {vertical-align: top; line-height:30px;}
+#tableUploadMap select {width: 50px;}
 #cgameDescription {width:120px;}
-.wrap { white-space: pre-wrap; /* css-3 */ white-space: -moz-pre-wrap; /* Mozilla */
-        white-space: -pre-wrap; /* Opera 4-6 */ white-space: -o-pre-wrap; /* Opera 7 */
-        word-wrap: break-word; /* Internet Explorer 5.5+ */ }
+.wrap { white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word; }
 
-#inputGameDescr { width: 400px; height: 200px; max-width: 400px; max-height: 200px;}
+#inputGameDescr, #inputMapRegions { width: 400px; height: 200px; max-width: 400px; max-height: 200px;}
 
-#tableNewGame tr {vertical-align: top;}
+
 .body {line-height:30px; padding: 4px;}
 
                    
 .corner-all { border:2px solid #336699; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; }
 .corner-top { border:2px solid #336699; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; border-radius: 10px 10px 0 0; }
-
 .tedit {width: 100%;}
 .error {font-weight:bold; color: #cd0a0a;}
 
@@ -72,7 +70,6 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 }
 
 .scrollBox { border: 1px solid #5588bb;}
-
 
 #divCurrentGame .header,
 #divCurrentPlayer .header,

@@ -184,6 +184,45 @@
              </div>
           </div>
           <div id="divUploadMap">
+            <table id="tableUploadMap">
+              <tr>
+                <td width="150">Name:</td>
+                <td width="400"> <input class="tedit" type="text" id="inputMapName"/></td>
+              </tr>
+              <tr>
+                <td>Players:</td>
+                <td>
+                  <select id="mapPlayersNum">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Turns:</td>
+                <td>
+                  <select id="mapTurnsNum">
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Regions:</td>
+                <td><textarea id="inputMapRegions"></textarea></td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <div class="buttons"><div id="btnUploadMap" onclick="cmdUploadMap">Upload</div></div>
+                </td>
+              </tr>
+            </table>
 
           </div>
         </div>
