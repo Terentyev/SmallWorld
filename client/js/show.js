@@ -49,10 +49,12 @@ function showLobby() {
   if (data.playerId != null && data.gameId == null) {
     $("#tabs").tabs("enable", 1);
     $("#tabs").tabs("enable", 2);
+    $("#tabs").tabs("enable", 4);
   } else {
     $("#tabs").tabs("select", 0);
     $("#tabs").tabs("disable", 1);
     $("#tabs").tabs("disable", 2);
+    $("#tabs").tabs("disable", 4);
   }
 }
 
