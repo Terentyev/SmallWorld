@@ -221,8 +221,10 @@
               <tr>
                 <td>File:</td>
                 <td>
-                  <form id="formUploadMap" action="http://server.smallworld/upload_map" method="POST" enctype="multipart/form-data" target="test1">
+                  <iframe name="test1"></iframe>
+                  <form id="formUploadMap" action="http://client.smallworld/upload_map" method="POST" enctype="multipart/form-data" target="test1">
                     <input name="mapId" value="1" hidden="1"/>
+                    <input name="address" value="http://server.smallworld/upload_map" hidden="1"/>
                     <input type="file" name="filename" />
                   </form>
                   <input type="checkbox" onclick="alert(1);" text="sdfsdf">
