@@ -223,6 +223,7 @@ use constant PATTERN => {
       name => 'mapName',
       type => 'unicode',
       mandatory => 1,
+      min => 1,
       max => MAX_MAPNAME_LEN,
       errorCode => R_BAD_MAP_NAME
     },
