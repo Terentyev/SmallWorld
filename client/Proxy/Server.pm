@@ -8,8 +8,8 @@ use utf8;
 use Apache2::Const -compile => qw( OK REDIRECT );
 use APR::Request::Param;
 use HTTP::Request;
-use HTTP::Request::StreamingUpload;
 use HTTP::Headers;
+use HTTP::Message;
 use LWP::UserAgent;
 use URI::Escape;
 
@@ -70,22 +70,18 @@ sub proxyUpload {
     return $self->redirect($r);
   }
 
-  my $ext = ($body->upload_filename() =~ m/.*(\..+)$/)[0];
-
-  if ( !defined $ext || $ext !~ m/^\.(png|jpeg|jpg)$/ ) {
-    return $self->redirect($r);
-  }
-
   my $filen = $body->upload_fh();
-  $self->{request} = HTTP::Request::StreamingUpload->new(
-      POST         => $r->param('address'),
-      fh           => $filen,
-      headers      => HTTP::Headers->new(
-        'Content-Length' => -s $filen
-      ),
-      Content_Type => 'multipart/form-data',
-      Content      => [ mapId => $r->param('mapId') ]
-  );
+
+  $self->{request} = HTTP::Request->new(POST => $r->param('address'));
+  $self->{request}->header('Content-Type' => 'multipart/form-data;');
+  my $f = HTTP::Message->new(['Content-Disposition' => 'form-data; name="mapId"', 'Content-Type' => 'text/plain; charset=utf-8']);
+  $f->add_content_utf8($r->param('mapId'));
+  $self->{request}->add_part($f);
+  $f = HTTP::Message->new([
+      'Content-Disposition' => 'form-data; name="filename"; filename="file' . $body->upload_filename() . '"',
+      'Content-Length' => -s $filen]);
+  $f->add_content($_) while <$filen>;
+  $self->{request}->add_part($f);
   return Apache2::Const::OK;
 }
 

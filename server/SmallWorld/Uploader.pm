@@ -11,7 +11,7 @@ use SmallWorld::Config;
 
 sub new {
   my $class = shift;
-  my $self = { db => shift };
+  my $self = { };
 
   bless $self, $class;
 
