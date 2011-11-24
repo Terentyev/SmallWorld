@@ -9,7 +9,6 @@
   <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.css"/>
   <link rel="stylesheet" type="text/css" href="css/jquery.jscrollpane.lozenge.css"/>
 
-
   <script type="text/javascript" src="js/jquery-1.6.4.min.js"></script>
   <script type="text/javascript" src="js/jquery.simplemodal.js"></script>
   <script type="text/javascript" src="js/jquery-ui.min.js"></script>
@@ -19,7 +18,7 @@
   <script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
   <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
   <script type="text/javascript" src="js/jquery.sprintf.js"></script>
-
+  <script type="text/javascript" src="js/ajaxfileupload.js"></script>
   <script type="text/javascript" src="js/json2.js"></script>
   <script type="text/javascript" src="js/base.js"></script>
   <script type="text/javascript" src="js/show.js"></script>
@@ -220,15 +219,7 @@
               </tr>
               <tr>
                 <td>File:</td>
-                <td>
-                  <iframe name="test1"></iframe>
-                  <form id="formUploadMap" action="http://client.smallworld/upload_map" method="POST" enctype="multipart/form-data" target="test1">
-                    <input name="mapId" value="1" hidden="1"/>
-                    <input name="address" value="http://server.smallworld/upload_map" hidden="1"/>
-                    <input type="file" name="filename" />
-                  </form>
-                  <input type="checkbox" onclick="alert(1);" text="sdfsdf">
-                </td>
+                <td> <input id="fileToUpload" type="file" name="filename" /> </td>
               </tr>
               <tr>
                 <td colspan="2">

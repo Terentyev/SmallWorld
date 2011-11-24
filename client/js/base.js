@@ -19,29 +19,28 @@ var data = {
       sid: 0
     };
 
-function showError(error, container) {
-  if (container) $(container).html(error);
-  else alert(error);
+function showError(errorText, container) {
+  if (container) $(container).html(errorText);
+  else alert(errorText);
 }
 
 function sendRequest(query, callback, errorContainer) {
   $.ajax({
-  	type: "POST",
-	  url: "http://client.smallworld",
-	  dataType: "JSON",
-	  timeout: 10000,
+    type: "POST",
+    url: "http://client.smallworld",
+    dataType: "JSON",
+    timeout: 10000,
     data: {request: JSON.stringify(query), address: serverUrl},
     beforeSend: function() {
       $.blockUI({ message: '<h3><img src="./pics/loading.gif" /> Loading...</h3>' });
     },
-	  success: function(response)	{
-		  if (!response || !response.result)
-			  showError("Unknown server response: " + JSON.stringify(response));
-		  else if (response.result == 'ok')
-		    callback(response);
-		  else
+    success: function(response)  {
+      if (!response || !response.result)
+        showError("Unknown server response: " + JSON.stringify(response));
+      else if (response.result == 'ok') {
+        if (callback) callback(response);
+      } else
         showError(response.result, errorContainer);
-		  //alert(JSON.stringify(response));
       $.unblockUI();
     },
     error: function(jqXHR, textStatus, errorThrown) {
@@ -49,6 +48,29 @@ function sendRequest(query, callback, errorContainer) {
       alert(textStatus);
     }
   });
+}
+
+function uploadMap(id) {
+  $.ajaxFileUpload ({
+    url:"http://client.smallworld/upload_map",
+    secureuri:false,
+    fileElementId: 'fileToUpload',
+    data: {mapId: id, address: "http://server.smallworld/upload_map"},
+    dataType: 'json',
+    success: function (data, status) {
+      if(typeof(data.error) != 'undefined') {
+        alert(data);
+        if (data.error != '') {
+          alert(data.error);
+        } else {
+          alert(data.msg);
+        }
+      }
+    },
+    error: function (data, status, e) {
+      alert(e);
+    }
+ });
 }
 
 function _setCookie(key, value) {

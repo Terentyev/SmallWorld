@@ -46,7 +46,8 @@ function cmdLogout() {
     gameId = null;
   }
   _setCookie(["playerId", "sid", "username", "gameId"], [null, null, null, null]);
-  sendRequest(cmd, showLobby);
+  showLobby();
+  sendRequest(cmd, null);
 }
 
 function cmdSendMessage() {
@@ -144,11 +145,13 @@ function cmdGetGameList() {
 }
 
 function hdlGetGameList(ans) {
-  var cur, s = '', notInGame = (data.gameId == null), makeCurrent = !notInGame;
+  var cur, s = '', notInGame = (data.gameId == null);
+
   for (var i in ans.games) {
     cur = ans.games[i];
     games[cur.gameId] = {"name": cur.gameName, "description": cur.gameDescription, "mapId": cur.mapId,
                          "turnsNum": cur.turnsNum, "players": cur.players, "playersNum": cur.maxPlayersNum };
+
     if (notInGame)
       for (var j in cur.players)
         if (cur.players[j].userId == data.playerId) {
@@ -167,6 +170,7 @@ function hdlGetGameList(ans) {
   $("#tableGameList tbody").html(s);
   $("#tableGameList").trigger("update");
   $("input:radio[name=listGameId]").first().attr("checked", 1);
+
   if (!notInGame)
     $("input:radio[name=listGameId]").attr("hidden", 1);
 
@@ -186,11 +190,12 @@ function hdlGetGameList(ans) {
 
   $("table").trigger("sorton",[sorting]);*/
 
-  if (makeCurrent) {
+  if (!notInGame) {
     with (games[data.gameId]) {
        $("#cgameName").html(name);
        $("#cgameDescription").html(description);
-       $("#cgameMap").html(maps[mapId].name);
+       if (maps[mapId]) $("#cgameMap").html(maps[mapId].name);
+       //
        $("#cgameTurnsNum").html(turnsNum);
        var s = $.sprintf("%d/%d", players.length, playersNum);
        s +="<br>";
@@ -217,11 +222,27 @@ function hdlLeaveGame(ans) {
   showLobby();
 }
 
-
 function cmdUploadMap() {
-  $("#formUploadMap").submit();
-  //alert($("#test1").contents().find('body').html());
+  var tmp;
+  try {
+    tmp = JSON.parse($("#inputMapRegions").val());
+  } catch(err) {
+    showError('Bad regions');
+    return;
+  }
+  var cmd = {
+    action: "uploadMap",
+    "mapName": $("#inputMapName").val(),
+    "playersNum": $("#mapPlayersNum").val(),
+    "turnsNum": $("#mapTurnsNum").val(),
+    "regions": tmp
+  };
+  sendRequest(cmd, hdlUploadMap);
 }
 
-function hdUploadMap(ans) {
+function hdlUploadMap(ans) {
+  uploadMap(5);
+  //alert($("#filename").val());
+  //$("#formUploadMap").submit();
+//  cmdGetMapList();
 }
