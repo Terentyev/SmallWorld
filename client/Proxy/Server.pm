@@ -8,6 +8,8 @@ use utf8;
 use Apache2::Const -compile => qw( OK REDIRECT );
 use APR::Request::Param;
 use HTTP::Request;
+use HTTP::Request::StreamingUpload;
+use HTTP::Headers;
 use LWP::UserAgent;
 use URI::Escape;
 
@@ -78,7 +80,7 @@ sub proxyUpload {
   $self->{request} = HTTP::Request::StreamingUpload->new(
       POST         => $r->param('address'),
       fh           => $filen,
-      headers      => HTTP::Header->new(
+      headers      => HTTP::Headers->new(
         'Content-Length' => -s $filen
       ),
       Content_Type => 'multipart/form-data',
