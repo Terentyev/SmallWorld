@@ -1,4 +1,4 @@
-﻿function showModal(divName) {
+function showModal(divName) {
   $(divName).modal({
     closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
     position: ["10%"],
