@@ -216,3 +216,12 @@ function hdlLeaveGame(ans) {
   _setCookie(["gameId"], [null]);
   showLobby();
 }
+
+
+function cmdUploadMap() {
+  $("#formUploadMap").submit();
+  //alert($("#test1").contents().find('body').html());
+}
+
+function hdUploadMap(ans) {
+}

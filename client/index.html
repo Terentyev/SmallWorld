@@ -186,7 +186,7 @@
           <div id="divUploadMap">
             <table id="tableUploadMap">
               <tr>
-                <td width="150">Name:</td>
+                <td width="120">Name:</td>
                 <td width="400"> <input class="tedit" type="text" id="inputMapName"/></td>
               </tr>
               <tr>
@@ -218,8 +218,18 @@
                 <td><textarea id="inputMapRegions"></textarea></td>
               </tr>
               <tr>
+                <td>File:</td>
+                <td>
+                  <form id="formUploadMap" action="http://server.smallworld/upload_map" method="POST" enctype="multipart/form-data" target="test1">
+                    <input name="mapId" value="1" hidden="1"/>
+                    <input type="file" name="filename" />
+                  </form>
+                  <input type="checkbox" onclick="alert(1);" text="sdfsdf">
+                </td>
+              </tr>
+              <tr>
                 <td colspan="2">
-                  <div class="buttons"><div id="btnUploadMap" onclick="cmdUploadMap">Upload</div></div>
+                  <div class="buttons"><div id="btnUploadMap" onclick="cmdUploadMap();">Upload</div></div>
                 </td>
               </tr>
             </table>
@@ -318,9 +328,6 @@
      </td><td>
 
      </td></tr>
-    </table>
-    
-    
-
+   </table>
 </body>
 </html>
