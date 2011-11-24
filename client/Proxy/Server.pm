@@ -13,7 +13,7 @@ use URI::Escape;
 
 sub new {
 	my $class = shift;
-	my $self = { ua => LWP::UserAgent->new() };
+	my $self = { ua => LWP::UserAgent->new(), request => undef };
 
 	bless $self, $class;
 
@@ -22,7 +22,6 @@ sub new {
 
 sub process {
 	my ($self, $r) = @_;
-  my $req = undef;
   my $result = Apache2::Const::OK;
 
   if ( $r->uri() eq '/upload_map' ) {
@@ -32,7 +31,7 @@ sub process {
     $result = $self->proxyCommand($r);
   }
 
-  print $self->{ua}->request($req)->content if $result eq Apache2::Const::OK;
+  print $self->{ua}->request($self->{request})->content if defined $self->{request};
 
   return $result;
 }
@@ -54,10 +53,10 @@ sub proxyCommand {
     return $self->redirect($r);
   }
 
-  $r = HTTP::Request->new(POST => $address);
-  $r->add_content_utf8($request);
-#  $r->content_type('application/x-www-form-urlencoded');
-#  $r->content("request=" . uri_escape($request)); # вот это надо раскоментировать, чтобы работало у Паши
+  $self->{request} = HTTP::Request->new(POST => $address);
+  $self->{request}->add_content_utf8($request);
+#  $self->{request}->content_type('application/x-www-form-urlencoded');
+#  $self->{request}->content("request=" . uri_escape($request)); # вот это надо раскоментировать, чтобы работало у Паши
   return Apache2::Const::OK;
 }
 
@@ -76,7 +75,7 @@ sub proxyUpload {
   }
 
   my $filen = $body->upload_fh();
-  $r = HTTP::Request::StreamingUpload->new(
+  $self->{request} = HTTP::Request::StreamingUpload->new(
       POST         => $r->param('address'),
       fh           => $filen,
       headers      => HTTP::Header->new(
