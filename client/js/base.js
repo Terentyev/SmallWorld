@@ -84,3 +84,8 @@ function addRow(list) {
   s += '</tr>'
   return s;
 }
+
+function getMapName(mapId) {
+  if (maps[mapId]) return maps[mapId].name
+  else return $.sprintf("<span class='_tmpMap_%s'>...</span>", mapId)
+}

@@ -89,15 +89,20 @@ function cmdGetMapList() {
 }
 
 function hdlGetMapList(ans) {
-  var s = '';
+  var s = '', sel = null;
   for (var i in ans.maps) {
     with(ans.maps[i]) {
       maps[mapId] = { "name": mapName, "turns": turnsNum, "players": playersNum };
       s += $.sprintf("<option value='%s'>%s</option>", mapId, mapName);
+      sel = $("span._tmpMap_"+mapId);
+      parent = sel.parent();
+      sel.remove();
+      parent.html(mapName);
     }
   }
   $("#mapList").html(s);
   $("#mapList").change();
+  $("span.tmpmapcontent").remove()
 }
 
 function cmdCreateGame() {
@@ -162,7 +167,7 @@ function hdlGetGameList(ans) {
     s += addRow([$.sprintf("<input type='radio' name='listGameId' value='%s'/>", cur.gameId),
                 cur.gameName,
                 $.sprintf("%d/%d", cur.players.length, cur.maxPlayersNum),
-                cur.mapId,
+                getMapName(cur.mapId),
                 $.sprintf("%d/%d", cur.turn, cur.turnsNum),
                 $.sprintf("<div class='wrap' width='100'>%s</div>", cur.gameDescription)]);
   }
@@ -189,12 +194,12 @@ function hdlGetGameList(ans) {
   /*var sorting = [[2,1],[0,0]];
 
   $("table").trigger("sorton",[sorting]);*/
-
+  var needLoadMaps = false;
   if (!notInGame) {
     with (games[data.gameId]) {
       $("#cgameName").html(name);
       $("#cgameDescription").html(description);
-      if (maps[mapId]) $("#cgameMap").html(maps[mapId].name);
+      $("#cgameMap").html(getMapName(cur.mapId));
       $("#cgameTurnsNum").html(turnsNum);
       var s = $.sprintf("%d/%d", players.length, playersNum);
       s +="<br>";
@@ -209,8 +214,11 @@ function hdlGetGameList(ans) {
         }
       }
       $("#cgamePlayers").html(s);
+      if (!maps[mapId]) needLoadMaps = true;
     }
   }
+
+  if (needLoadMaps) cmdGetMapList();
   showCurrentGame();
 }
 
