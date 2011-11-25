@@ -192,17 +192,23 @@ function hdlGetGameList(ans) {
 
   if (!notInGame) {
     with (games[data.gameId]) {
-       $("#cgameName").html(name);
-       $("#cgameDescription").html(description);
-       if (maps[mapId]) $("#cgameMap").html(maps[mapId].name);
-       //
-       $("#cgameTurnsNum").html(turnsNum);
-       var s = $.sprintf("%d/%d", players.length, playersNum);
-       s +="<br>";
-       //alert(JSON.stringify(players));
-       for (var i in players)
-         s += players[i].userName+"<br>";
-       $("#cgamePlayers").html(s);
+      $("#cgameName").html(name);
+      $("#cgameDescription").html(description);
+      if (maps[mapId]) $("#cgameMap").html(maps[mapId].name);
+      $("#cgameTurnsNum").html(turnsNum);
+      var s = $.sprintf("%d/%d", players.length, playersNum);
+      s +="<br>";
+      //alert(JSON.stringify(players));
+      for (var i in players) {
+        with (players[i]) {
+          s += $.sprintf("%s %s<br>", userName, isReady ? "ready" : "");
+          if (userId == data.playerId) {
+            $('#checkBoxReady').attr('checked', isReady ? "checked": null)
+            $('#readinessStatus').html(isReady ? "ready" : "not ready");
+          }
+        }
+      }
+      $("#cgamePlayers").html(s);
     }
   }
   showCurrentGame();
@@ -227,15 +233,15 @@ function cmdUploadMap() {
   try {
     tmp = JSON.parse($("#inputMapRegions").val());
   } catch(err) {
-    showError('Bad regions');
+    showError('Bad regions description');
     return;
   }
   var cmd = {
     action: "uploadMap",
-    "mapName": $("#inputMapName").val(),
-    "playersNum": $("#mapPlayersNum").val(),
-    "turnsNum": $("#mapTurnsNum").val(),
-    "regions": tmp
+    mapName: $("#inputMapName").val(),
+    playersNum: $("#mapPlayersNum").val(),
+    turnsNum: $("#mapTurnsNum").val(),
+    regions: tmp
   };
   sendRequest(cmd, hdlUploadMap);
 }
@@ -246,4 +252,14 @@ function hdlUploadMap(ans) {
 }
 
 function cmdSetReady() {
+  var cmd = {
+    action: 'setReadinessStatus',
+    sid: data.sid,
+    isReady: $('#checkBoxReady').is(':checked') ? 1 : 0
+  };
+  sendRequest(cmd, hdlSetReady);
+}
+
+function hdlSetReady(ans) {
+  cmdGetGameList();
 }

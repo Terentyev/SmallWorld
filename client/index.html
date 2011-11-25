@@ -309,10 +309,18 @@
             <tr><td>Map:</td><td><span id="cgameMap"></span></td></tr>
             <tr><td>Max turns:</td><td><span id="cgameTurnsNum"></span></td></tr>
             <tr><td>Description:</td><td><div id="cgameDescription" class="wrap"></div></td></tr>
+            <tr>
+              <td>Readiness:</td>
+              <td valign="middle">
+                <span>
+                <input id ="checkBoxReady" type="checkbox" onclick="cmdSetReady();" />
+                <span id="readinessStatus"></span>
+
+              </td>
+            </tr>
             <tr><td colspan="2">
               <div class="buttons">
                 <div id="btnLeave" onclick="cmdLeaveGame();">Leave</div>
-                <div id="btnSetReady" onclick="cmdSetReady();">Ready</div>
               </div>
             </td></tr>
           </table>
