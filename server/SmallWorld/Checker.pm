@@ -81,7 +81,7 @@ sub checkRegions {
     return 1 if !defined @$r[$i]->{adjacent} || ref @$r[$i]->{adjacent} ne 'ARRAY';
     foreach my $j (@{@$r[$i]->{adjacent}}) {
 
-      return 1 if !defined @$r[$j-1]->{adjacent} || ref @$r[$j-1]->{adjacent} ne 'ARRAY';
+      return 1 if scalar(@$r) < $j || !defined @$r[$j-1]->{adjacent} || ref @$r[$j-1]->{adjacent} ne 'ARRAY';
       #регион граничет с недопустимым регионом или самим собой
       return 1 if $j< 1 || $j > $l || $j == $i + 1;
 
