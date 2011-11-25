@@ -46,7 +46,6 @@ function showGame() {
 function showLobby() {
   showLogin();
   showCurrentGame();
-  cmdGetMapList();
   cmdGetMessages();
   cmdGetGameList();
   if (data.playerId != null && data.gameId == null) {

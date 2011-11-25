@@ -18,6 +18,7 @@ var data = {
       mapId: null,
       sid: 0
     };
+var needMakeCurrent = false;
 
 function showError(errorText, container) {
   if (container) $(container).html(errorText);
@@ -83,4 +84,9 @@ function addRow(list) {
     s += $.sprintf('<td>%s</td>', list[i]);
   s += '</tr>'
   return s;
+}
+
+function getMapName(mapId) {
+  if (maps[mapId]) return maps[mapId].name
+  else return $.sprintf("<span class='_tmpMap_%s'>...</span>", mapId);
 }
