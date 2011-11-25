@@ -116,6 +116,23 @@
   <div id="divCurrentServer" class="corner-all" onclick="showSelectServer();">
     Server URL: <span id="serverUrl"></span>
   </div>
+
+  <div id="divGame" class="corner-all" style="display: none;">
+
+    <table width="100%">
+      <tr>
+        <td width="100%">
+          <div id="divMap">
+
+            <div id="divMapImg"><img id="imgMap" /></div>
+            <div id="divMapObjects"></div>
+
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </div>
   
    <table align="center" width="990" >
       <tr valign="top"><td width="680">
@@ -125,7 +142,6 @@
             <li><a href="#divCreateGame">Create game</a></li>
             <li><a href="#divLoadGame">Load game</a></li>
             <li><a href="#divUploadMap">Upload map</a></li>
-            <li><a href="#divGame">Game</a></li>
           </ul>
           <div id="divGameList">
             <table id="tableGameList" class="tablesorter" width="100%">
@@ -229,22 +245,6 @@
             </table>
 
           </div>
-          <div id="divGame">
-
-            <table width="100%">
-              <tr>
-                <td width="100%">
-                  <div id="divMap">
-
-                    <div id="divMapImg"><img id="imgMap" /></div>
-                    <div id="divMapObjects"></div>
-
-                  </div>
-                </td>
-              </tr>
-            </table>
-
-          </div>
         </div>
      </td><td width="310">
      
@@ -312,7 +312,7 @@
             <tr><td colspan="2">
               <div class="buttons">
                 <div id="btnLeave" onclick="cmdLeaveGame();">Leave</div>
-                <div id="btnSetReady">Ready</div>
+                <div id="btnSetReady" onclick="cmdSetReady();">Ready</div>
               </div>
             </td></tr>
           </table>

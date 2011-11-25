@@ -241,8 +241,9 @@ function cmdUploadMap() {
 }
 
 function hdlUploadMap(ans) {
-  uploadMap(5);
-  //alert($("#filename").val());
-  //$("#formUploadMap").submit();
-//  cmdGetMapList();
+  uploadMap(ans.mapId);
+  cmdGetMapList();
+}
+
+function cmdSetReady() {
 }

@@ -33,11 +33,14 @@ function showLogin() {
 }
 
 function showCurrentGame() {
+  $("#divCurrentGame").css("display", (data.gameId != null ? "block" : "none"));
   if (data.gameId != null) {
-    $("#divCurrentGame").css("display", "block");
-  } else {
-    $("#divCurrentGame").css("display", "none");
+    showGame();
   }
+}
+
+function showGame() {
+  //$("#divGame").css("display", (data.game
 }
 
 function showLobby() {
@@ -49,12 +52,10 @@ function showLobby() {
   if (data.playerId != null && data.gameId == null) {
     $("#tabs").tabs("enable", 1);
     $("#tabs").tabs("enable", 2);
-    $("#tabs").tabs("enable", 4);
   } else {
     $("#tabs").tabs("select", 0);
     $("#tabs").tabs("disable", 1);
     $("#tabs").tabs("disable", 2);
-    $("#tabs").tabs("disable", 4);
   }
 }
 
