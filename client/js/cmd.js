@@ -184,17 +184,19 @@ function updatePlayersInGame(gameId) {
 }
 
 function hdlGetGameList(ans) {
-  var cur, s = '', needLoadMaps = false;
+  var cur, s = '', needLoadMaps = false, gameStarted = false;
 
   for (var i in ans.games) {
     cur = ans.games[i];
     games[cur.gameId] = {"name": cur.gameName, "description": cur.gameDescription, "mapId": cur.mapId,
                          "turnsNum": cur.turnsNum, "players": cur.players, "playersNum": cur.maxPlayersNum };
     if (!maps[cur.mapId]) needLoadMaps = true;
+    gameStarted = gameStarted || (cur.state == 2 && data.gameId == cur.gameId);
     if (data.gameId == null)
       for (var j in cur.players)
         if (cur.players[j].userId == data.playerId) {
           data.gameId = cur.gameId;
+          needMakeCurrent = true;
           break;
         }
     s += addRow([$.sprintf("<input type='radio' name='listGameId' value='%s'/>", cur.gameId),
@@ -217,7 +219,6 @@ function hdlGetGameList(ans) {
 
   if (data.gameId != null) {
     if (needMakeCurrent) {
-      alert("create from cmd" + data.gameId);
       //data.gameId = tmpGameId;
       makeCurrentGame(games[data.gameId]);
       needMakeCurrent = false;
@@ -228,6 +229,7 @@ function hdlGetGameList(ans) {
   }
   if (needLoadMaps) cmdGetMapList();
   showCurrentGame();
+  if (gameStarted) alert('Started');
 }
 
 function cmdLeaveGame() {
