@@ -355,7 +355,8 @@ use constant PATTERN => {
     {
       name => 'sid',
       type => 'int',
-      mandatory => 1
+      mandatory => 1,
+      errorCode => R_BAD_SID
     },
     {
       name => 'regionId',
