@@ -1,0 +1,65 @@
+{
+    "include": [ "_game1.inc" ],
+    "test": [
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        },
+        {
+            "action": "conquer",
+            "regionId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": -1,
+            "regionId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 3,
+            "regionId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 5
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        }
+
+    ],
+    "description": "first conquer"
+}

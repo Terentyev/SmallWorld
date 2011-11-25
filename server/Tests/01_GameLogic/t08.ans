@@ -1,0 +1,65 @@
+[
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "map" : {
+              "regions": [
+                { "currentRegionState": {"tokensNum": 0 }},
+                { "currentRegionState": {"tokensNum": 1 }},
+                { "currentRegionState": {"tokensNum": 2, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 1 }}
+              ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 3,
+                    "tokensInHand": 6,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 2,
+                        "specialPowerName": "bivouacking",
+                        "raceName": "elves"
+                    },
+                    "declineTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "badStage"
+    }
+
+]
