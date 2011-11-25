@@ -119,6 +119,12 @@ function cmdCreateGame() {
 function hdlCreateGame(ans) {
   data.gameId = ans.gameId;
   _setCookie(["gameId"], [data.gameId]);
+  makeCurrentGame({
+    name: $("#inputGameName").val(),
+    description: $("#inputGameDescr").val(),
+    mapId: $("#mapList").val(),
+    turnsNum: maps[$("#mapList").val()].turnsNum
+  });
   showLobby();
 }
 
@@ -139,6 +145,7 @@ function cmdJoinGame() {
 function hdlJoinGame(ans) {
   data.gameId = sentedGameId;
   _setCookie(["gameId"], [data.gameId]);
+  makeCurrentGame(games[data.gameId]);
   showLobby();
 }
 
@@ -149,19 +156,45 @@ function cmdGetGameList() {
   sendRequest(cmd, hdlGetGameList);
 }
 
+function makeCurrentGame(game) {
+  with (game) {
+    $("#cgameName").html(name);
+    $("#cgameDescription").html(description);
+    $("#cgameMap").html(getMapName(mapId));
+    $("#cgameTurnsNum").html(turnsNum);
+  }
+}
+
+function updatePlayersInGame(gameId) {
+  with (games[gameId]) {
+    var s = $.sprintf("%d/%d", players.length, playersNum);
+    s +="<br>";
+    //alert(JSON.stringify(players));
+    for (var i in players) {
+      with (players[i]) {
+        s += $.sprintf("%s %s<br>", userName, isReady ? "ready" : "");
+        if (userId == data.playerId) {
+          $('#checkBoxReady').attr('checked', isReady ? "checked": null)
+          $('#readinessStatus').html(isReady ? "ready" : "not ready");
+        }
+      }
+    }
+    $("#cgamePlayers").html(s);
+  }
+}
+
 function hdlGetGameList(ans) {
-  var cur, s = '', notInGame = (data.gameId == null);
+  var cur, s = '', needLoadMaps = false;
 
   for (var i in ans.games) {
     cur = ans.games[i];
     games[cur.gameId] = {"name": cur.gameName, "description": cur.gameDescription, "mapId": cur.mapId,
                          "turnsNum": cur.turnsNum, "players": cur.players, "playersNum": cur.maxPlayersNum };
-
-    if (notInGame)
+    if (!maps[cur.mapId]) needLoadMaps = true;
+    if (data.gameId == null)
       for (var j in cur.players)
         if (cur.players[j].userId == data.playerId) {
           data.gameId = cur.gameId;
-          notInGame = false;
           break;
         }
     s += addRow([$.sprintf("<input type='radio' name='listGameId' value='%s'/>", cur.gameId),
@@ -175,49 +208,24 @@ function hdlGetGameList(ans) {
   $("#tableGameList tbody").html(s);
   $("#tableGameList").trigger("update");
   $("input:radio[name=listGameId]").first().attr("checked", 1);
+  var tmp = $("#tableGameList tbody tr");
+  tmp.mouseover(function() {$(this).addClass("hover"); })
+     .mouseout(function() {$(this).removeClass("hover"); })
+     .click(function (){
+       $("input:radio[name=listGameId]").eq(tmp.index(this)).attr("checked", 1);
+     });
 
-  if (!notInGame)
-    $("input:radio[name=listGameId]").attr("hidden", 1);
-
-  /*var tmp = $("#tableGameList tr");
-  tmp.mouseover(function() {
-    $(this).addClass("hover3");
-   });
-  tmp.mouseout(function() {
-    $(this).removeClass("hover3");
-  });*/
-
-  /*var tmp = $("#tableGameList tr");
-  tmp.click(function (){
-    $("input:radio[name=listGameId]").eq(tmp.index(this)).attr("checked", 1);
-  });*/
-  /*var sorting = [[2,1],[0,0]];
-
-  $("table").trigger("sorton",[sorting]);*/
-  var needLoadMaps = false;
-  if (!notInGame) {
-    with (games[data.gameId]) {
-      $("#cgameName").html(name);
-      $("#cgameDescription").html(description);
-      $("#cgameMap").html(getMapName(cur.mapId));
-      $("#cgameTurnsNum").html(turnsNum);
-      var s = $.sprintf("%d/%d", players.length, playersNum);
-      s +="<br>";
-      //alert(JSON.stringify(players));
-      for (var i in players) {
-        with (players[i]) {
-          s += $.sprintf("%s %s<br>", userName, isReady ? "ready" : "");
-          if (userId == data.playerId) {
-            $('#checkBoxReady').attr('checked', isReady ? "checked": null)
-            $('#readinessStatus').html(isReady ? "ready" : "not ready");
-          }
-        }
-      }
-      $("#cgamePlayers").html(s);
-      if (!maps[mapId]) needLoadMaps = true;
+  if (data.gameId != null) {
+    if (needMakeCurrent) {
+      alert("create from cmd" + data.gameId);
+      //data.gameId = tmpGameId;
+      makeCurrentGame(games[data.gameId]);
+      needMakeCurrent = false;
     }
+    $("input:radio[name=listGameId]").attr("hidden", 1);
+    updatePlayersInGame(data.gameId);
+    if (!maps[games[data.gameId].mapId]) needLoadMaps = true;
   }
-
   if (needLoadMaps) cmdGetMapList();
   showCurrentGame();
 }
