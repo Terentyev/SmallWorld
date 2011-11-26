@@ -28,6 +28,22 @@
         {
             "action": "conquer",
             "sid": 1,
+            "regionId": 12
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": -1
+        },
+        {
+            "action": "conquer",
+            "sid": 1
+        },
+
+
+        {
+            "action": "conquer",
+            "sid": 1,
             "regionId": 1
         },
         {

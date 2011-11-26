@@ -15,6 +15,17 @@
         "result": "notInGame"
     },
     {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badRegionId"
+    },
+
+
+    {
         "result": "badRegion"
     },
     {
