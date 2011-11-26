@@ -120,7 +120,7 @@ use constant CMD_ERRORS => {
   ],
   finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE], # R_BAD_GAME_STATE
   getGameList        => [R_BAD_SID],
-  getGameState       => [],
+  getGameState       => [R_BAD_SID, R_NOT_IN_GAME],
   getMapList         => [R_BAD_SID],
   getMessages        => [],
   joinGame           => [R_BAD_SID, R_BAD_GAME_ID, R_BAD_GAME_STATE, R_ALREADY_IN_GAME, R_TOO_MANY_PLAYERS],
