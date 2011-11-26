@@ -65,8 +65,21 @@ sub canPlaceObj2Region {
 # возвращает может ли игрок на первом завоевании завоевать эту территорию (может
 # ли вообще пытаться -- типа граница и все такое)
 sub canFirstConquer {
-  my ($self, $region) = @_;
-  return grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} };
+  my ($self, $region, $regions) = @_;
+  #нельзя захватывать моря и озера
+  return 0 if grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} };
+  return 1 if grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} };
+
+  #можно захватить регион соседствующий с морем, которое является гранцией
+  foreach my $i ( @{$region->{adjacentRegions}} ) {
+    my ($isSea, $isBorder) = (0, 0);
+    foreach ( @{$regions->[$i-1]->{constRegionState}} ){
+      $isBorder = 1 if $_ eq REGION_TYPE_BORDER;
+      $isSea = 1 if $_ eq REGION_TYPE_SEA;
+    }
+    return 1 if $isSea && $isBorder;
+  }
+  return 0;
 }
 
 # приводим расу в упадок в регионе
@@ -198,7 +211,7 @@ sub canPlaceObj2Region {
 }
 
 sub canFirstConquer {
-  my ($self, $region) = @_;
+  my ($self, $region, $regions) = @_;
   # полурослики на первом завоевании могут пытаться захватить любую сушу
   return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} });
 }
