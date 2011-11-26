@@ -95,7 +95,8 @@ sub readFile {
 sub sendRequest {
   my ($self, $query) = @_;
   my $req = HTTP::Request->new(POST => "http://" . SERVER_ADDRESS . "/");
-#  $req->content_type("multipart/form-data");
+#  $req->content_type('application/x-www-form-urlencoded');
+#  $req->content("request=" . uri_escape($query));
   $req->add_content_utf8($query);
   return $self->{ua}->request($req)->content;
 }
