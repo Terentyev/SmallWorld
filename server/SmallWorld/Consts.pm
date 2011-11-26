@@ -415,15 +415,15 @@ use constant DEFAULT_MAPS => [
   {mapName => 'Are you lucky?', playersNum => 2, turnsNum => 5, regions =>[
     {
       population  => 1, landDescription => ['border', 'coast'], adjacent => [2],
-      coordinates => [ [255,290], [234,254], [224,213], [239,168], [287,137], [355,135], [395,178], [371,284], [304,279] ],
-      raceCoords  => [267,216],
-      powerCoords => [346,208]
+      coordinates => [ [0,0], [300,0], [300,399], [0,399] ],
+      raceCoords  => [164,117],
+      powerCoords => [172,292]
     },
     {
       population  => 0, landDescription => ['border'], adjacent => [1],
-      coordinates => [ [255,290], [234,254], [224,213], [239,168], [287,137], [355,135], [395,178], [371,284], [304,279] ],
-      raceCoords  => [267,216],
-      powerCoords => [346,208]
+      coordinates => [ [300,0], [300,399], [639,399], [639,0] ],
+      raceCoords  => [502,199],
+      powerCoords => [493,287]
     },
   ]},
   {mapName => 'Cheburashka', playersNum => 3, turnsNum => 5, regions => [

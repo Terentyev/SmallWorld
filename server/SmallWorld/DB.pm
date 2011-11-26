@@ -177,7 +177,9 @@ sub getMessages {
 
 sub getMaps {
   my $self = shift;
-  return $self->{dbh}->selectall_arrayref('SELECT id, name, playersNum, turnsNum FROM MAPS', { Slice => {} }) or dbError;
+  return $self->{dbh}->selectall_arrayref('
+      SELECT id, name, playersNum, turnsNum, regions FROM MAPS',
+      { Slice => {} }) or dbError;
 }
 
 sub getGameState {

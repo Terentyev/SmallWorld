@@ -161,11 +161,18 @@ sub cmd_getMapList {
   my ($self, $result) = @_;
   $result->{maps} = [
     map { {
-      'mapId'      => $_->{ID},
-      'mapName'    => $_->{NAME},
-      'playersNum' => $_->{PLAYERSNUM},
-      'turnsNum'   => $_->{TURNSNUM},
-      'url'        => $self->getMapUrl($_->{ID})
+      'mapId'       => $_->{ID},
+      'mapName'     => $_->{NAME},
+      'playersNum'  => $_->{PLAYERSNUM},
+      'turnsNum'    => $_->{TURNSNUM},
+      'url'         => $self->getMapUrl($_->{ID}),
+      'regions'     => [
+        map { {
+          coordinates => $_->{coordinates},
+          raceCoords  => $_->{raceCoords},
+          powerCoords => $_->{powerCoords}
+        } } @{ decode_json($_->{REGIONS}) }
+      ]
     } } @{$self->{db}->getMaps()}
   ];
 }
