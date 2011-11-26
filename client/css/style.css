@@ -111,4 +111,7 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 .scroll-pane-arrows {width: 100%;  height: 200px; overflow: auto;}
 
 #divMapObjs { position: absolute; }
-#divMap { overflow: auto; position: absolute; min-width: 400px; min-height: 300px; }
+#divMap { overflow: auto; position: relative; min-width: 400px; min-height: 300px;}
+
+.clickable img { opacity: 0.25; }
+.clickable:hover img { opacity: 1; }

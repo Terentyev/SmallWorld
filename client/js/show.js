@@ -34,13 +34,23 @@ function showLogin() {
 
 function showCurrentGame() {
   $("#divCurrentGame").css("display", (data.gameId != null ? "block" : "none"));
-  if (data.gameId != null) {
-    showGame();
-  }
 }
 
 function showGame() {
-  //$("#divGame").css("display", (data.game
+  if (data.game == null || !data.game.state) return;
+
+  $("#divGame").css("display", "block");
+  $("#divLobby").css("display", "none");
+  $("#imgMap").attr("src", serverUrl + maps[data.game.map.mapId].url);
+
+  var s = '';
+  for (var i in data.game.visibleTokenBadges) {
+    cur = data.game.visibleTokenBadges[i];
+    s += addRow([$.sprintf("<a href='#' class='clickable' onclick='tokenBadgeClick(%d)'><img src='%s' /><img src='%s' /></a>",
+                          i, races[cur.raceName], specialPowers[cur.specialPowerName])]);
+  }
+  $("#tableTokenBadges tbody").html(s);
+  $("#tableTokenBadges").trigger("update");
 }
 
 function showLobby() {

@@ -6,7 +6,7 @@
         "result": "ok",
         "gameState": {
             "activePlayerId": 2,
-            "state": "selectRace",
+            "stage": "selectRace",
             "currentTurn": 0,
             "map": {
                 "mapId": 1,

@@ -120,21 +120,38 @@
 
   <div id="divGame" class="corner-all" style="display: none;">
 
-    <table width="100%">
+    <table id="tableGame" width="100%" height="100%" valign="middle" align="center">
       <tr>
-        <td width="100%">
-          <div id="divMap">
+        <td width="200">
+          <table id="tableTokenBadges" width="100%" height="100%" align="center">
+            <tbody></tbody>
+          </table>
+        </td>
+        <td>
+          <table id="tableCenter" width="100%" height="100%" align="center">
+            <tr>
+              <td></td>
+            </tr>
+            <tr>
+              <td>
+                <div id="divMap">
 
-            <div id="divMapImg"><img id="imgMap" /></div>
-            <div id="divMapObjects"></div>
+                  <div id="divMapImg"><img id="imgMap" /></div>
+                  <div id="divMapObjects"></div>
 
-          </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+        <td>
         </td>
       </tr>
     </table>
 
   </div>
   
+  <div id="divLobby">
    <table align="center" width="990" >
       <tr valign="top"><td width="680">
         <div id="tabs" class="corner-all">
@@ -348,5 +365,6 @@
 
      </td></tr>
    </table>
+   </div>
 </body>
 </html>

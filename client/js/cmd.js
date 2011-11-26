@@ -92,7 +92,7 @@ function hdlGetMapList(ans) {
   var s = '', sel = null;
   for (var i in ans.maps) {
     with(ans.maps[i]) {
-      maps[mapId] = { "name": mapName, "turns": turnsNum, "players": playersNum };
+      maps[mapId] = { "name": mapName, "turns": turnsNum, "players": playersNum, "url": url };
       s += $.sprintf("<option value='%s'>%s</option>", mapId, mapName);
       sel = $("span._tmpMap_"+mapId);
       parent = sel.parent();
@@ -102,7 +102,8 @@ function hdlGetMapList(ans) {
   }
   $("#mapList").html(s);
   $("#mapList").change();
-  $("span.tmpmapcontent").remove()
+  $("span.tmpmapcontent").remove();
+  showGame();
 }
 
 function cmdCreateGame() {
@@ -143,9 +144,7 @@ function cmdJoinGame() {
 }
 
 function hdlJoinGame(ans) {
-  data.gameId = sentedGameId;
-  _setCookie(["gameId"], [data.gameId]);
-  makeCurrentGame(games[data.gameId]);
+  setGame(sentedGameId);
   showLobby();
 }
 
@@ -154,15 +153,6 @@ function cmdGetGameList() {
     action: "getGameList"
   };
   sendRequest(cmd, hdlGetGameList);
-}
-
-function makeCurrentGame(game) {
-  with (game) {
-    $("#cgameName").html(name);
-    $("#cgameDescription").html(description);
-    $("#cgameMap").html(getMapName(mapId));
-    $("#cgameTurnsNum").html(turnsNum);
-  }
 }
 
 function updatePlayersInGame(gameId) {
@@ -189,9 +179,9 @@ function hdlGetGameList(ans) {
   for (var i in ans.games) {
     cur = ans.games[i];
     games[cur.gameId] = {"name": cur.gameName, "description": cur.gameDescription, "mapId": cur.mapId,
-                         "turnsNum": cur.turnsNum, "players": cur.players, "playersNum": cur.maxPlayersNum };
-    if (!maps[cur.mapId]) needLoadMaps = true;
-    gameStarted = gameStarted || (cur.state == 2 && data.gameId == cur.gameId);
+                         "turnsNum": cur.turnsNum, "players": cur.players, "playersNum": cur.maxPlayersNum,
+                         "inGame": cur.state == 2};
+    needLoadMaps = needLoadMaps || !maps[cur.mapId];
     if (data.gameId == null)
       for (var j in cur.players)
         if (cur.players[j].userId == data.playerId) {
@@ -199,6 +189,7 @@ function hdlGetGameList(ans) {
           needMakeCurrent = true;
           break;
         }
+    gameStarted = gameStarted || (cur.state == 2 && data.gameId == cur.gameId);
     s += addRow([$.sprintf("<input type='radio' name='listGameId' value='%s'/>", cur.gameId),
                 cur.gameName,
                 $.sprintf("%d/%d", cur.players.length, cur.maxPlayersNum),
@@ -217,18 +208,12 @@ function hdlGetGameList(ans) {
        $("input:radio[name=listGameId]").eq(tmp.index(this)).attr("checked", 1);
      });
 
+  if (needLoadMaps) cmdGetMapList();
   if (data.gameId != null) {
-    if (needMakeCurrent) {
-      //data.gameId = tmpGameId;
-      makeCurrentGame(games[data.gameId]);
-      needMakeCurrent = false;
-    }
     $("input:radio[name=listGameId]").attr("hidden", 1);
     updatePlayersInGame(data.gameId);
-    if (!maps[games[data.gameId].mapId]) needLoadMaps = true;
+    setGame(data.gameId);
   }
-  if (needLoadMaps) cmdGetMapList();
-  showCurrentGame();
   if (gameStarted) alert('Started');
 }
 
@@ -279,5 +264,18 @@ function cmdSetReady() {
 }
 
 function hdlSetReady(ans) {
-  cmdGetGameList();
+  cmdGetGameState(hdlGetGameState);
+}
+
+function cmdGetGameState(callback) {
+  var cmd = {
+    action: "getGameState",
+    sid: data.sid
+  };
+  sendRequest(cmd, callback);
+}
+
+function hdlGetGameState(ans) {
+  data.game = ans.gameState;
+  showGame();
 }

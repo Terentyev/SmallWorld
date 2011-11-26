@@ -8,6 +8,7 @@ use utf8;
 use APR::Request::Param;
 
 use SmallWorld::Config;
+use SmallWorld::Consts;
 
 sub new {
   my $class = shift;
@@ -23,14 +24,14 @@ sub map_upload {
   my $body = $r->upload('filename');
 
   if ( !defined $body || !defined $r->param('mapId') ) {
-    print "Bad body or bad mapId";
+    print '{"result":"' . R_BAD_BODY_OR_MAPID . '"}';
     return 0;
   }
 
   my $ext = ($body->upload_filename() =~ m/.*(\..+)$/)[0];
 
   if ( !defined $ext || $ext !~ m/^\.(png|jpeg|jpg)$/ ) {
-    print "Bad file extension";
+    print '{"result":"' . R_BAD_FILE_EXTENSION . '"}';
     return 0;
   }
 
@@ -44,7 +45,7 @@ sub map_upload {
       print FL $_;
     }
     close FL;
-    print "OK";
+    print '{"result":"' . R_ALL_OK . '"}';
   }
 }
 
