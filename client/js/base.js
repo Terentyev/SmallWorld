@@ -1,10 +1,46 @@
 var serverUrl = null;
 var cmdErrors = {
-  'badUsername':'Bad username',
-  'badPassword':'Bad password',
+  'badUsername': 'Bad username',
+  'badPassword': 'Bad password',
   'usernameTaken': 'Username already taken',
   'badUserSid': 'You are not logged in',
   'badUsernameOrPassword': 'Wrong username or password'
+};
+var races = {
+  'amazons': '/pics/raceAmazons.png',
+  'dwarves': '/pics/raceDwarves.png',
+  'elves': '/pics/raceElves.png',
+  'giants': '/pics/raceGiants.png',
+  'halflings': '/pics/raceHalflings.png',
+  'humans': '/pics/raceHumans.png',
+  'orcs': '/pics/raceOrcs.png',
+  'ratmen': '/pics/raceRatmen.png',
+  'skeletons': '/pics/raceSkeletons.png',
+  'sorcerers': '/pics/raceSorcerers.png',
+  'tritons': '/pics/raceTritons.png',
+  'trolls': '/pics/raceTrolls.png',
+  'wizards': '/pics/raceWizards.png'
+};
+var specialPowers = {
+  'alchemist': '/pics/spAlchemist.png',
+  'berserk': '/pics/spBerserk.png',
+  'bivouacking': '/pics/spBivouacking.png',
+  'commando': '/pics/spCommando.png',
+  'diplomat': '/pics/spDiplomat.png',
+  'dragonMaster': '/pics/spDragonMaster.png',
+  'flying': '/pics/spFlying.png',
+  'forest': '/pics/spForest.png',
+  'fortified': '/pics/spFortified.png',
+  'heroic': '/pics/spHeroic.png',
+  'hill': '/pics/spHill.png',
+  'merchant': '/pics/spMerchant.png',
+  'mounted': '/pics/spMounted.png',
+  'pillaging': '/pics/spPillaging.png',
+  'seafaring': '/pics/spSeafaring.png',
+  'stout': '/pics/spStout.png',
+  'swamp': '/pics/spSwamp.png',
+  'underworld': '/pics/spUnderworld.png',
+  'wealthyt': '/pics/spWealthy.png'
 };
 
 messages = new Array();
@@ -89,4 +125,23 @@ function addRow(list) {
 function getMapName(mapId) {
   if (maps[mapId]) return maps[mapId].name
   else return $.sprintf("<span class='_tmpMap_%s'>...</span>", mapId);
+}
+
+function makeCurrentGame(game) {
+  with (game) {
+    $("#cgameName").html(name);
+    $("#cgameDescription").html(description);
+    $("#cgameMap").html(getMapName(mapId));
+    $("#cgameTurnsNum").html(turnsNum);
+  }
+  showCurrentGame();
+}
+
+function setGame(gameId) {
+  data.gameId = gameId;
+  _setCookie(["gameId"], gameId);
+  makeCurrentGame(games[gameId]);
+  if (games[gameId].inGame) {
+    cmdGetGameState(hdlGetGameState);
+  }
 }
