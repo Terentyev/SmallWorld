@@ -7,7 +7,7 @@
             "gameDescription": "description1",
             "currentPlayersNum": 2,
             "activePlayerId": 1,
-            "state": "selectRace",
+            "stage": "selectRace",
             "currentTurn": 0,
             "map": {
                 "mapId": 1,

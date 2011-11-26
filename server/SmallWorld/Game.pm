@@ -191,7 +191,8 @@ sub getGameStateForPlayer {
     gameDescription    => $gs->{gameInfo}->{gameDescription},
     currentPlayersNum  => $gs->{gameInfo}->{currentPlayersNum},
     activePlayerId     => $gs->{activePlayerId},
-    state              => $gs->{state},
+    state              => !(grep { $_->{isReady} == 0 } @{ $gs->{players} }),
+    stage              => $gs->{state},
     currentTurn        => $gs->{currentTurn},
     map                => \%{ $gs->{map} },
     visibleTokenBadges => $gs->{visibleTokenBadges}
