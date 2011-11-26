@@ -45,12 +45,21 @@ function showGame() {
 
   var s = '';
   for (var i in data.game.visibleTokenBadges) {
-    cur = data.game.visibleTokenBadges[i];
+    var cur = data.game.visibleTokenBadges[i];
     s += addRow([$.sprintf("<a href='#' class='clickable' onclick='tokenBadgeClick(%d)'><img src='%s' /><img src='%s' /></a>",
                           i, races[cur.raceName], specialPowers[cur.specialPowerName])]);
   }
   $("#tableTokenBadges tbody").html(s);
   $("#tableTokenBadges").trigger("update");
+
+  s = '';
+  for (var i in data.game.map.regions) {
+    var cur = data.game.map.regions[i];
+    s += addAreaPoly(maps[data.game.map.mapId].regions[i].coordinates, i);
+  }
+  $("#mapLayer").html(s);
+  $("#mapLayer").trigger("update");
+  $("#imgMap").maphilight();
 }
 
 function showLobby() {

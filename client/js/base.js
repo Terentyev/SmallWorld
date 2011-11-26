@@ -122,6 +122,17 @@ function addRow(list) {
   return s;
 }
 
+function addAreaPoly(coords, regionId) {
+  var s = '';
+  for (var i in coords) {
+    if ( s != '') s = ',' + s;
+    s = $.sprintf('%d,%d', coords[i][0], coords[i][1]) + s;
+  }
+  return $.sprintf(
+      '<area shape="poly" coords="%s" href="#" onclick="areaclick(%d);" />',
+      s, regionId);
+}
+
 function getMapName(mapId) {
   if (maps[mapId]) return maps[mapId].name
   else return $.sprintf("<span class='_tmpMap_%s'>...</span>", mapId);

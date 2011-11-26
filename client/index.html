@@ -16,6 +16,7 @@
   <script type="text/javascript" src="js/jquery.blockUI.js"></script>
   <script type="text/javascript" src="js/jquery.cookie.js"></script>
   <script type="text/javascript" src="js/jquery.jscrollpane.min.js"></script>
+  <script type="text/javascript" src="js/jquery.maphilight.min.js"></script>
   <script type="text/javascript" src="js/jquery.mousewheel.js"></script>
   <script type="text/javascript" src="js/jquery.sprintf.js"></script>
   <script type="text/javascript" src="js/ajaxfileupload.js"></script>
@@ -136,7 +137,10 @@
               <td>
                 <div id="divMap">
 
-                  <div id="divMapImg"><img id="imgMap" /></div>
+                  <div id="divMapImg">
+                    <img id="imgMap" usemap="#mapLayer" />
+                    <map id="mapLayer" name="mapLayer"></map>
+                  </div>
                   <div id="divMapObjects"></div>
 
                 </div>

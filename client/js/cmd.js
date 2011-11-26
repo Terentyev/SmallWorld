@@ -92,7 +92,13 @@ function hdlGetMapList(ans) {
   var s = '', sel = null;
   for (var i in ans.maps) {
     with(ans.maps[i]) {
-      maps[mapId] = { "name": mapName, "turns": turnsNum, "players": playersNum, "url": url };
+      maps[mapId] = {
+        "name": mapName,
+        "turns": turnsNum,
+        "players": playersNum,
+        "url": url,
+        "regions": regions
+      };
       s += $.sprintf("<option value='%s'>%s</option>", mapId, mapName);
       sel = $("span._tmpMap_"+mapId);
       parent = sel.parent();
