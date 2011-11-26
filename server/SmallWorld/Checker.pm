@@ -302,9 +302,10 @@ sub checkRegion_conquer {
   # 1. свои регионы с активной расой захватывать нельзя
   # 2. на первом завоевании можно захватывать далеко не все регионы
   # 3. и вообще есть куча правил нападения на регионы (если это не первое нападение)
+
   if ( $player->activeConq($region) ||
-    (!$game->isFirstConquer() || !$race->canFirstConquer($region, $game->{gameState}->{regions})) &&
-    !$sp->canAttack($player, $region, $game->{gameState}->{regions}) ||
+    !($game->isFirstConquer() && $race->canFirstConquer($region, $game->{gameState}->{regions})) &&
+    !$sp->canAttack($region, $game->{gameState}->{regions}) ||
     !$game->canAttack($player, $region, $race, $sp)
   ) {
     $result->{dice} = $player->{dice} if defined $player->{dice};
