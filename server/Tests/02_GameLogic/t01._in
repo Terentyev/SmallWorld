@@ -1,0 +1,53 @@
+{
+    "include": [ "_game1.inc" ],
+    "test": [
+        {
+            "action": "selectRace",
+            "position": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": -1,
+            "position": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 3,
+            "position": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": -1
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 6
+        },
+        {
+            "action": "selectRace",
+            "sid": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        }
+    ],
+    "description": "test selectRace"
+}

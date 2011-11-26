@@ -1,0 +1,84 @@
+[
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badPosition"
+    },
+    {
+        "result": "badPosition"
+    },
+    {
+        "result": "badPosition"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 3,
+                    "tokensInHand": 11,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 2,
+                        "specialPowerName": "bivouacking",
+                        "raceName": "elves"
+                    },
+                    "declineTokenBadge": {}
+                },
+                {}
+            ],
+            "visibleTokenBadges": [
+                {
+                    "tokenBadgeId": 0,
+                    "specialPowerName": "alchemist",
+                    "raceName": "amazons",
+                    "bonusMoney": 1
+                },
+                {
+                    "tokenBadgeId": 1,
+                    "specialPowerName": "berserk",
+                    "raceName": "dwarves",
+                    "bonusMoney": 1
+                },
+                {
+                    "tokenBadgeId": 3,
+                    "specialPowerName": "commando",
+                    "raceName": "giants"
+                },
+                {
+                    "tokenBadgeId": 4,
+                    "specialPowerName": "diplomat",
+                    "raceName": "halflings"
+                },
+                {
+                    "tokenBadgeId": 5,
+                    "specialPowerName": "dragonMaster",
+                    "raceName": "humans"
+                },
+                {
+                    "tokenBadgeId": 6,
+                    "specialPowerName": "flying",
+                    "raceName": "orcs"
+                }
+            ]
+        }
+    },
+    {
+        "result": "badStage"
+    }
+
+]
