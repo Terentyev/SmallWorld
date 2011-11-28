@@ -486,7 +486,7 @@ sub selectRace {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  $player->{coins} -= $p;
+  $player->{coins} += $player->{currentTokenBadge}->{bonusMoney} - $p;
   $player->{tokensInHand} = $race->initialTokens() + $sp->initialTokens();
   $self->{gameState}->{state} = GS_CONQUEST;
 }

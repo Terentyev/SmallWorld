@@ -368,10 +368,29 @@ use constant PATTERN => {
       errorCode => R_BAD_REGION_ID
     }
   ],
-  decline =>[ {name => 'sid', type => 'int', mandatory => 1} ],
-  finishTurn => [ {name => 'sid', type => 'int', mandatory => 1} ],
+  decline =>[
+    {
+      name => 'sid',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_SID
+    }
+  ],
+  finishTurn => [
+    {
+      name => 'sid',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_SID
+    }
+  ],
   redeploy => [
-    {name => 'sid', type => 'int', mandatory => 1},
+    {
+      name => 'sid',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_SID
+    },
     {name => 'regions', type => 'list', mandatory => 1},
     {name => 'encampments', type => 'list', mandatory => 0},
     {name => 'fortified', type => 'hash', mandatory => 0},
