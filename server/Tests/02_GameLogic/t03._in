@@ -1,0 +1,81 @@
+{
+    "test": [
+        {
+            "action": "redeploy",
+            "regions": [{"regionId": 2, "tokensNum": 11}]
+        },
+        {
+            "action": "redeploy",
+            "sid": -1,
+            "regions": [{"regionId": 2, "tokensNum": 11}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 7,
+            "regions": [{"regionId": 2, "tokensNum": 11}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 2, "tokensNum": 11}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": -2, "tokensNum": 11}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 12, "tokensNum": 11}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"tokensNum": 11}]
+        },
+
+
+        {
+            "action": "redeploy",
+            "sid": 1
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 1, "tokensNum": 11}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 4}, {"regionId": 3, "tokensNum": 6}, {"regionId": 4}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 4}, {"regionId": 3, "tokensNum": 6}, {"regionId": 4, "tokensNum": 2}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 6}, {"regionId": 3, "tokensNum": 6}, {"regionId": 4, "tokensNum": -1}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 1}, {"regionId": 3, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 4}, {"regionId": 3, "tokensNum": 7}]
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        }
+
+
+    ],
+    "description": "redeploy"
+}

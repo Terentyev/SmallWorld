@@ -74,6 +74,11 @@
             "action": "selectRace",
             "sid": 1,
             "position": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 2
         }
 
     ],
