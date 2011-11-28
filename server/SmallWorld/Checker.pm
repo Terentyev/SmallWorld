@@ -405,7 +405,10 @@ sub checkTokensInHand {
 sub checkTokensNum {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # только для redeploy
-  return grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} };
+  my $tokensNum = $player->{tokensInHand};
+  grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
+  grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
+  return $tokensNum != 0 || grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} };;
 }
 
 sub checkForts {
@@ -433,6 +436,8 @@ sub checkEnoughEncamps {
 
 sub checkTokensForRedeployment {
   my ($self, $game, $player, $region, $race, $sp) = @_;
+  #TODO когда возвращается ошибка noTokensForRedeployment ?
+  return 0;
   # только для redeploy
   my $tokensNum = $player->{tokensInHand};
   grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
@@ -472,7 +477,7 @@ sub checkGameCommand {
     &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables, $result); },
     &R_BAD_REGION_ID                => sub { $self->checkRegionId(@gameVariables); },
     &R_BAD_SET_HERO_CMD             => sub { defined $js->{heroes} && HEROES_MAX < scalar(@{ $js->{heroes} }); },
-    &R_BAD_SID                      => sub { $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId}; },
+    &R_BAD_SID                      => sub { !$self->{db}->dbExists("players", "sid", $js->{sid});  },
     &R_BAD_STAGE                    => sub { $self->checkStage(@gameVariables); },
     &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables); },
     &R_CANNOT_ENCHANT               => sub { $region->{inDecline}; },

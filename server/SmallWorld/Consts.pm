@@ -391,31 +391,76 @@ use constant PATTERN => {
       mandatory => 1,
       errorCode => R_BAD_SID
     },
-    {name => 'regions', type => 'list', mandatory => 1},
+    {
+      name => 'regions',
+      type => 'list',
+      mandatory => 1,
+      errorCode => R_BAD_REGION
+    },
     {name => 'encampments', type => 'list', mandatory => 0},
     {name => 'fortified', type => 'hash', mandatory => 0},
     {name => 'heroes', type => 'list', mandatory => 0}
   ],
   defend => [
-    {name => 'sid', type => 'int', mandatory => 1},
-    {name => 'regions', type => 'list', mandatory => 1}
+    {
+      name => 'sid',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_SID
+    },
+    {
+      name => 'regions',
+      type => 'list',
+      mandatory => 1,
+      errorCode => R_BAD_REGION
+    }
   ],
   enchant => [
-    {name => 'sid', type => 'int', mandatory => 1},
-    {name => 'regionId', type => 'int', mandatory => 1}
+    {
+      name => 'sid',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_SID
+    },
+    {
+     name => 'regionId',
+     type => 'int',
+     mandatory => 1,
+     errorCode => R_BAD_REGION_ID
+    }
   ],
   resetServer => [ {name => 'sid', type => 'int', mandatory => 0} ],
   throwDice => [
-    {name => 'sid', type => 'int', mandatory => 1},
+    {
+      name => 'sid',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_SID
+    },
     {name => 'dice', type => 'int', mandatory => 0}
   ],
   dragonAttack => [
-    {name => 'sid', type => 'int', mandatory => 1},
+    {
+      name => 'sid',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_SID
+    },
     {name => 'regionId', type => 'int', mandatory => 1}
   ],
   selectFriend => [
-    {name => 'sid', type => 'int', mandatory => 1},
-    {name => 'friendId', type => 'int', mandatory => 1}
+    {
+      name => 'sid',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_SID
+    },
+    {
+      name => 'friendId',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_FRIEND_ID
+    }
   ],
   getGameState => [
     {
