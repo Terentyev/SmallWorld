@@ -200,7 +200,7 @@ sub cmd_setReadinessStatus {
 sub cmd_selectRace {
   my ($self, $result) = @_;
   my $game = $self->getGame();
-  $game->selectRace($self->{json}->{position});
+  $game->selectRace($self->{json}->{position}, $result);
   $game->save();
 }
 

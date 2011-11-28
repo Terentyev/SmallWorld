@@ -133,6 +133,7 @@ sub initTokenBadges {
     push @result, {
       tokenBadgeId     => $j++,
       specialPowerName => splice(@sp, rand(scalar(@sp)), 1),
+      bonusMoney       => 0
     };
   }
 
@@ -474,9 +475,13 @@ sub decline {
 }
 
 sub selectRace {
-  my ($self, $p) = @_;
+  my ($self, $p, $result) = @_;
   my $player = $self->getPlayer();
+
+  ++$self->{gameState}->{tokenBadges}->[$_]->{bonusMoney} for (0..$p-1);
+
   $player->{currentTokenBadge} = splice @{ $self->{gameState}->{tokenBadges} }, $p, 1;
+  $result->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
 
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
