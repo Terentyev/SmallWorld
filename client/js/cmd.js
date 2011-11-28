@@ -168,7 +168,7 @@ function updatePlayersInGame(gameId) {
     //alert(JSON.stringify(players));
     for (var i in players) {
       with (players[i]) {
-        s += $.sprintf("%s %s<br>", userName, isReady ? "ready" : "");
+        s += $.sprintf("%s %s<br>", username, isReady ? "ready" : "");
         if (userId == data.playerId) {
           $('#checkBoxReady').attr('checked', isReady ? "checked": null)
           $('#readinessStatus').html(isReady ? "ready" : "not ready");
@@ -184,8 +184,12 @@ function hdlGetGameList(ans) {
 
   for (var i in ans.games) {
     cur = ans.games[i];
+    var players = new Array();
+    for (var j in cur.players) {
+      players[cur.players[j].userId] = cur.players[j];
+    }
     games[cur.gameId] = {"name": cur.gameName, "description": cur.gameDescription, "mapId": cur.mapId,
-                         "turnsNum": cur.turnsNum, "players": cur.players, "playersNum": cur.maxPlayersNum,
+                         "turnsNum": cur.turnsNum, "players": players, "playersNum": cur.maxPlayersNum,
                          "inGame": cur.state == 2};
     needLoadMaps = needLoadMaps || !maps[cur.mapId];
     if (data.gameId == null)
@@ -284,4 +288,22 @@ function cmdGetGameState(callback) {
 function hdlGetGameState(ans) {
   data.game = ans.gameState;
   showGame();
+}
+
+/*******************************************************************************
+   *         Area actions                                                      *
+   ****************************************************************************/
+function cmdConquer(regionId) {
+  var cmd = {
+    action: "conquer",
+    regionId: regionId,
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlConquer);
+}
+
+function hdlConquer(ans) {
+  // first implementation
+  // TODO: change game state handly
+  cmdGetGameState(hdlGetGameState);
 }

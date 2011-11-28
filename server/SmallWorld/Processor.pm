@@ -106,7 +106,7 @@ sub cmd_getMessages {
   my $ref = $self->{db}->getMessages($self->{json}->{since});
   my @a = ();
   foreach (@{$ref}) {
-    push @a, { 'id' => $_->{ID}, 'text' => $_->{TEXT}, 'userName' => $_->{USERNAME}, 'time' => TEST_MODE ? $_->{ID} : $_->{T} };
+    push @a, { 'id' => $_->{ID}, 'text' => $_->{TEXT}, 'username' => $_->{USERNAME}, 'time' => TEST_MODE ? $_->{ID} : $_->{T} };
   }
   @{$result->{messages}} = reverse @a;
 }
@@ -141,7 +141,7 @@ sub cmd_getGameList {
     my $players = [
       map { {
         'userId' => $_->{ID},
-        'userName' => $_->{USERNAME},
+        'username' => $_->{USERNAME},
         'isReady' => $_->{ISREADY}
       } } @{$pl}
     ];
