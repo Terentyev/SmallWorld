@@ -1,3 +1,15 @@
+var gameStages = {
+  null: [''],
+  '': [''],
+  'defend': ["Let's defend, my friend!", "Wait other players"],
+  'selectRace': ["So... You should select your path... or race", "Wait other players"],
+  'conquest': ["Do you want some fun? Let's conquer some regions", "Wait other players"],
+  'redeploy': ["Place your warriors to the world", "Wait other players"],
+  'finishTurn': ["Click finish-turn button, dude", "Wait other players"],
+  'gameOver': ["Oops!.. Game over", "Oops!.. Game over"]
+};
+
+
 function showModal(divName) {
   $(divName).modal({
     closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
@@ -41,18 +53,64 @@ function showGame() {
 
   $("#divGame").css("display", "block");
   $("#divLobby").css("display", "none");
-  $("#imgMap").attr("src", serverUrl + maps[data.game.map.mapId].url);
+  $("#tdGameChat").append($("#divChat").detach());
 
+  showGameMap();
+  showBadges();
+  showPlayers();
+  showRegions();
+  showMapObjects();
+  showGameStage();
+}
+
+function showGameMap() {
+  if ($("#imgMap").attr("src") === maps[data.game.map.mapId].url) return;
+
+  $("#imgMap").attr("src", serverUrl + maps[data.game.map.mapId].url);
+  $("#divMapObjects").css("width", document.getElementById("imgMap").clientWidth);
+  $("#divMapObjects").css("top", - document.getElementById("imgMap").clientHeight);
+}
+
+function showBadges() {
   var s = '';
   for (var i in data.game.visibleTokenBadges) {
     var cur = data.game.visibleTokenBadges[i];
-    s += addRow([$.sprintf("<a href='#' class='clickable' onclick='tokenBadgeClick(%d)'><img src='%s' /><img src='%s' /></a>",
-                          i, races[cur.raceName], specialPowers[cur.specialPowerName])]);
+    s += addRow([$.sprintf(
+          "<a href='#' class='clickable' onclick='tokenBadgeClick(%d)'>" +
+          "<img src='%s' /><img src='%s' /></a>",
+          i, races[cur.raceName], specialPowers[cur.specialPowerName])]);
   }
   $("#tableTokenBadges tbody").html(s);
   $("#tableTokenBadges").trigger("update");
+}
 
-  s = '';
+function showPlayers() {
+  var s = '';
+  for (var i in data.game.players) {
+    var cur = data.game.players[i];
+    if (cur.userId == data.playerId) {
+      s = addOurPlayerInfo(cur) + s;
+    }
+    else {
+      s += addPlayerInfo(cur);
+    }
+  }
+  $("#tablePlayers tbody").html(s);
+  $("#tablePlayers").trigger("update");
+}
+
+function showMapObjects() {
+  var s = '';
+  for (var i in data.game.map.regions) {
+    var cur = data.game.map.regions[i];
+    s += addTokensToMap(cur, i) + addObjectsToMap(cur, i);
+  }
+  $("#divMapObjects").html(s);
+  $("#divMapObjects").trigger("update");
+}
+
+function showRegions() {
+  var s = '';
   for (var i in data.game.map.regions) {
     var cur = data.game.map.regions[i];
     s += addAreaPoly(maps[data.game.map.mapId].regions[i].coordinates, i);
@@ -60,6 +118,11 @@ function showGame() {
   $("#mapLayer").html(s);
   $("#mapLayer").trigger("update");
   $("#imgMap").maphilight();
+}
+
+function showGameStage() {
+  $("#spanGameStage").html(gameStages[data.game.stage][data.game.activePlayerId == data.userId ? 0 : 1]);
+  $("#spanGameStage").trigger("update");
 }
 
 function showLobby() {
@@ -83,7 +146,7 @@ function showMessages() {
   var cur;
   for (var i in messages) {
     cur = messages[i];
-    s += $.sprintf('<p id="message%d"><b>%s:</b> %s</p>',cur.id, cur.userName, cur.text);
+    s += $.sprintf('<p id="message%d"><b>%s:</b> %s</p>',cur.id, cur.username, cur.text);
   }
   api.getContentPane().html(s);
   api.reinitialise();
