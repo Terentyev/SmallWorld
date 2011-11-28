@@ -27,7 +27,7 @@
     {
         "result": "ok",
         "messages": [
-          { "id": 1, "time": 1, "userName": "username1", "text": "message 1" }
+          { "id": 1, "time": 1, "username": "username1", "text": "message 1" }
         ]
     },
     {
@@ -47,8 +47,8 @@
     {
         "result": "ok",
         "messages": [
-          { "id": 2, "time": 2, "userName": "username1", "text": "message 2" },
-          { "id": 3, "time": 3, "userName": "username2", "text": "message 3" }
+          { "id": 2, "time": 2, "username": "username1", "text": "message 2" },
+          { "id": 3, "time": 3, "username": "username2", "text": "message 3" }
         ]
     },
 
