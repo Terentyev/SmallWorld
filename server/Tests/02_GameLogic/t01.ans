@@ -57,22 +57,26 @@
                 {
                     "tokenBadgeId": 3,
                     "specialPowerName": "commando",
-                    "raceName": "giants"
+                    "raceName": "giants",
+                    "bonusMoney": 0
                 },
                 {
                     "tokenBadgeId": 4,
                     "specialPowerName": "diplomat",
-                    "raceName": "halflings"
+                    "raceName": "halflings",
+                    "bonusMoney": 0
                 },
                 {
                     "tokenBadgeId": 5,
                     "specialPowerName": "dragonMaster",
-                    "raceName": "humans"
+                    "raceName": "humans",
+                    "bonusMoney": 0
                 },
                 {
                     "tokenBadgeId": 6,
                     "specialPowerName": "flying",
-                    "raceName": "orcs"
+                    "raceName": "orcs",
+                    "bonusMoney": 0
                 }
             ]
         }
