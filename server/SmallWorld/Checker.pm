@@ -195,7 +195,7 @@ sub checkJsonCmd {
 
   if (
       $result->{result} eq R_ALL_OK &&
-      (grep { $_ eq $cmd } qw( defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn ))
+      (grep { $_ eq $cmd } qw( decline defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn ))
   ) {
     $self->checkGameCommand($result);
   }
