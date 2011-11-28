@@ -309,7 +309,7 @@ sub initialTokens {
 sub canCmd {
   my ($self, $js) = @_;
   # чародеи могут ещё и зачаровывать
-  return $js->{action} eq 'enchant' ||
+  return $js->{action} eq 'enchant' ||  #TODO а просто всегда возвращать true нельзя?
     $self->SUPER::canCmd($js);
 }
 

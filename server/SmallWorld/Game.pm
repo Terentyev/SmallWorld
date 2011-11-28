@@ -435,7 +435,7 @@ sub conquer {
     my $defender = $self->getPlayer( { id => $region->{ownerId} } );
     if ( $defender->activeConq($region) ) {
       my $defRace = $self->createRace($defender->{currentTokenBadge});
-      $defender->{tokensNum} += $region->{tokensNum} + $defRace->looseTokensBonus();
+      $defender->{tokensInHand} += $region->{tokensNum} + $defRace->looseTokensBonus();
       if ( $self->canDefend($defender) ) {
         $self->{gameState}->{conquerorId} = $player->{playerId};
         $self->{gameState}->{activePlayerId} = $defender->{playerId};

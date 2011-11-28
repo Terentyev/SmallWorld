@@ -273,16 +273,20 @@ sub checkRegion {
 sub checkRegion_defend {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
   my $regions = $game->{gameState}->{regions};
+  my $js = $self->{json};
   my $lostRegion = undef;
-  my $lastIdx = 0;
+  my $lastIdx = -1;
   foreach ( @{ $regions } ) {
-    if ( $lastIdx >= $_->{conquestIdx} ) {
+    if ( defined $_->{conquestIdx} && $lastIdx < $_->{conquestIdx} ) {
+      $lastIdx = $_->{conquestIdx};
       $lostRegion = $_;
     }
   }
 
-  # 1. ставить можно только на регион своей активной расы
-  return 1 if !$player->activeConq($region);
+  # 1. ставить можно только на регионы своей активной расы
+  foreach my $r ( @{$js->{regions}} ) {
+    return 1 if !(grep { $r->{regionId} == $_->{regionId} } @{ $race->{regions} });
+  }
 
   # если мы перемещаем войска на смежный с потерянным регионом
   if ( grep { $_ == $region->{regionId} } @{ $lostRegion->{adjacentRegions} } ) {
@@ -366,6 +370,7 @@ sub checkRegionIsImmune {
   return $game->isImmuneRegion($region);
 }
 
+#TODO не правильно работает sp->canCmd
 sub checkStage {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $js = $self->{json};
