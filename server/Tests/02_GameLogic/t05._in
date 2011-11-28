@@ -1,0 +1,75 @@
+{
+    "include": [ "_game1.inc" ],
+    "test": [
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 2
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 8}, {"regionId": 3, "tokensNum": 2}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 4
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 3, "tokensNum": 10}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+        {
+            "action": "getGameState",
+            "sid": 2
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        }
+
+
+    ],
+    "description": "second player conquer + defend"
+}
