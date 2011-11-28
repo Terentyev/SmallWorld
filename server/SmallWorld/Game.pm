@@ -481,6 +481,7 @@ sub selectRace {
   ++$self->{gameState}->{tokenBadges}->[$_]->{bonusMoney} for (0..$p-1);
 
   $player->{currentTokenBadge} = splice @{ $self->{gameState}->{tokenBadges} }, $p, 1;
+  delete $player->{currentTokenBadge}->{bonusMoney};
   $result->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
 
   my $race = $self->createRace($player->{currentTokenBadge});
@@ -492,19 +493,22 @@ sub selectRace {
 }
 
 sub finishTurn {
-  my $self = shift;
+  my ($self, $result) = @_;
   my $player = $self->getPlayer();
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  $player->{coins} += 1 * (grep {
+  my $bonus = 1 * (grep {
     defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}
   } @{ $regions }) + $sp->coinsBonus() + $race->coinsBonus();
+  $player->{coins} += $bonus;
+  $result->{coins} = $bonus;  #TODO Переделать если finishTurn возвращает общее количество монет игрока, а не только полученных на этом ходу
   delete $player->{dice};
   grep { $_->{conquestIdx} = undef } @{ $self->{gameState}->{regions} };
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
     ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
+  $result->{nextPlayer} = $self->{gameState}->{activePlayerId};
   $player = $self->getPlayer();
   if ( $player->{priority} == 0 ) {
     $self->{gameState}->{currentTurn}++;
@@ -528,12 +532,16 @@ sub redeploy {
   foreach ( @{ $race->{regions} } ) {
     $player->{tokensInHand} += $_->{tokensNum};
     $_->{tokensNum} = 0;
+    delete $_->{ownerId};
+    delete $_->{tokenBadgeId};
   }
 
   foreach ( @{ $regs } ) {
     $lastRegion = $self->getRegion($_->{regionId});
     $lastRegion->{tokensNum} = $_->{tokensNum};
     $player->{tokensInHand} -= $_->{tokensNum};
+    $lastRegion->{ownerId} = $player->{playerId};
+    $lastRegion->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
   }
   if ( defined $lastRegion ) {
     $lastRegion->{tokensNum} += $player->{tokensInHand};

@@ -408,7 +408,8 @@ sub checkTokensNum {
   my $tokensNum = $player->{tokensInHand};
   grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
   grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
-  return $tokensNum != 0 || grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} };;
+  return $tokensNum != 0 || #TODO разрешать ставить меньше фигурок чем есть, а оставшиеся ставить в последний регион?
+         grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} };
 }
 
 sub checkForts {

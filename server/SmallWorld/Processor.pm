@@ -221,7 +221,7 @@ sub cmd_decline {
 sub cmd_finishTurn {
   my ($self, $result) = @_;
   my $game = $self->getGame();
-  $game->finishTurn();
+  $game->finishTurn($result);
   $game->save();
 }
 
