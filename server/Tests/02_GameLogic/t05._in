@@ -12,6 +12,10 @@
             "regionId": 3
         },
         {
+            "action": "decline",
+            "sid": 1
+        },
+        {
             "action": "conquer",
             "sid": 1,
             "regionId": 4
@@ -22,9 +26,14 @@
             "regionId": 2
         },
         {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 5
+        },
+        {
             "action": "redeploy",
             "sid": 1,
-            "regions": [{"regionId": 2, "tokensNum": 8}, {"regionId": 3, "tokensNum": 2}, {"regionId": 4, "tokensNum": 1}]
+            "regions": [{"regionId": 2, "tokensNum": 7}, {"regionId": 3, "tokensNum": 2}, {"regionId": 4, "tokensNum": 1}, {"regionId": 5, "tokensNum": 1}]
         },
         {
             "action": "finishTurn",
@@ -64,11 +73,110 @@
             "sid": 2
         },
         {
+            "action": "decline",
+            "sid": 2
+        },
+        {
+            "action": "defend",
+            "regions": [{"regionId": 2, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": -1,
+            "regions": [{"regionId": 2, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": 3,
+            "regions": [{"regionId": 2, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": 2,
+            "regions": [{"regionId": 2, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
             "action": "defend",
             "sid": 1,
-            "regions": [{"regionId": 2, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+            "regions": [{"tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": -1, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 10, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": 1
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": 3
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 3, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [ {"regionId": 5, "tokensNum": 1},  {"regionId": 5}]
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 5, "tokensNum": 3}]
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": []
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 2}]
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 5, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 5, "tokensNum": 1}, {"regionId": 5, "tokensNum": 1}]
+        },
+        {
+            "action": "getGameState",
+            "sid": 2
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 4
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 5, "tokensNum": 1}]
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 2
         }
-
 
     ],
     "description": "second player conquer + defend"

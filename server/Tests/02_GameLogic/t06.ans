@@ -1,0 +1,98 @@
+[
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 2
+    },
+    {
+        "result": "badStage"
+    },
+
+
+    {
+        "result": "ok", "tokenBadgeId": 0
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 1
+    },
+
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 2
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 2,
+            "currentTurn": 1,
+            "map" : {
+              "regions": [
+                { "currentRegionState": {"tokensNum": 0 }},
+                { "currentRegionState": {"tokensNum": 1 }},
+                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 1 }},
+                { "currentRegionState": {"tokensNum": 10, "tokenBadgeId": 0, "ownerId": 2 }},
+                { "currentRegionState": {"tokensNum": 1 }}
+              ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 5,
+                    "currentTokenBadge": {},
+                    "declineTokenBadge": {
+                        "tokenBadgeId": 2,
+                        "specialPowerName": "bivouacking",
+                        "raceName": "elves"
+                    }
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "tokensInHand": 0,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 0,
+                        "specialPowerName": "alchemist",
+                        "raceName": "amazons"
+                    },
+                    "declineTokenBadge": {}
+
+                }
+            ]
+        }
+    }
+
+
+]
