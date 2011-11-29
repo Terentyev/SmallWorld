@@ -23,9 +23,6 @@
         "result": "ok"
     },
     {
-        "result": "ok"
-    },
-    {
         "result": "ok",
         "gameState": {
             "map": {

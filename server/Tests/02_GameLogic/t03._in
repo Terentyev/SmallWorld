@@ -63,11 +63,6 @@
         {
             "action": "redeploy",
             "sid": 1,
-            "regions": [{"regionId": 2, "tokensNum": 1}, {"regionId": 3, "tokensNum": 1}, {"regionId": 4, "tokensNum": 1}]
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
             "regions": [{"regionId": 2, "tokensNum": 4}, {"regionId": 3, "tokensNum": 7}]
         },
         {

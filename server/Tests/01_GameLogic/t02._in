@@ -45,11 +45,6 @@
         {
             "action": "redeploy",
             "sid": 1,
-            "regions": []
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
             "regions": [
                 { "regionId": 1, "tokensNum": 1 }
             ]
