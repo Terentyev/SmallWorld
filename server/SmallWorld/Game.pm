@@ -473,6 +473,7 @@ sub decline {
   }
   my $badge = $player->{currentTokenBadge};
   @{ $player }{qw( tokensInHand currentTokenBadge declineTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
+  $self->{gameState}->{state} = GS_FINISH_TURN;
 }
 
 sub selectRace {
@@ -514,7 +515,7 @@ sub finishTurn {
   if ( $player->{priority} == 0 ) {
     $self->{gameState}->{currentTurn}++;
   }
-  if ( $self->{gameState}->{currentTurn} ) {
+  if ( $self->{gameState}->{currentTurn} >= $self->{gameState}->{map}->{turnsNum}) {
     $self->{gameState}->{state} = GS_IS_OVER;
   }
   else {
