@@ -75,17 +75,17 @@ sub init {
       constRegionState => $_->{landDescription},
       adjacentRegions  => $_->{adjacent},
 
-      ownerId          => undef,                # идентификатор игрока-владельца
-      tokenBadgeId     => undef,                # идентификатор расы игрока-владельца
-      tokensNum        => 1 * $_->{population}, # количество фигурок
-      conquestIdx      => undef,                # порядковый номер завоевания (обнуляется по окончанию хода)
-      holeInTheGround  => undef,                # 1 если присутствует нора полуросликов
-      lair             => undef,                # кол-во пещер троллей
-      encampment       => undef,                # кол-во лагерей (какая осень в лагерях...)
-      dragon           => undef,                # 1 если присутствует дракон
-      fortiefied       => undef,                # кол-во фортов
-      hero             => undef,                # 1 если присутствует герой
-      inDecline        => undef                 # 1 если раса tokenBadgeId в упадке
+      ownerId          => undef,                                          # идентификатор игрока-владельца
+      tokenBadgeId     => undef,                                          # идентификатор расы игрока-владельца
+      tokensNum        => defined $_->{population} ? $_->{population}: 0, # количество фигурок
+      conquestIdx      => undef,                                          # порядковый номер завоевания (обнуляется по окончанию хода)
+      holeInTheGround  => undef,                                          # 1 если присутствует нора полуросликов
+      lair             => undef,                                          # кол-во пещер троллей
+      encampment       => undef,                                          # кол-во лагерей (какая осень в лагерях...)
+      dragon           => undef,                                          # 1 если присутствует дракон
+      fortiefied       => undef,                                          # кол-во фортов
+      hero             => undef,                                          # 1 если присутствует герой
+      inDecline        => undef                                           # 1 если раса tokenBadgeId в упадке
    } } @{$regions}
   ];
 
@@ -100,7 +100,7 @@ sub init {
       coins              => INITIAL_COINS_NUM,
       tokensInHand       => INITIAL_TOKENS_NUM,
       priority           => $i++,
-#      dice               => undef,              # число, которое выпало при броске костей берсерка
+#      dice               => undef,                                       # число, которое выпало при броске костей берсерка
       currentTokenBadge  => {
         tokenBadgeId     => undef,
         totalTokensNum   => undef,
@@ -401,7 +401,7 @@ sub canAttack {
 
   # если игроку не хватает фигурок даже с подкреплением
   if ( $self->{conqNum} + $player->safe('dice') < $self->{defendNum} ) {
-    $self->{gameState}->{state} = GS_FINISH_TURN;
+    $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN;
     return 0;
   }
   return 1;
@@ -439,7 +439,7 @@ sub conquer {
       if ( $self->canDefend($defender) ) {
         $self->{gameState}->{conquerorId} = $player->{playerId};
         $self->{gameState}->{activePlayerId} = $defender->{playerId};
-        $self->{gameState}->{state} = GS_DEFEND;
+        $self->{gameState}->{state} = $defender->{tokensInHand} ? GS_DEFEND: GS_CONQUEST;
       }
     }
   }
@@ -450,6 +450,7 @@ sub conquer {
   $region->{inDecline} = undef;
   $region->{tokensNum} = min($self->{defendNum}, $self->{conqNum}); # размещаем в регионе все фигурки, которые использовались для завоевания
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
+  $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
 
 sub decline {
@@ -518,7 +519,7 @@ sub finishTurn {
   }
   else {
     $self->{gameState}->{state} = defined $player->{currentTokenBadge}->{tokenBadgeId}
-      ? GS_CONQUEST
+      ? GS_BEFORE_CONQUEST
       : GS_SELECT_RACE;
   }
 }
@@ -559,6 +560,7 @@ sub redeploy {
   foreach ( @{ $heroes } ) {
     $self->getRegion($_->{regionId})->{hero} = 1;
   }
+  $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN;
 }
 
 sub defend {
@@ -566,9 +568,11 @@ sub defend {
   my $player = $self->getPlayer();
   
   foreach ( @{ $regs } ) {
-    $self->getRegion($_->{regionId})->{tokensNum} = $_->{tokensNum};
-    $player->{tokensNum} -= $_->{tokensNum};
+    $self->getRegion($_->{regionId})->{tokensNum} += $_->{tokensNum};
+    $player->{tokensInHand} -= $_->{tokensNum};
   }
+  $self->{gameState}->{state} = GS_CONQUEST;
+  $self->{gameState}->{activePlayerId} = $self->{gameState}->{conquerorId};
 }
 
 sub enchant {
@@ -577,12 +581,14 @@ sub enchant {
   @{ $self->getRegion($regionId) }{qw( ownerId tokenBadgeId conquestIdx )} = (
       $player->{playerId}, $player->{currentTokenBadgeId}->{tokenBadgeId}, $self->nextConquestIdx() );
   $self->{gameState}->{storage}->{&RACE_SORCERERS} -= 1;
+  $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
 
 sub throwDice {
   my $self = shift;
   my $player = $self->getPlayer();
   $player->{dice} = $self->random();
+  $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
   return $player->{dice};
 }
 

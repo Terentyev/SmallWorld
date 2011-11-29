@@ -276,20 +276,22 @@ sub checkRegion_defend {
   my $js = $self->{json};
   my $lostRegion = undef;
   my $lastIdx = -1;
-  foreach ( @{ $regions } ) {
+  foreach ( @{$regions} ) {
     if ( defined $_->{conquestIdx} && $lastIdx < $_->{conquestIdx} ) {
       $lastIdx = $_->{conquestIdx};
       $lostRegion = $_;
     }
   }
 
+  my $adj = 0;
   # 1. ставить можно только на регионы своей активной расы
   foreach my $r ( @{$js->{regions}} ) {
     return 1 if !(grep { $r->{regionId} == $_->{regionId} } @{ $race->{regions} });
+    $adj = $adj || (grep { $r->{regionId} == $_ } @{ $lostRegion->{adjacentRegions} });
   }
 
   # если мы перемещаем войска на смежный с потерянным регионом
-  if ( grep { $_ == $region->{regionId} } @{ $lostRegion->{adjacentRegions} } ) {
+  if ( $adj ) {
     # надо убедиться, что несмежных нет, иначе ошибка
     foreach ( @{ $regions } ) {
       my $regionId = $_->{regionId};
@@ -370,26 +372,36 @@ sub checkRegionIsImmune {
   return $game->isImmuneRegion($region);
 }
 
-#TODO не правильно работает sp->canCmd
 sub checkStage {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $js = $self->{json};
 
   my %states = (
-    &GS_DEFEND      => [ 'defend' ],
-    &GS_SELECT_RACE => [ 'selectRace' ],
-    &GS_CONQUEST    => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'selectFriend', 'finishTurn' ],
-    &GS_REDEPLOY    => [ 'redeploy', 'selectFriend', 'finishTurn' ],
-    &GS_FINISH_TURN => [ 'finishTurn' ],
-    &GS_IS_OVER     => [],
+    &GS_DEFEND             => [ 'defend' ],
+    &GS_SELECT_RACE        => [ 'selectRace' ],
+    &GS_BEFORE_CONQUEST    => [ 'decline', 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'finishTurn' ],
+    &GS_CONQUEST           => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy' ],
+    &GS_REDEPLOY           => [ 'redeploy' ],
+    &GS_BEFORE_FINISH_TURN => [ 'finishTurn', 'selectFriend', 'decline' ],
+    &GS_FINISH_TURN        => [ 'finishTurn' ],
+    &GS_IS_OVER            => [],
   );
 
   # 1. пользователь, который послал команду, != активный пользователь
   # 2. действие, которое запрашивает пользователь, не соответствует текущему
   #    состоянию игры
+  # только команда реорганизация войск при условии, что в команде не пытаются
+  # установить героев/лагеря/форты
+  # или команда атаки с ненулевым числом фигурок на руках
+  # или команда окончания хода с нулевым числом фигурок на руках
+  # или команда выбора расы при условии, что раса не выбрана $player->{tokensInHand}
+#    ($js->{action} eq 'selectRace') && (!defined $tokensInHand);
+
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
-    !$sp->canCmd($js, $player->{tokensInHand}) ||
+#    ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
+    ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
+    !$sp->canCmd($js, $game->{gameState}->{state}) ||
     !$race->canCmd($js);
 }
 
@@ -413,8 +425,8 @@ sub checkTokensNum {
   my $tokensNum = $player->{tokensInHand};
   grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
   grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
-  return $tokensNum != 0 || #TODO разрешать ставить меньше фигурок чем есть, а оставшиеся ставить в последний регион?
-         grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} };
+  return (grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} }) ||
+         $tokensNum < 0; #TODO разрешать ставить меньше фигурок чем есть, а оставшиеся ставить в последний регион?
 }
 
 sub checkForts {
