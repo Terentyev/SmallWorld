@@ -49,6 +49,9 @@
         "result": "badStage"
     },
     {
+        "result": "badStage"
+    },
+    {
         "result": "ok", "coins": 1, "nextPlayer": 2
     },
     {
@@ -62,7 +65,7 @@
                 { "currentRegionState": {"tokensNum": 1 }},
                 { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
                 { "currentRegionState": {"tokensNum": 1 }},
-                { "currentRegionState": {"tokensNum": 10, "tokenBadgeId": 0, "ownerId": 2 }},
+                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 0, "ownerId": 2 }},
                 { "currentRegionState": {"tokensNum": 1 }}
               ]
             },
@@ -81,7 +84,7 @@
                 {
                     "userId": 2,
                     "username": "username2",
-                    "tokensInHand": 0,
+                    "tokensInHand": 13,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
                         "specialPowerName": "alchemist",

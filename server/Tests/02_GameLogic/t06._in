@@ -64,6 +64,10 @@
             "sid": 1
         },
         {
+            "action": "decline",
+            "sid": 1
+        },
+        {
             "action": "conquer",
             "sid": 1,
             "regionId": 5

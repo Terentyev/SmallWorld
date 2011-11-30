@@ -1,0 +1,125 @@
+{
+    "include": [ "_game1.inc" ],
+    "test": [
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 5
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 5
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 6
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 2
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 3, "tokensNum": 2}, {"regionId": 4, "tokensNum": 1}, {"regionId": 5, "tokensNum": 7}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 5
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 4
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 4, "tokensNum": 1}]
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 5, "tokensNum": 1}]
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 4
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 5, "tokensNum": 1}]
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 2
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 3, "tokensNum": 8}, {"regionId": 4, "tokensNum": 2}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 0
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "defend",
+            "sid": 2,
+            "regions": [{"regionId": 3, "tokensNum": 1}]
+        }
+
+
+    ],
+    "description": "different basic commands"
+}
