@@ -21,7 +21,7 @@
                         "specialPowerName": "alchemist",
                         "raceName": "amazons"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {}
             ]
@@ -90,13 +90,12 @@
                         "specialPowerName": "alchemist",
                         "raceName": "amazons"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {}
             ]
         }
     },
-
     {
         "result": "ok", "nextPlayer": 2, "coins": 3
     },
@@ -149,7 +148,7 @@
                         "specialPowerName": "alchemist",
                         "raceName": "amazons"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {}
             ]

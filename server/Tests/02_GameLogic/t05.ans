@@ -132,7 +132,7 @@
                         "specialPowerName": "bivouacking",
                         "raceName": "elves"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {
                     "userId": 2,
@@ -144,7 +144,7 @@
                         "specialPowerName": "dragonMaster",
                         "raceName": "humans"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
 
                 }
             ]

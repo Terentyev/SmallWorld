@@ -82,6 +82,10 @@
             "action": "selectRace",
             "sid": 2,
             "position": 0
+        },
+        {
+            "action": "getGameState",
+            "sid": 2
         }
 
     ],

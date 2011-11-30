@@ -75,7 +75,7 @@
                     "username": "username1",
                     "coins": 5,
                     "currentTokenBadge": {},
-                    "declineTokenBadge": {
+                    "declinedTokenBadge": {
                         "tokenBadgeId": 2,
                         "specialPowerName": "bivouacking",
                         "raceName": "elves"
@@ -90,7 +90,7 @@
                         "specialPowerName": "alchemist",
                         "raceName": "amazons"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
 
                 }
             ]

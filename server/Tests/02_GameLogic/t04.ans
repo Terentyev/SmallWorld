@@ -55,7 +55,7 @@
                         "specialPowerName": "bivouacking",
                         "raceName": "elves"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {}
             ]
@@ -81,6 +81,39 @@
     },
     {
         "result": "ok", "tokenBadgeId": 0
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 2,
+            "currentTurn": 0,
+            "map" : {
+              "regions": [
+                { "currentRegionState": {"tokensNum": 0 }},
+                { "currentRegionState": {"tokensNum": 4, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 7, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 0 }},
+                { "currentRegionState": {"tokensNum": 0 }},
+                { "currentRegionState": {"tokensNum": 1 }}
+              ]
+            },
+            "players": [
+                {},
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "coins": 6,
+                    "tokensInHand": 14,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 0,
+                        "specialPowerName": "alchemist",
+                        "raceName": "amazons"
+                    },
+                    "declinedTokenBadge": {}
+                }
+            ]
+        }
     }
+
 
 ]

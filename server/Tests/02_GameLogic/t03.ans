@@ -65,7 +65,7 @@
                         "specialPowerName": "bivouacking",
                         "raceName": "elves"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {}
             ]

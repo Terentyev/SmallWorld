@@ -86,7 +86,7 @@
                         "specialPowerName": "dragonMaster",
                         "raceName": "humans"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {
                     "userId": 2,
@@ -97,7 +97,7 @@
                         "specialPowerName": "flying",
                         "raceName": "orcs"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 }                
             ]
         }
