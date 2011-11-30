@@ -238,7 +238,7 @@ sub checkRegionId {
 
   if ( defined $js->{regions} ) {
     foreach my $reg ( @{ $js->{regions} } ) {
-      return 1 if !(grep { $reg->{regionId} == $_->{regionId} } @{ $regions });
+      return 1 if !(grep { defined $reg->{regionId} && $reg->{regionId} == $_->{regionId} } @{ $regions });
     }
   }
 
@@ -408,14 +408,14 @@ sub checkStage {
 sub checkEnoughTokens {
   my ($game, $player) = $_[0]->getGameVariables();
   my $tokensNum = 0;
-  grep { $tokensNum += $_->{tokensNum} } @{ $_[0]->{json}->{regions} };
+  grep { $tokensNum += $_->{tokensNum} if defined $_->{tokensNum} } @{ $_[0]->{json}->{regions} };
   return $tokensNum > $player->{tokensInHand};
 }
 
 sub checkTokensInHand {
   my ($game, $player) = $_[0]->getGameVariables();
   my $tokensNum = 0;
-  grep { $tokensNum += $_->{tokensNum} } @{ $_[0]->{json}->{regions} };
+  grep { $tokensNum += $_->{tokensNum} if defined $_->{tokensNum} } @{ $_[0]->{json}->{regions} };
   return $tokensNum < $player->{tokensInHand};
 }
 
@@ -424,8 +424,8 @@ sub checkTokensNum {
   # только для redeploy
   my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus();
   grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
-  grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
-  return (grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} }) ||
+  grep { $tokensNum -= $_->{tokensNum} if defined $_->{tokensNum} } @{ $self->{json}->{regions} };
+  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} }) ||
          $tokensNum < 0; #TODO разрешать ставить меньше фигурок чем есть, а оставшиеся ставить в последний регион?
 }
 
