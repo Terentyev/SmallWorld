@@ -228,7 +228,7 @@ sub getGameStateForPlayer {
       tokensInHand => $_->{tokensInHand},
       priority     => $_->{priority},
       currentTokenBadge => \%{ $_->{currentTokenBadge} },
-      declineTokenBadge => \%{ $_->{declineTokenBadge} }
+      declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
     }
   } @{ $gs->{players} };
   grep {delete $_->{coins} if $_->{userId} != $playerId} @{ $result->{players} };
@@ -459,7 +459,7 @@ sub decline {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  foreach ( grep { $_->{ownerId} == $player->{playerId} } @{ $regions } ) {
+  foreach ( grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId} } @{ $regions } ) {
     if ( $_->{inDecline} ) {
       $_->{inDecline} = undef;
       @{ $_ }{qw( ownerId tokenBadgeId tokensNum )} = (undef, undef, undef);
@@ -471,7 +471,7 @@ sub decline {
     $sp->declineRegion($_);
   }
   my $badge = $player->{currentTokenBadge};
-  @{ $player }{qw( tokensInHand currentTokenBadge declineTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
+  @{ $player }{qw( tokensInHand currentTokenBadge declinedTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
   $self->{gameState}->{state} = GS_FINISH_TURN;
 }
 
@@ -482,13 +482,13 @@ sub selectRace {
   ++$self->{gameState}->{tokenBadges}->[$_]->{bonusMoney} for (0..$p-1);
 
   $player->{currentTokenBadge} = splice @{ $self->{gameState}->{tokenBadges} }, $p, 1;
-  delete $player->{currentTokenBadge}->{bonusMoney};
   $result->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
 
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
   $player->{coins} += $player->{currentTokenBadge}->{bonusMoney} - $p;
+  delete $player->{currentTokenBadge}->{bonusMoney};
   $player->{tokensInHand} = $race->initialTokens() + $sp->initialTokens() + $race->conquestTokensBonus();
   $self->{gameState}->{state} = GS_CONQUEST;
 }
@@ -498,11 +498,11 @@ sub finishTurn {
   my $player = $self->getPlayer();
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
+  my $drace = $self->createRace($player->{declinedTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  my $bonus = 1 * (grep {
-    defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}
-  } @{ $regions }) + $sp->coinsBonus() + $race->coinsBonus();
+  my $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
+              $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
   $player->{coins} += $bonus;
   # возвращаем количество монет, полученных на этом ходу
   $result->{coins} = $bonus;

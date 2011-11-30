@@ -52,6 +52,10 @@ sub coinsBonus {
   return 0;
 }
 
+sub declineCoinsBonus {
+  return 0;
+}
+
 # возвращает количество бонусных фигурок для атакуемого региона
 sub conquestRegionTokensBonus {
   return 0;
@@ -139,6 +143,10 @@ sub initialTokens {
 
 sub coinsBonus {
   return $_[0]->SUPER::coinsBonus() + $_[0]->getOwnedRegionsNum(REGION_TYPE_MINE);
+}
+
+sub declineCoinsBonus {
+  return $_[0]->coinsBonus();
 }
 
 
