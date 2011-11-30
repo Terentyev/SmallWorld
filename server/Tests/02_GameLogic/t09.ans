@@ -1,0 +1,118 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 4,
+                    "tokensInHand": 7,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 1,
+                        "specialPowerName": "forest",
+                        "raceName": "dwarves"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "nextPlayer": 2, "coins": 5
+    },
+
+
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "nextPlayer": 1, "coins": 3
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "nextPlayer": 2, "coins": 5
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 2,
+            "currentTurn": 1,
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 2 }},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
+                {},
+                {},
+                {}
+              ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 14,
+                    "currentTokenBadge": {},
+                    "declinedTokenBadge": {
+                        "tokenBadgeId": 1,
+                        "specialPowerName": "forest",
+                        "raceName": "dwarves"
+                    }
+                },
+                                {
+                    "userId": 2,
+                    "username": "username2",
+                    "tokensInHand": 9,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 2,
+                        "specialPowerName": "alchemist",
+                        "raceName": "elves"
+                    },
+                    "declinedTokenBadge": {}
+                }
+
+            ]
+        }
+    }
+
+
+]
