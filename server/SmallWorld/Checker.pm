@@ -296,7 +296,7 @@ sub checkRegion_defend {
     foreach ( @{ $regions } ) {
       my $regionId = $_->{regionId};
       return 1 if $player->activeConq($_) &&
-        !(grep { $_ == $regionId  } @{ $_->{adjacentRegions} });
+        !(grep { $_ == $regionId  } @{ $lostRegion->{adjacentRegions} });
     }
   }
   return 0;
@@ -422,7 +422,7 @@ sub checkTokensInHand {
 sub checkTokensNum {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # только для redeploy
-  my $tokensNum = $player->{tokensInHand};
+  my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus();
   grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
   grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
   return (grep { $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} }) ||

@@ -138,7 +138,7 @@ sub initialTokens {
 }
 
 sub coinsBonus {
-  return $_[0]->BaseRace::coinsBonus() + $_[0]->getOwnedRegionsNum(REGION_TYPE_MINE);
+  return $_[0]->SUPER::coinsBonus() + $_[0]->getOwnedRegionsNum(REGION_TYPE_MINE);
 }
 
 
@@ -237,7 +237,7 @@ sub initialTokens {
 }
 
 sub coinsBonus {
-  return $_[0]->BaseRace::coinsBonus() + $_[0]->getOwnedRegionsNum(REGION_TYPE_FARMLAND);
+  return $_[0]->SUPER::coinsBonus() + $_[0]->getOwnedRegionsNum(REGION_TYPE_FARMLAND);
 }
 
 
@@ -256,7 +256,7 @@ sub initialTokens {
 
 sub coinsBonus {
   # получение дополнительных монет за захваченные территории
-  return $_[0]->BaseRace::coinsBonus() +
+  return $_[0]->SUPER::coinsBonus() +
     1 * (grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} });
 }
 
@@ -370,7 +370,7 @@ sub initialTokens {
 }
 
 sub coinsBonus {
-  return $_[0]->getOwnedRegionsNum(REGION_TYPE_MAGIC) + $_[0]->BaseRace::coinsBonus();
+  return $_[0]->getOwnedRegionsNum(REGION_TYPE_MAGIC) + $_[0]->SUPER::coinsBonus();
 }
 
 

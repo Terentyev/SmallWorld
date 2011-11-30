@@ -401,7 +401,7 @@ sub canAttack {
 
   # если игроку не хватает фигурок даже с подкреплением
   if ( $self->{conqNum} + $player->safe('dice') < $self->{defendNum} ) {
-    $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN;
+    $self->{gameState}->{state} = GS_REDEPLOY;
     return 0;
   }
   return 1;
@@ -411,10 +411,9 @@ sub canAttack {
 sub canDefend {
   my ($self, $defender) = @_;
   # игрок может защищаться, если у него остались регионы, на которые он может
-  # перемещать фигурки
-  return grep {
-    $defender->activeConq($_)
-  } @{ $self->{gameState}->{regions} };
+  # перемещать фигурки и на руках есть фигурки расы
+  return $defender->{tokensInHand} &&
+         grep { $defender->activeConq($_) } @{ $self->{gameState}->{regions} };
 }
 
 sub conquer {
@@ -439,7 +438,7 @@ sub conquer {
       if ( $self->canDefend($defender) ) {
         $self->{gameState}->{conquerorId} = $player->{playerId};
         $self->{gameState}->{activePlayerId} = $defender->{playerId};
-        $self->{gameState}->{state} = $defender->{tokensInHand} ? GS_DEFEND: GS_CONQUEST;
+        $self->{gameState}->{state} = GS_DEFEND;
       }
     }
   }
@@ -490,7 +489,7 @@ sub selectRace {
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
   $player->{coins} += $player->{currentTokenBadge}->{bonusMoney} - $p;
-  $player->{tokensInHand} = $race->initialTokens() + $sp->initialTokens();
+  $player->{tokensInHand} = $race->initialTokens() + $sp->initialTokens() + $race->conquestTokensBonus();
   $self->{gameState}->{state} = GS_CONQUEST;
 }
 
@@ -505,7 +504,8 @@ sub finishTurn {
     defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}
   } @{ $regions }) + $sp->coinsBonus() + $race->coinsBonus();
   $player->{coins} += $bonus;
-  $result->{coins} = $bonus;  #TODO Переделать если finishTurn возвращает общее количество монет игрока, а не только полученных на этом ходу
+  # возвращаем количество монет, полученных на этом ходу
+  $result->{coins} = $bonus;
   delete $player->{dice};
   grep { $_->{conquestIdx} = undef } @{ $self->{gameState}->{regions} };
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
@@ -518,10 +518,18 @@ sub finishTurn {
   if ( $self->{gameState}->{currentTurn} >= $self->{gameState}->{map}->{turnsNum}) {
     $self->{gameState}->{state} = GS_IS_OVER;
   }
-  else {
-    $self->{gameState}->{state} = defined $player->{currentTokenBadge}->{tokenBadgeId}
-      ? GS_BEFORE_CONQUEST
-      : GS_SELECT_RACE;
+  elsif ( defined $player->{currentTokenBadge}->{tokenBadgeId} ) {
+    $self->{gameState}->{state} = GS_BEFORE_CONQUEST;
+
+    #оставляем на территориях по одной фигурке рас, остальные даем игроку в руки
+    $race = $self->createRace($player->{currentTokenBadge});
+    $player->{tokensInHand} += $race->conquestTokensBonus();
+    foreach ( @{$race->{regions}} ) {
+      $player->{tokensInHand} += $_->{tokensNum} - 1;
+      $_->{tokensNum} = 1;
+    }
+  } else {
+    $self->{gameState}->{state} = GS_SELECT_RACE;
   }
 }
 
@@ -537,7 +545,7 @@ sub redeploy {
     delete $_->{ownerId};
     delete $_->{tokenBadgeId};
   }
-
+  $player->{tokensInHand} += $race->redeployTokensBonus();
   foreach ( @{ $regs } ) {
     $lastRegion = $self->getRegion($_->{regionId});
     $lastRegion->{tokensNum} = $_->{tokensNum};
