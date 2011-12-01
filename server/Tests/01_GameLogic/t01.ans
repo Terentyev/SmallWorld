@@ -59,13 +59,13 @@
                     "isReady": 1,
                     "priority": 0,
                     "coins": 5,
-                    "tokensInHand": 7,
+                    "tokensInHand": 11,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
                         "specialPowerName": "alchemist",
                         "raceName": "amazons"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {
                     "userId": 2,
@@ -73,7 +73,7 @@
                     "isReady": 1,
                     "priority": 1,
                     "currentTokenBadge": {},
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 }
             ]
         }

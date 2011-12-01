@@ -43,7 +43,7 @@
                         "specialPowerName": "alchemist",
                         "raceName": "amazons"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {
                     "userId": 2,
@@ -51,7 +51,7 @@
                     "isReady": 1,
                     "priority": 1,
                     "currentTokenBadge": {},
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 }
             ]
         }
