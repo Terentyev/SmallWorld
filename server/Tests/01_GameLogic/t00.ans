@@ -35,7 +35,7 @@
                     "priority": 0,
                     "coins": 5,
                     "currentTokenBadge": {},
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {
                     "userId": 2,
@@ -43,7 +43,7 @@
                     "isReady": 1,
                     "priority": 1,
                     "currentTokenBadge": {},
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 }
             ],
             "visibleTokenBadges": [
@@ -120,13 +120,13 @@
                     "isReady": 1,
                     "priority": 0,
                     "coins": 5,
-                    "tokensInHand": 10,
+                    "tokensInHand": 14,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
                         "specialPowerName": "alchemist",
                         "raceName": "amazons"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {
                     "userId": 2,
@@ -134,7 +134,7 @@
                     "isReady": 1,
                     "priority": 1,
                     "currentTokenBadge": {},
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 }
             ],
             "visibleTokenBadges": [

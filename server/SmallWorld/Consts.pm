@@ -663,6 +663,6 @@ use constant GS_BEFORE_FINISH_TURN => 'finishTurn'       ;
 use constant GS_FINISH_TURN        => 'beforeFinishTurn' ;
 use constant GS_IS_OVER            => 'gameOver'         ;
 
-__END__
-
 1;
+
+__END__

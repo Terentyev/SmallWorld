@@ -91,13 +91,17 @@ function cmdGetMapList() {
 function hdlGetMapList(ans) {
   var s = '', sel = null;
   for (var i in ans.maps) {
+    var regs = new Array();
+    for (var j in ans.maps[i].regions) {
+      regs[parseInt(j) + 1] = ans.maps[i].regions[j];
+    }
     with(ans.maps[i]) {
       maps[mapId] = {
         "name": mapName,
         "turns": turnsNum,
         "players": playersNum,
         "url": url,
-        "regions": regions
+        "regions": regs
       };
       s += $.sprintf("<option value='%s'>%s</option>", mapId, mapName);
       sel = $("span._tmpMap_"+mapId);
@@ -109,7 +113,7 @@ function hdlGetMapList(ans) {
   $("#mapList").html(s);
   $("#mapList").change();
   $("span.tmpmapcontent").remove();
-  showGame();
+  showGameMap();
 }
 
 function cmdCreateGame() {
@@ -163,7 +167,7 @@ function cmdGetGameList() {
 
 function updatePlayersInGame(gameId) {
   with (games[gameId]) {
-    var s = $.sprintf("%d/%d", players.length, playersNum);
+    var s = $.sprintf("%d/%d", (keys (players)).length, playersNum);
     s +="<br>";
     //alert(JSON.stringify(players));
     for (var i in players) {
@@ -218,13 +222,13 @@ function hdlGetGameList(ans) {
        $("input:radio[name=listGameId]").eq(tmp.index(this)).attr("checked", 1);
      });
 
-  if (needLoadMaps) cmdGetMapList();
   if (data.gameId != null) {
     $("input:radio[name=listGameId]").attr("hidden", 1);
     updatePlayersInGame(data.gameId);
     setGame(data.gameId);
   }
   if (gameStarted) alert('Started');
+  if (needLoadMaps) cmdGetMapList();
 }
 
 function cmdLeaveGame() {
@@ -274,20 +278,41 @@ function cmdSetReady() {
 }
 
 function hdlSetReady(ans) {
-  cmdGetGameState(hdlGetGameState);
+  cmdGetGameState();
 }
 
-function cmdGetGameState(callback) {
+function cmdGetGameState() {
   var cmd = {
     action: "getGameState",
     sid: data.sid
   };
-  sendRequest(cmd, callback);
+  sendRequest(cmd, hdlGetGameState);
 }
 
 function hdlGetGameState(ans) {
-  data.game = ans.gameState;
-  showGame();
+  var gs = ans.gameState;
+  var regions = new Array();
+  for (var i in gs.map.regions) {
+    regions[parseInt(i) + 1] = gs.map.regions[i];
+  }
+  gs.map.regions = regions;
+  mergeGameState(gs);
+}
+
+/*******************************************************************************
+   *         Token badge actions                                               *
+   ****************************************************************************/
+function cmdSelectRace(position) {
+  var cmd = {
+    action: "selectRace",
+    sid: data.sid,
+    position: position
+  };
+  sendRequest(cmd, hdlSelectRace);
+}
+
+function hdlSelectRace(ans) {
+  cmdGetGameState();
 }
 
 /*******************************************************************************
@@ -305,5 +330,69 @@ function cmdConquer(regionId) {
 function hdlConquer(ans) {
   // first implementation
   // TODO: change game state handly
-  cmdGetGameState(hdlGetGameState);
+  cmdGetGameState();
+}
+
+function cmdDefend(regions) {
+  var cmd = {
+    action: "defend",
+    regions: regions,
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlDefend);
+}
+
+function hdlDefend(ans) {
+  // first implementation
+  // TODO: change game state handly
+  cmdGetGameState();
+}
+
+function cmdRedeploy(regions) {
+  var cmd = {
+    action: "redeploy",
+    regions: regions,
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlRedeploy);
+}
+
+function hdlRedeploy(ans) {
+  // first implementation
+  // TODO: change game state handly
+  cmdGetGameState();
+}
+
+/*******************************************************************************
+   *         Finish turn actions                                               *
+   ****************************************************************************/
+function cmdFinishTurn() {
+  var cmd = {
+    action: "finishTurn",
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlFinishTurn);
+}
+
+function hdlFinishTurn(ans) {
+  // first implementation
+  // TODO: change game state handly
+  cmdGetGameState();
+}
+
+/*******************************************************************************
+   *         Decline actions                                                   *
+   ****************************************************************************/
+function cmdDecline() {
+  var cmd = {
+    action: "decline",
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlDecline);
+}
+
+function hdlDecline(ans) {
+  // first implementation
+  // TODO: change game state handly
+  cmdGetGameState();
 }

@@ -42,7 +42,7 @@
                         "specialPowerName": "alchemist",
                         "raceName": "amazons"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 },
                 {
                     "userId": 2,
@@ -56,7 +56,7 @@
                         "specialPowerName": "bivouacking",
                         "raceName": "elves"
                     },
-                    "declineTokenBadge": {}
+                    "declinedTokenBadge": {}
                 }
             ],
             "visibleTokenBadges": [
