@@ -75,6 +75,6 @@
             "sid": 1,
             "regions": [{"regionId": 8, "tokensNum": 2}]
         }
-],
+    ],
     "description": "giants"
 }

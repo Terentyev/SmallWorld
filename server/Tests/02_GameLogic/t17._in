@@ -1,0 +1,20 @@
+{
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "amazons", "sorcerers", "ratmen", "skeletons", "orcs", "humans", "giants", "elves", "dwarves", "halflings", "tritons", "trolls", "wizard" ],
+          "visibleSpecialPowers": [
+            "berserk", "alchemist", "bivouacking", "commando", "forest", "diplomat", "dragonMaster", "flying", "fortified", "heroic", "hill", "merchant", "mounted", "pillaging", "seafaring", "stout", "swamp", "underworld", "wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 1
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        }
+    ],
+    "description": "sorcerers"
+}

@@ -1,0 +1,34 @@
+{
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "amazons", "ratmen", "orcs", "humans", "giants", "elves", "dwarves", "halflings", "skeletons", "sorcerers", "tritons", "trolls", "wizard" ],
+          "visibleSpecialPowers": [
+            "berserk", "alchemist", "bivouacking", "commando", "forest", "diplomat", "dragonMaster", "flying", "fortified", "heroic", "hill", "merchant", "mounted", "pillaging", "seafaring", "stout", "swamp", "underworld", "wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 1
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 11
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 11, "tokensNum": 12}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        }
+    ],
+    "description": "ratmen"
+}

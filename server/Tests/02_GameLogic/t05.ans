@@ -157,6 +157,9 @@
         "result": "ok"
     },
     {
+        "result": "badRegion"
+    },
+    {
         "result": "ok"
     },
     {

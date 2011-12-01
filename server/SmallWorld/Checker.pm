@@ -422,7 +422,7 @@ sub checkTokensInHand {
 sub checkTokensNum {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # только для redeploy
-  my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus();
+  my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus($player);
   grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
   grep { $tokensNum -= $_->{tokensNum} if defined $_->{tokensNum} } @{ $self->{json}->{regions} };
   return (grep { !defined $_->{tokensNum} || $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} }) ||

@@ -1,0 +1,30 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 4,
+                    "tokensInHand": 9,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 1,
+                        "specialPowerName": "alchemist",
+                        "raceName": "sorcerers"
+                    },               
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    }
+]

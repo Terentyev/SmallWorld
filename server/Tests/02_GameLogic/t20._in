@@ -2,11 +2,10 @@
     "include": [ "_game2.inc" ],
     "test": [
         { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
-            "amazons", "dwarves", "elves",       "giants",   "halflings", "humans",       "orcs",   "ratmen", "skeletons", "sorcerers", "tritons", "trolls",   "wizard" ],
+            "amazons", "wizard", "trolls", "ratmen", "tritons", "sorcerers", "skeletons", "orcs", "humans", "giants", "elves", "dwarves", "halflings" ],
           "visibleSpecialPowers": [
-            "berserk", "forest", "alchemist", "bivouacking", "commando", "diplomat",  "dragonMaster", "flying", "fortified", "heroic",    "hill",    "merchant", "mounted", "pillaging", "seafaring", "stout", "swamp", "underworld", "wealthy" ] 
+            "berserk", "alchemist", "bivouacking", "commando", "forest", "diplomat", "dragonMaster", "flying", "fortified", "heroic", "hill", "merchant", "mounted", "pillaging", "seafaring", "stout", "swamp", "underworld", "wealthy" ] 
         },
-
         {
             "action": "selectRace",
             "sid": 1,
@@ -19,28 +18,27 @@
         {
             "action": "conquer",
             "sid": 1,
-            "regionId": 6
+            "regionId": 15
         },
         {
             "action": "conquer",
             "sid": 1,
-            "regionId": 11
+            "regionId": 14
         },
         {
             "action": "conquer",
             "sid": 1,
-            "regionId": 12
+            "regionId": 9
         },
         {
             "action": "redeploy",
             "sid": 1,
-            "regions": [{"regionId": 6, "tokensNum": 2}, {"regionId": 12, "tokensNum": 2}, {"regionId": 11, "tokensNum": 3}]
+            "regions": [{"regionId": 9, "tokensNum": 3}, {"regionId": 14, "tokensNum": 3}, {"regionId": 15, "tokensNum": 3}]
         },
         {
             "action": "finishTurn",
             "sid": 1
         },
-
 
         {
             "action": "selectRace",
@@ -50,29 +48,32 @@
         {
             "action": "conquer",
             "sid": 2,
-            "regionId": 4
+            "regionId": 13
         },
         {
             "action": "redeploy",
             "sid": 2,
-            "regions": [{"regionId": 4, "tokensNum": 10}]
+            "regions": [{"regionId": 13, "tokensNum": 10}]
         },
         {
             "action": "finishTurn",
             "sid": 2
         },
+
         {
-            "action": "decline",
-            "sid": 1
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 8, "tokensNum": 3}, {"regionId": 14, "tokensNum": 3}, {"regionId": 15, "tokensNum": 3}]
         },
         {
             "action": "finishTurn",
             "sid": 1
-        },
-        {
-            "action": "getGameState",
-            "sid": 1
         }
     ],
-    "description": "dwarves"
+    "description": "wizards"
 }

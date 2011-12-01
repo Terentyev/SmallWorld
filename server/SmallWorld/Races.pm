@@ -38,6 +38,7 @@ sub conquestTokensBonus {
 
 # возвращает количество бонусных фигурок перед реорганизацией войск
 sub redeployTokensBonus {
+  my ($self, $player) = @_;
   return 0;
 }
 
@@ -65,6 +66,10 @@ sub conquestRegionTokensBonus {
 sub canPlaceObj2Region {
   return 0;
 }
+# размещает объект в регионе
+sub placeObject {
+  my ($self, $player, $region) = @_;
+}
 
 # возвращает может ли игрок на первом завоевании завоевать эту территорию (может
 # ли вообще пытаться -- типа граница и все такое)
@@ -88,6 +93,10 @@ sub canFirstConquer {
 
 # приводим расу в упадок в регионе
 sub declineRegion {
+  my ($self, $region) = @_;
+}
+# отказаться от региона
+sub abandonRegion {
   my ($self, $region) = @_;
 }
 
@@ -188,7 +197,7 @@ sub conquestRegionTokensBonus {
   # гигантам
   return (grep {
       # регион принадлежит игроку
-      $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+      defined $_->{tokenBadgeId} && $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
       # на нем есть горы
       (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} }) &&
       # регион граничит с регионом, на который мы нападаем
@@ -214,9 +223,14 @@ sub initialTokens {
 
 sub canPlaceObj2Region {
   my ($self, $player, $region) = @_;
-  return $region->{currentBadgeState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-    !defined $region->{holeInTheGround} &&
-    $region->{conquestIdx} < 2;
+  return defined $region->{tokenBadgeId} && $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+    !defined $region->{holeInTheGround} && $player->{currentTokenBadge}->{holesPlaced} < 2;
+}
+
+sub placeObject {
+  my ($self, $player, $region) = @_;
+  $region->{holeInTheGround} = 1;
+  ++$player->{currentTokenBadge}->{holesPlaced};
 }
 
 sub canFirstConquer {
@@ -225,9 +239,14 @@ sub canFirstConquer {
   return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} });
 }
 
+# у полуросликов после упадка или отказа исчезают норы
 sub declineRegion {
   my ($self, $region) = @_;
-  # у полуросликов после упадка исчезают норы
+  $region->{holeInTheGround} = undef;
+}
+
+sub abandonRegion {
+  my ($self, $region) = @_;
   $region->{holeInTheGround} = undef;
 }
 
@@ -290,6 +309,7 @@ use warnings;
 use utf8;
 
 use base ("SmallWorld::BaseRace");
+use List::Util qw( min );
 
 use SmallWorld::Consts;
 
@@ -298,7 +318,11 @@ sub initialTokens {
 }
 
 sub redeployTokensBonus {
-  return SKELETONS_RED_TOKENS_NUM;
+  my ($self, $player) = @_;
+  my $inGame = $player->{tokensInHand};
+  map { $inGame += $_->{tokensNum} } @{ $self->{regions} };
+  my $bonus = int ((grep { defined $_->{conquestIdx} } @{ $self->{regions} }) / 2);
+  return min($bonus, SKELETONS_TOKENS_MAX -  $inGame);
 }
 
 
@@ -318,8 +342,7 @@ sub initialTokens {
 sub canCmd {
   my ($self, $js) = @_;
   # чародеи могут ещё и зачаровывать
-  return $js->{action} eq 'enchant' ||  #TODO а просто всегда возвращать true нельзя?
-    $self->SUPER::canCmd($js);
+  return $js->{action} eq 'enchant' || $self->SUPER::canCmd($js);
 }
 
 
@@ -338,10 +361,12 @@ sub initialTokens {
 
 sub conquestRegionTokensBonus {
   my ($self, $player, $region, $regions) = @_;
-  foreach ( @{ $region->{constRegionState} } ) {
-    return 1 if $_ eq REGION_TYPE_COAST;
-  }
-  return 0;
+  return (grep {
+           (grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $_->{constRegionState} }) &&
+           ( grep { defined $region->{regionId} && $_ == $region->{regionId} } @{ $_->{adjacentRegions} })
+         } @{ $regions })
+         ? 1
+         : 0;
 }
 
 
@@ -360,8 +385,18 @@ sub initialTokens {
 
 sub canPlaceObj2Region {
   my ($self, $player, $region) = @_;
-  return $region->{currentBadgeState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-    !defined $region->{lair};
+  return $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+         !defined $region->{lair};
+}
+
+sub placeObject() {
+  my ($self, $player, $region) = @_;
+  $region->{lair} = 1;
+}
+
+sub abandonRegion {
+  my ($self, $region) = @_;
+  $region->{lair} = undef;
 }
 
 
