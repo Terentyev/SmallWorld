@@ -166,17 +166,19 @@ function addAreaPoly(coords, regionId) {
 
 function addPlayerInfo(player) {
   var s = $.sprintf(
-    '<tr><td>%s</td><td>%s</td></tr>' +
-    '<tr><td></td><td><img src="%s" />',
+    '<tr><td>%s</td><td>%s</td></tr>',
     currentPlayerCursor(player.userId),
-    games[data.gameId].players[player.userId].username,
-    tokens[player.currentTokenBadge.raceName]);
-  if (player.declinedTokenBadge) {
+    games[data.gameId].players[player.userId].username);
+  if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
-      '<img src="%s" />',
+      '<tr><td></td><td><img src="%s" /></td></tr>',
+      tokens[player.currentTokenBadge.raceName]);
+  }
+  if (player.declinedTokenBadge && player.declinedTokenBadge.raceName != null) {
+    s += $.sprintf(
+      '<tr><td></td><td><img src="%s" /></td></tr>',
       tokens[player.declinedTokenBadge.raceName]);
   }
-  s += '</td></tr>';
   return s;
 }
 
@@ -184,19 +186,26 @@ function addOurPlayerInfo(player) {
   var s = $.sprintf(
     '<tr><td>%s</td><td>' +
     '<table id="tableOurPlayer">' +
-    '<tr><td></td><td>%s</td></tr>' +
-    '<tr><td></td><td><img src="%s" /><img src="%s" /></td></tr>' +
-    '<tr><td></td><td>Tokens in hand: %d</td></tr>' +
-    '<tr><td></td><td>Coins: %d</td></tr>',
+    '<tr><td>%s</td><td></td></tr>' +
+    '<tr><td>Tokens in hand:</td><td><a id="aTokensInHand">%d</a></td></tr>' +
+    '<tr><td>Coins:</td><td>%d</td></tr>',
     currentPlayerCursor(player.userId),
     data.username,
-    races[player.currentTokenBadge.raceName],
-    specialPowers[player.currentTokenBadge.specialPowerName],
     player.tokensInHand,
     player.coins);
-  if (player.declinedTokenBadge) {
+  if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
-      '<tr><td><td><td><img src="%s" /><img src="%s" /></td></tr>',
+      '<tr><td>' +
+      '<img src="%s" class="badge" /><img src="%s" class="badge" />' +
+      '</td><td></td></tr>',
+      races[player.currentTokenBadge.raceName],
+      specialPowers[player.currentTokenBadge.specialPowerName]);
+  }
+  if (player.declinedTokenBadge && player.declinedTokenBadge.raceName != null) {
+    s += $.sprintf(
+      '<tr><td></td><td>' +
+      '<img src="%s" class="badge"/><img src="%s" class="badge" />' +
+      '</td></tr>',
       races[player.declinedTokenBadge.raceName],
       specialPowers[player.declinedTokenBadge.specialPowerName]);
   }
@@ -222,11 +231,15 @@ function addTokensToMap(region, i) {
     }
   }
   return $.sprintf(
-      '<div style="position: absolute; left: %dpx; top: %dpx;"><a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onmouseclick="$(\'#area%d\').mouseclick();"><img src="%s"/>%d</a></div>',
+      '<div style="position: absolute; left: %dpx; top: %dpx;">' +
+      '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onmouseclick="$(\'#area%d\').click();">' +
+      '<img src="%s"/><a id="aTokensNum%d">%d</a>' +
+      '</a>' +
+      '</div>',
       maps[data.game.map.mapId].regions[i].raceCoords[0],
       maps[data.game.map.mapId].regions[i].raceCoords[1],
       i, i, i,
-      tokens[race], region.currentRegionState.tokensNum);
+      tokens[race], i, region.currentRegionState.tokensNum);
 }
 
 function addObjectsToMap(region, i) {
@@ -243,7 +256,7 @@ function addObjectsToMap(region, i) {
     }
     num = (num == 1) ? '' : ('' + num);
     result += $.sprintf(
-        '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onmouseclick="$(\'#area%d\').mouseclick();"><img src="%s" />%s</a>',
+        '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onmouseclick="$(\'#area%d\').click();"><img src="%s" />%s</a>',
         i, i, i, objects[j], num);
   }
   if (result !== '') result += '</div>';

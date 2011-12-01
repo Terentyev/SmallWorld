@@ -21,6 +21,7 @@
   <script type="text/javascript" src="js/jquery.sprintf.js"></script>
   <script type="text/javascript" src="js/ajaxfileupload.js"></script>
   <script type="text/javascript" src="js/json2.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/base.js"></script>
   <script type="text/javascript" src="js/show.js"></script>
   <script type="text/javascript" src="js/cmd.js"></script>
@@ -84,6 +85,37 @@
     </div>
   </div>
   
+  <div id ="divAskNum" class="modal">
+    <div class="header"><span>How much?</span></div>
+    <div class="message">
+      <table width="100%">
+        <tr>
+          <td colspan="3" align="center">
+            <div id="divAskNumError" class="error"></div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" align="center">
+            <div id="divAskNumQuestion" class="question"></div>
+          </td>
+        </tr>
+        <tr>
+          <td width="100">Number:</td>
+          <td><input class="tedit" type="text" id="inputAskNum" onkeyup="this.value = this.value.replace(/[^0-9]/g, '');" /></td>
+          <td width="30">*</td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="buttons">
+              <div class="modal-close">Cancel</div>
+              <div onclick="askNumOkClick();">OK</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
   <div id="divRegister" class="modal">
     <div class="header"><span>Register</span></div>
     <div class="message">
@@ -100,7 +132,7 @@
         </tr>
         <tr>
           <td>Password:</td>
-          <td><input class="tedit" type="text" id="inputRegisterPassword" /></td>
+          <td><input class="tedit" type="password" id="inputRegisterPassword" /></td>
           <td>*</td>
         </tr>
         <tr>
@@ -122,47 +154,59 @@
 
   <div id="divGame" class="corner-all" style="display: none;">
 
-    <table id="tableGame" width="100%" height="100%" valign="middle" align="center">
+    <table id="tableGame" width="100%" height="100%" align="center">
+    <tbody valign="top">
       <tr>
         <td width="200">
-          <table id="tableTokenBadges" width="100%" height="100%" align="center" valign="middle">
+          <table id="tableTokenBadges" width="200" align="center" valign="top">
             <tbody></tbody>
           </table>
         </td>
-        <td width="50%">
-          <table id="tableCenter" width="100%" height="100%" align="center">
+        <td>
+          <div class="corner-all" align="center">
+
+          <table id="tableCenter" width="100%" align="center">
             <tr>
               <td><span id="spanGameStage"></span></td>
             </tr>
             <tr>
               <td>
-                <div id="divMap" class="corner-all" align="center" style="position: relative;">
+                <div id="divMap" align="center" style="position: relative;">
 
                   <div id="divMapImg" style="position: relative;">
-                    <img id="imgMap" usemap="#mapLayer" />
+                    <img id="imgMap" class="corner-all" usemap="#mapLayer" onload="loadGameMapImg();" />
                     <map id="mapLayer" name="mapLayer"></map>
                   </div>
-                  <div id="divMapObjects" style="position: relative;"></div>
+                  <div id="divMapObjects" style="position: relative; display: none;"></div>
 
                 </div>
               </td>
             </tr>
+            <tr>
+              <td id="tdGameChat"></td>
+            </tr>
           </table>
+
+          </div>
         </td>
         <td width="10%">
           <div id="divPlayers" class="corner-all">
           <table id="tablePlayers" width="100%" height="100%" align="center">
-            <tbody>
+            <tbody valign="top">
             </tbody>
           </table>
+          </div>
+          <div class="buttons">
+            <div id="btnCommitStage" onclick="commitStageClick();">Next &gt;&gt;</div><br>
+            <div id="btnDecline" onclick="declineClick();" style="display: none;">Decline ...</div>
           </div>
         </td>
       </tr>
       <tr>
         <td></td>
-        <td id="tdGameChat"></td>
         <td></td>
       </tr>
+    </tbody>
     </table>
 
   </div>
@@ -294,7 +338,7 @@
              </tr>
              <tr>
                <td>Password</td>
-               <td><input class="tedit" type="text" id="inputLoginPassword" /></td>
+               <td><input class="tedit" type="password" id="inputLoginPassword" /></td>
              </tr>
              <tr>
                <td colspan="2" align="center">

@@ -3,6 +3,7 @@ var gameStages = {
   '': [''],
   'defend': ["Let's defend, my friend!", "Wait other players"],
   'selectRace': ["So... You should select your path... or race", "Wait other players"],
+  'beforeConquest': ["May be you want decline you race?", "Wait other players"],
   'conquest': ["Do you want some fun? Let's conquer some regions", "Wait other players"],
   'redeploy': ["Place your warriors to the world", "Wait other players"],
   'finishTurn': ["Click finish-turn button, dude", "Wait other players"],
@@ -58,17 +59,25 @@ function showGame() {
   showGameMap();
   showBadges();
   showPlayers();
-  showRegions();
-  showMapObjects();
   showGameStage();
 }
 
 function showGameMap() {
+  if (data.game == null || !data.game.state || maps[data.game.map.mapId] == null) {
+    return;
+  }
+
   if ($("#imgMap").attr("src") === maps[data.game.map.mapId].url) return;
 
   $("#imgMap").attr("src", serverUrl + maps[data.game.map.mapId].url);
+  showRegions();
+  showMapObjects();
+}
+
+function loadGameMapImg() {
   $("#divMapObjects").css("width", document.getElementById("imgMap").clientWidth);
   $("#divMapObjects").css("top", - document.getElementById("imgMap").clientHeight);
+  $("#divMapObjects").css("display", "block");
 }
 
 function showBadges() {
@@ -77,7 +86,8 @@ function showBadges() {
     var cur = data.game.visibleTokenBadges[i];
     s += addRow([$.sprintf(
           "<a href='#' class='clickable' onclick='tokenBadgeClick(%d)'>" +
-          "<img src='%s' /><img src='%s' /></a>",
+          "<img src='%s' class='badge' />" +
+          "<img src='%s' class='badge' /></a>",
           i, races[cur.raceName], specialPowers[cur.specialPowerName])]);
   }
   $("#tableTokenBadges tbody").html(s);
@@ -121,8 +131,14 @@ function showRegions() {
 }
 
 function showGameStage() {
-  $("#spanGameStage").html(gameStages[data.game.stage][data.game.activePlayerId == data.userId ? 0 : 1]);
-  $("#spanGameStage").trigger("update");
+  $("#spanGameStage").html(
+      gameStages[data.game.stage][
+        data.game.activePlayerId == data.playerId ? 0 : 1
+      ]
+  ).trigger("update");
+  $("#btnDecline").css(
+      "display",
+      (data.game.stage == 'beforeConquest' ? 'block' : 'none'));
 }
 
 function showLobby() {

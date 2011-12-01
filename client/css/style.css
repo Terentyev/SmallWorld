@@ -115,3 +115,5 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 
 .clickable img { opacity: 0.25; }
 .clickable:hover img { opacity: 1; }
+
+.badge { width: 120; height: 80; }
