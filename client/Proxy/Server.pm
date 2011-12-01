@@ -13,6 +13,8 @@ use HTTP::Message;
 use LWP::UserAgent;
 use URI::Escape;
 
+use Proxy::Config;
+
 sub new {
 	my $class = shift;
 	my $self = { ua => LWP::UserAgent->new(), request => undef };
@@ -33,7 +35,13 @@ sub process {
     $result = $self->proxyCommand($r);
   }
 
-  print $self->{ua}->request($self->{request})->content if defined $self->{request};
+  my $content = $self->{ua}->request($self->{request})->content if defined $self->{request};
+  if ($ENV{DEBUG} && $r->param('request')) {
+    open FL, '>>' . LOG_FILE;
+    print FL $r->param('request') . "\n" . $content . "\n\n";
+    close FL;
+  }
+  print $content;
 
   return $result;
 }
