@@ -73,7 +73,6 @@
             "action": "getGameState",
             "sid": 1
         }
-
 ],
     "description": "dwarves"
 }

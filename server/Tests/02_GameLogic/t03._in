@@ -69,8 +69,6 @@
             "action": "getGameState",
             "sid": 1
         }
-
-
     ],
     "description": "redeploy"
 }

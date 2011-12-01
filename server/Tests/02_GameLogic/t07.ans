@@ -110,5 +110,106 @@
     },
     {
         "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 2, "nextPlayer": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 2,
+            "currentTurn": 3,
+            "map" : {
+              "regions": [
+                { "currentRegionState": {"tokensNum": 0 }},
+                { "currentRegionState": {"tokensNum": 1 }},
+                { "currentRegionState": {"tokensNum": 0 }},
+                { "currentRegionState": {"tokensNum": 0 }},
+                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 6, "ownerId": 2 }},
+                { "currentRegionState": {"tokensNum": 8, "tokenBadgeId": 6, "ownerId": 2 }}
+              ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "tokensInHand": 5,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 5,
+                        "specialPowerName": "dragonMaster",
+                        "raceName": "humans"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "tokensInHand": 0,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 6,
+                        "specialPowerName": "flying",
+                        "raceName": "orcs"
+                    },
+                    "declinedTokenBadge": {}
+                }                
+            ]
+        }
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 1
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
     }
 ]
