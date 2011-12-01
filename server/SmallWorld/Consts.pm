@@ -565,7 +565,6 @@ use constant PILLAGING_TOKENS_NUM       => 5    ;
 use constant RATMEN_TOKENS_NUM          => 8    ;
 use constant RATMEN_TOKENS_MAX          => 13   ;
 use constant SEAFARING_TOKENS_NUM       => 5    ;
-use constant SKELETONS_RED_TOKENS_NUM   => 1    ;
 use constant SKELETONS_TOKENS_NUM       => 6    ;
 use constant SKELETONS_TOKENS_MAX       => 20   ;
 use constant SORCERERS_TOKENS_NUM       => 5    ;

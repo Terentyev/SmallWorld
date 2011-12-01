@@ -544,7 +544,7 @@ sub redeploy {
   my $lastRegion = defined $regs->[-1] ? $self->getRegion($regs->[-1]->{regionId}): undef;
   my ($find, $newState) = (0, undef);
 
-  $player->{tokensInHand} += $race->redeployTokensBonus();
+  $player->{tokensInHand} += $race->redeployTokensBonus($player);
   foreach ( @{ $race->{regions} } ) {
     $player->{tokensInHand} += $_->{tokensNum};
     $find = 0;

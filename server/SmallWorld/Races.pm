@@ -38,6 +38,7 @@ sub conquestTokensBonus {
 
 # возвращает количество бонусных фигурок перед реорганизацией войск
 sub redeployTokensBonus {
+  my ($self, $player) = @_;
   return 0;
 }
 
@@ -307,6 +308,7 @@ use warnings;
 use utf8;
 
 use base ("SmallWorld::BaseRace");
+use List::Util qw( min );
 
 use SmallWorld::Consts;
 
@@ -315,7 +317,11 @@ sub initialTokens {
 }
 
 sub redeployTokensBonus {
-  return SKELETONS_RED_TOKENS_NUM;
+  my ($self, $player) = @_;
+  my $inGame = $player->{tokensInHand};
+  map { $inGame += $_->{tokensNum} } @{ $self->{regions} };
+  my $bonus = int ((grep { defined $_->{conquestIdx} } @{ $self->{regions} }) / 2);
+  return min($bonus, SKELETONS_TOKENS_MAX -  $inGame);
 }
 
 
