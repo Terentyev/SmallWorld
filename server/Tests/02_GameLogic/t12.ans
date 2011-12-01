@@ -1,0 +1,147 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 4
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 1,
+                    "tokensInHand": 10,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 4,
+                        "specialPowerName": "forest",
+                        "raceName": "halflings"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+
+    {
+        "result": "ok",
+        "gameState": {
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 4, "ownerId": 1 }},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 4, "ownerId": 1, "holeInTheGround": 1 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 4, "ownerId": 1, "holeInTheGround": 1 }},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {}
+              ]
+            },
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 1,
+                    "tokensInHand": 4,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 4,
+                        "specialPowerName": "forest",
+                        "raceName": "halflings"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 2
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "regionIsImmune"
+    },
+    {
+        "result": "regionIsImmune"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 7, "nextPlayer": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 2
+    },
+    {
+        "result": "ok"
+    }
+]

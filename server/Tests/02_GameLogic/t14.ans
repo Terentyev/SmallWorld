@@ -1,0 +1,74 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 4,
+                    "tokensInHand": 9,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 1,
+                        "specialPowerName": "alchemist",
+                        "raceName": "orcs"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion", "dice": 0
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "nextPlayer": 2, "coins": 8
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "nextPlayer": 1, "coins": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "nextPlayer": 2, "coins": 5
+    }
+]

@@ -1,0 +1,89 @@
+{
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "amazons", "orcs", "humans", "giants", "elves", "dwarves", "halflings", "ratmen", "skeletons", "sorcerers", "tritons", "trolls", "wizard" ],
+          "visibleSpecialPowers": [
+            "berserk", "alchemist", "bivouacking", "commando", "forest", "diplomat", "dragonMaster", "flying", "fortified", "heroic", "hill", "merchant", "mounted", "pillaging", "seafaring", "stout", "swamp", "underworld", "wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 1
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 9
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 7
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 7, "tokensNum": 3}, {"regionId": 8, "tokensNum": 3}, {"regionId": 9, "tokensNum": 3}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 3
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 3, "tokensNum": 10}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 7, "tokensNum": 3}, {"regionId": 8, "tokensNum": 3}, {"regionId": 9, "tokensNum": 3}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        }
+    ],
+    "description": "orcs"
+}
