@@ -17,6 +17,8 @@ our @EXPORT = qw(
     MAP_IMG_PREFIX
     MAP_IMG_URL_PREFIX
     MAP_IMGS_DIR
+
+    LOG_FILE
 );
 
 
@@ -31,4 +33,8 @@ use constant MAP_IMG_PREFIX     => 'map_';
 use constant MAP_IMG_URL_PREFIX => '/public/imgs/';
 use constant MAP_IMGS_DIR       => $ENV{DOCUMENT_ROOT} . MAP_IMG_URL_PREFIX;
 
+use constant LOG_FILE           => '/var/log/apache2/server.log';
+
 1;
+
+__END__

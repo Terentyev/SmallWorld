@@ -44,13 +44,18 @@ sub process {
 
 sub debug {
   return if !$ENV{DEBUG};
-  use Data::Dumper; print Dumper(@_);
+  use Data::Dumper;
+  open FL, '>>' . LOG_FILE;
+  print FL Dumper(@_);
+  close FL;
 }
 
 sub getGame {
   my $self = shift;
   my ($version, $id) = @{ $self->{db}->getGameVersionAndId($self->{json}->{sid}) };
+  debug($version, $id);
   if ( !defined $self->{_game} ||
+      !$self->{_game}->{gameState}->{gameInfo}->{state} ||
       $self->{_game}->{gameState}->{gameInfo}->{gameId} != $id ||
       $self->{_game}->{_version} != $version ) {
     $self->{_game} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid}, $self->{json}->{action});
@@ -189,10 +194,12 @@ sub cmd_leaveGame {
 
 sub cmd_setReadinessStatus {
   my ($self, $result) = @_;
-  if ( $ENV{DEBUG} && $self->{db}->setIsReady( @{$self->{json}}{qw/isReady sid/} ) ) {
+  if ($self->{db}->setIsReady( @{$self->{json}}{qw/isReady sid/} ) ) {
     my $game = $self->getGame();
-    $game->setTokenBadge('raceName', $self->{json}->{visibleRaces});
-    $game->setTokenBadge('specialPowerName', $self->{json}->{visibleSpecialPowers});
+    if ( $ENV{DEBUG} && exists $self->{json}->{visibleRaces} && exists $self->{json}->{visibleSpecialPowers} ) {
+      $game->setTokenBadge('raceName', $self->{json}->{visibleRaces});
+      $game->setTokenBadge('specialPowerName', $self->{json}->{visibleSpecialPowers});
+    }
     $game->save();
   }
 }
