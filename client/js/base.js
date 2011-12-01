@@ -44,7 +44,7 @@ var specialPowers = {
   'stout': '/pics/spStout.png',
   'swamp': '/pics/spSwamp.png',
   'underworld': '/pics/spUnderworld.png',
-  'wealthyt': '/pics/spWealthy.png'
+  'wealthy': '/pics/spWealthy.png'
 };
 
 var tokens = {
@@ -168,7 +168,7 @@ function addPlayerInfo(player) {
   var s = $.sprintf(
     '<tr><td>%s</td><td>%s</td></tr>',
     currentPlayerCursor(player.userId),
-    games[data.gameId].players[player.userId].username);
+    player.username);
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
       '<tr><td></td><td><img src="%s" /></td></tr>',

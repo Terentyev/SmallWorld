@@ -510,6 +510,7 @@ sub checkGameCommand {
     &R_TOO_MANY_FORTS_IN_REGION     => sub { $self->checkFortsInRegion(@gameVariables); },
     &R_USER_HAS_NOT_REGIONS         => sub { !(grep { $player->activeConq($_) } @{ $regions }); },
   });
+  $game->save();
 }
 
 1;

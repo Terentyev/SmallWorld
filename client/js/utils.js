@@ -13,7 +13,7 @@ function isUInt(i) {
 }
 
 function checkAskNumber() {
-  if (!isUInt($('inputAskNum').attr('value'))) {
+  if (!isUInt($('#inputAskNum').attr('value'))) {
     $('#divAskNumError').html('You must enter integer').trigger('update');
     return true;
   }

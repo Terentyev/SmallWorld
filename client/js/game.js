@@ -185,7 +185,7 @@ function deployRegion() {
   if (checkAskNumber()) return;
   var v = parseInt($("#inputAskNum").attr("value"));
   var regState = getRegState(lastRegionId);
-  if (checkEnough(v - regState.tokensNum > playerInfo.tokensInHand)) return;
+  if (checkEnough(v - regState.tokensNum > playerInfo.tokensInHand, '#divAskNumError')) return;
 
   playerInfo.tokensInHand -= v - regState.tokensNum;
   regState.tokensNum = v;
@@ -258,7 +258,8 @@ function commitStageRedeploy() {
   checkDeploy(
     cmdRedeploy,
     function(i, regions) {
-      if (cur.tokensNum != 0) regions.push({ regionId: parseInt(i), tokensNum: data.game.map.regions[i].tokensNum })
+      var cur = data.game.map.regions[i];
+      if (cur.tokensNum != 0) regions.push({ regionId: parseInt(i), tokensNum: cur.tokensNum })
     });
 }
 
