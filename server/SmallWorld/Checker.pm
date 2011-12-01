@@ -380,7 +380,7 @@ sub checkStage {
     &GS_DEFEND             => [ 'defend' ],
     &GS_SELECT_RACE        => [ 'selectRace' ],
     &GS_BEFORE_CONQUEST    => [ 'decline', 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'finishTurn' ],
-    &GS_CONQUEST           => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy' ],
+    &GS_CONQUEST           => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'finishTurn' ],
     &GS_REDEPLOY           => [ 'redeploy' ],
     &GS_BEFORE_FINISH_TURN => [ 'finishTurn', 'selectFriend', 'decline' ],
     &GS_FINISH_TURN        => [ 'finishTurn' ],
@@ -399,7 +399,7 @@ sub checkStage {
 
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
-#    ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
+    ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
     !$sp->canCmd($js, $game->{gameState}->{state}) ||
     !$race->canCmd($js);

@@ -419,6 +419,7 @@ sub canDefend {
 sub conquer {
   my ($self, $regionId, $result) = @_;
   my $player = $self->getPlayer();
+  my $defender = undef;
   my $region = $self->getRegion($regionId);
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
@@ -431,15 +432,10 @@ sub conquer {
   # если регион принадлежал активной расе
   if ( defined $region->{ownerId} ) {
     # то надо вернуть ему какие-то фигурки
-    my $defender = $self->getPlayer( { id => $region->{ownerId} } );
+    $defender = $self->getPlayer( { id => $region->{ownerId} } );
     if ( $defender->activeConq($region) ) {
       my $defRace = $self->createRace($defender->{currentTokenBadge});
       $defender->{tokensInHand} += $region->{tokensNum} + $defRace->looseTokensBonus();
-      if ( $self->canDefend($defender) ) {
-        $self->{gameState}->{conquerorId} = $player->{playerId};
-        $self->{gameState}->{activePlayerId} = $defender->{playerId};
-        $self->{gameState}->{state} = GS_DEFEND;
-      }
     }
   }
 
@@ -449,6 +445,12 @@ sub conquer {
   $region->{inDecline} = undef;
   $region->{tokensNum} = min($self->{defendNum}, $self->{conqNum}); # размещаем в регионе все фигурки, которые использовались для завоевания
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
+
+  if ( defined $defender && $self->canDefend($defender) ) {
+    $self->{gameState}->{conquerorId} = $player->{playerId};
+    $self->{gameState}->{activePlayerId} = $defender->{playerId};
+    $self->{gameState}->{state} = GS_DEFEND;
+  }
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
 
