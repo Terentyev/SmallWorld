@@ -1,0 +1,68 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 4,
+                    "tokensInHand": 9,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 1,
+                        "specialPowerName": "alchemist",
+                        "raceName": "wizards"
+                    },               
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 7, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 6, "nextPlayer": 2
+    }
+]
