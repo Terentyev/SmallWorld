@@ -173,6 +173,11 @@
             "regions": [{"regionId": 5, "tokensNum": 1}]
         },
         {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 2, "tokensNum": 1}]
+        },
+        {
             "action": "conquer",
             "sid": 2,
             "regionId": 2
