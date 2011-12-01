@@ -167,7 +167,7 @@ function cmdGetGameList() {
 
 function updatePlayersInGame(gameId) {
   with (games[gameId]) {
-    var s = $.sprintf("%d/%d", (keys (players)).length, playersNum);
+    var s = $.sprintf("%d/%d", (keys(players)).length, playersNum);
     s +="<br>";
     //alert(JSON.stringify(players));
     for (var i in players) {

@@ -138,7 +138,9 @@ function showGameStage() {
   ).trigger("update");
   $("#btnDecline").css(
       "display",
-      (data.game.stage == 'beforeConquest' ? 'block' : 'none'));
+      (data.game.activePlayerId == data.playerId && data.game.stage == 'beforeConquest'
+       ? 'block'
+       : 'none'));
 }
 
 function showLobby() {

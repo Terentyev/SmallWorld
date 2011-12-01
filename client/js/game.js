@@ -1,5 +1,6 @@
 var playerInfo = null;
 var lastRegionId = null;
+var defend = null;
 
 var areaClickAction = areaWrong;
 var tokenBadgeClickAction = tokenBadgeWrong;
@@ -105,7 +106,8 @@ function changeGameStage() {
   commitStageClickAction = commitStageWrong;
   switch (data.game.stage) {
     case 'defend':
-      areaClickAction = areaPlaceTokens;
+      defend = { regions: [] };
+      areaClickAction = areaDefend;
       commitStageClickAction = commitStageDefend;
       break;
     case 'selectRace':
@@ -163,7 +165,6 @@ function areaConquer(regionId) {
 
 function areaPlaceTokens(regionId) {
   // TODO: do needed checks
-  // ask player how much tokens
   var regState = getRegState(regionId);
   if (regState.tokenBadgeId != playerInfo.currentTokenBadge.tokenBadgeId) {
     alert('Wrong region');
@@ -177,23 +178,50 @@ function areaPlaceTokens(regionId) {
 }
 
 function deployRegion() {
-  var v = $("#inputAskNum").attr("value");
+  if (checkAskNumber()) return;
+  var v = parseInt($("#inputAskNum").attr("value"));
   var regState = getRegState(lastRegionId);
-  if (!isUInt(v)) {
-    $('#divAskNumError').html('You must enter integer').trigger('update');;
-    return;
-  }
-
-  v = parseInt(v);
-  if (v - regState.tokensNum > playerInfo.tokensInHand) {
-    $('#divAskNumError').html('Not enough tokens in hand').trigger('update');;
-    return;
-  }
+  if (checkEnough(v - regState.tokensNum > playerInfo.tokensInHand)) return;
 
   playerInfo.tokensInHand -= v - regState.tokensNum;
   regState.tokensNum = v;
   $("#aTokensNum" + lastRegionId).html(regState.tokensNum).trigger("update");
   $("#aTokensInHand").html(playerInfo.tokensInHand).trigger("update");
+  $.modal.close();
+}
+
+function areaDefend(regionId) {
+  // TODO: do needed checks
+  var regState = getRegState(regionId);
+  if (regState.tokenBadgeId != playerInfo.currentTokenBadge.tokenBadgeId) {
+    alert('Wrong region');
+    return;
+  }
+
+  // TODO: check adjacent regions
+  /*for (var i in data.game.map.regions) {
+    if (i == regionId) continue;
+    var cur = data.game.map.regions[i];
+    if (
+  }*/
+  lastRegionId = regionId;
+  if (defend.regions[regionId] == null) defend.regions[regionId] = 0;
+  askNumBox('How much tokens deploy on region on defend?',
+            defendRegion,
+            defend.regions[regionId]);
+}
+
+function defendRegion() {
+  if (checkAskNumber()) return;
+  var v = parseInt($('#inputAskNum').attr('value'));
+  if (checkEnough(v - defend.regions[lastRegionId] > playerInfo.tokensInHand, '#divAskNumError')) return;
+  var regState = getRegState(lastRegionId);
+
+  playerInfo.tokensInHand -= v - defend.regions[lastRegionId];
+  defend.regions[lastRegionId] = v;
+  $('#aTokensNum' + lastRegionId).html($.sprintf(
+        '%d <a color="#FF0000">+%d</a>', regState.tokensNum, defend.regions[lastRegionId])).trigger('update');
+  $('#aTokensInHand').html(playerInfo.tokensInHand).trigger('update');
   $.modal.close();
 }
 
@@ -205,7 +233,11 @@ function commitStageWrong() {
 }
 
 function commitStageDefend() {
-  checkDeploy(cmdDefend);
+  checkDeploy(
+    cmdDefend,
+    function(i, regions) {
+      if (defend.regions[i] != 0) regions.push({ regionId: parseInt(i), tokensNum: defend.regions[i] })
+    });
 }
 
 function commitStageBeforeConquest() {
@@ -219,7 +251,11 @@ function commitStageConquest() {
 }
 
 function commitStageRedeploy() {
-  checkDeploy(cmdRedeploy);
+  checkDeploy(
+    cmdRedeploy,
+    function(i, regions) {
+      if (cur.tokensNum != 0) regions.push({ regionId: parseInt(i), tokensNum: data.game.map.regions[i].tokensNum })
+    });
 }
 
 function commitStageFinishTurn() {
@@ -234,19 +270,15 @@ function commitStageGetGameState() {
 /*******************************************************************************
    *         Some checks                                                       *
    ****************************************************************************/
-function checkDeploy(cmd) {
+function checkDeploy(cmd, add) {
   var regions = null;
   for (var i in data.game.map.regions) {
     var cur = data.game.map.regions[i].currentRegionState;
-    if (cur.tokenBadgeId != playerInfo.currentTokenBadge.tokenBadgeId) {
-      continue;
-    }
+    if (cur.tokenBadgeId != playerInfo.currentTokenBadge.tokenBadgeId) continue;
     if (regions == null) {
-      regions = new Array();
+      regions = [];
     }
-    if (cur.tokensNum != 0) {
-      regions.push({ regionId: parseInt(i), tokensNum: cur.tokensNum });
-    }
+    add(i, regions);
   }
 
   if (regions == null) {
