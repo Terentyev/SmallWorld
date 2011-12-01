@@ -188,10 +188,11 @@ sub conquestRegionTokensBonus {
   # гигантам
   return (grep {
       # регион принадлежит игроку
-      $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} && (
-        # регион граничит с регионом, на который мы нападаем
-        grep { $_ == $region->{regionId} } $_->{adjacentRegions}
-      )
+      $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+      # на нем есть горы
+      (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} }) &&
+      # регион граничит с регионом, на который мы нападаем
+      ( grep { defined $region->{regionId} && $_ == $region->{regionId} } @{ $_->{adjacentRegions} })
     } @{ $regions })
     ? 1
     : 0;
