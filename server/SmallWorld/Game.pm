@@ -442,7 +442,7 @@ sub conquer {
   $region->{conquestIdx} = $self->nextConquestIdx();
   $region->{ownerId} = $player->{playerId};
   $region->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
-  $region->{inDecline} = undef;
+  @{ $region }{ qw(inDecline lair) } = (undef, undef);
   $region->{tokensNum} = min($self->{defendNum}, $self->{conqNum}); # размещаем в регионе все фигурки, которые использовались для завоевания
   $race->placeObject($player, $region) if $race->canPlaceObj2Region($player, $region); # размещаем в регионе уникальные для рас объекты
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе

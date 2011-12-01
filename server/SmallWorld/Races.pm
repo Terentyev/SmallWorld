@@ -97,6 +97,7 @@ sub declineRegion {
 }
 # отказаться от региона
 sub abandonRegion {
+  my ($self, $region) = @_;
 }
 
 # может ли раса выполнить это действие
@@ -222,7 +223,7 @@ sub initialTokens {
 
 sub canPlaceObj2Region {
   my ($self, $player, $region) = @_;
-  return $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+  return defined $region->{tokenBadgeId} && $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
     !defined $region->{holeInTheGround} && $player->{currentTokenBadge}->{holesPlaced} < 2;
 }
 
@@ -391,6 +392,11 @@ sub canPlaceObj2Region {
 sub placeObject() {
   my ($self, $player, $region) = @_;
   $region->{lair} = 1;
+}
+
+sub abandonRegion {
+  my ($self, $region) = @_;
+  $region->{lair} = undef;
 }
 
 
