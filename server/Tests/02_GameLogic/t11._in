@@ -1,0 +1,80 @@
+{
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "amazons", "giants", "elves", "dwarves", "halflings", "humans",       "orcs",   "ratmen", "skeletons", "sorcerers", "tritons", "trolls",   "wizard" ],
+          "visibleSpecialPowers": [
+            "berserk", "forest", "alchemist", "bivouacking", "commando", "diplomat",  "dragonMaster", "flying", "fortified", "heroic",    "hill",    "merchant", "mounted", "pillaging", "seafaring", "stout", "swamp", "underworld", "wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 1
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 14
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 15
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 13
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 9
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 7
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 15
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 14
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 13
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 8, "tokensNum": 2}]
+        }
+],
+    "description": "giants"
+}

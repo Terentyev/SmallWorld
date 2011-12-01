@@ -1,0 +1,67 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 4,
+                    "tokensInHand": 10,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 1,
+                        "specialPowerName": "forest",
+                        "raceName": "giants"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "nextPlayer": 2, "coins": 8
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 5
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    }
+]
