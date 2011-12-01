@@ -361,14 +361,14 @@ sub isFirstConquer {
 sub isImmuneRegion {
   my $region = $_[1];
   return grep {
-    $region->{$_}
+    defined $region->{$_} && $region->{$_}
   } qw( holeInTheGround dragon hero );
 }
 
 # возвращает следующий порядковый номер завоевания регионов
 sub nextConquestIdx {
   my $result = -1;
-  grep { $result = max( $result, $_->conquestIdx ) } @{ $_[0]->{regions} };
+  grep { $result = max( $result, defined $_->{conquestIdx} ? $_->{conquestIdx} : -1 ) } @{ $_[0]->{gameState}->{regions} };
   return $result + 1;
 }
 
@@ -444,6 +444,7 @@ sub conquer {
   $region->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
   $region->{inDecline} = undef;
   $region->{tokensNum} = min($self->{defendNum}, $self->{conqNum}); # размещаем в регионе все фигурки, которые использовались для завоевания
+  $race->placeObject($player, $region) if $race->canPlaceObj2Region($player, $region); # размещаем в регионе уникальные для рас объекты
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
 
   if ( defined $defender && $self->canDefend($defender) ) {
@@ -540,22 +541,32 @@ sub redeploy {
   my ($self, $regs, $encampments, $fortified, $heroes) = @_;
   my $player = $self->getPlayer();
   my $race = $self->createRace($player->{currentTokenBadge});
-  my $lastRegion = undef;
+  my $lastRegion = defined $regs->[-1] ? $self->getRegion($regs->[-1]->{regionId}): undef;
+  my ($find, $newState) = (0, undef);
 
+  $player->{tokensInHand} += $race->redeployTokensBonus();
   foreach ( @{ $race->{regions} } ) {
     $player->{tokensInHand} += $_->{tokensNum};
+    $find = 0;
     $_->{tokensNum} = 0;
-    delete $_->{ownerId};
-    delete $_->{tokenBadgeId};
+    foreach my $r ( @{ $regs } ) {
+      if ($_->{regionId} == $r->{regionId}){
+        $find = 1;
+        $newState = $r;
+        last;
+      }
+    }
+    if ($find) {
+      #$lastRegion = $self->getRegion($newState->{regionId});
+      $_->{tokensNum} += $newState->{tokensNum};
+      $player->{tokensInHand} -= $newState->{tokensNum};
+    } else {
+      $race->abandonRegion($_);
+      delete $_->{ownerId};
+      delete $_->{tokenBadgeId};
+    }
   }
-  $player->{tokensInHand} += $race->redeployTokensBonus();
-  foreach ( @{ $regs } ) {
-    $lastRegion = $self->getRegion($_->{regionId});
-    $lastRegion->{tokensNum} = $_->{tokensNum};
-    $player->{tokensInHand} -= $_->{tokensNum};
-    $lastRegion->{ownerId} = $player->{playerId};
-    $lastRegion->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
-  }
+
   if ( defined $lastRegion ) {
     $lastRegion->{tokensNum} += $player->{tokensInHand};
     $player->{tokensInHand} = 0;

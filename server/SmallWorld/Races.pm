@@ -65,6 +65,10 @@ sub conquestRegionTokensBonus {
 sub canPlaceObj2Region {
   return 0;
 }
+# размещает объект в регионе
+sub placeObject {
+  my ($self, $player, $region) = @_;
+}
 
 # возвращает может ли игрок на первом завоевании завоевать эту территорию (может
 # ли вообще пытаться -- типа граница и все такое)
@@ -89,6 +93,9 @@ sub canFirstConquer {
 # приводим расу в упадок в регионе
 sub declineRegion {
   my ($self, $region) = @_;
+}
+# отказаться от региона
+sub abandonRegion {
 }
 
 # может ли раса выполнить это действие
@@ -188,7 +195,7 @@ sub conquestRegionTokensBonus {
   # гигантам
   return (grep {
       # регион принадлежит игроку
-      $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+      defined $_->{tokenBadgeId} && $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
       # на нем есть горы
       (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} }) &&
       # регион граничит с регионом, на который мы нападаем
@@ -214,9 +221,14 @@ sub initialTokens {
 
 sub canPlaceObj2Region {
   my ($self, $player, $region) = @_;
-  return $region->{currentBadgeState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-    !defined $region->{holeInTheGround} &&
-    $region->{conquestIdx} < 2;
+  return $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+    !defined $region->{holeInTheGround} && $player->{currentTokenBadge}->{holesPlaced} < 2;
+}
+
+sub placeObject {
+  my ($self, $player, $region) = @_;
+  $region->{holeInTheGround} = 1;
+  ++$player->{currentTokenBadge}->{holesPlaced};
 }
 
 sub canFirstConquer {
@@ -225,9 +237,14 @@ sub canFirstConquer {
   return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} });
 }
 
+# у полуросликов после упадка или отказа исчезают норы
 sub declineRegion {
   my ($self, $region) = @_;
-  # у полуросликов после упадка исчезают норы
+  $region->{holeInTheGround} = undef;
+}
+
+sub abandonRegion {
+  my ($self, $region) = @_;
   $region->{holeInTheGround} = undef;
 }
 
@@ -360,8 +377,13 @@ sub initialTokens {
 
 sub canPlaceObj2Region {
   my ($self, $player, $region) = @_;
-  return $region->{currentBadgeState}->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-    !defined $region->{lair};
+  return $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
+         !defined $region->{lair};
+}
+
+sub placeObject() {
+  my ($self, $player, $region) = @_;
+  $region->{lair} = 1;
 }
 
 
