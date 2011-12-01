@@ -656,8 +656,8 @@ use constant REGION_TYPES => [
 # внутриигровые состояния игры
 use constant GS_DEFEND             => 'defend'           ;
 use constant GS_SELECT_RACE        => 'selectRace'       ;
-use constant GS_CONQUEST           => 'conquest'         ;
 use constant GS_BEFORE_CONQUEST    => 'beforeConquest'   ;
+use constant GS_CONQUEST           => 'conquest'         ;
 use constant GS_REDEPLOY           => 'redeploy'         ;
 use constant GS_BEFORE_FINISH_TURN => 'finishTurn'       ;
 use constant GS_FINISH_TURN        => 'beforeFinishTurn' ;

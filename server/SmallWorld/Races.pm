@@ -341,8 +341,7 @@ sub initialTokens {
 sub canCmd {
   my ($self, $js) = @_;
   # чародеи могут ещё и зачаровывать
-  return $js->{action} eq 'enchant' ||  #TODO а просто всегда возвращать true нельзя?
-    $self->SUPER::canCmd($js);
+  return $js->{action} eq 'enchant' || $self->SUPER::canCmd($js);
 }
 
 
@@ -361,10 +360,12 @@ sub initialTokens {
 
 sub conquestRegionTokensBonus {
   my ($self, $player, $region, $regions) = @_;
-  foreach ( @{ $region->{constRegionState} } ) {
-    return 1 if $_ eq REGION_TYPE_COAST;
-  }
-  return 0;
+  return (grep {
+           (grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $_->{constRegionState} }) &&
+           ( grep { defined $region->{regionId} && $_ == $region->{regionId} } @{ $_->{adjacentRegions} })
+         } @{ $regions })
+         ? 1
+         : 0;
 }
 
 
