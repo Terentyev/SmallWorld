@@ -6,7 +6,7 @@ use warnings;
 use utf8;
 
 use JSON qw( decode_json encode_json );
-use List::Util qw( min );
+use List::Util qw( min max);
 
 use SmallWorld::Consts;
 use SmallWorld::DB;
@@ -389,10 +389,10 @@ sub tokensInStorage {
 sub canAttack {
   my ($self, $player, $region, $race, $sp) = @_;
   my $regions = $self->{gameState}->{regions};
-  $self->{conqNum} = $player->{tokensInHand} +
-    $race->conquestRegionTokensBonus($player, $region, $regions);
-  $self->{defendNum} = $region->getDefendTokensNum() +
-    $sp->conquestRegionTokensBonus($region);
+  $self->{conqNum} = $player->{tokensInHand};
+
+  $self->{defendNum} = max(1, $region->getDefendTokensNum() -
+    $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions));
 
   if ( $self->{defendNum} - $self->{conqNum} > 0 && $self->{defendNum} - $self->{conqNum} <= 3 ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости
@@ -506,6 +506,7 @@ sub finishTurn {
   my $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
               $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
   $player->{coins} += $bonus;
+
   # возвращаем количество монет, полученных на этом ходу
   $result->{coins} = $bonus;
   delete $player->{dice};

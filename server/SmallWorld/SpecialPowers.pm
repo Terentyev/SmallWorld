@@ -255,7 +255,7 @@ sub coinsBonus {
     # за каждую оккупированную территорию,..
     $_->{tokensNum} > 0 &&
       # на которой расположен лес получаем по монетке
-      grep { $_ eq REGION_TYPE_FOREST } $_->{constRegionState}
+      grep { $_ eq REGION_TYPE_FOREST } @{$_->{constRegionState}}
   } @{ $_[0]->{regions} });
 }
 
