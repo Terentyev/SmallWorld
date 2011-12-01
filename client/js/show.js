@@ -6,6 +6,7 @@ var gameStages = {
   'beforeConquest': ["May be you want decline you race?", "Wait other players"],
   'conquest': ["Do you want some fun? Let's conquer some regions", "Wait other players"],
   'redeploy': ["Place your warriors to the world", "Wait other players"],
+  'beforeFinishTurn': ["Last actions", "Wait other players"],
   'finishTurn': ["Click finish-turn button, dude", "Wait other players"],
   'gameOver': ["Oops!.. Game over", "Oops!.. Game over"]
 };

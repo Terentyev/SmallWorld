@@ -125,6 +125,10 @@ function changeGameStage() {
       areaClickAction = areaPlaceTokens;
       commitStageClickAction = commitStageRedeploy;
       break;
+    case 'beforeFinishTurn':
+      commitStageClickAction = commitStageFinishTurn;
+      // TODO: show special power button
+      break
     case 'finishTurn':
       commitStageClickAction = commitStageFinishTurn;
       break;
