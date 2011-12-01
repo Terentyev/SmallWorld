@@ -165,9 +165,9 @@ function cmdGetGameList() {
   sendRequest(cmd, hdlGetGameList);
 }
 
-function updatePlayersInGame(gameId) {
-  with (games[gameId]) {
-    var s = $.sprintf("%d/%d", (keys(players)).length, playersNum);
+function updatePlayersInGame() {
+  with (data.game) {
+    var s = $.sprintf("%d/%d", currentPlayersNum, map.playersNum);
     s +="<br>";
     //alert(JSON.stringify(players));
     for (var i in players) {
@@ -184,7 +184,7 @@ function updatePlayersInGame(gameId) {
 }
 
 function hdlGetGameList(ans) {
-  var cur, s = '', needLoadMaps = false, gameStarted = false;
+  var cur, s = '', needLoadMaps = false, gameStarted = false, gameId = null;
 
   for (var i in ans.games) {
     cur = ans.games[i];
@@ -196,11 +196,10 @@ function hdlGetGameList(ans) {
                          "turnsNum": cur.turnsNum, "players": players, "playersNum": cur.maxPlayersNum,
                          "inGame": cur.state == 2};
     needLoadMaps = needLoadMaps || !maps[cur.mapId];
-    if (data.gameId == null)
+    if (gameId == null)
       for (var j in cur.players)
         if (cur.players[j].userId == data.playerId) {
-          data.gameId = cur.gameId;
-          needMakeCurrent = true;
+          gameId = cur.gameId;
           break;
         }
     gameStarted = gameStarted || (cur.state == 2 && data.gameId == cur.gameId);
@@ -222,12 +221,10 @@ function hdlGetGameList(ans) {
        $("input:radio[name=listGameId]").eq(tmp.index(this)).attr("checked", 1);
      });
 
-  if (data.gameId != null) {
+  if (gameId != null) {
     $("input:radio[name=listGameId]").attr("hidden", 1);
-    updatePlayersInGame(data.gameId);
-    setGame(data.gameId);
+    setGame(gameId);
   }
-  if (gameStarted) alert('Started');
   if (needLoadMaps) cmdGetMapList();
 }
 
@@ -291,12 +288,17 @@ function cmdGetGameState() {
 
 function hdlGetGameState(ans) {
   var gs = ans.gameState;
+  var gameStarted = (data.game == null || data.game.state != 1) && gs.state == 1;
   var regions = new Array();
   for (var i in gs.map.regions) {
     regions[parseInt(i) + 1] = gs.map.regions[i];
   }
   gs.map.regions = regions;
   mergeGameState(gs);
+  if (data.game.state != 2) {
+    updatePlayersInGame();
+  }
+  if (gameStarted) alert('Started');
 }
 
 /*******************************************************************************

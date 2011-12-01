@@ -76,7 +76,7 @@ function mergeMember(gs, attr, actions, acts) {
 
 function mergeGameState(gs) {
   updatePlayerInfo(gs);
-  if (data.game == null) {
+  if (data.game == null || data.game.state != gs.state) {
     data.game = gs;
     changeGameStage();
     showGame();

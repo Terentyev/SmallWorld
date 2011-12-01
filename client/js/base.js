@@ -221,18 +221,20 @@ function currentPlayerCursor(playerId) {
 
 function addTokensToMap(region, i) {
   var race = '';
-  for (var j in data.game.players) {
-    var cur = data.game.players[j];
-    if (cur.currentTokenBadge.tokenBadgeId == region.currentRegionState.tokenBadgeId) {
-      race = cur.currentTokenBadge.raceName;
-    }
-    if (cur.declinedTokenBadge && cur.declinedTokenBadge.tokenBadgeId == region.currentRegionState.tokenBadgeId) {
-      race = cur.declinedTokenBadge.raceName;
+  if (region.currentRegionState.tokenBadgeId != null) {
+    for (var j in data.game.players) {
+      var cur = data.game.players[j];
+      if (cur.currentTokenBadge.tokenBadgeId == region.currentRegionState.tokenBadgeId) {
+        race = cur.currentTokenBadge.raceName;
+      }
+      if (cur.declinedTokenBadge && cur.declinedTokenBadge.tokenBadgeId == region.currentRegionState.tokenBadgeId) {
+        race = cur.declinedTokenBadge.raceName;
+      }
     }
   }
   return $.sprintf(
       '<div style="position: absolute; left: %dpx; top: %dpx;">' +
-      '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onmouseclick="$(\'#area%d\').click();">' +
+      '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onclick="$(\'#area%d\').click();">' +
       '<img src="%s"/><a id="aTokensNum%d">%d</a>' +
       '</a>' +
       '</div>',
@@ -256,7 +258,7 @@ function addObjectsToMap(region, i) {
     }
     num = (num == 1) ? '' : ('' + num);
     result += $.sprintf(
-        '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onmouseclick="$(\'#area%d\').click();"><img src="%s" />%s</a>',
+        '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onclick="$(\'#area%d\').click();"><img src="%s" />%s</a>',
         i, i, i, objects[j], num);
   }
   if (result !== '') result += '</div>';

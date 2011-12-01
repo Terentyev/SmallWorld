@@ -51,7 +51,7 @@ function showCurrentGame() {
 }
 
 function showGame() {
-  if (data.game == null || !data.game.state) return;
+  if (data.game == null || data.game.state != 1) return;
 
   $("#divGame").css("display", "block");
   $("#divLobby").css("display", "none");

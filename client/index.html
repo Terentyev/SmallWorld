@@ -197,8 +197,14 @@
           </table>
           </div>
           <div class="buttons">
+            <table width="100%" align="left">
+            <tr><td>
             <div id="btnCommitStage" onclick="commitStageClick();">Next &gt;&gt;</div><br>
-            <div id="btnDecline" onclick="declineClick();" style="display: none;">Decline ...</div>
+            </td></tr>
+            <tr><td>
+            <div id="btnDecline" onclick="declineClick();" style="display: none;">Decline</div>
+            </td></tr>
+            </table>
           </div>
         </td>
       </tr>
@@ -399,6 +405,7 @@
             <tr><td colspan="2">
               <div class="buttons">
                 <div id="btnLeave" onclick="cmdLeaveGame();">Leave</div>
+                <div id="btnUpdate" onclick="cmdGetGameState();">Update</div>
               </div>
             </td></tr>
           </table>
