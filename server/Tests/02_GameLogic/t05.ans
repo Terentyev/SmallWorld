@@ -129,8 +129,8 @@
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "elves"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Elves"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -141,8 +141,8 @@
                     "tokensInHand": 6,
                     "currentTokenBadge": {
                         "tokenBadgeId": 5,
-                        "specialPowerName": "dragonMaster",
-                        "raceName": "humans"
+                        "specialPowerName": "DragonMaster",
+                        "raceName": "Humans"
                     },
                     "declinedTokenBadge": {}
 

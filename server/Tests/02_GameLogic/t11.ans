@@ -18,8 +18,8 @@
                     "tokensInHand": 10,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "forest",
-                        "raceName": "giants"
+                        "specialPowerName": "Forest",
+                        "raceName": "Giants"
                     },
                     "declinedTokenBadge": {}
                 },

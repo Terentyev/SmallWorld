@@ -77,8 +77,8 @@
                     "currentTokenBadge": {},
                     "declinedTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "elves"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Elves"
                     }
                 },
                 {
@@ -87,8 +87,8 @@
                     "tokensInHand": 13,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
-                        "specialPowerName": "alchemist",
-                        "raceName": "amazons"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Amazons"
                     },
                     "declinedTokenBadge": {}
 

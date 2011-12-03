@@ -18,8 +18,8 @@
                     "tokensInHand": 14,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
-                        "specialPowerName": "alchemist",
-                        "raceName": "amazons"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Amazons"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -87,8 +87,8 @@
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
-                        "specialPowerName": "alchemist",
-                        "raceName": "amazons"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Amazons"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -145,8 +145,8 @@
                     "tokensInHand": 13,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
-                        "specialPowerName": "alchemist",
-                        "raceName": "amazons"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Amazons"
                     },
                     "declinedTokenBadge": {}
                 },

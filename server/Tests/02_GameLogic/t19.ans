@@ -18,8 +18,8 @@
                     "tokensInHand": 9,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "alchemist",
-                        "raceName": "trolls"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Trolls"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -71,8 +71,8 @@
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "alchemist",
-                        "raceName": "trolls"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Trolls"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -107,8 +107,8 @@
                     "tokensInHand": 11,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "ratmen"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Ratmen"
                     },
                     "declinedTokenBadge": {}
                 }
@@ -132,8 +132,8 @@
                     "tokensInHand": 9,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "ratmen"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Ratmen"
                     },
                     "declinedTokenBadge": {}
                 }
@@ -155,8 +155,8 @@
                     "tokensInHand": 2,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "alchemist",
-                        "raceName": "trolls"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Trolls"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -167,8 +167,8 @@
                     "tokensInHand": 3,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "ratmen"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Ratmen"
                     },
                     "declinedTokenBadge": {}
                 }
@@ -206,8 +206,8 @@
                     "currentTokenBadge": {},
                     "declinedTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "alchemist",
-                        "raceName": "trolls"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Trolls"
                     }
                 },
                 {
@@ -217,8 +217,8 @@
                     "tokensInHand": 5,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "ratmen"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Ratmen"
                     },
                     "declinedTokenBadge": {}
                 }
@@ -247,13 +247,13 @@
                     "tokensInHand": 10,
                     "currentTokenBadge": {
                         "tokenBadgeId": 6,
-                        "specialPowerName": "dragonMaster",
-                        "raceName": "orcs"
+                        "specialPowerName": "DragonMaster",
+                        "raceName": "Orcs"
                     },
                     "declinedTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "alchemist",
-                        "raceName": "trolls"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Trolls"
                     }
                 },
                 {
@@ -263,8 +263,8 @@
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "ratmen"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Ratmen"
                     },
                     "declinedTokenBadge": {}
                 }
@@ -286,13 +286,13 @@
                     "tokensInHand": 6,
                     "currentTokenBadge": {
                         "tokenBadgeId": 6,
-                        "specialPowerName": "dragonMaster",
-                        "raceName": "orcs"
+                        "specialPowerName": "DragonMaster",
+                        "raceName": "Orcs"
                     },
                     "declinedTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "alchemist",
-                        "raceName": "trolls"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Trolls"
                     }
                 },
                 {}

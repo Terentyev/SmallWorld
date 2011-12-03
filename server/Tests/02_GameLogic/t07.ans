@@ -83,8 +83,8 @@
                     "tokensInHand": 7,
                     "currentTokenBadge": {
                         "tokenBadgeId": 5,
-                        "specialPowerName": "dragonMaster",
-                        "raceName": "humans"
+                        "specialPowerName": "DragonMaster",
+                        "raceName": "Humans"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -94,8 +94,8 @@
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 6,
-                        "specialPowerName": "flying",
-                        "raceName": "orcs"
+                        "specialPowerName": "Flying",
+                        "raceName": "Orcs"
                     },
                     "declinedTokenBadge": {}
                 }                
@@ -181,8 +181,8 @@
                     "tokensInHand": 5,
                     "currentTokenBadge": {
                         "tokenBadgeId": 5,
-                        "specialPowerName": "dragonMaster",
-                        "raceName": "humans"
+                        "specialPowerName": "DragonMaster",
+                        "raceName": "Humans"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -192,8 +192,8 @@
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 6,
-                        "specialPowerName": "flying",
-                        "raceName": "orcs"
+                        "specialPowerName": "Flying",
+                        "raceName": "Orcs"
                     },
                     "declinedTokenBadge": {}
                 }                

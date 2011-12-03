@@ -18,8 +18,8 @@
                     "tokensInHand": 10,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "alchemist",
-                        "raceName": "tritons"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Tritons"
                     },
                     "declinedTokenBadge": {}
                 },
