@@ -1,4 +1,5 @@
 {
+    "description": "test finish turn + second player selectRace",
     "include": [ "_game1.inc" ],
     "test": [
         {
@@ -87,6 +88,5 @@
             "action": "getGameState",
             "sid": 2
         }
-    ],
-    "description": "test finish turn + second player selectRace"
+    ]
 }

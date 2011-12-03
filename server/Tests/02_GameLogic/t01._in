@@ -1,4 +1,5 @@
 {
+    "description": "test selectRace",
     "include": [ "_game1.inc" ],
     "test": [
         {
@@ -48,6 +49,5 @@
             "sid": 1,
             "position": 2
         }
-    ],
-    "description": "test selectRace"
+    ]
 }

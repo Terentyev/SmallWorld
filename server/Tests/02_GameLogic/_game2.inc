@@ -29,4 +29,3 @@
         { "action": "joinGame", "sid": 2, "gameId": 1 },
         { "action": "setReadinessStatus", "sid": 1, "isReady": 1 }
 ]
-

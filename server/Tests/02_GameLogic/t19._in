@@ -1,10 +1,11 @@
 {
+    "description": "Trolls",
     "include": [ "_game2.inc" ],
     "test": [
         { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
-            "amazons", "trolls", "ratmen", "tritons", "sorcerers", "skeletons", "orcs", "humans", "giants", "elves", "dwarves", "halflings", "wizard" ],
+            "Amazons", "Trolls", "Ratmen", "Tritons", "Sorcerers", "Skeletons", "Orcs", "Humans", "Giants", "Elves", "Dwarves", "Halflings", "Wizard" ],
           "visibleSpecialPowers": [
-            "berserk", "alchemist", "bivouacking", "commando", "forest", "diplomat", "dragonMaster", "flying", "fortified", "heroic", "hill", "merchant", "mounted", "pillaging", "seafaring", "stout", "swamp", "underworld", "wealthy" ] 
+            "Berserk", "Alchemist", "Bivouacking", "Commando", "Forest", "Diplomat", "DragonMaster", "Flying", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
         },
         {
             "action": "selectRace",
@@ -142,6 +143,5 @@
             "action": "getGameState",
             "sid": 1
         }
-    ],
-    "description": "trolls"
+    ]
 }

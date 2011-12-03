@@ -1,4 +1,5 @@
 {
+    "description": "second player conquer + defend",
     "include": [ "_game1.inc" ],
     "test": [
         {
@@ -182,6 +183,5 @@
             "sid": 2,
             "regionId": 2
         }
-    ],
-    "description": "second player conquer + defend"
+    ]
 }

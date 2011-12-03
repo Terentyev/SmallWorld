@@ -18,8 +18,8 @@
                     "tokensInHand": 11,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "skeletons"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Skeletons"
                     },               
                     "declinedTokenBadge": {}
                 },

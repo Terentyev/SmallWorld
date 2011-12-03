@@ -18,8 +18,8 @@
                     "tokensInHand": 10,
                     "currentTokenBadge": {
                         "tokenBadgeId": 4,
-                        "specialPowerName": "forest",
-                        "raceName": "halflings"
+                        "specialPowerName": "Forest",
+                        "raceName": "Halflings"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -78,8 +78,8 @@
                     "tokensInHand": 4,
                     "currentTokenBadge": {
                         "tokenBadgeId": 4,
-                        "specialPowerName": "forest",
-                        "raceName": "halflings"
+                        "specialPowerName": "Forest",
+                        "raceName": "Halflings"
                     },
                     "declinedTokenBadge": {}
                 },

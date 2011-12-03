@@ -39,8 +39,8 @@
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
-                        "specialPowerName": "alchemist",
-                        "raceName": "amazons"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Amazons"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -53,8 +53,8 @@
                     "coins": 4,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "elves"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Elves"
                     },
                     "declinedTokenBadge": {}
                 }
@@ -62,33 +62,33 @@
             "visibleTokenBadges": [
                 {
                     "tokenBadgeId": 1,
-                    "specialPowerName": "berserk",
-                    "raceName": "dwarves"
+                    "specialPowerName": "Berserk",
+                    "raceName": "Dwarves"
                 },
                 {
                     "tokenBadgeId": 3,
-                    "specialPowerName": "commando",
-                    "raceName": "giants"
+                    "specialPowerName": "Commando",
+                    "raceName": "Giants"
                 },
                 {
                     "tokenBadgeId": 4,
-                    "specialPowerName": "diplomat",
-                    "raceName": "halflings"
+                    "specialPowerName": "Diplomat",
+                    "raceName": "Halflings"
                 },
                 {
                     "tokenBadgeId": 5,
-                    "specialPowerName": "dragonMaster",
-                    "raceName": "humans"
+                    "specialPowerName": "DragonMaster",
+                    "raceName": "Humans"
                 },
                 {
                     "tokenBadgeId": 6,
-                    "specialPowerName": "flying",
-                    "raceName": "orcs"
+                    "specialPowerName": "Flying",
+                    "raceName": "Orcs"
                 },
                 {
                     "tokenBadgeId": 7,
-                    "specialPowerName": "forest",
-                    "raceName": "ratmen"
+                    "specialPowerName": "Forest",
+                    "raceName": "Ratmen"
                 }
             ]
         }

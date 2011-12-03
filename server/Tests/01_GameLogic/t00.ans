@@ -49,33 +49,33 @@
             "visibleTokenBadges": [
                 {
                     "tokenBadgeId": 0,
-                    "specialPowerName": "alchemist",
-                    "raceName": "amazons"
+                    "specialPowerName": "Alchemist",
+                    "raceName": "Amazons"
                 },
                 {
                     "tokenBadgeId": 1,
-                    "specialPowerName": "berserk",
-                    "raceName": "dwarves"
+                    "specialPowerName": "Berserk",
+                    "raceName": "Dwarves"
                 },
                 {
                     "tokenBadgeId": 2,
-                    "specialPowerName": "bivouacking",
-                    "raceName": "elves"
+                    "specialPowerName": "Bivouacking",
+                    "raceName": "Elves"
                 },
                 {
                     "tokenBadgeId": 3,
-                    "specialPowerName": "commando",
-                    "raceName": "giants"
+                    "specialPowerName": "Commando",
+                    "raceName": "Giants"
                 },
                 {
                     "tokenBadgeId": 4,
-                    "specialPowerName": "diplomat",
-                    "raceName": "halflings"
+                    "specialPowerName": "Diplomat",
+                    "raceName": "Halflings"
                 },
                 {
                     "tokenBadgeId": 5,
-                    "specialPowerName": "dragonMaster",
-                    "raceName": "humans"
+                    "specialPowerName": "DragonMaster",
+                    "raceName": "Humans"
                 }
             ]
         }
@@ -123,8 +123,8 @@
                     "tokensInHand": 14,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
-                        "specialPowerName": "alchemist",
-                        "raceName": "amazons"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Amazons"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -140,33 +140,33 @@
             "visibleTokenBadges": [
                 {
                     "tokenBadgeId": 1,
-                    "specialPowerName": "berserk",
-                    "raceName": "dwarves"
+                    "specialPowerName": "Berserk",
+                    "raceName": "Dwarves"
                 },
                 {
                     "tokenBadgeId": 2,
-                    "specialPowerName": "bivouacking",
-                    "raceName": "elves"
+                    "specialPowerName": "Bivouacking",
+                    "raceName": "Elves"
                 },
                 {
                     "tokenBadgeId": 3,
-                    "specialPowerName": "commando",
-                    "raceName": "giants"
+                    "specialPowerName": "Commando",
+                    "raceName": "Giants"
                 },
                 {
                     "tokenBadgeId": 4,
-                    "specialPowerName": "diplomat",
-                    "raceName": "halflings"
+                    "specialPowerName": "Diplomat",
+                    "raceName": "Halflings"
                 },
                 {
                     "tokenBadgeId": 5,
-                    "specialPowerName": "dragonMaster",
-                    "raceName": "humans"
+                    "specialPowerName": "DragonMaster",
+                    "raceName": "Humans"
                 },
                 {
                     "tokenBadgeId": 6,
-                    "specialPowerName": "flying",
-                    "raceName": "orcs"
+                    "specialPowerName": "Flying",
+                    "raceName": "Orcs"
                 }
             ]
         }

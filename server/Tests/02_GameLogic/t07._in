@@ -1,4 +1,5 @@
 {
+    "description": "different basic commands",
     "include": [ "_game1.inc" ],
     "test": [
         {
@@ -216,6 +217,5 @@
             "sid": 1,
             "regionId": 3
         }
-    ],
-    "description": "different basic commands"
+    ]
 }

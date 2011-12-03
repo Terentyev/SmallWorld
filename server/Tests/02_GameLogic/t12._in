@@ -1,10 +1,11 @@
 {
+    "description": "Halflings",
     "include": [ "_game2.inc" ],
     "test": [
         { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
-            "amazons", "giants", "elves", "dwarves", "halflings", "humans",       "orcs",   "ratmen", "skeletons", "sorcerers", "tritons", "trolls",   "wizard" ],
+            "Amazons", "Giants", "Elves", "Dwarves", "Halflings", "Humans",       "Orcs",   "Ratmen", "Skeletons", "Sorcerers", "Tritons", "Trolls",   "Wizard" ],
           "visibleSpecialPowers": [
-            "berserk", "alchemist", "bivouacking", "commando", "forest", "diplomat",  "dragonMaster", "flying", "fortified", "heroic",    "hill",    "merchant", "mounted", "pillaging", "seafaring", "stout", "swamp", "underworld", "wealthy" ] 
+            "Berserk", "Alchemist", "Bivouacking", "Commando", "Forest", "Diplomat",  "DragonMaster", "Flying", "Fortified", "Heroic",    "Hill",    "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
         },
         {
             "action": "selectRace",
@@ -140,6 +141,5 @@
             "sid": 2,
             "regionId": 9
         }
-    ],
-    "description": "halflings"
+    ]
 }

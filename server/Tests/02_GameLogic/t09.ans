@@ -18,8 +18,8 @@
                     "tokensInHand": 7,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "forest",
-                        "raceName": "dwarves"
+                        "specialPowerName": "Forest",
+                        "raceName": "Dwarves"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -94,8 +94,8 @@
                     "currentTokenBadge": {},
                     "declinedTokenBadge": {
                         "tokenBadgeId": 1,
-                        "specialPowerName": "forest",
-                        "raceName": "dwarves"
+                        "specialPowerName": "Forest",
+                        "raceName": "Dwarves"
                     }
                 },
                                 {
@@ -104,8 +104,8 @@
                     "tokensInHand": 9,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "alchemist",
-                        "raceName": "elves"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Elves"
                     },
                     "declinedTokenBadge": {}
                 }
