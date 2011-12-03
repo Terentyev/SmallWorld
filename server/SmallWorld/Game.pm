@@ -31,7 +31,7 @@ sub new {
 
 sub mergeGameState {
   my ($self, $gs) = @_;
-  grep { $self->{gameState}->{$_} = $gs->{$_} } keys %$gs;
+  $self->{gameState}->{$_} = $gs->{$_} for keys %$gs;
 }
 
 # загружает информацию об игре из БД
@@ -328,7 +328,7 @@ sub createSpecialPower {
       &SP_ALCHEMIST     => 'SmallWorld::SpAlchemist',
       &SP_BERSERK       => 'SmallWorld::SpBerserk',
       &SP_BIVOUACKING   => 'SmallWorld::SpBivouacking',
-      &SP_COMMANDO      => 'SmallWorld::SpCommado',
+      &SP_COMMANDO      => 'SmallWorld::SpCommando',
       &SP_DIPLOMAT      => 'SmallWorld::SpDiplomat',
       &SP_DRAGON_MASTER => 'SmallWorld::SpDragonMaster',
       &SP_FLYING        => 'SmallWorld::SpFlying',
@@ -360,9 +360,7 @@ sub isFirstConquer {
 # возвращает есть ли у региона иммунитет к нападению
 sub isImmuneRegion {
   my $region = $_[1];
-  return grep {
-    defined $region->{$_} && $region->{$_}
-  } qw( holeInTheGround dragon hero );
+  return grep $region->{$_}, qw( holeInTheGround dragon hero );
 }
 
 # возвращает следующий порядковый номер завоевания регионов

@@ -10,9 +10,8 @@ use base ('SmallWorld::SafeObj');
 # определяет принадлежит ли регион активной расе
 sub activeConq {
   my ($self, $region) = @_;
-  return defined $self->{currentTokenBadge}->{tokenBadgeId} &&
-    defined $region->{tokenBadgeId} &&
-    $self->{currentTokenBadge}->{tokenBadgeId} == $region->{tokenBadgeId};
+  return
+    ($self->{currentTokenBadge}->{tokenBadgeId} // -1)  == ($region->{tokenBadgeId} // -2);
 }
 
 1;

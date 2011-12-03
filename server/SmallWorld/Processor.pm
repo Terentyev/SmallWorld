@@ -39,7 +39,15 @@ sub process {
     no strict 'refs';
     &{"cmd_$self->{json}->{action}"}($self, $result);
   }
+  if ( $ENV{LENA} ) {
+    # у Лены sid проверяется только как число, а наш сервер почему-то возвращает
+    # строку... Ничего лучше пока не придумано.
+    if ( $self->{json}->{action} eq 'login' ) {
+      $result->{sid} *= 1;
+    }
+  }
   print encode_json($result)."\n" or die "Can not encode JSON-object\n";
+  $self->{_game} = undef;
 }
 
 sub debug {
@@ -82,6 +90,7 @@ sub cmd_resetServer {
   return if !$ENV{DEBUG};
   my ($self, $result) = @_;
   $self->{db}->clear();
+  $self->cmd_createDefaultMaps() if $ENV{LENA};
 }
 
 sub cmd_register {
@@ -118,7 +127,10 @@ sub cmd_getMessages {
 sub cmd_createDefaultMaps {
   return if !$ENV{DEBUG};
   my ($self, $result) = @_;
-  foreach (@{&DEFAULT_MAPS}){
+  my @maps = $ENV{LENA}
+    ? @{ &LENA_DEFAULT_MAPS }
+    : @{ &DEFAULT_MAPS };
+  foreach (@maps){
     $self->{db}->addMap( @{$_}{ qw/mapName playersNum turnsNum/}, exists($_->{regions}) ? encode_json($_->{regions}) : "[]");
   }
 }
