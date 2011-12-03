@@ -70,8 +70,8 @@
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 0,
-                        "specialPowerName": "alchemist",
-                        "raceName": "amazons"
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Amazons"
                     },
                     "declinedTokenBadge": {}
                 },
@@ -84,8 +84,8 @@
                     "coins": 4,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
-                        "specialPowerName": "bivouacking",
-                        "raceName": "elves"
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Elves"
                     },
                     "declinedTokenBadge": {}
                 }
