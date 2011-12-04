@@ -231,7 +231,7 @@ sub getGameStateForPlayer {
       declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
     }
   } @{ $gs->{players} };
-  grep {delete $_->{coins} if $_->{userId} != $playerId} @{ $result->{players} };
+  grep {delete $_->{coins} if $_->{userId} != $playerId} @{ $result->{players} } if $result->{stage} ne GS_IS_OVER;
   $self->removeNull($result);
   return $result;
 }
