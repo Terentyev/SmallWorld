@@ -41,11 +41,6 @@
             "action": "finishTurn",
             "sid": 2
         },
-        {
-            "action": "conquer",
-            "sid": 2,
-            "regionId": 1
-        },
 
 
         {
