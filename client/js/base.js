@@ -195,15 +195,15 @@ function addOurPlayerInfo(player) {
     player.coins);
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
-      '<tr><td>' +
+      '<tr><td colspan="2">' +
       '<img src="%s" class="badge" /><img src="%s" class="badge" />' +
-      '</td><td></td></tr>',
+      '</td></tr>',
       races[player.currentTokenBadge.raceName],
       specialPowers[player.currentTokenBadge.specialPowerName]);
   }
   if (player.declinedTokenBadge && player.declinedTokenBadge.raceName != null) {
     s += $.sprintf(
-      '<tr><td></td><td>' +
+      '<tr><td colspan="2">' +
       '<img src="%s" class="badge"/><img src="%s" class="badge" />' +
       '</td></tr>',
       races[player.declinedTokenBadge.raceName],

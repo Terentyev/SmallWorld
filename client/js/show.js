@@ -145,6 +145,8 @@ function showGameStage() {
 }
 
 function showLobby() {
+  $("#divLobby").css("display", "block");
+  $("#divGame").css("display", "none");
   showLogin();
   showCurrentGame();
   cmdGetMessages();
@@ -170,6 +172,17 @@ function showMessages() {
   api.getContentPane().html(s);
   api.reinitialise();
   api.scrollToBottom();
+}
+
+function showScores() {
+  var s = '';
+  for (var i in data.game.players) {
+    with (data.game.players[i]) {
+      s += addRow([username, coins]);
+    }
+  }
+  $('#tableScores tbody').html(s).trigger('update');
+  showModal('#divScores');
 }
 
 function changeMap(mapId) {
