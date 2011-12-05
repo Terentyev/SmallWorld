@@ -1,4 +1,3 @@
-var playerInfo = null;
 var place = null;
 var defend = null;
 
@@ -22,7 +21,7 @@ function commitStageClick() {
 }
 
 function declineClick() {
-  if (confirm('Do you really want decline you race "' + playerInfo.currentTokenBadge.raceName + '"?')) {
+  if (confirm('Do you really want decline you race "' + player.curRace() + '"?')) {
     cmdDecline();
   }
 }
@@ -43,12 +42,7 @@ function askNumBox(text, onOk, value) {
 }
 
 function updatePlayerInfo(gs) {
-  for (var i in gs.players) {
-    if (gs.players[i].userId == data.playerId) {
-      playerInfo = gs.players[i];
-      return;
-    }
-  }
+  player.updatePlayer(gs);
 }
 
 function notEqual(gs, game, attr) {
@@ -155,11 +149,11 @@ function changeGameStage() {
    *         Token badge actions                                               *
    ****************************************************************************/
 function tokenBadgeWrong() {
-  alert('Wrong action. Your race: ' + playerInfo.currentTokenBadge.raceName);
+  alert('Wrong action. Your race: ' + player.curRace());
 }
 
 function tokenBadgeBuy(position) {
-  if (position > playerInfo.coins) {
+  if (position > player.coins()) {
     alert('Not enough coins');
     return;
   }
@@ -183,7 +177,7 @@ function areaConquer(regionId) {
 function areaPlaceTokens(regionId) {
   // TODO: do needed checks
   place = { r: data.game.map.regions[regionId].currentRegionState, id: regionId };
-  if (place.r.tokenBadgeId != playerInfo.currentTokenBadge.tokenBadgeId) {
+  if (place.r.tokenBadgeId != player.curTokenBadgeId()) {
     alert('Wrong region');
     return;
   }
@@ -196,19 +190,18 @@ function areaPlaceTokens(regionId) {
 function deployRegion() {
   if (checkAskNumber()) return;
   var v = parseInt($("#inputAskNum").attr("value"));
-  if (checkEnough(v - place.r.tokensNum > playerInfo.tokensInHand, '#divAskNumError')) return;
+  if (checkEnough(v - place.r.tokensNum > player.tokens(), '#divAskNumError')) return;
 
-  playerInfo.tokensInHand -= v - place.r.tokensNum;
+  player.addTokens(place.r.tokensNum -v);
   place.r.tokensNum = v;
   $("#aTokensNum" + place.id).html(place.r.tokensNum).trigger("update");
-  $("#aTokensInHand").html(playerInfo.tokensInHand).trigger("update");
   $.modal.close();
 }
 
 function areaDefend(regionId) {
   // TODO: do needed checks
   var regState = getRegState(regionId);
-  if (regState.tokenBadgeId != playerInfo.currentTokenBadge.tokenBadgeId) {
+  if (regState.tokenBadgeId != player.curTokenBadgeId()) {
     alert('Wrong region');
     return;
   }
@@ -229,14 +222,13 @@ function areaDefend(regionId) {
 function defendRegion() {
   if (checkAskNumber()) return;
   var v = parseInt($('#inputAskNum').attr('value'));
-  if (checkEnough(v - defend.regions[defend.regionId] > playerInfo.tokensInHand, '#divAskNumError')) return;
+  if (checkEnough(v - defend.regions[defend.regionId] > player.tokens(), '#divAskNumError')) return;
   var regState = getRegState(defend.regionId);
 
-  playerInfo.tokensInHand -= v - defend.regions[defend.regionId];
+  player.addTokens(defend.regions[defend.regionId] - v);
   defend.regions[defend.regionId] = v;
   $('#aTokensNum' + defend.regionId).html($.sprintf(
         '%d <a color="#FF0000">+%d</a>', regState.tokensNum, defend.regions[defend.regionId])).trigger('update');
-  $('#aTokensInHand').html(playerInfo.tokensInHand).trigger('update');
   $.modal.close();
 }
 
@@ -290,7 +282,7 @@ function checkDeploy(cmd, add) {
   var regions = null;
   for (var i in data.game.map.regions) {
     var cur = data.game.map.regions[i].currentRegionState;
-    if (cur.tokenBadgeId != playerInfo.currentTokenBadge.tokenBadgeId) continue;
+    if (cur.tokenBadgeId != player.curTokenBadgeId()) continue;
     if (regions == null) {
       regions = [];
     }
