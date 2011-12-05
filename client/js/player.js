@@ -1,26 +1,32 @@
-var player = {
-  p: null,
-  updatePlayer: function(gs) {
-    for (var i in gs.players) {
-      this.p = gs.players[i];
-      if (this.p.userId == data.playerId) break;
-    }
-    return this.p;
-  },
-  curTokenBadgeId: function() {
+var player = getPlayer(data.playerId);
+
+function getPlayer(gs, playerId) {
+  for (var i in gs.players) {
+    this.p = gs.players[i];
+    if (this.p.userId == playerId) break;
+  }
+
+  this.curTokenBadgeId = function() {
     return this.p.currentTokenBadge.tokenBadgeId;
-  },
-  curRace: function() {
+  };
+  this.curRace = function() {
     return this.p.currentTokenBadge.raceName;
-  },
-  coins: function() {
-    return this.p.coins;
-  },
-  tokens: function() {
+  };
+  this.coins = function() {
+  return this.p.coins;
+  };
+  this.tokens = function() {
     return this.p.tokensInHand;
-  },
-  addTokens: function(tokens) {
+  };
+  this.addTokens = function(tokens) {
     this.p.tokensInHand += tokens;
     $('#aTokensInHand').html(this.p.tokensInHand).trigger('update');
-  }
-};
+  };
+  this.beforeRedeploy = function() {
+    if (this.curRace == 'Amazons') {
+      this.addTokens(-4);
+    }
+  };
+  this.canAttack = function(regionId) {
+  };
+}

@@ -42,7 +42,7 @@ function askNumBox(text, onOk, value) {
 }
 
 function updatePlayerInfo(gs) {
-  player.updatePlayer(gs);
+  player = getPlayer(gs, data.playerId);
 }
 
 function notEqual(gs, game, attr) {
@@ -171,6 +171,10 @@ function areaConquer(regionId) {
   // TODO: do needed checks
   data.game.stage = 'conquest';
   changeGameStage();
+  if (!player.canAttack(regionId)) {
+    alert("Can't conquer the region");
+    return;
+  }
   cmdConquer(regionId);
 }
 
@@ -254,6 +258,7 @@ function commitStageBeforeConquest() {
 
 function commitStageConquest() {
   data.game.stage = 'redeploy';
+  player.beforeRedeploy();
   changeGameStage();
 }
 
