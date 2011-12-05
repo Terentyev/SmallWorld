@@ -98,7 +98,7 @@ use constant VISIBLE_BADGES_NUM => 6  ;
 use constant CMD_ERRORS => {
   conquer            => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
-    R_BAD_REGION, R_REGION_IS_IMMUNE
+    R_REGION_IS_IMMUNE, R_BAD_REGION
   ],
   createDefaultMaps  => [],
   createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
@@ -111,12 +111,12 @@ use constant CMD_ERRORS => {
   ],
   dragonAttack       => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
-    R_BAD_REGION
+    R_BAD_REGION, R_REGION_IS_IMMUNE
   ],
   enchant            => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_BAD_REGION, R_BAD_ATTACKED_RACE, R_NOTHING_TO_ENCHANT, R_CANNOT_ENCHANT,
-    R_NO_MORE_TOKENS_IN_STORAGE
+    R_NO_MORE_TOKENS_IN_STORAGE, R_REGION_IS_IMMUNE
   ],
   finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE], # R_BAD_GAME_STATE
   getGameList        => [R_BAD_SID],

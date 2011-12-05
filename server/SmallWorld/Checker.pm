@@ -307,7 +307,7 @@ sub checkRegion_conquer {
 
   # 1. свои регионы с активной расой захватывать нельзя
   # 2. на первом завоевании можно захватывать далеко не все регионы
-  # 3. и вообще есть куча правил нападения на регионы (если это не первое нападение)
+  # 3. у рас и умений есть особые правила нападения на регионы
 
   if ( $player->activeConq($region) ||
     !($game->isFirstConquer() && $race->canFirstConquer($region, $game->{gameState}->{regions})) &&
@@ -315,7 +315,7 @@ sub checkRegion_conquer {
     !$game->canAttack($player, $region, $race, $sp)
   ) {
     $result->{dice} = $player->{dice} if defined $player->{dice};
-    delete $player->{dice};
+    $player->{dice} = undef;
     return 1;
   }
   return 0;
@@ -366,9 +366,6 @@ sub checkRegion_redeploy {
 
 sub checkRegionIsImmune {
   my ($self, $game, $player, $region, $race, $sp) = @_;
-  my $js = $self->{json};
-
-  # а вдруг у территории иммунитет?
   return $game->isImmuneRegion($region);
 }
 
@@ -392,13 +389,13 @@ sub checkStage {
   #    состоянию игры
   # 3. попытка завоевания с нулевым числом фигурок на руках
   # 4. команда окончания хода с ненулевым числом фигурок на руках
-  # 5. после бросока кубика может идти только команда conquer 'berserk'
+  # 5. после бросока кубика может идти только команда conquer
 
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    ($js->{action} ne 'conquer') && defined $player->{dice} && ($game->{gameState}->{state} eq GS_CONQUEST) || #TODO
+    ($js->{action} ne 'conquer') && exists $player->{berserkDice} && ($game->{gameState}->{state} eq GS_CONQUEST) || #TODO
     !$sp->canCmd($js, $game->{gameState}->{state}) ||
     !$race->canCmd($js);
 }
@@ -424,7 +421,7 @@ sub checkTokensNum {
   $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
   $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
   return (grep { !defined $_->{tokensNum} || $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} }) ||
-         $tokensNum < 0; #TODO разрешать ставить меньше фигурок чем есть, а оставшиеся ставить в последний регион?
+         $tokensNum < 0;
 }
 
 sub checkForts {
