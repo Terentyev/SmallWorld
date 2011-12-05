@@ -244,7 +244,7 @@ sub checkRegionId {
 
   if ( defined $js->{encampments} ) {
     foreach my $reg ( @{ $js->{encampments} } ) {
-      return 1 if !(grep { $reg->{regionId} == $_->{regionId} } @{ $regions });
+      return 1 if !(grep { $reg->{regionId} // -1 == $_->{regionId} } @{ $regions });
     }
   }
 
@@ -315,6 +315,7 @@ sub checkRegion_conquer {
     !$game->canAttack($player, $region, $race, $sp)
   ) {
     $result->{dice} = $player->{dice} if defined $player->{dice};
+    delete $player->{dice};
     return 1;
   }
   return 0;
@@ -350,17 +351,16 @@ sub checkRegion_redeploy {
 
   # войска можно ставить только на свои территории
   foreach my $reg ( @{ $js->{regions} } ) {
-    return 1 if (grep {
-      $_->{regionId} == $reg->{regionId} && !$player->activeConq($_)
-    } @{ $game->{gameState}->{regions} });
+     return 1 if (grep
+       $_->{regionId} == $reg->{regionId} && !$player->activeConq($_), @{ $game->{gameState}->{regions} });
   }
 
-  # ставить лагеря/форты/героев можно только на свои регионы, на которых есть
-  # наши фигурки
+  # ставить лагеря/форты/героев можно только на свои регионы,
+  # которые так же указаны в поле regions команды redeploy
   foreach my $reg ( (@{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
-    return 1 if defined $reg && (grep {
-      $_->{regionId} == $reg->{regionId} && !$player->activeConq($_)
-    } @{ $game->{gameState}->{regions} });
+    return 1 if defined $reg && !(grep {
+      $_->{regionId} == $reg->{regionId} #&& !$player->activeConq($_)
+    } @{ $js->{regions} });
   }
 }
 
@@ -390,17 +390,15 @@ sub checkStage {
   # 1. пользователь, который послал команду, != активный пользователь
   # 2. действие, которое запрашивает пользователь, не соответствует текущему
   #    состоянию игры
-  # только команда реорганизация войск при условии, что в команде не пытаются
-  # установить героев/лагеря/форты
-  # или команда атаки с ненулевым числом фигурок на руках
-  # или команда окончания хода с нулевым числом фигурок на руках
-  # или команда выбора расы при условии, что раса не выбрана $player->{tokensInHand}
-#    ($js->{action} eq 'selectRace') && (!defined $tokensInHand);
+  # 3. попытка завоевания с нулевым числом фигурок на руках
+  # 4. команда окончания хода с ненулевым числом фигурок на руках
+  # 5. после бросока кубика может идти только команда conquer 'berserk'
 
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
+    ($js->{action} ne 'conquer') && defined $player->{dice} && ($game->{gameState}->{state} eq GS_CONQUEST) || #TODO
     !$sp->canCmd($js, $game->{gameState}->{state}) ||
     !$race->canCmd($js);
 }
@@ -408,14 +406,14 @@ sub checkStage {
 sub checkEnoughTokens {
   my ($game, $player) = $_[0]->getGameVariables();
   my $tokensNum = 0;
-  grep { $tokensNum += $_->{tokensNum} if defined $_->{tokensNum} } @{ $_[0]->{json}->{regions} };
+  $tokensNum += $_->{tokensNum} // 0 for @{ $_[0]->{json}->{regions} };
   return $tokensNum > $player->{tokensInHand};
 }
 
 sub checkTokensInHand {
   my ($game, $player) = $_[0]->getGameVariables();
   my $tokensNum = 0;
-  grep { $tokensNum += $_->{tokensNum} if defined $_->{tokensNum} } @{ $_[0]->{json}->{regions} };
+  $tokensNum += $_->{tokensNum} // 0 for @{ $_[0]->{json}->{regions} };
   return $tokensNum < $player->{tokensInHand};
 }
 
@@ -423,8 +421,8 @@ sub checkTokensNum {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   # только для redeploy
   my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus($player);
-  grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
-  grep { $tokensNum -= $_->{tokensNum} if defined $_->{tokensNum} } @{ $self->{json}->{regions} };
+  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
+  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
   return (grep { !defined $_->{tokensNum} || $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} }) ||
          $tokensNum < 0; #TODO разрешать ставить меньше фигурок чем есть, а оставшиеся ставить в последний регион?
 }
@@ -447,8 +445,8 @@ sub checkFortsInRegion {
 sub checkEnoughEncamps {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $encampsNum = 0;
-  grep { $encampsNum += $game->getRegion($_->{regionId})->safe('encampment') } @{ $game->{gameState}->{regions} };
-  grep { $encampsNum += $_->{encampmentsNum} } @{ $self->{json}->{encampments} };
+  $encampsNum += $game->getRegion($_->{regionId})->safe('encampment') for @{ $game->{gameState}->{regions} };
+  $encampsNum += $_->{encampmentsNum} // 0 for @{ $self->{json}->{encampments} };
   return $encampsNum > ENCAMPMENTS_MAX;
 }
 
@@ -458,8 +456,8 @@ sub checkTokensForRedeployment {
   return 0;
   # только для redeploy
   my $tokensNum = $player->{tokensInHand};
-  grep { $tokensNum += $_->{tokensNum} } @{ $race->{regions} };
-  grep { $tokensNum -= $_->{tokensNum} } @{ $self->{json}->{regions} };
+  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
+  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
   return $tokensNum < 0;
 }
 
