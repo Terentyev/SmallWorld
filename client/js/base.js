@@ -188,11 +188,13 @@ function addOurPlayerInfo(player) {
     '<table id="tableOurPlayer">' +
     '<tr><td>%s</td><td></td></tr>' +
     '<tr><td>Tokens in hand:</td><td><a id="aTokensInHand">%d</a></td></tr>' +
-    '<tr><td>Coins:</td><td>%d</td></tr>',
+    '<tr><td>Coins:</td><td>%d</td></tr>' +
+    '%s',
     currentPlayerCursor(player.userId),
     data.username,
     player.tokensInHand,
-    player.coins);
+    player.coins,
+    currentPlayerPower());
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
       '<tr><td colspan="2">' +
@@ -217,6 +219,27 @@ function currentPlayerCursor(playerId) {
   return playerId == data.game.activePlayerId
     ? '<img src="/pics/currentPlayerCursor.png" />'
     : '';
+}
+
+function currentPlayerPower() {
+  var s = [];
+  switch (player.curPower()) {
+    case 'Berserk':
+      s.push('Dice:');
+      if (player.berserkDice() == null) {
+        s.push($('#divThrowDice').html());
+      }
+      else {
+        s.push(player.berserkDice());
+      }
+      break;
+    // TODO: может быть стоит отображать для других умений какую-то информацию,
+    // например, оставшееся число лагерей
+  }
+  if (s.length == 0) {
+    return '';
+  }
+  return $.sprintf('<tr><td>%s</td><td>%s</td></tr>', s[0], s[1]);
 }
 
 function addTokensToMap(region, i) {

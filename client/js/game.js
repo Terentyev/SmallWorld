@@ -42,7 +42,7 @@ function askNumBox(text, onOk, value) {
 }
 
 function updatePlayerInfo(gs) {
-  player = getPlayer(gs, data.playerId);
+  player = new Player(gs, data.playerId);
 }
 
 function notEqual(gs, game, attr) {
@@ -172,7 +172,6 @@ function areaConquer(regionId) {
   data.game.stage = 'conquest';
   changeGameStage();
   if (!player.canAttack(regionId)) {
-    alert("Can't conquer the region");
     return;
   }
   cmdConquer(regionId);

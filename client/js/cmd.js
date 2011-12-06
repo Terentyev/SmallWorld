@@ -398,3 +398,19 @@ function hdlDecline(ans) {
   // TODO: change game state handly
   cmdGetGameState();
 }
+
+/*******************************************************************************
+   *         Special powers commands                                           *
+   ****************************************************************************/
+function cmdThrowDice() {
+  var cmd = {
+    action: "throwDice",
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlThrowDice);
+}
+
+function hdlThrowDice(ans) {
+  player.setBerserkDice(ans.dice);
+  showPlayers();
+}
