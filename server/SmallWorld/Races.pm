@@ -363,7 +363,7 @@ sub conquestRegionTokensBonus {
   my ($self, $player, $region, $regions) = @_;
   return (grep {
            (grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $_->{constRegionState} }) &&
-           ( grep { defined $region->{regionId} && $_ == $region->{regionId} } @{ $_->{adjacentRegions} })
+           (grep { defined $region->{regionId} && $_ == $region->{regionId} } @{ $_->{adjacentRegions} })
          } @{ $regions })
          ? 1
          : 0;
