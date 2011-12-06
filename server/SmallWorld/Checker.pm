@@ -244,7 +244,7 @@ sub checkRegionId {
 
   if ( defined $js->{encampments} ) {
     foreach my $reg ( @{ $js->{encampments} } ) {
-      return 1 if !(grep { $reg->{regionId} // -1 == $_->{regionId} } @{ $regions });
+      return 1 if !(grep { ($reg->{regionId} // -1) == $_->{regionId} } @{ $regions });
     }
   }
 
@@ -442,8 +442,11 @@ sub checkFortsInRegion {
 sub checkEnoughEncamps {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $encampsNum = 0;
-  $encampsNum += $game->getRegion($_->{regionId})->safe('encampment') for @{ $game->{gameState}->{regions} };
-  $encampsNum += $_->{encampmentsNum} // 0 for @{ $self->{json}->{encampments} };
+#  foreach (@{ $game->{gameState}->{regions} }) {
+#    my $reg = $game->getRegion($_->{regionId});
+#    $encampsNum += $reg->safe('encampment') if !$player->activeConq($reg);
+#  }
+  $encampsNum += ($_->{encampmentsNum} // 0) for @{ $self->{json}->{encampments} };
   return $encampsNum > ENCAMPMENTS_MAX;
 }
 
