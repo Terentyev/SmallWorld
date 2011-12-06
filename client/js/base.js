@@ -1,78 +1,4 @@
 var serverUrl = null;
-var cmdErrors = {
-  'badUsername': 'Bad username',
-  'badPassword': 'Bad password',
-  'usernameTaken': 'Username already taken',
-  'badUserSid': 'You are not logged in',
-  'badUsernameOrPassword': 'Wrong username or password'
-};
-var races = {
-  null: '/pics/raceNone.png',
-  '': '/pics/raceNone.png',
-  'Amazons': '/pics/raceAmazons.png',
-  'Dwarves': '/pics/raceDwarves.png',
-  'Elves': '/pics/raceElves.png',
-  'Giants': '/pics/raceGiants.png',
-  'Halflings': '/pics/raceHalflings.png',
-  'Humans': '/pics/raceHumans.png',
-  'Orcs': '/pics/raceOrcs.png',
-  'Ratmen': '/pics/raceRatmen.png',
-  'Skeletons': '/pics/raceSkeletons.png',
-  'Sorcerers': '/pics/raceSorcerers.png',
-  'Tritons': '/pics/raceTritons.png',
-  'Trolls': '/pics/raceTrolls.png',
-  'Wizards': '/pics/raceWizards.png'
-};
-var specialPowers = {
-  null: '/pics/spNone.png',
-  '': '/pics/spNone.png',
-  'Alchemist': '/pics/spAlchemist.png',
-  'Berserk': '/pics/spBerserk.png',
-  'Bivouacking': '/pics/spBivouacking.png',
-  'Commando': '/pics/spCommando.png',
-  'Diplomat': '/pics/spDiplomat.png',
-  'DragonMaster': '/pics/spDragonMaster.png',
-  'Flying': '/pics/spFlying.png',
-  'Forest': '/pics/spForest.png',
-  'Fortified': '/pics/spFortified.png',
-  'Heroic': '/pics/spHeroic.png',
-  'Hill': '/pics/spHill.png',
-  'Merchant': '/pics/spMerchant.png',
-  'Mounted': '/pics/spMounted.png',
-  'Pillaging': '/pics/spPillaging.png',
-  'Seafaring': '/pics/spSeafaring.png',
-  'Stout': '/pics/spStout.png',
-  'Swamp': '/pics/spSwamp.png',
-  'Underworld': '/pics/spUnderworld.png',
-  'Wealthy': '/pics/spWealthy.png'
-};
-
-var tokens = {
-  null: '/pics/tokenNone.png',
-  '': '/pics/tokenNone.png',
-  'Amazons': '/pics/tokenAmazons.png',
-  'Dwarves': '/pics/tokenDwarves.png',
-  'Elves': '/pics/tokenElves.png',
-  'Giants': '/pics/tokenGiants.png',
-  'Halflings': '/pics/tokenHalflings.png',
-  'Humans': '/pics/tokenHumans.png',
-  'Orcs': '/pics/tokenOrcs.png',
-  'Ratmen': '/pics/tokenRatmen.png',
-  'Skeletons': '/pics/tokenSkeletons.png',
-  'Sorcerers': '/pics/tokenSorcerers.png',
-  'Tritons': '/pics/tokenTritons.png',
-  'Trolls': '/pics/tokenTrolls.png',
-  'Wizards': '/pics/tokenWizard.png'
-};
-
-var objects = {
-  'holeInTheGround': '/pics/objHoleInTheGround.png',
-  'lair': '/pics/objLair.png',
-  'encampment': '/pics/objEncampment.png',
-  'dragon': '/pics/objDragon.png',
-  'fortified': '/pics/objFortified.png',
-  'hero': '/pics/objHero.png'
-};
 
 messages = new Array();
 maps = new Array();
@@ -88,11 +14,16 @@ var data = {
 var needMakeCurrent = false;
 
 function showError(errorText, container) {
-  if (container) $(container).html(errorText);
-  else alert(errorText);
+  errorText = cmdErrors[errorText] != null
+    ? cmdErrors[errorText]
+    : errorText;
+  if (container)
+    $(container).html(errorText);
+  else
+    alert(errorText);
 }
 
-function sendRequest(query, callback, errorContainer) {
+function sendRequest(query, callback, errorContainer, errorCallback) {
   $.ajax({
     type: "POST",
     url: "http://client.smallworld",
@@ -106,8 +37,12 @@ function sendRequest(query, callback, errorContainer) {
       if (!response || !response.result)
         showError("Unknown server response: " + JSON.stringify(response));
       else if (response.result == 'ok') {
-        if (callback) callback(response);
-      } else
+        if (callback)
+          callback(response);
+      }
+      else if (errorCallback)
+        errorCallback(response, errorContainer)
+      else
         showError(response.result, errorContainer);
       $.unblockUI();
     },

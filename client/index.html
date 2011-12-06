@@ -28,6 +28,7 @@
   <script type="text/javascript" src="js/game.js"></script>
   <script type="text/javascript" src="js/player.js"></script>
   <script type="text/javascript" src="js/region.js"></script>
+  <script type="text/javascript" src="js/consts.js"></script>
 
   <script type="text/javascript">
 
@@ -195,9 +196,10 @@
           <table id="tableCenter" width="100%" align="center">
             <tr>
               <td><span id="spanGameStage"></span></td>
+              <td><div id="divGameError" class="error"><div></td>
             </tr>
             <tr>
-              <td>
+              <td colspan="2">
                 <div id="divMap" align="center" style="position: relative;">
 
                   <div id="divMapImg" style="position: relative;">
@@ -210,7 +212,7 @@
               </td>
             </tr>
             <tr>
-              <td id="tdGameChat"></td>
+              <td id="tdGameChat" colspan="2"></td>
             </tr>
           </table>
 
