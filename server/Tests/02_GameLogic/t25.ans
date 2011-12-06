@@ -1,0 +1,79 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 3
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 2,
+                    "tokensInHand": 10,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 3,
+                        "specialPowerName": "Commando",
+                        "raceName": "Giants"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 3, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }}
+              ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "tokensInHand": 6,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 3,
+                        "specialPowerName": "Commando",
+                        "raceName": "Giants"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    }
+]

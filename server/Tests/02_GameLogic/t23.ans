@@ -1,0 +1,233 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 3,
+                    "tokensInHand": 10,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 2,
+                        "specialPowerName": "Bivouacking",
+                        "raceName": "Trolls"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion", "dice": 0
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "notEnoughEncampmentsForRedeployment"
+    },
+    {
+        "result": "badEncampmentsNum"
+    },
+    {
+        "result": "badEncampmentsNum"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1, "encampment": 3 }},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 2, "ownerId": 1, "encampment": 1 }},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1, "encampment": 1 }},
+                {},
+                {},
+                {}
+              ]
+            },
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 3,
+                    "tokensInHand": 0
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 2
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 2, "ownerId": 1, "encampment": 3 }},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 2, "ownerId": 1, "encampment": 1 }},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 7, "tokenBadgeId": 1, "ownerId": 2 }},
+                {},
+                {},
+                {}
+              ]
+            }
+        }
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "encampment": 3 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "encampment": 1 }},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 8, "tokenBadgeId": 1, "ownerId": 2 }},
+                {},
+                {}
+              ]
+            }
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "inDecline": 1 }},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 1, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 2 }},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "inDecline": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 2 }},
+                {},
+                {}
+              ]
+            }
+        }
+    }
+]
