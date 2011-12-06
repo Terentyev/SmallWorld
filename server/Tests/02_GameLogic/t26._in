@@ -1,0 +1,149 @@
+{
+    "description": "Diplomat",
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Tritons", "Wizard", "Trolls", "Giants", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
+          "visibleSpecialPowers": [
+            "Berserk", "Alchemist", "Bivouacking", "Commando", "Forest", "Diplomat", "DragonMaster", "Flying", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": 2
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 5
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 13
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 12
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 12, "tokensNum": 5}, {"regionId": 13, "tokensNum": 5}]
+        },
+        {
+            "action": "selectFriend",
+            "friendId": 2
+        },
+        {
+            "action": "selectFriend",
+            "sid": -11,
+            "friendId": 2
+        },
+        {
+            "action": "selectFriend",
+            "sid": 3,
+            "friendId": 2
+        },
+        {
+            "action": "selectFriend",
+            "sid": 2,
+            "friendId": 2
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": -2
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": 1
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": 2
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 12
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 7
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 3, "tokensNum": 3}, {"regionId": 8, "tokensNum": 5}, {"regionId": 7, "tokensNum": 1}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 7
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 13, "tokensNum": 3}, {"regionId": 12, "tokensNum": 5}, {"regionId": 7, "tokensNum": 2}]
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": 2
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 7
+        }
+
+    ]
+}

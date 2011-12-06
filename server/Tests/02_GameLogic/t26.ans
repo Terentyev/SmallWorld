@@ -1,0 +1,113 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 5
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 0,
+                    "tokensInHand": 10,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 5,
+                        "specialPowerName": "Diplomat",
+                        "raceName": "Orcs"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badFriendId"
+    },
+    {
+        "result": "badFriendId"
+    },
+    {
+        "result": "badFriend"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 6, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badFriend"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok"
+    }
+
+
+]
