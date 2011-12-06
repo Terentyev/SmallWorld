@@ -264,6 +264,13 @@ sub cmd_enchant {
   $game->save();
 }
 
+sub cmd_selectFriend {
+  my ($self, $result) = @_;
+  my $game = $self->getGame();
+  $game->selectFriend($self->{json}->{friendId});
+  $game->save();
+}
+
 sub cmd_throwDice {
   my ($self, $result) = @_;
   my $game = $self->getGame();

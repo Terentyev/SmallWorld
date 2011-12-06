@@ -79,6 +79,7 @@ sub init {
       tokenBadgeId     => undef,                                          # идентификатор расы игрока-владельца
       tokensNum        => defined $_->{population} ? $_->{population}: 0, # количество фигурок
       conquestIdx      => undef,                                          # порядковый номер завоевания (обнуляется по окончанию хода)
+      prevTokenBadgeId => undef,
       holeInTheGround  => undef,                                          # 1 если присутствует нора полуросликов
       lair             => undef,                                          # кол-во пещер троллей
       encampment       => undef,                                          # кол-во лагерей (какая осень в лагерях...)
@@ -101,6 +102,7 @@ sub init {
       tokensInHand       => INITIAL_TOKENS_NUM,
       priority           => $i++,
 #      dice               => undef,                                       # число, которое выпало при броске костей берсерка
+      friendTokenBadgeId => undef,                                       # id активной расы игрока, который подружил нас с собой
       currentTokenBadge  => {
         tokenBadgeId     => undef,
         totalTokensNum   => undef,
@@ -228,7 +230,8 @@ sub getGameStateForPlayer {
       tokensInHand => $_->{tokensInHand},
       priority     => $_->{priority},
 #     dice         => $_->{dice},
-#     berserkDice  => $_->{berserkDice},
+      berserkDice  => $_->{berserkDice},
+      friendTokenBadgeId => $_->{friendTokenBadgeId},
       currentTokenBadge => \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
     }
@@ -389,6 +392,7 @@ sub tokensInStorage {
 sub canAttack {
   my ($self, $player, $region, $race, $sp) = @_;
   my $regions = $self->{gameState}->{regions};
+  return 0 if ($player->{friendTokenBadgeId} // -1) == ($region->{tokenBadgeId} // -2);
   $self->{defendNum} = max(1, $region->getDefendTokensNum() -
     $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions));
 
@@ -434,6 +438,7 @@ sub conquer {
   }
 
   $region->{conquestIdx} = $self->nextConquestIdx();
+  $region->{prevTokenBadgeId} = $region->{tokenBadgeId};
   $region->{ownerId} = $player->{playerId};
   $region->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
   @{ $region }{ qw(inDecline lair fortified encampment) } = ();
@@ -505,14 +510,15 @@ sub finishTurn {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $drace = $self->createRace($player->{declinedTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
-
+  @{ $player }{qw( berserkDice friendTokenBadgeId )} = ();
   my $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
               $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
   $player->{coins} += $bonus;
 
   # возвращаем количество монет, полученных на этом ходу
   $result->{coins} = $bonus;
-  grep { $_->{conquestIdx} = undef } @{ $self->{gameState}->{regions} };
+  @ {$_}{qw (conquestIdx prevTokenBadgeId)} = () for @{ $self->{gameState}->{regions} };
+
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
     ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
   $result->{nextPlayer} = $self->{gameState}->{activePlayerId};
@@ -599,6 +605,12 @@ sub enchant {
       $player->{playerId}, $player->{currentTokenBadgeId}->{tokenBadgeId}, $self->nextConquestIdx() );
   $self->{gameState}->{storage}->{&RACE_SORCERERS} -= 1;
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
+}
+
+sub selectFriend {
+  my ($self, $friendId) = @_;
+  my $player = $self->getPlayer({ id => $friendId });
+  $player->{friendTokenBadgeId} = $self->getPlayer()->{currentTokenBadge}->{tokenBadgeId};
 }
 
 sub throwDice {

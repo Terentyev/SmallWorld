@@ -463,10 +463,10 @@ sub checkTokensForRedeployment {
 
 sub checkFriend {
   my ($self, $game, $player, $region, $race, $sp) = @_;
-  # мы не можем подружиться с тем, на регион с активной расой которого нападали
-  # в этом ходу
-  return grep {
-    defined $_->{conquestIdx} && $_->{ownerId} == $self->{json}->{friendId} && !defined $_->{inDecline}
+  # мы не можем подружиться с игроком, если мы нападали на его aктивную расу на этом ходу
+  my $tid = $game->getPlayer( {id => $self->{json}->{friendId}} )->{currentTokenBadge}->{tokenBadgeId};
+  return $player->{playerId} == $self->{json}->{friendId} || grep {
+    ($_->{prevTokenBadgeId} // -1 ) == ($tid // -2)
   } @{ $game->{gameState}->{regions} };
 }
 
@@ -488,7 +488,7 @@ sub checkGameCommand {
     &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == $region->{ownerId}; },
     &R_BAD_ENCAMPMENTS_NUM          => sub { grep { !defined $_->{encampmentsNum} || $_->{encampmentsNum} <= 0 } @{ $js->{encampments} }; },
     &R_BAD_FRIEND                   => sub { $self->checkFriend(@gameVariables); },
-    &R_BAD_FRIEND_ID                => sub { !(grep { $_->{playerId} == $js->{friendId} && $_->{playerId} != $player->{playerId} } @{ $game->{gameState}->{players} }); },
+    &R_BAD_FRIEND_ID                => sub { !(grep { $_->{playerId} == $js->{friendId} } @{ $game->{gameState}->{players} }); },
     &R_BAD_MONEY_AMOUNT             => sub { $player->{coins} < $js->{position}; },
     &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables, $result); },
     &R_BAD_REGION_ID                => sub { $self->checkRegionId(@gameVariables); },

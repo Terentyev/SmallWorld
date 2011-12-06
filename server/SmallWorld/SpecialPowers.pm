@@ -38,7 +38,7 @@ sub canPlaceObj2Region {
 
 # можем ли мы атаковать регион
 sub canAttack {
-  my ($self, $region) = @_;
+  my ($self, $region, $regions) = @_;
 
   return
     # нельзя нападать на моря и озера
@@ -422,7 +422,7 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub canAttack {
-  my ($self, $region) = @_;
+  my ($self, $region, $regions) = @_;
 
   return
     # можно нападать, если мы имеем регион, граничащий с регионом-жертвой
@@ -483,11 +483,11 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub canAttack {
-  my ($self, $region) = @_;
+  my ($self, $region, $regions) = @_;
 
   return
     # либо мы можем атаковать регион по стандартным правилам
-    $self->SUPER::canAttack($region) ||
+    $self->SUPER::canAttack($region, $regions) ||
     # либо на атакуемом регионе есть природная пещера
     (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} }) &&
     # и у нас есть регион с такой же природной пещерой
