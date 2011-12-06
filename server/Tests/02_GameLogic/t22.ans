@@ -1,0 +1,86 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "ok", "dice": 0
+    },
+
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "dice": 0
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "dice": 0
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 1
+    }
+
+]

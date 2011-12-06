@@ -64,9 +64,9 @@ sub declineRegion {
 # можем ли мы с этим умением выполнить эту команду
 sub canCmd {
   my ($self, $js, $state) = @_;
-  return ! ( ($js->{action} eq 'redeploy') && (grep { defined $js->{$_} } qw( heroes encampments fortified )) ||
-             ($js->{action} eq 'throwDice') || ($js->{action} eq 'dragonAttack') || ($js->{action} eq 'selectFriend') ||
-             ($js->{action} eq 'decline') && ($state eq GS_BEFORE_FINISH_TURN)
+  return ! ( $js->{action} eq 'redeploy' && (grep { defined $js->{$_} } qw( heroes encampments fortified )) ||
+             $js->{action} eq 'throwDice' || $js->{action} eq 'dragonAttack' || $js->{action} eq 'selectFriend' ||
+             $js->{action} eq 'decline' && $state eq GS_BEFORE_FINISH_TURN
            );
 }
 
@@ -106,7 +106,8 @@ use SmallWorld::Consts;
 sub _init {
   my ($self, $player, $regions, $badge) = @_;
   $self->SUPER::_init($player, $regions, $badge);
-  $self->{dice} = $badge->{dice} if exists $badge->{dice};
+  $self->{dice} = $player->{berserkDice} if exists $player->{berserkDice};
+
 }
 
 sub conquestRegionTokensBonus {

@@ -224,7 +224,7 @@ sub initialTokens {
 sub canPlaceObj2Region {
   my ($self, $player, $region) = @_;
   return defined $region->{tokenBadgeId} && $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-    !defined $region->{holeInTheGround} && $player->{currentTokenBadge}->{holesPlaced} < 2;
+         !defined $region->{holeInTheGround} && ($player->{currentTokenBadge}->{holesPlaced} // 0) < 2;
 }
 
 sub placeObject {

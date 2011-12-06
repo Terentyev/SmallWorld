@@ -227,6 +227,8 @@ sub getGameStateForPlayer {
       coins    => $_->{coins},
       tokensInHand => $_->{tokensInHand},
       priority     => $_->{priority},
+#     dice         => $_->{dice},
+#     berserkDice  => $_->{berserkDice},
       currentTokenBadge => \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
     }
@@ -387,10 +389,10 @@ sub tokensInStorage {
 sub canAttack {
   my ($self, $player, $region, $race, $sp) = @_;
   my $regions = $self->{gameState}->{regions};
-  $self->{defendNum} = max(1, $region->getDefendTokensNum() - $player->safe('dice') -
+  $self->{defendNum} = max(1, $region->getDefendTokensNum() -
     $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions));
 
-  if ( !defined $player->{dice} && ($self->{defendNum} - $player->{tokensInHand} ~~ 1..3 )) {
+  if ( !exists $player->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости, если еще не кинули(berserk)
     $player->{dice} = $self->random();
   }
@@ -444,9 +446,13 @@ sub conquer {
     $self->{gameState}->{activePlayerId} = $defender->{playerId};
     $self->{gameState}->{state} = GS_DEFEND;
   }
+  if (exists $player->{berserkDice}) {
+    $result->{dice} = $player->{berserkDice};
+    delete $player->{berserkDice};
+  }
   if ( defined $player->{dice} ) {
     $result->{dice} = $player->{dice};
-    delete $player->{dice};
+    $player->{dice} = undef;
   }
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
@@ -598,9 +604,9 @@ sub enchant {
 sub throwDice {
   my $self = shift;
   my $player = $self->getPlayer();
-  $player->{dice} = $self->random();
+  $player->{berserkDice} = $self->random();
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
-  return $player->{dice};
+  return $player->{berserkDice};
 }
 
 1;
