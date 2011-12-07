@@ -549,7 +549,7 @@ sub finishTurn {
     delete $player->{declineBonus};
   } else {
     $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
-             $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
+             $sp->coinsBonus(!$self->{gameState}->{currentTurn}) + $race->coinsBonus() + $drace->declineCoinsBonus();
   }
   $player->{coins} += $bonus;
   $result->{coins} = $bonus;
