@@ -43,7 +43,7 @@
         {
             "action": "redeploy",
             "sid": 2,
-            "regions": [],
+            "regions": [ { "regionId": 2, "tokensNum": 1 } ],
             "encampments": [ { "regionId": 2, "encampmentsNum": 0 } ]
         },
 

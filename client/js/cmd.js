@@ -310,7 +310,7 @@ function cmdSelectRace(position) {
     sid: data.sid,
     position: position
   };
-  sendRequest(cmd, hdlSelectRace);
+  sendRequest(cmd, hdlSelectRace, '#divGameError');
 }
 
 function hdlSelectRace(ans) {
@@ -326,7 +326,7 @@ function cmdConquer(regionId) {
     regionId: regionId,
     sid: data.sid
   };
-  sendRequest(cmd, hdlConquer);
+  sendRequest(cmd, hdlConquer, '#divGameError');
 }
 
 function hdlConquer(ans) {
@@ -341,7 +341,7 @@ function cmdDefend(regions) {
     regions: regions,
     sid: data.sid
   };
-  sendRequest(cmd, hdlDefend);
+  sendRequest(cmd, hdlDefend, '#divGameError');
 }
 
 function hdlDefend(ans) {
@@ -356,7 +356,7 @@ function cmdRedeploy(regions) {
     regions: regions,
     sid: data.sid
   };
-  sendRequest(cmd, hdlRedeploy);
+  sendRequest(cmd, hdlRedeploy, '#divGameError');
 }
 
 function hdlRedeploy(ans) {
@@ -373,7 +373,7 @@ function cmdFinishTurn() {
     action: "finishTurn",
     sid: data.sid
   };
-  sendRequest(cmd, hdlFinishTurn);
+  sendRequest(cmd, hdlFinishTurn, '#divGameError');
 }
 
 function hdlFinishTurn(ans) {
@@ -390,11 +390,27 @@ function cmdDecline() {
     action: "decline",
     sid: data.sid
   };
-  sendRequest(cmd, hdlDecline);
+  sendRequest(cmd, hdlDecline, '#divGameError');
 }
 
 function hdlDecline(ans) {
   // first implementation
   // TODO: change game state handly
   cmdGetGameState();
+}
+
+/*******************************************************************************
+   *         Special powers commands                                           *
+   ****************************************************************************/
+function cmdThrowDice() {
+  var cmd = {
+    action: "throwDice",
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlThrowDice, '#divGameError');
+}
+
+function hdlThrowDice(ans) {
+  player.setBerserkDice(ans.dice);
+  showPlayers();
 }
