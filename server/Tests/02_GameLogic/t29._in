@@ -24,6 +24,11 @@
         {
             "action": "conquer",
             "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
             "regionId": 14
         },
         {
@@ -35,11 +40,6 @@
             "action": "conquer",
             "sid": 1,
             "regionId": 1
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 7
         },
         {
             "action": "conquer",
@@ -59,7 +59,7 @@
         {
             "action": "redeploy",
             "sid": 1,
-            "regions": [{"regionId": 7, "tokensNum": 3}, {"regionId": 11, "tokensNum": 3}, {"regionId": 14, "tokensNum": 3}, {"regionId": 4, "tokensNum": 2}]
+            "regions": [{"regionId": 8, "tokensNum": 3}, {"regionId": 11, "tokensNum": 3}, {"regionId": 14, "tokensNum": 3}, {"regionId": 4, "tokensNum": 2}]
         },
         {
             "action": "finishTurn",

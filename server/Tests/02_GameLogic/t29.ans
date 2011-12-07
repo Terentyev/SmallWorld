@@ -33,13 +33,13 @@
         "result": "ok"
     },
     {
-        "result": "badRegion"
-    },
-    {
-        "result": "badRegion"
-    },
-    {
         "result": "ok"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badRegion"
     },
     {
         "result": "ok"
