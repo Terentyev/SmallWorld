@@ -1,0 +1,63 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 0
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 2, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 4
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 2
+    }
+]
