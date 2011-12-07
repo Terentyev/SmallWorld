@@ -477,6 +477,12 @@ use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
 
+sub canCmd {
+  my ($self, $js, $state) = @_;
+  # команда decline после реорганизации войск
+  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'decline' && $state eq GS_BEFORE_FINISH_TURN;
+}
+
 sub initialTokens {
   return STOUT_TOKENS_NUM;
 }
