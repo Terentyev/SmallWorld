@@ -271,6 +271,13 @@ sub cmd_selectFriend {
   $game->save();
 }
 
+sub cmd_dragonAttack {
+  my ($self, $result) = @_;
+  my $game = $self->getGame();
+  $game->dragonAttack($self->{json}->{regionId});
+  $game->save();
+}
+
 sub cmd_throwDice {
   my ($self, $result) = @_;
   my $game = $self->getGame();

@@ -95,6 +95,7 @@ sub canFirstConquer {
 sub declineRegion {
   my ($self, $region) = @_;
 }
+
 # отказаться от региона
 sub abandonRegion {
   my ($self, $region) = @_;

@@ -229,6 +229,7 @@ sub getGameStateForPlayer {
       coins    => $_->{coins},
       tokensInHand => $_->{tokensInHand},
       priority     => $_->{priority},
+#     dragonAttacked => undef,
 #     dice         => $_->{dice},
       berserkDice  => $_->{berserkDice},
       friendTokenBadgeId => $_->{friendTokenBadgeId},
@@ -396,7 +397,7 @@ sub canAttack {
   $self->{defendNum} = max(1, $region->getDefendTokensNum() -
     $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions));
 
-  if ( !exists $player->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
+  if ( !defined $player->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости, если еще не кинули(berserk)
     $player->{dice} = $self->random();
   }
@@ -451,9 +452,9 @@ sub conquer {
     $self->{gameState}->{activePlayerId} = $defender->{playerId};
     $self->{gameState}->{state} = GS_DEFEND;
   }
-  if (exists $player->{berserkDice}) {
+  if (defined $player->{berserkDice}) {
     $result->{dice} = $player->{berserkDice};
-    delete $player->{berserkDice};
+    $player->{berserkDice} = undef;
   }
   if ( defined $player->{dice} ) {
     $result->{dice} = $player->{dice};
@@ -510,7 +511,7 @@ sub finishTurn {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $drace = $self->createRace($player->{declinedTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
-  @{ $player }{qw( berserkDice friendTokenBadgeId )} = ();
+  @{ $player }{qw( berserkDice friendTokenBadgeId dragonAttacked)} = ();
   my $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
               $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
   $player->{coins} += $bonus;
@@ -548,6 +549,7 @@ sub redeploy {
   my ($self, $regs, $encampments, $fortified, $heroes) = @_;
   my $player = $self->getPlayer();
   my $race = $self->createRace($player->{currentTokenBadge});
+  my $sp = $self->createSpecialPower('currentTokenBadge', $player);
   my $lastRegion = defined $regs->[-1] ? $self->getRegion($regs->[-1]->{regionId}): undef;
 
   $player->{tokensInHand} += $race->redeployTokensBonus($player);
@@ -562,6 +564,7 @@ sub redeploy {
   foreach ( @{ $race->{regions} } ) {
     if (!$_->{tokensNum}) {
       $race->abandonRegion($_);
+      $sp->abandonRegion($_);
       delete $_->{ownerId};
       delete $_->{tokenBadgeId};
     }
@@ -611,6 +614,33 @@ sub selectFriend {
   my ($self, $friendId) = @_;
   my $player = $self->getPlayer({ id => $friendId });
   $player->{friendTokenBadgeId} = $self->getPlayer()->{currentTokenBadge}->{tokenBadgeId};
+}
+
+sub dragonAttack {
+  my ($self, $regionId) = @_;
+  my $player = $self->getPlayer();
+  my $region = $self->getRegion($regionId);
+  my $defender = undef;
+
+  if ( defined $region->{ownerId} ) {
+    $defender = $self->getPlayer( { id => $region->{ownerId} } );
+    if ( $defender->activeConq($region) ) {
+      my $defRace = $self->createRace($defender->{currentTokenBadge});
+      $defender->{tokensInHand} += $region->{tokensNum} + $defRace->looseTokensBonus();
+    }
+  }
+
+  @{$region}{qw ( dragon tokensNum ownerId prevTokenBadgeId tokenBadgeId conquestIdx inDecline lair fortified encampment)} = (
+    1, 1, $player->{playerId}, $region->{tokenBadgeId}, $player->{currentTokenBadge}->{tokenBadgeId}, $self->nextConquestIdx() );
+  $player->{dragonAttacked} = 1;
+  --$player->{tokensInHand};
+
+  if ( defined $defender && $self->canDefend($defender) ) {
+    $self->{gameState}->{conquerorId} = $player->{playerId};
+    $self->{gameState}->{activePlayerId} = $defender->{playerId};
+    $self->{gameState}->{state} = GS_DEFEND;
+  }
+  $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
 
 sub throwDice {

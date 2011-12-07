@@ -61,6 +61,11 @@ sub declineRegion {
   my ($self, $region) = @_;
 }
 
+# отказаться от региона
+sub abandonRegion {
+  my ($self, $region) = @_;
+}
+
 # можем ли мы с этим умением выполнить эту команду
 sub canCmd {
   my ($self, $js, $state) = @_;
@@ -106,13 +111,12 @@ use SmallWorld::Consts;
 sub _init {
   my ($self, $player, $regions, $badge) = @_;
   $self->SUPER::_init($player, $regions, $badge);
-  $self->{dice} = $player->{berserkDice} if exists $player->{berserkDice};
-
+  $self->{dice} = $player->{berserkDice};
 }
 
 sub conquestRegionTokensBonus {
   my ($self, $region) = @_;
-  return exists $self->{dice} && defined $self->{dice}
+  return defined $self->{dice}
     ? $self->{dice}
     : $self->SUPER::conquestRegionTokensBonus($region);
 }
@@ -120,7 +124,7 @@ sub conquestRegionTokensBonus {
 sub canCmd {
   my ($self, $js, $state) = @_;
   # базовый класс + бросить кости (если мы их еще не бросали)
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'throwDice' && !exists $self->{dice};
+  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'throwDice' && !defined $self->{dice};
 }
 
 sub initialTokens {
@@ -203,16 +207,27 @@ use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
 
+sub _init {
+  my ($self, $player, $regions, $badge) = @_;
+  $self->SUPER::_init($player, $regions, $badge);
+  $self->{dragonAttacked} = exists $player->{dragonAttacked} ? $player->{dragonAttacked}: 0;
+}
+
 sub declineRegion {
   my ($self, $region) = @_;
   $self->SUPER::declineRegion($region);
   $region->{dragon} = undef;
 }
 
+sub abandonRegion {
+  my ($self, $region) = @_;
+  $region->{dragon} = undef;
+}
+
 sub canCmd {
   my ($self, $js, $state) = @_;
   # базовый класс + атаковать драконом
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'dragonAttack';
+  return $self->SUPER::canCmd($js, $state) || ($js->{action} eq 'dragonAttack') && !$self->{dragonAttacked};
 }
 
 sub initialTokens {

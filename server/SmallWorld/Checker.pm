@@ -323,7 +323,10 @@ sub checkRegion_conquer {
 
 sub checkRegion_dragonAttack {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
-  return $player->activeConq($region);
+
+  return $player->activeConq($region) ||
+         !($game->isFirstConquer() && $race->canFirstConquer($region, $game->{gameState}->{regions})) &&
+         !$sp->canAttack($region, $game->{gameState}->{regions});
 }
 
 sub checkRegion_enchant {
@@ -333,7 +336,7 @@ sub checkRegion_enchant {
   # 2. регион с активной расой
   # 3. количество фигурок должно быть == 1
   return $player->activeConq($region) ||
-    $region->{inDeclune} ||
+    $region->{inDecline} ||
     $region->{tokensNum} == 1;
 }
 
@@ -395,7 +398,7 @@ sub checkStage {
     !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    ($js->{action} ne 'conquer') && exists $player->{berserkDice} && ($game->{gameState}->{state} eq GS_CONQUEST) || #TODO
+    ($js->{action} ne 'conquer') && defined $player->{berserkDice} && ($game->{gameState}->{state} eq GS_CONQUEST) || #TODO
     !$sp->canCmd($js, $game->{gameState}->{state}) ||
     !$race->canCmd($js);
 }
