@@ -494,7 +494,12 @@ sub decline {
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
+  my $drace = $self->createRace($player->{declinedTokenBadge});
 
+  if ($self->{gameState}->{state} eq GS_BEFORE_FINISH_TURN) {
+    $player->{declineBonus} = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
+                              $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
+  }
   foreach ( grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId} } @{ $regions } ) {
     if ( $_->{inDecline} ) {
       $_->{inDecline} = undef;
@@ -536,13 +541,20 @@ sub finishTurn {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $drace = $self->createRace($player->{declinedTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
-  @{ $player }{qw( berserkDice friendTokenBadgeId dragonAttacked)} = ();
-  my $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
-              $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
-  $player->{coins} += $bonus;
 
   # возвращаем количество монет, полученных на этом ходу
+  my $bonus = 0;
+  if (exists $player->{declineBonus}) {
+    $bonus = $player->{declineBonus};
+    delete $player->{declineBonus};
+  } else {
+    $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
+             $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
+  }
+  $player->{coins} += $bonus;
   $result->{coins} = $bonus;
+
+  @{ $player }{qw( berserkDice friendTokenBadgeId dragonAttacked)} = ();
   @ {$_}{qw (conquestIdx prevTokenBadgeId)} = () for @{ $self->{gameState}->{regions} };
 
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
