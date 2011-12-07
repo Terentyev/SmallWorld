@@ -459,7 +459,7 @@ sub canAttack {
   return
     # можно нападать, если мы имеем регион, граничащий с регионом-жертвой
     grep {
-      grep { $_ == $region->{regionId} } $_->{adjacentRegions}
+      grep { $_ == $region->{regionId} } @ { $_->{adjacentRegions} }
     } @{ $self->{regions} };
 }
 
