@@ -247,9 +247,9 @@ use SmallWorld::Consts;
 sub canAttack {
   my ($self, $region, $regions) = @_;
   return
-    $self->SUPER::canAttack($region, $regions) ||
-    # если не море. Регион не обязательно должен быть соседним
-    !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions });
+    !(grep {
+      $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE
+    } @{ $region->{constRegionState} })
 }
 
 sub initialTokens {
