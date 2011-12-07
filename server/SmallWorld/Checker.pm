@@ -310,8 +310,8 @@ sub checkRegion_conquer {
   # 3. у рас и умений есть особые правила нападения на регионы
 
   if ( $player->activeConq($region) ||
-    !($game->isFirstConquer() && $race->canFirstConquer($region, $game->{gameState}->{regions})) &&
-    !$sp->canAttack($region, $game->{gameState}->{regions}) ||
+    $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
+    !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
     !$game->canAttack($player, $region, $race, $sp)
   ) {
     $result->{dice} = $player->{dice} if defined $player->{dice};
@@ -325,8 +325,8 @@ sub checkRegion_dragonAttack {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
 
   return $player->activeConq($region) ||
-         !($game->isFirstConquer() && $race->canFirstConquer($region, $game->{gameState}->{regions})) &&
-         !$sp->canAttack($region, $game->{gameState}->{regions});
+         $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
+         !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions});
 }
 
 sub checkRegion_enchant {

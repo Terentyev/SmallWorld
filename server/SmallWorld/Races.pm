@@ -74,20 +74,7 @@ sub placeObject {
 # возвращает может ли игрок на первом завоевании завоевать эту территорию (может
 # ли вообще пытаться -- типа граница и все такое)
 sub canFirstConquer {
-  my ($self, $region, $regions) = @_;
-  #нельзя захватывать моря и озера
-  return 0 if grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} };
-  return 1 if grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} };
-
-  #можно захватить регион соседствующий с морем, которое является гранцией
-  foreach my $i ( @{$region->{adjacentRegions}} ) {
-    my ($isSea, $isBorder) = (0, 0);
-    foreach ( @{$regions->[$i-1]->{constRegionState}} ){
-      $isBorder = 1 if $_ eq REGION_TYPE_BORDER;
-      $isSea = 1 if $_ eq REGION_TYPE_SEA;
-    }
-    return 1 if $isSea && $isBorder;
-  }
+  my ($self, $region) = @_;
   return 0;
 }
 
@@ -235,7 +222,7 @@ sub placeObject {
 }
 
 sub canFirstConquer {
-  my ($self, $region, $regions) = @_;
+  my ($self, $region) = @_;
   # полурослики на первом завоевании могут пытаться захватить любую сушу
   return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} });
 }

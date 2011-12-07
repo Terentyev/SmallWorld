@@ -388,6 +388,30 @@ sub tokensInStorage {
   return $_[0]->{gameState}->{storage}->{$_[1]};
 }
 
+# возвращает может ли игрок атаковать регион при первом завоевании
+sub canFirstConquer {
+  my ($self, $region, $race, $sp) = @_;
+  my $regions = $self->{gameState}->{regions};
+
+  #можно захватить любой регион соседствующий с морем, которое является гранцией
+  #можно захватить любой приграничный не морской регион
+  #нельзя захватывать моря и озера,
+  my $ adj = 0;
+  foreach my $i ( @{$region->{adjacentRegions}} ) {
+    my ($isSea, $isBorder) = (0, 0);
+    foreach ( @{$regions->[$i-1]->{constRegionState}} ){
+      $isBorder = 1 if $_ eq REGION_TYPE_BORDER;
+      $isSea = 1 if $_ eq REGION_TYPE_SEA;
+    }
+    $adj = 1 if $isSea && $isBorder;
+  }
+
+  return
+    !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} }) &&
+    ((grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} }) || $adj) ||
+    $race->canFirstConquer($region) || $sp->canFirstConquer($region);
+}
+
 # возвращает может ли игрок атаковать регион (делает подсчет фигурок,
 # бросает кубик, если надо)
 sub canAttack {
