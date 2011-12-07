@@ -343,6 +343,7 @@ sub createSpecialPower {
       &SP_HEROIC        => 'SmallWorld::SpHeroic',
       &SP_HILL          => 'SmallWorld::SpHill',
       &SP_MERCHANT      => 'SmallWorld::SpMerchant',
+      &SP_MOUNTED       => 'SmallWorld::SpMounted',
       &SP_PILLAGING     => 'SmallWorld::SpPillaging',
       &SP_SEAFARING     => 'SmallWorld::SpSeafaring',
       &SP_STOUT         => 'SmallWorld::SpStout',
