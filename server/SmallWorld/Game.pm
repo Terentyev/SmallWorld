@@ -420,7 +420,7 @@ sub canAttack {
   my $regions = $self->{gameState}->{regions};
   return 0 if ($player->{friendTokenBadgeId} // -1) == ($region->{tokenBadgeId} // -2);
   $self->{defendNum} = max(1, $region->getDefendTokensNum() -
-    $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions));
+    $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions, $sp));
 
   if ( !defined $player->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости, если еще не кинули(berserk)
@@ -494,6 +494,7 @@ sub decline {
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
+  my $dsp = $self->createSpecialPower('declinedTokenBadge', $player);
   my $drace = $self->createRace($player->{declinedTokenBadge});
 
   if ($self->{gameState}->{state} eq GS_BEFORE_FINISH_TURN) {
@@ -504,12 +505,14 @@ sub decline {
     if ( $_->{inDecline} ) {
       $_->{inDecline} = undef;
       @{ $_ }{qw( ownerId tokenBadgeId tokensNum )} = (undef, undef, undef);
+      $drace->abandonRegion($_);
+      $dsp->abandonRegion($_);
     }
     else {
       @{ $_ }{qw( inDecline tokensNum )} = (1, DECLINED_TOKENS_NUM);
+      $race->declineRegion($_);
+      $sp->declineRegion($_);
     }
-    $race->declineRegion($_);
-    $sp->declineRegion($_);
   }
   my $badge = $player->{currentTokenBadge};
   @{ $player }{qw( tokensInHand currentTokenBadge declinedTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
