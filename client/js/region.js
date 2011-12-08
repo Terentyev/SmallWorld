@@ -1,5 +1,10 @@
 function Region(regionId) {
   this.r = data.game.map.regions[regionId];
+  this._regionId = regionId;
+}
+
+Region.prototype.regionId = function() {
+  return this._regionId;
 }
 
 Region.prototype.isOwned = function(tokenBadgeId) {
@@ -48,6 +53,12 @@ Region.prototype.isHill = function() {
   return this.is('hill');
 }
 
+Region.prototype.isImmune = function() {
+  return this.r.currentRegionState.dragon ||
+    this.r.currentRegionState.holeInTheGround ||
+    this.r.currentRegionState.hero;
+}
+
 Region.prototype.adjacents = function() {
   var result = [];
   for (var i in this.r.adjacentRegions) {
@@ -61,7 +72,23 @@ Region.prototype.tokens = function() {
   return this.r.currentRegionState.tokensNum;
 }
 
+Region.prototype.rmTokens = function(tokens) {
+  this.r.currentRegionState -= tokens;
+  $('#aTokensNum' + this.regionId()).html(this.tokens()).trigger('update');
+}
+
 Region.prototype.bonusTokens = function() {
   return 2 + this.get('fortified') + this.get('encampment') + this.get('lair') +
     (this.isMountain() ? 1 : 0);
+}
+
+Region.prototype.conquerByPlayer = function(p) {
+  var dt = this.tokens() + this.bonusTokens();
+  var ct = p.tokens() + p.bonusTokens(this);
+  with (this.r.currentRegionState) {
+    ownerId = p.userId();
+    tokenBadgeId = p.curTokenBadgeId();
+    tokens = (dt > ct ? ct : dt);
+    p.addTokens(tokens);
+  }
 }

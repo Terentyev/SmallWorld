@@ -1,17 +1,3 @@
-var gameStages = {
-  null: [''],
-  '': [''],
-  'defend': ["Let's defend, my friend!", "Wait other players"],
-  'selectRace': ["So... You should select your path... or race", "Wait other players"],
-  'beforeConquest': ["May be you want decline you race?", "Wait other players"],
-  'conquest': ["Do you want some fun? Let's conquer some regions", "Wait other players"],
-  'redeploy': ["Place your warriors to the world", "Wait other players"],
-  'beforeFinishTurn': ["Last actions", "Wait other players"],
-  'finishTurn': ["Click finish-turn button, dude", "Wait other players"],
-  'gameOver': ["Oops!.. Game over", "Oops!.. Game over"]
-};
-
-
 function showModal(divName) {
   $(divName).modal({
     closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
@@ -132,16 +118,13 @@ function showRegions() {
 }
 
 function showGameStage() {
-  $("#spanGameStage").html(
-      gameStages[data.game.stage][
-        data.game.activePlayerId == data.playerId ? 0 : 1
-      ]
-  ).trigger("update");
-  $("#btnDecline").css(
-      "display",
-      (data.game.activePlayerId == data.playerId && data.game.stage == 'beforeConquest'
-       ? 'block'
-       : 'none'));
+  $('#spanGameStage').html(
+      gameStages[data.game.stage][player.isActive()]
+  ).trigger('update');
+  $('#placeDecline').html(
+      (player.isActive() && data.game.stage == 'beforeConquest'
+       ? $('#divDecline').html()
+       : '')).trigger('update');
 }
 
 function showLobby() {

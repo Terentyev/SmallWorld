@@ -103,7 +103,7 @@ function hdlGetMapList(ans) {
         "url": url,
         "regions": regs
       };
-      s += $.sprintf("<option value='%s'>%s</option>", mapId, mapName);
+      s += addOption(mapId, mapName);
       sel = $("span._tmpMap_"+mapId);
       parent = sel.parent();
       sel.remove();
@@ -283,7 +283,7 @@ function cmdGetGameState() {
     action: "getGameState",
     sid: data.sid
   };
-  sendRequest(cmd, hdlGetGameState);
+  sendRequest(cmd, hdlGetGameState, '#divGameError');
 }
 
 function hdlGetGameState(ans) {
@@ -326,13 +326,36 @@ function cmdConquer(regionId) {
     regionId: regionId,
     sid: data.sid
   };
-  sendRequest(cmd, hdlConquer, '#divGameError');
+  sendRequest(cmd, hdlConquer, '#divGameError', errConquer);
 }
 
 function hdlConquer(ans) {
   // first implementation
   // TODO: change game state handly
+  if (ans.dice != null) {
+    alert($.sprintf(
+          'Dice: %d.\n' +
+          'Conquest is over.',
+          ans.dice));
+    player.getRegion().conquerBy(player);
+  }
   cmdGetGameState();
+}
+
+function errConquer(ans, cnt) {
+  var et = getErrorText(ans.result);
+  if (ans.dice == null) {
+    showError(et, cnt);
+    return;
+  }
+
+  alert($.sprintf(
+        'Dice: %d\n' +
+        'Not enough lucky.\n' +
+        'Conquest is over.',
+        ans.dice,
+        et));
+  changeGameStage('redeploy');
 }
 
 function cmdDefend(regions) {
@@ -413,4 +436,33 @@ function cmdThrowDice() {
 function hdlThrowDice(ans) {
   player.setBerserkDice(ans.dice);
   showPlayers();
+}
+
+function cmdSelectFriend(friendId) {
+  var cmd = {
+    action: "selectFriend",
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlSelectFriend, '#divSelectFriendError');
+}
+
+function hdlSelectFriend(ans) {
+  player.setSelectFriend();
+  showPlayers();
+  $.modal.close();
+}
+
+function cmdDragonAttack(regionId) {
+  var cmd = {
+    action: "dragonAttack",
+    sid: data.sid
+  };
+  sendRequest(cmd, hdlDragonAttack, '#divGameError');
+}
+
+function hdlDragonAttack(ans) {
+  player.setDragonAttack();
+  showPlayers();
+  // TODO: надо бы запомнить регион и обновлять вручную
+  cmdGetGameState();
 }

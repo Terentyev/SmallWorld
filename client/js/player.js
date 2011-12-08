@@ -7,6 +7,18 @@ function Player(gs, playerId) {
   }
 }
 
+Player.prototype.userId = function() {
+  return this.p.userId;
+}
+
+Player.prototype.isHe = function(playerId) {
+  return playerId == this.userId();
+}
+
+Player.prototype.isActive = function() {
+  return this.isHe(data.game.activePlayerId) ? 1 : 0;
+}
+
 Player.prototype.curTokenBadgeId = function() {
   return this.p.currentTokenBadge.tokenBadgeId;
 }
@@ -27,9 +39,47 @@ Player.prototype.tokens = function() {
   return this.p.tokensInHand;
 }
 
+Player.prototype.setBerserkDice = function(dice) {
+  this.p.berserkDice = dice;
+}
+
+Player.prototype.setSelectFriend = function() {
+  // TODO
+}
+
+Player.prototype.setDragonAttack = function() {
+  // TODO
+}
+
+Player.prototype.setRegionId = function(regionId) {
+  this.p.regionId = regionId;
+}
+
+Player.prototype.getRegion = function() {
+  var r = new Region(this.p.regionId);
+  this.p.regionId = null;
+  return r;
+}
+
 Player.prototype.addTokens = function(tokens) {
   this.p.tokensInHand += tokens;
-  $('#aTokensInHand').html(this.p.tokensInHand).trigger('update');
+  if (this.p.tokensInHand < 0) {
+    // если на руках получилось отрицательное число, то надо "дополнить" руки
+    // фигурками с регионов
+    var regions = this.myRegions();
+    for (var i in regions) {
+      var t = regions[i].tokens() + this.tokens();
+      if (t <= 0) {
+        this.p.tokensInHand += regions[i].tokens() - 1;
+        regions[i].rmTokens(regions[i].tokens() - 1);
+      }
+      else {
+        regions[i].rmTokens(this.tokens());
+        break;
+      }
+    }
+  }
+  $('#aTokensInHand').html(this.tokens()).trigger('update');
 }
 
 Player.prototype.beforeRedeploy = function() {
@@ -98,14 +148,18 @@ Player.prototype.bonusTokens = function(region) {
 }
 
 Player.prototype.canThrowDice = function() {
-  // TODO: берсерк после своего броска имеет право бросать кубик?
-  return true;
+  return this.p.berserkDice == null;
 }
 
-Player.prototype.canAttack = function(regionId) {
+Player.prototype.canBaseAttack = function(regionId) {
   var region = new Region(regionId);
   if (region.isOwned(this.curTokenBadgeId())) {
     alert("You can't conquer your owned region");
+    return false;
+  }
+
+  if (region.isImmune()) {
+    alert('Region is immune');
     return false;
   }
 
@@ -159,9 +213,23 @@ Player.prototype.canAttack = function(regionId) {
 
   if (!adjacent) {
     // можно нападать только на граничные нашим регионы
+    alert('You should conquer only adjacent regions');
+    return false;
+  }
+  return true;
+}
+
+Player.prototype.canDragonAttack = function(regionId) {
+  // TODO: дополнительные проверки
+  return this.canBaseAttack(regionId);
+}
+
+Player.prototype.canAttack = function(regionId) {
+  if (!this.canBaseAttack(regionId)) {
     return false;
   }
 
+  var region = new Region(regionId);
   var tokensDiff = region.tokens() + region.bonusTokens() - this.tokens() - this.bonusTokens(region);
   if (this.tokens() < 1 || !this.canThrowDice() || tokensDiff > 3) {
     alert('Not enough tokens for conquest this region');
