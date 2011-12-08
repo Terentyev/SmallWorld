@@ -250,7 +250,7 @@ sub checkRegionId {
   }
 
   if ( defined $js->{fortified} ) {
-    return 1 if !(grep { ($_->{regionId} // -1) == $js->{fortified}->{regionId} } @{ $regions });
+      return 1 if !(grep { $_->{regionId} == ($js->{fortified}->{regionId} // -1) } @{ $regions });
   }
 
   if ( defined $js->{heroes} ) {
@@ -363,7 +363,7 @@ sub checkRegion_redeploy {
   # которые так же указаны в поле regions команды redeploy
   my @tmp = ();
   push @tmp, @{ $js->{encampments} } if defined $js->{encampments};
-  push @tmp, @{ $js->{fortified} } if defined $js->{fortified};
+  push @tmp, $js->{fortified} if defined $js->{fortified};
   push @tmp, @{ $js->{heroes} } if defined $js->{heroes};
   foreach my $reg ( @tmp ) {
     return 1 if defined $reg && !(grep {
@@ -435,7 +435,7 @@ sub checkTokensNum {
 sub checkForts {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   return defined $self->{json}->{fortified} && defined $self->{json}->{fortified}->{regionId} &&
-    FORTRESS_MAX >= 1 * (grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} });
+    FORTRESS_MAX <= 1 * (grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} });
 }
 
 sub checkFortsInRegion {
