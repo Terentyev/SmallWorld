@@ -455,13 +455,17 @@ sub conquer {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  # если регион принадлежал активной расе
   if ( defined $region->{ownerId} ) {
-    # то надо вернуть ему какие-то фигурки
     $defender = $self->getPlayer( { id => $region->{ownerId} } );
+    # если регион принадлежал активной расе
     if ( $defender->activeConq($region) ) {
+      # то надо вернуть ему какие-то фигурки
       my $defRace = $self->createRace($defender->{currentTokenBadge});
       $defender->{tokensInHand} += $region->{tokensNum} + $defRace->looseTokensBonus();
+    }
+    else {
+      # иначе защищающийся ничего не делает
+      $defender = undef;
     }
   }
 
