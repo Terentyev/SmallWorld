@@ -43,7 +43,6 @@ use constant R_BAD_MAP_ID                   => 'badMapId'                       
 use constant R_BAD_MAP_NAME                 => 'badMapName'                         ;
 use constant R_BAD_MESSAGE_TEXT             => 'badMessageText'                     ;
 use constant R_BAD_MONEY_AMOUNT             => 'badMoneyAmount'                     ;
-use constant R_BAD_NUM_OF_PLAYERS           => 'badNumberOfPlayers'                 ;
 use constant R_BAD_PASSWORD                 => 'badPassword'                        ;
 use constant R_BAD_PLAYERS_NUM              => 'badPlayersNum'                      ;
 use constant R_BAD_POSITION                 => 'badPosition'                        ;
