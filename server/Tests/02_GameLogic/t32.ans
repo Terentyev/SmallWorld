@@ -1,0 +1,103 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 0
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badSetHeroCommand"
+    },
+    {
+        "result": "badSetHeroCommand"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "regionIsImmune"
+    },
+    {
+        "result": "regionIsImmune"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "regionIsImmune"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 2, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    }
+]
