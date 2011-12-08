@@ -429,7 +429,9 @@ sub canAttack {
 
   # если игроку не хватает фигурок даже с подкреплением, это его последнее завоевание
   if ( $player->{tokensInHand} + $player->safe('dice') < $self->{defendNum} ) {
-    $self->{gameState}->{state} = GS_REDEPLOY;
+    # если у игрока нет территорий то ждем команды конец хода
+    $self->{gameState}->{state} = (grep { $player->activeConq($_) } @{ $regions }) ?
+                                  GS_REDEPLOY : GS_BEFORE_FINISH_TURN;
     return 0;
   }
   return 1;
@@ -595,7 +597,7 @@ sub redeploy {
   $player->{tokensInHand} += $race->redeployTokensBonus($player);
   foreach ( @{ $race->{regions} } ) {
     $player->{tokensInHand} += $_->{tokensNum};
-    $_->{tokensNum} = 0;
+    @ {$_}{qw (tokensNum encampment hero) } = (0, undef, undef);
   }
   foreach ( @{ $regs } ) {
     $self->getRegion($_->{regionId})->{tokensNum} = $_->{tokensNum};
