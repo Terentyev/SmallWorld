@@ -74,20 +74,7 @@ sub placeObject {
 # возвращает может ли игрок на первом завоевании завоевать эту территорию (может
 # ли вообще пытаться -- типа граница и все такое)
 sub canFirstConquer {
-  my ($self, $region, $regions) = @_;
-  #нельзя захватывать моря и озера
-  return 0 if grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} };
-  return 1 if grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} };
-
-  #можно захватить регион соседствующий с морем, которое является гранцией
-  foreach my $i ( @{$region->{adjacentRegions}} ) {
-    my ($isSea, $isBorder) = (0, 0);
-    foreach ( @{$regions->[$i-1]->{constRegionState}} ){
-      $isBorder = 1 if $_ eq REGION_TYPE_BORDER;
-      $isSea = 1 if $_ eq REGION_TYPE_SEA;
-    }
-    return 1 if $isSea && $isBorder;
-  }
+  my ($self, $region) = @_;
   return 0;
 }
 
@@ -95,6 +82,7 @@ sub canFirstConquer {
 sub declineRegion {
   my ($self, $region) = @_;
 }
+
 # отказаться от региона
 sub abandonRegion {
   my ($self, $region) = @_;
@@ -191,20 +179,14 @@ sub initialTokens {
 }
 
 sub conquestRegionTokensBonus {
-  my ($self, $player, $region, $regions) = @_;
+  my ($self, $player, $region, $regions, $sp) = @_;
   # для гигантов бонус в 1 фигурку, если они нападают на регион, который
   # граничит с регионом, на котором находятся горы и который принадлежит
   # гигантам
   return (grep {
-      # регион принадлежит игроку
-      defined $_->{tokenBadgeId} && $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-      # на нем есть горы
-      (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} }) &&
-      # регион граничит с регионом, на который мы нападаем
-      ( grep { defined $region->{regionId} && $_ == $region->{regionId} } @{ $_->{adjacentRegions} })
-    } @{ $regions })
-    ? 1
-    : 0;
+      ($_->{tokenBadgeId} // -1) == $player->{currentTokenBadge}->{tokenBadgeId} &&
+      (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} })
+    } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
 }
 
 
@@ -234,7 +216,7 @@ sub placeObject {
 }
 
 sub canFirstConquer {
-  my ($self, $region, $regions) = @_;
+  my ($self, $region) = @_;
   # полурослики на первом завоевании могут пытаться захватить любую сушу
   return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} });
 }
@@ -360,13 +342,12 @@ sub initialTokens {
 }
 
 sub conquestRegionTokensBonus {
-  my ($self, $player, $region, $regions) = @_;
-  return (grep {
-           (grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $_->{constRegionState} }) &&
-           (grep { defined $region->{regionId} && $_ == $region->{regionId} } @{ $_->{adjacentRegions} })
-         } @{ $regions })
-         ? 1
-         : 0;
+  my ($self, $player, $region, $regions, $sp) = @_;
+
+  return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState}}) &&
+         (grep {
+           grep {$_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $_->{constRegionState} }
+        } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
 }
 
 

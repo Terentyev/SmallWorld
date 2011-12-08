@@ -36,9 +36,14 @@ sub canPlaceObj2Region {
   return 0;
 }
 
+sub canFirstConquer() {
+  my ($self, $region) = @_;
+  return 0;
+}
+
 # можем ли мы атаковать регион
 sub canAttack {
-  my ($self, $region) = @_;
+  my ($self, $region, $regions) = @_;
 
   return
     # нельзя нападать на моря и озера
@@ -61,6 +66,11 @@ sub declineRegion {
   my ($self, $region) = @_;
 }
 
+# отказаться от региона
+sub abandonRegion {
+  my ($self, $region) = @_;
+}
+
 # можем ли мы с этим умением выполнить эту команду
 sub canCmd {
   my ($self, $js, $state) = @_;
@@ -75,6 +85,12 @@ sub initialTokens {
   return 0;
 }
 
+# возвращает являются ли смежными два региона
+sub isAdjacent {
+  my ($self, $reg1, $reg2) = @_;
+  return (grep { $_ == $reg2->{regionId} } @{ $reg1->{adjacentRegions} });
+#  return 0;
+}
 
 package SmallWorld::SpAlchemist;
 use strict;
@@ -106,13 +122,12 @@ use SmallWorld::Consts;
 sub _init {
   my ($self, $player, $regions, $badge) = @_;
   $self->SUPER::_init($player, $regions, $badge);
-  $self->{dice} = $player->{berserkDice} if exists $player->{berserkDice};
-
+  $self->{dice} = $player->{berserkDice};
 }
 
 sub conquestRegionTokensBonus {
   my ($self, $region) = @_;
-  return exists $self->{dice} && defined $self->{dice}
+  return defined $self->{dice}
     ? $self->{dice}
     : $self->SUPER::conquestRegionTokensBonus($region);
 }
@@ -120,7 +135,7 @@ sub conquestRegionTokensBonus {
 sub canCmd {
   my ($self, $js, $state) = @_;
   # базовый класс + бросить кости (если мы их еще не бросали)
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'throwDice' && !exists $self->{dice};
+  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'throwDice' && !defined $self->{dice};
 }
 
 sub initialTokens {
@@ -140,6 +155,11 @@ use SmallWorld::Consts;
 sub declineRegion {
   my ($self, $region) = @_;
   $self->SUPER::declineRegion($region);
+  $region->{encampment} = undef;
+}
+
+sub abandonRegion {
+  my ($self, $region) = @_;
   $region->{encampment} = undef;
 }
 
@@ -203,16 +223,27 @@ use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
 
+sub _init {
+  my ($self, $player, $regions, $badge) = @_;
+  $self->SUPER::_init($player, $regions, $badge);
+  $self->{dragonAttacked} = exists $player->{dragonAttacked} ? $player->{dragonAttacked}: 0;
+}
+
 sub declineRegion {
   my ($self, $region) = @_;
   $self->SUPER::declineRegion($region);
   $region->{dragon} = undef;
 }
 
+sub abandonRegion {
+  my ($self, $region) = @_;
+  $region->{dragon} = undef;
+}
+
 sub canCmd {
   my ($self, $js, $state) = @_;
   # базовый класс + атаковать драконом
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'dragonAttack';
+  return $self->SUPER::canCmd($js, $state) || ($js->{action} eq 'dragonAttack') && !$self->{dragonAttacked};
 }
 
 sub initialTokens {
@@ -229,12 +260,18 @@ use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
 
+sub canFirstConquer() {
+  my ($self, $region) = @_;
+  #нельзя моря и озера
+  return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} });
+}
+
 sub canAttack {
   my ($self, $region, $regions) = @_;
   return
-    $self->SUPER::canAttack($region, $regions) ||
-    # если не море. Регион не обязательно должен быть соседним
-    !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $regions });
+    !(grep {
+      $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE
+    } @{ $region->{constRegionState} })
 }
 
 sub initialTokens {
@@ -275,18 +312,13 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  # за каждый форт мы получаем по дополнительной монетке
-  return 1 * (grep { $_->{fortified} } @{ $_[0]->{allRegions} });
+  # за каждый форт мы получаем по дополнительной монетке если раса активна
+  return 1 * (grep { $_->{fortified} } @{ $_[0]->{regions} });
 }
 
-sub declineRegion {
+sub abandonRegion {
   my ($self, $region) = @_;
-  $self->SUPER::declineRegion($region);
-  if ( !defined $region->{inDecline} ) {
-    # видимо, если мы второй раз приводим расу в упадок после расстановки
-    # фортов, то надо их удалить
-    $region->{fortified} = undef;
-  }
+  $region->{fortified} = undef;
 }
 
 sub canCmd {
@@ -312,6 +344,11 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub declineRegion {
+  my ($self, $region) = @_;
+  $region->{hero} = undef;
+}
+
+sub abandonRegion {
   my ($self, $region) = @_;
   $region->{hero} = undef;
 }
@@ -343,7 +380,7 @@ sub coinsBonus {
     # за каждую оккупированную территорию,..
     $_->{tokensNum} > 0 &&
       # на которой расположен холм получаем по монетке
-      grep { $_ eq REGION_TYPE_HILL } $_->{constRegionState}
+      grep { $_ eq REGION_TYPE_HILL } @{$_->{constRegionState}}
   } @{ $_[0]->{regions} });
 }
 
@@ -421,13 +458,19 @@ use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
 
-sub canAttack {
+sub canFirstConquer() {
   my ($self, $region) = @_;
+  #можно любой пограничный регион
+  return grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} };
+}
+
+sub canAttack {
+  my ($self, $region, $regions) = @_;
 
   return
     # можно нападать, если мы имеем регион, граничащий с регионом-жертвой
     grep {
-      grep { $_ == $region->{regionId} } $_->{adjacentRegions}
+      grep { $_ == $region->{regionId} } @ { $_->{adjacentRegions} }
     } @{ $self->{regions} };
 }
 
@@ -444,6 +487,12 @@ use utf8;
 use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
+
+sub canCmd {
+  my ($self, $js, $state) = @_;
+  # команда decline после реорганизации войск
+  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'decline' && $state eq GS_BEFORE_FINISH_TURN;
+}
 
 sub initialTokens {
   return STOUT_TOKENS_NUM;
@@ -483,16 +532,16 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub canAttack {
-  my ($self, $region) = @_;
+  my ($self, $region, $regions) = @_;
 
   return
     # либо мы можем атаковать регион по стандартным правилам
-    $self->SUPER::canAttack($region) ||
+    $self->SUPER::canAttack($region, $regions) ||
     # либо на атакуемом регионе есть природная пещера
     (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} }) &&
     # и у нас есть регион с такой же природной пещерой
     (grep {
-      grep { $_ eq REGION_TYPE_CAVERN } @{ $_->{consRegionState} }
+      grep { $_ eq REGION_TYPE_CAVERN } @{ $_->{constRegionState} }
     } @{ $self->{regions} });
 }
 
@@ -507,6 +556,13 @@ sub conquestRegionTokensBonus {
 
 sub initialTokens {
   return UNDERWORLD_TOKENS_NUM;
+}
+
+sub isAdjacent {
+  my ($self, $reg1, $reg2) = @_;
+  return $self->SUPER::isAdjacent($reg1, $reg2) ||   
+         (grep { $_ eq REGION_TYPE_CAVERN } @{ $reg1->{constRegionState} }) &&
+         (grep { $_ eq REGION_TYPE_CAVERN } @{ $reg2->{constRegionState} });
 }
 
 

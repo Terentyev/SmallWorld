@@ -445,7 +445,12 @@ use constant PATTERN => {
       mandatory => 1,
       errorCode => R_BAD_SID
     },
-    {name => 'regionId', type => 'int', mandatory => 1}
+    {
+      name => 'regionId',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_REGION_ID
+    }
   ],
   selectFriend => [
     {

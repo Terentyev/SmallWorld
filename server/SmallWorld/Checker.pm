@@ -4,6 +4,7 @@ package SmallWorld::Checker;
 use strict;
 use warnings;
 use utf8;
+use List::Util qw( min max);
 
 use SmallWorld::Consts;
 use SmallWorld::Config;
@@ -244,17 +245,17 @@ sub checkRegionId {
 
   if ( defined $js->{encampments} ) {
     foreach my $reg ( @{ $js->{encampments} } ) {
-      return 1 if !(grep { $reg->{regionId} // -1 == $_->{regionId} } @{ $regions });
+      return 1 if !(grep { ($reg->{regionId} // -1) == $_->{regionId} } @{ $regions });
     }
   }
 
   if ( defined $js->{fortified} ) {
-    return 1 if !(grep { $_->{regionId} == $js->{fortified}->{regionId} } @{ $regions });
+      return 1 if !(grep { $_->{regionId} == ($js->{fortified}->{regionId} // -1) } @{ $regions });
   }
 
   if ( defined $js->{heroes} ) {
     foreach my $reg ( @{ $js->{heroes} } ) {
-      return 1 if !(grep { $reg == $_->{regionId} } @{ $regions });
+      return 1 if !(grep { ($reg->{regionId} // -1) == $_->{regionId} } @{ $regions });
     }
   }
 
@@ -306,12 +307,12 @@ sub checkRegion_conquer {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
 
   # 1. свои регионы с активной расой захватывать нельзя
-  # 2. на первом завоевании можно захватывать далеко не все регионы
+  # 2. на первом завоевании можно захватывать только при отдельных условиях
   # 3. у рас и умений есть особые правила нападения на регионы
 
   if ( $player->activeConq($region) ||
-    !($game->isFirstConquer() && $race->canFirstConquer($region, $game->{gameState}->{regions})) &&
-    !$sp->canAttack($region, $game->{gameState}->{regions}) ||
+    $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
+    !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
     !$game->canAttack($player, $region, $race, $sp)
   ) {
     $result->{dice} = $player->{dice} if defined $player->{dice};
@@ -323,7 +324,10 @@ sub checkRegion_conquer {
 
 sub checkRegion_dragonAttack {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
-  return $player->activeConq($region);
+
+  return $player->activeConq($region) ||
+         $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
+         !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions});
 }
 
 sub checkRegion_enchant {
@@ -333,7 +337,7 @@ sub checkRegion_enchant {
   # 2. регион с активной расой
   # 3. количество фигурок должно быть == 1
   return $player->activeConq($region) ||
-    $region->{inDeclune} ||
+    $region->{inDecline} ||
     $region->{tokensNum} == 1;
 }
 
@@ -344,7 +348,7 @@ sub checkRegion_redeploy {
   # в каждом массиве не должны повторяться регионы
   return 1 if $self->existsDuplicates($js->{regions}) ||
     $self->existsDuplicates($js->{encampments}) ||
-    $self->existsDuplicates([map { regionId => $_ }, @{ $js->{heroes} }]);
+    $self->existsDuplicates($js->{heroes});
 
   # у нас должны быть регионы, чтобы расставлять фигурки
   return 1 if !(grep { $player->activeConq($_) } @{ $game->{gameState}->{regions} });
@@ -355,9 +359,13 @@ sub checkRegion_redeploy {
        $_->{regionId} == $reg->{regionId} && !$player->activeConq($_), @{ $game->{gameState}->{regions} });
   }
 
-  # ставить лагеря/форты/героев можно только на свои регионы,
+  # ставить лагеря/форты/героев можно только на регионы,
   # которые так же указаны в поле regions команды redeploy
-  foreach my $reg ( (@{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
+  my @tmp = ();
+  push @tmp, @{ $js->{encampments} } if defined $js->{encampments};
+  push @tmp, $js->{fortified} if defined $js->{fortified};
+  push @tmp, @{ $js->{heroes} } if defined $js->{heroes};
+  foreach my $reg ( @tmp ) {
     return 1 if defined $reg && !(grep {
       $_->{regionId} == $reg->{regionId} #&& !$player->activeConq($_)
     } @{ $js->{regions} });
@@ -395,7 +403,7 @@ sub checkStage {
     !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    ($js->{action} ne 'conquer') && exists $player->{berserkDice} && ($game->{gameState}->{state} eq GS_CONQUEST) || #TODO
+    ($js->{action} ne 'conquer') && defined $player->{berserkDice} && ($game->{gameState}->{state} eq GS_CONQUEST) || #TODO
     !$sp->canCmd($js, $game->{gameState}->{state}) ||
     !$race->canCmd($js);
 }
@@ -427,7 +435,7 @@ sub checkTokensNum {
 sub checkForts {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   return defined $self->{json}->{fortified} && defined $self->{json}->{fortified}->{regionId} &&
-    FORTRESS_MAX >= 1 * (grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} });
+    FORTRESS_MAX <= 1 * (grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} });
 }
 
 sub checkFortsInRegion {
@@ -442,28 +450,25 @@ sub checkFortsInRegion {
 sub checkEnoughEncamps {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $encampsNum = 0;
-  $encampsNum += $game->getRegion($_->{regionId})->safe('encampment') for @{ $game->{gameState}->{regions} };
-  $encampsNum += $_->{encampmentsNum} // 0 for @{ $self->{json}->{encampments} };
+  $encampsNum += ($_->{encampmentsNum} // 0) for @{ $self->{json}->{encampments} };
   return $encampsNum > ENCAMPMENTS_MAX;
 }
 
 sub checkTokensForRedeployment {
   my ($self, $game, $player, $region, $race, $sp) = @_;
-  #TODO когда возвращается ошибка noTokensForRedeployment ?
   return 0;
-  # только для redeploy
-  my $tokensNum = $player->{tokensInHand};
-  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
-  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
-  return $tokensNum < 0;
+#  my $tokensNum = $player->{tokensInHand};
+#  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
+#  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
+#  return $tokensNum < 0;
 }
 
 sub checkFriend {
   my ($self, $game, $player, $region, $race, $sp) = @_;
-  # мы не можем подружиться с тем, на регион с активной расой которого нападали
-  # в этом ходу
-  return grep {
-    defined $_->{conquestIdx} && $_->{ownerId} == $self->{json}->{friendId} && !defined $_->{inDecline}
+  # мы не можем подружиться с игроком, если мы нападали на его aктивную расу на этом ходу
+  my $tid = $game->getPlayer( {id => $self->{json}->{friendId}} )->{currentTokenBadge}->{tokenBadgeId};
+  return $player->{playerId} == $self->{json}->{friendId} || grep {
+    ($_->{prevTokenBadgeId} // -1 ) == ($tid // -2)
   } @{ $game->{gameState}->{regions} };
 }
 
@@ -485,11 +490,11 @@ sub checkGameCommand {
     &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == $region->{ownerId}; },
     &R_BAD_ENCAMPMENTS_NUM          => sub { grep { !defined $_->{encampmentsNum} || $_->{encampmentsNum} <= 0 } @{ $js->{encampments} }; },
     &R_BAD_FRIEND                   => sub { $self->checkFriend(@gameVariables); },
-    &R_BAD_FRIEND_ID                => sub { !(grep { $_->{playerId} == $js->{friendId} && $_->{playerId} != $player->{playerId} } @{ $game->{gameState}->{players} }); },
+    &R_BAD_FRIEND_ID                => sub { !(grep { $_->{playerId} == $js->{friendId} } @{ $game->{gameState}->{players} }); },
     &R_BAD_MONEY_AMOUNT             => sub { $player->{coins} < $js->{position}; },
     &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables, $result); },
     &R_BAD_REGION_ID                => sub { $self->checkRegionId(@gameVariables); },
-    &R_BAD_SET_HERO_CMD             => sub { defined $js->{heroes} && HEROES_MAX < scalar(@{ $js->{heroes} }); },
+    &R_BAD_SET_HERO_CMD             => sub { defined $js->{heroes} && scalar(@{$js->{heroes}}) != min (scalar(@{$js->{regions}}), HEROES_MAX); },
     &R_BAD_SID                      => sub { !$self->{db}->dbExists("players", "sid", $js->{sid});  },
     &R_BAD_STAGE                    => sub { $self->checkStage(@gameVariables); },
     &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables); },

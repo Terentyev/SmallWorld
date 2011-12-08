@@ -1,0 +1,201 @@
+{
+    "description": "Bivouacking",
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Tritons", "Wizard", "Trolls", "Ratmen", "Sorcerers","Amazons", "Skeletons", "Orcs", "Humans", "Giants", "Elves", "Dwarves", "Halflings" ],
+          "visibleSpecialPowers": [
+            "Berserk", "Alchemist", "Bivouacking", "Commando", "Forest", "Diplomat", "DragonMaster", "Flying", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 6
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 7
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 11
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 12
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 13
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 2}, {"regionId": 7, "tokensNum": 2}, {"regionId": 11, "tokensNum": 3}, {"regionId": 12, "tokensNum": 3}],
+            "encampments": [{"encampmentsNum": 5}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 2}, {"regionId": 7, "tokensNum": 2}, {"regionId": 11, "tokensNum": 3}, {"regionId": 12, "tokensNum": 3}],
+            "encampments": [{"regionId": -3, "encampmentsNum": 5}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 2}, {"regionId": 7, "tokensNum": 2}, {"regionId": 11, "tokensNum": 3}, {"regionId": 12, "tokensNum": 3}],
+            "encampments": [{"regionId": 3, "encampmentsNum": 5}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 2}, {"regionId": 7, "tokensNum": 2}, {"regionId": 11, "tokensNum": 3}, {"regionId": 12, "tokensNum": 3}],
+            "encampments": [{"regionId": 6, "encampmentsNum": 6}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 2}, {"regionId": 7, "tokensNum": 2}, {"regionId": 11, "tokensNum": 3}, {"regionId": 12, "tokensNum": 3}],
+            "encampments": [{"regionId": 6, "encampmentsNum": -1}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 2}, {"regionId": 7, "tokensNum": 2}, {"regionId": 11, "tokensNum": 3}, {"regionId": 12, "tokensNum": 3}],
+            "encampments": [{"regionId": 6}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 3}, {"regionId": 7, "tokensNum": 4}, {"regionId": 12, "tokensNum": 3}],
+            "encampments": [{"regionId": 6, "encampmentsNum": 3}, {"regionId": 7, "encampmentsNum": 1}, {"regionId": 11, "encampmentsNum": 1}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 3}, {"regionId": 7, "tokensNum": 4}, {"regionId": 12, "tokensNum": 3}],
+            "encampments": [{"regionId": 6, "encampmentsNum": 3}, {"regionId": 7, "encampmentsNum": 1}, {"regionId": 12, "encampmentsNum": 1}]
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 12
+        },
+        {
+            "action": "defend",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 2}]
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 13, "tokensNum": 8}],
+            "encampments": [{"regionId": 13, "encampmentsNum": 3}]
+        },
+
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 13
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 13, "tokensNum": 8}, {"regionId": 12, "tokensNum": 1}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 12
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 3}, {"regionId": 7, "tokensNum": 5}, {"regionId": 12, "tokensNum": 1}],
+            "encampments": [{"regionId": 6, "encampmentsNum": 3}, {"regionId": 7, "encampmentsNum": 1}, {"regionId": 12, "encampmentsNum": 1}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 8
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 13, "tokensNum": 4}, {"regionId": 8, "tokensNum": 4}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "decline",
+            "sid": 1
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 7
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 12
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        }
+    ]
+}

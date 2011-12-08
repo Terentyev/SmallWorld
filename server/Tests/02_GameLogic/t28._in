@@ -1,0 +1,157 @@
+{
+    "description": "DragonMaster",
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Tritons", "Wizard", "Trolls", "Giants", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
+          "visibleSpecialPowers": [
+            "Berserk", "DragonMaster", "Alchemist", "Bivouacking", "Commando", "Forest", "Diplomat", "Flying", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": 13
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 1
+        },
+        {
+            "action": "dragonAttack",
+            "regionId": 13
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 0,
+            "regionId": 13
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 3,
+            "regionId": 13
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 2,
+            "regionId": 13
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": -1
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": 2
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 3, "tokensNum": 1}, {"regionId": 8, "tokensNum": 9}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 3
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 2,
+            "regionId": 9
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 9
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 4, "tokensNum": 1}, {"regionId": 9, "tokensNum": 8}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": 11
+        },
+        {
+            "action": "dragonAttack",
+            "sid": 1,
+            "regionId": 9
+        },
+        {
+            "action": "decline",
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "defend",
+            "sid": 2,
+            "regions": [{"regionId": 4, "tokensNum": 7}]
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 3, "tokensNum": 5}, {"regionId": 8, "tokensNum": 5}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 9
+        }
+    ]
+}

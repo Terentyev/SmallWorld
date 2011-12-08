@@ -1,0 +1,69 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 3
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 2,
+                    "tokensInHand": 12,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 3,
+                        "specialPowerName": "Commando",
+                        "raceName": "Ratmen"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion", "dice": 0
+    }
+]

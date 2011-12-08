@@ -1,0 +1,40 @@
+{
+    "description": "Mounted",
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Tritons", "Wizard", "Trolls", "Giants", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
+          "visibleSpecialPowers": [
+            "Berserk", "Mounted", "Merchant", "DragonMaster", "Alchemist", "Seafaring", "Hill", "Forest", "Flying", "Bivouacking", "Commando", "Diplomat", "Fortified", "Heroic", "Pillaging", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 9
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        }
+    ]
+}

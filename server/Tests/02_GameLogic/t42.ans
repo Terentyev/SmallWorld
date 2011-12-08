@@ -1,0 +1,43 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 4
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 9, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 2, "nextPlayer": 2
+    }
+]

@@ -79,6 +79,7 @@ sub init {
       tokenBadgeId     => undef,                                          # идентификатор расы игрока-владельца
       tokensNum        => defined $_->{population} ? $_->{population}: 0, # количество фигурок
       conquestIdx      => undef,                                          # порядковый номер завоевания (обнуляется по окончанию хода)
+      prevTokenBadgeId => undef,
       holeInTheGround  => undef,                                          # 1 если присутствует нора полуросликов
       lair             => undef,                                          # кол-во пещер троллей
       encampment       => undef,                                          # кол-во лагерей (какая осень в лагерях...)
@@ -101,6 +102,7 @@ sub init {
       tokensInHand       => INITIAL_TOKENS_NUM,
       priority           => $i++,
 #      dice               => undef,                                       # число, которое выпало при броске костей берсерка
+      friendTokenBadgeId => undef,                                       # id активной расы игрока, который подружил нас с собой
       currentTokenBadge  => {
         tokenBadgeId     => undef,
         totalTokensNum   => undef,
@@ -227,8 +229,10 @@ sub getGameStateForPlayer {
       coins    => $_->{coins},
       tokensInHand => $_->{tokensInHand},
       priority     => $_->{priority},
+#     dragonAttacked => undef,
 #     dice         => $_->{dice},
-#     berserkDice  => $_->{berserkDice},
+      berserkDice  => $_->{berserkDice},
+      friendTokenBadgeId => $_->{friendTokenBadgeId},
       currentTokenBadge => \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
     }
@@ -339,6 +343,7 @@ sub createSpecialPower {
       &SP_HEROIC        => 'SmallWorld::SpHeroic',
       &SP_HILL          => 'SmallWorld::SpHill',
       &SP_MERCHANT      => 'SmallWorld::SpMerchant',
+      &SP_MOUNTED       => 'SmallWorld::SpMounted',
       &SP_PILLAGING     => 'SmallWorld::SpPillaging',
       &SP_SEAFARING     => 'SmallWorld::SpSeafaring',
       &SP_STOUT         => 'SmallWorld::SpStout',
@@ -384,22 +389,49 @@ sub tokensInStorage {
   return $_[0]->{gameState}->{storage}->{$_[1]};
 }
 
+# возвращает может ли игрок атаковать регион при первом завоевании
+sub canFirstConquer {
+  my ($self, $region, $race, $sp) = @_;
+  my $regions = $self->{gameState}->{regions};
+
+  #можно захватить любой регион соседствующий с морем, которое является гранцией
+  #можно захватить любой приграничный не морской регион
+  #нельзя захватывать моря и озера,
+  my $ adj = 0;
+  foreach my $i ( @{$region->{adjacentRegions}} ) {
+    my ($isSea, $isBorder) = (0, 0);
+    foreach ( @{$regions->[$i-1]->{constRegionState}} ){
+      $isBorder = 1 if $_ eq REGION_TYPE_BORDER;
+      $isSea = 1 if $_ eq REGION_TYPE_SEA;
+    }
+    $adj = 1 if $isSea && $isBorder;
+  }
+
+  return
+    !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} }) &&
+    ((grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} }) || $adj) ||
+    $race->canFirstConquer($region) || $sp->canFirstConquer($region);
+}
+
 # возвращает может ли игрок атаковать регион (делает подсчет фигурок,
 # бросает кубик, если надо)
 sub canAttack {
   my ($self, $player, $region, $race, $sp) = @_;
   my $regions = $self->{gameState}->{regions};
+  return 0 if ($player->{friendTokenBadgeId} // -1) == ($region->{tokenBadgeId} // -2);
   $self->{defendNum} = max(1, $region->getDefendTokensNum() -
-    $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions));
+    $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions, $sp));
 
-  if ( !exists $player->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
+  if ( !defined $player->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости, если еще не кинули(berserk)
     $player->{dice} = $self->random();
   }
 
   # если игроку не хватает фигурок даже с подкреплением, это его последнее завоевание
   if ( $player->{tokensInHand} + $player->safe('dice') < $self->{defendNum} ) {
-    $self->{gameState}->{state} = GS_REDEPLOY;
+    # если у игрока нет территорий то ждем команды конец хода
+    $self->{gameState}->{state} = (grep { $player->activeConq($_) } @{ $regions }) ?
+                                  GS_REDEPLOY : GS_BEFORE_FINISH_TURN;
     return 0;
   }
   return 1;
@@ -434,9 +466,10 @@ sub conquer {
   }
 
   $region->{conquestIdx} = $self->nextConquestIdx();
+  $region->{prevTokenBadgeId} = $region->{tokenBadgeId};
   $region->{ownerId} = $player->{playerId};
   $region->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
-  @{ $region }{ qw(inDecline lair) } = ();
+  @{ $region }{ qw(inDecline lair fortified encampment) } = ();
   $region->{tokensNum} = min($self->{defendNum}, $player->{tokensInHand}); # размещаем в регионе все фигурки, которые использовались для завоевания
   $race->placeObject($player, $region) if $race->canPlaceObj2Region($player, $region); # размещаем в регионе уникальные для рас объекты
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
@@ -446,9 +479,9 @@ sub conquer {
     $self->{gameState}->{activePlayerId} = $defender->{playerId};
     $self->{gameState}->{state} = GS_DEFEND;
   }
-  if (exists $player->{berserkDice}) {
+  if (defined $player->{berserkDice}) {
     $result->{dice} = $player->{berserkDice};
-    delete $player->{berserkDice};
+    $player->{berserkDice} = undef;
   }
   if ( defined $player->{dice} ) {
     $result->{dice} = $player->{dice};
@@ -463,17 +496,25 @@ sub decline {
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
+  my $dsp = $self->createSpecialPower('declinedTokenBadge', $player);
+  my $drace = $self->createRace($player->{declinedTokenBadge});
 
+  if ($self->{gameState}->{state} eq GS_BEFORE_FINISH_TURN) {
+    $player->{declineBonus} = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
+                              $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
+  }
   foreach ( grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId} } @{ $regions } ) {
     if ( $_->{inDecline} ) {
       $_->{inDecline} = undef;
       @{ $_ }{qw( ownerId tokenBadgeId tokensNum )} = (undef, undef, undef);
+      $drace->abandonRegion($_);
+      $dsp->abandonRegion($_);
     }
     else {
       @{ $_ }{qw( inDecline tokensNum )} = (1, DECLINED_TOKENS_NUM);
+      $race->declineRegion($_);
+      $sp->declineRegion($_);
     }
-    $race->declineRegion($_);
-    $sp->declineRegion($_);
   }
   my $badge = $player->{currentTokenBadge};
   @{ $player }{qw( tokensInHand currentTokenBadge declinedTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
@@ -506,13 +547,21 @@ sub finishTurn {
   my $drace = $self->createRace($player->{declinedTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  my $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
-              $sp->coinsBonus() + $race->coinsBonus() + $drace->declineCoinsBonus();
-  $player->{coins} += $bonus;
-
   # возвращаем количество монет, полученных на этом ходу
+  my $bonus = 0;
+  if (exists $player->{declineBonus}) {
+    $bonus = $player->{declineBonus};
+    delete $player->{declineBonus};
+  } else {
+    $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
+             $sp->coinsBonus(!$self->{gameState}->{currentTurn}) + $race->coinsBonus() + $drace->declineCoinsBonus();
+  }
+  $player->{coins} += $bonus;
   $result->{coins} = $bonus;
-  grep { $_->{conquestIdx} = undef } @{ $self->{gameState}->{regions} };
+
+  @{ $player }{qw( berserkDice friendTokenBadgeId dragonAttacked)} = ();
+  @ {$_}{qw (conquestIdx prevTokenBadgeId)} = () for @{ $self->{gameState}->{regions} };
+
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
     ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
   $result->{nextPlayer} = $self->{gameState}->{activePlayerId};
@@ -542,12 +591,13 @@ sub redeploy {
   my ($self, $regs, $encampments, $fortified, $heroes) = @_;
   my $player = $self->getPlayer();
   my $race = $self->createRace($player->{currentTokenBadge});
+  my $sp = $self->createSpecialPower('currentTokenBadge', $player);
   my $lastRegion = defined $regs->[-1] ? $self->getRegion($regs->[-1]->{regionId}): undef;
 
   $player->{tokensInHand} += $race->redeployTokensBonus($player);
   foreach ( @{ $race->{regions} } ) {
     $player->{tokensInHand} += $_->{tokensNum};
-    $_->{tokensNum} = 0;
+    @ {$_}{qw (tokensNum encampment hero) } = (0, undef, undef);
   }
   foreach ( @{ $regs } ) {
     $self->getRegion($_->{regionId})->{tokensNum} = $_->{tokensNum};
@@ -556,6 +606,7 @@ sub redeploy {
   foreach ( @{ $race->{regions} } ) {
     if (!$_->{tokensNum}) {
       $race->abandonRegion($_);
+      $sp->abandonRegion($_);
       delete $_->{ownerId};
       delete $_->{tokenBadgeId};
     }
@@ -598,6 +649,39 @@ sub enchant {
   @{ $self->getRegion($regionId) }{qw( ownerId tokenBadgeId conquestIdx )} = (
       $player->{playerId}, $player->{currentTokenBadgeId}->{tokenBadgeId}, $self->nextConquestIdx() );
   $self->{gameState}->{storage}->{&RACE_SORCERERS} -= 1;
+  $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
+}
+
+sub selectFriend {
+  my ($self, $friendId) = @_;
+  my $player = $self->getPlayer({ id => $friendId });
+  $player->{friendTokenBadgeId} = $self->getPlayer()->{currentTokenBadge}->{tokenBadgeId};
+}
+
+sub dragonAttack {
+  my ($self, $regionId) = @_;
+  my $player = $self->getPlayer();
+  my $region = $self->getRegion($regionId);
+  my $defender = undef;
+
+  if ( defined $region->{ownerId} ) {
+    $defender = $self->getPlayer( { id => $region->{ownerId} } );
+    if ( $defender->activeConq($region) ) {
+      my $defRace = $self->createRace($defender->{currentTokenBadge});
+      $defender->{tokensInHand} += $region->{tokensNum} + $defRace->looseTokensBonus();
+    }
+  }
+
+  @{$region}{qw ( dragon tokensNum ownerId prevTokenBadgeId tokenBadgeId conquestIdx inDecline lair fortified encampment)} = (
+    1, 1, $player->{playerId}, $region->{tokenBadgeId}, $player->{currentTokenBadge}->{tokenBadgeId}, $self->nextConquestIdx() );
+  $player->{dragonAttacked} = 1;
+  --$player->{tokensInHand};
+
+  if ( defined $defender && $self->canDefend($defender) ) {
+    $self->{gameState}->{conquerorId} = $player->{playerId};
+    $self->{gameState}->{activePlayerId} = $defender->{playerId};
+    $self->{gameState}->{state} = GS_DEFEND;
+  }
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
 

@@ -1,0 +1,99 @@
+{
+    "description": "Hill",
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Tritons", "Wizard", "Trolls", "Giants", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
+          "visibleSpecialPowers": [
+            "Berserk", "DragonMaster", "Alchemist", "Seafaring", "Hill", "Forest", "Flying", "Bivouacking", "Commando", "Diplomat", "Fortified", "Heroic", "Merchant", "Mounted", "Pillaging", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 11
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 11, "tokensNum": 9}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 0
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 12
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 12, "tokensNum": 10}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "decline",
+            "sid": 1
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 7
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 12, "tokensNum": 5}, {"regionId": 7, "tokensNum": 5}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 9
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 4, "tokensNum": 6}, {"regionId": 9, "tokensNum": 6}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        }
+    ]
+}

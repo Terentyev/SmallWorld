@@ -1,0 +1,75 @@
+{
+    "description": "Pillaging",
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Tritons", "Giants", "Wizard", "Trolls", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
+          "visibleSpecialPowers": [
+            "Berserk", "Mounted", "Merchant", "DragonMaster", "Alchemist", "Pillaging", "Seafaring", "Hill", "Forest", "Flying", "Bivouacking", "Commando", "Diplomat", "Fortified", "Heroic", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 5
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 9
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 3, "tokensNum": 4}, {"regionId": 8, "tokensNum": 2}, {"regionId": 9, "tokensNum": 4}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 6
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 6, "tokensNum": 7}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 3, "tokensNum": 4}, {"regionId": 8, "tokensNum": 2}, {"regionId": 9, "tokensNum": 4}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        }
+    ]
+}

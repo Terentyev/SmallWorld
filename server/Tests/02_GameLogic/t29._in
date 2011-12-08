@@ -1,0 +1,69 @@
+{
+    "description": "Flying",
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Tritons", "Wizard", "Trolls", "Giants", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
+          "visibleSpecialPowers": [
+            "Berserk", "DragonMaster", "Alchemist", "Flying", "Bivouacking", "Commando", "Forest", "Diplomat", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 3
+        },
+        {
+            "action": "getGameState",
+            "sid": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 14
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 10
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 11
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 6
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 8, "tokensNum": 3}, {"regionId": 11, "tokensNum": 3}, {"regionId": 14, "tokensNum": 3}, {"regionId": 4, "tokensNum": 2}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        }
+    ]
+}
