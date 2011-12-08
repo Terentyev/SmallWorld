@@ -18,6 +18,15 @@ sub getDefendTokensNum {
     (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_[0]->{constRegionState} });
 }
 
+sub getAdjacentRegions {
+  my ($self, $regions, $sp) = @_;
+  my @ans = ();
+  foreach (@$regions) {
+    push @ans, $_ if $_->{regionId} != $self->{regionId} && $sp->isAdjacent($self, $_);
+  }
+  return \@ans;
+}
+
 1;
 
 __END__

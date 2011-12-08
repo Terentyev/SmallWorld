@@ -179,20 +179,14 @@ sub initialTokens {
 }
 
 sub conquestRegionTokensBonus {
-  my ($self, $player, $region, $regions) = @_;
+  my ($self, $player, $region, $regions, $sp) = @_;
   # для гигантов бонус в 1 фигурку, если они нападают на регион, который
   # граничит с регионом, на котором находятся горы и который принадлежит
   # гигантам
   return (grep {
-      # регион принадлежит игроку
-      defined $_->{tokenBadgeId} && $_->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-      # на нем есть горы
-      (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} }) &&
-      # регион граничит с регионом, на который мы нападаем
-      ( grep { defined $region->{regionId} && $_ == $region->{regionId} } @{ $_->{adjacentRegions} })
-    } @{ $regions })
-    ? 1
-    : 0;
+      ($_->{tokenBadgeId} // -1) == $player->{currentTokenBadge}->{tokenBadgeId} &&
+      (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} })
+    } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
 }
 
 
@@ -348,11 +342,12 @@ sub initialTokens {
 }
 
 sub conquestRegionTokensBonus {
-  my ($self, $player, $region, $regions) = @_;
+  my ($self, $player, $region, $regions, $sp) = @_;
+
   return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState}}) &&
          (grep {
-           grep {$_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $regions->[$_-1]->{constRegionState} }
-         } @{ $region->{adjacentRegions} }) ? 1 : 0;
+           grep {$_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $_->{constRegionState} }
+        } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
 }
 
 

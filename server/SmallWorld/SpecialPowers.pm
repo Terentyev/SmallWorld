@@ -85,6 +85,12 @@ sub initialTokens {
   return 0;
 }
 
+# возвращает являются ли смежными два региона
+sub isAdjacent {
+  my ($self, $reg1, $reg2) = @_;
+  return (grep { $_ == $reg2->{regionId} } @{ $reg1->{adjacentRegions} });
+#  return 0;
+}
 
 package SmallWorld::SpAlchemist;
 use strict;
@@ -149,6 +155,11 @@ use SmallWorld::Consts;
 sub declineRegion {
   my ($self, $region) = @_;
   $self->SUPER::declineRegion($region);
+  $region->{encampment} = undef;
+}
+
+sub abandonRegion {
+  my ($self, $region) = @_;
   $region->{encampment} = undef;
 }
 
@@ -301,18 +312,13 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  # за каждый форт мы получаем по дополнительной монетке
-  return 1 * (grep { $_->{fortified} } @{ $_[0]->{allRegions} });
+  # за каждый форт мы получаем по дополнительной монетке если раса активна
+  return 1 * (grep { $_->{fortified} } @{ $_[0]->{regions} });
 }
 
-sub declineRegion {
+sub abandonRegion {
   my ($self, $region) = @_;
-  $self->SUPER::declineRegion($region);
-  if ( !defined $region->{inDecline} ) {
-    # видимо, если мы второй раз приводим расу в упадок после расстановки
-    # фортов, то надо их удалить
-    $region->{fortified} = undef;
-  }
+  $region->{fortified} = undef;
 }
 
 sub canCmd {
@@ -338,6 +344,11 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub declineRegion {
+  my ($self, $region) = @_;
+  $region->{hero} = undef;
+}
+
+sub abandonRegion {
   my ($self, $region) = @_;
   $region->{hero} = undef;
 }
@@ -530,7 +541,7 @@ sub canAttack {
     (grep { $_ eq REGION_TYPE_CAVERN } @{ $region->{constRegionState} }) &&
     # и у нас есть регион с такой же природной пещерой
     (grep {
-      grep { $_ eq REGION_TYPE_CAVERN } @{ $_->{consRegionState} }
+      grep { $_ eq REGION_TYPE_CAVERN } @{ $_->{constRegionState} }
     } @{ $self->{regions} });
 }
 
@@ -545,6 +556,13 @@ sub conquestRegionTokensBonus {
 
 sub initialTokens {
   return UNDERWORLD_TOKENS_NUM;
+}
+
+sub isAdjacent {
+  my ($self, $reg1, $reg2) = @_;
+  return $self->SUPER::isAdjacent($reg1, $reg2) ||   
+         (grep { $_ eq REGION_TYPE_CAVERN } @{ $reg1->{constRegionState} }) &&
+         (grep { $_ eq REGION_TYPE_CAVERN } @{ $reg2->{constRegionState} });
 }
 
 
