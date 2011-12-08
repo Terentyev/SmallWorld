@@ -4,6 +4,7 @@ package SmallWorld::Checker;
 use strict;
 use warnings;
 use utf8;
+use List::Util qw( min max);
 
 use SmallWorld::Consts;
 use SmallWorld::Config;
@@ -249,12 +250,12 @@ sub checkRegionId {
   }
 
   if ( defined $js->{fortified} ) {
-    return 1 if !(grep { $_->{regionId} == $js->{fortified}->{regionId} } @{ $regions });
+    return 1 if !(grep { ($_->{regionId} // -1) == $js->{fortified}->{regionId} } @{ $regions });
   }
 
   if ( defined $js->{heroes} ) {
     foreach my $reg ( @{ $js->{heroes} } ) {
-      return 1 if !(grep { $reg == $_->{regionId} } @{ $regions });
+      return 1 if !(grep { ($reg->{regionId} // -1) == $_->{regionId} } @{ $regions });
     }
   }
 
@@ -306,7 +307,7 @@ sub checkRegion_conquer {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
 
   # 1. свои регионы с активной расой захватывать нельзя
-  # 2. на первом завоевании можно захватывать далеко не все регионы
+  # 2. на первом завоевании можно захватывать только при отдельных условиях
   # 3. у рас и умений есть особые правила нападения на регионы
 
   if ( $player->activeConq($region) ||
@@ -347,7 +348,7 @@ sub checkRegion_redeploy {
   # в каждом массиве не должны повторяться регионы
   return 1 if $self->existsDuplicates($js->{regions}) ||
     $self->existsDuplicates($js->{encampments}) ||
-    $self->existsDuplicates([map { regionId => $_ }, @{ $js->{heroes} }]);
+    $self->existsDuplicates($js->{heroes});
 
   # у нас должны быть регионы, чтобы расставлять фигурки
   return 1 if !(grep { $player->activeConq($_) } @{ $game->{gameState}->{regions} });
@@ -358,9 +359,13 @@ sub checkRegion_redeploy {
        $_->{regionId} == $reg->{regionId} && !$player->activeConq($_), @{ $game->{gameState}->{regions} });
   }
 
-  # ставить лагеря/форты/героев можно только на свои регионы,
+  # ставить лагеря/форты/героев можно только на регионы,
   # которые так же указаны в поле regions команды redeploy
-  foreach my $reg ( (@{ $js->{encampments} }, $js->{fortified}, map { regionId => $_ }, @{ $js->{heroes} }) ) {
+  my @tmp = ();
+  push @tmp, @{ $js->{encampments} } if defined $js->{encampments};
+  push @tmp, @{ $js->{fortified} } if defined $js->{fortified};
+  push @tmp, @{ $js->{heroes} } if defined $js->{heroes};
+  foreach my $reg ( @tmp ) {
     return 1 if defined $reg && !(grep {
       $_->{regionId} == $reg->{regionId} #&& !$player->activeConq($_)
     } @{ $js->{regions} });
@@ -445,23 +450,17 @@ sub checkFortsInRegion {
 sub checkEnoughEncamps {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $encampsNum = 0;
-#  foreach (@{ $game->{gameState}->{regions} }) {
-#    my $reg = $game->getRegion($_->{regionId});
-#    $encampsNum += $reg->safe('encampment') if !$player->activeConq($reg);
-#  }
   $encampsNum += ($_->{encampmentsNum} // 0) for @{ $self->{json}->{encampments} };
   return $encampsNum > ENCAMPMENTS_MAX;
 }
 
 sub checkTokensForRedeployment {
   my ($self, $game, $player, $region, $race, $sp) = @_;
-  #TODO когда возвращается ошибка noTokensForRedeployment ?
   return 0;
-  # только для redeploy
-  my $tokensNum = $player->{tokensInHand};
-  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
-  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
-  return $tokensNum < 0;
+#  my $tokensNum = $player->{tokensInHand};
+#  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
+#  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
+#  return $tokensNum < 0;
 }
 
 sub checkFriend {
@@ -495,7 +494,7 @@ sub checkGameCommand {
     &R_BAD_MONEY_AMOUNT             => sub { $player->{coins} < $js->{position}; },
     &R_BAD_REGION                   => sub { $self->checkRegion(@gameVariables, $result); },
     &R_BAD_REGION_ID                => sub { $self->checkRegionId(@gameVariables); },
-    &R_BAD_SET_HERO_CMD             => sub { defined $js->{heroes} && HEROES_MAX < scalar(@{ $js->{heroes} }); },
+    &R_BAD_SET_HERO_CMD             => sub { defined $js->{heroes} && scalar(@{$js->{heroes}}) != min (scalar(@{$js->{regions}}), HEROES_MAX); },
     &R_BAD_SID                      => sub { !$self->{db}->dbExists("players", "sid", $js->{sid});  },
     &R_BAD_STAGE                    => sub { $self->checkStage(@gameVariables); },
     &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables); },
