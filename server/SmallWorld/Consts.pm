@@ -701,27 +701,27 @@ use constant DEFAULT_MAPS => [
   {mapName => 'Cheburashka', playersNum => 3, turnsNum => 5, regions => [
     {
       population  => 1, landDescription => ['mountain'], adjacent => [2, 3, 4],
-      coordinates => [ [255,290], [234,254], [224,213], [239,168], [287,137], [355,135], [395,178], [371,284], [304,279] ],
-      raceCoords  => [267,216],
-      powerCoords => [346,208]
+      coordinates => [ [255,290], [234,254], [224,213], [239,168], [287,137], [355,135], [395,178], [398, 234], [371,284], [304,279] ],
+      raceCoords  => [267,180],
+      powerCoords => [346,173]
     },
     {
       population  => 1, landDescription => ['sea'], adjacent => [1, 4],
       coordinates => [ [224,213], [175,217], [132,184], [113,136], [131,91], [185,69], [242,77], [272,108], [287,137], [239,168] ],
-      raceCoords  => [143,133],
-      powerCoords => [218,117]
+      raceCoords  => [143,100],
+      powerCoords => [218,82]
     },
     {
       population  => 1, landDescription => ['border', 'mountain'], adjacent => [1],
       coordinates => [ [269,399], [249,385], [232,360], [230,337], [236,305], [255,290], [304,279], [371,284], [405,303], [418,330], [411,356], [405,387], [396,399] ],
-      raceCoords  => [297,351],
-      powerCoords => [363,345]
+      raceCoords  => [297,316],
+      powerCoords => [363,310]
     },
     {
       population  => 1, landDescription => ['coast'], adjacent => [1, 2],
       coordinates => [ [355,135], [365,96], [400,69], [446,62], [505,86], [523,138], [515,187], [487,218], [442,233], [398,234], [395,178] ],
-      raceCoords  => [400,110],
-      powerCoords => [465,172]
+      raceCoords  => [400,75],
+      powerCoords => [465,137]
     }
   ]}
 ];
