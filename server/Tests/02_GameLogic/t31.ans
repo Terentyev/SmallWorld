@@ -1,0 +1,208 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 0
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 2, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 3
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 3, "nextPlayer": 1
+    },
+
+    {
+        "result": "tooManyFortifiedsInRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 4, "nextPlayer": 2
+    },
+
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 2,
+            "currentTurn": 1,
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 2 }},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 0, "ownerId": 1, "fortified": 1 }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 0, "ownerId": 1, "fortified": 1 }},
+                {},
+                {}
+              ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "tokensInHand": 0,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 0,
+                        "specialPowerName": "Fortified",
+                        "raceName": "Tritons"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "tokensInHand": 9,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 3,
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Giants"
+                    },
+                    "declinedTokenBadge": {}
+                }
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 1,
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 2 }},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 3, "ownerId": 2 }},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 0, "ownerId": 1, "fortified": 1 }},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 3, "ownerId": 2 }},
+                {},
+                {}
+              ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "tokensInHand": 2,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 0,
+                        "specialPowerName": "Fortified",
+                        "raceName": "Tritons"
+                    },
+                    "declinedTokenBadge": {}
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "tokensInHand": 1,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 3,
+                        "specialPowerName": "Alchemist",
+                        "raceName": "Giants"
+                    },
+                    "declinedTokenBadge": {}
+                }
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "coins": 5, "nextPlayer": 1
+    },
+
+    {
+        "result": "ok"
+    },
+
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 2,
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 2 }},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 2 }},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 0, "ownerId": 1, "fortified": 1, "inDecline": 1}},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 3, "ownerId": 2 }},
+                {},
+                {}
+              ]
+            }
+        }
+    },
+    {
+        "result": "ok", "coins": 1, "nextPlayer": 2
+    }
+]
