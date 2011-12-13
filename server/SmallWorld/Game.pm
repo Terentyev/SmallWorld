@@ -130,7 +130,7 @@ sub initTokenBadges {
   my @races = @{ &RACES };
   my @result = ();
 
-  my $j = 0;
+  my $j = 1;
   while ( @sp ) {
     push @result, {
       tokenBadgeId     => $j++,
@@ -237,7 +237,7 @@ sub getGameStateForPlayer {
       declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
     }
   } @{ $gs->{players} };
-  grep {delete $_->{coins} if $_->{userId} != $playerId} @{ $result->{players} } if $result->{stage} ne GS_IS_OVER;
+  # grep {delete $_->{coins} if $_->{userId} != $playerId} @{ $result->{players} } if $result->{stage} ne GS_IS_OVER;
   $self->removeNull($result);
   return $result;
 }
@@ -413,12 +413,11 @@ sub canFirstConquer {
     $race->canFirstConquer($region) || $sp->canFirstConquer($region);
 }
 
-# возвращает может ли игрок атаковать регион (делает подсчет фигурок,
-# бросает кубик, если надо)
+# возвращает хватает ли игроку фигурок для атаки региона (бросает кубик, если надо)
 sub canAttack {
   my ($self, $player, $region, $race, $sp) = @_;
   my $regions = $self->{gameState}->{regions};
-  return 0 if ($player->{friendTokenBadgeId} // -1) == ($region->{tokenBadgeId} // -2);
+
   $self->{defendNum} = max(1, $region->getDefendTokensNum() -
     $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions, $sp));
 
@@ -688,7 +687,7 @@ sub dragonAttack {
 sub throwDice {
   my $self = shift;
   my $player = $self->getPlayer();
-  $player->{berserkDice} = $self->random();
+  $player->{berserkDice} = $ENV{DEBUG} ? 1 : $self->random();
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
   return $player->{berserkDice};
 }
