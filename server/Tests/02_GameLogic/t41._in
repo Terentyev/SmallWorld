@@ -59,7 +59,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         }
     ]
 }

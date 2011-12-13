@@ -48,32 +48,32 @@
             ],
             "visibleTokenBadges": [
                 {
-                    "tokenBadgeId": 0,
+                    "tokenBadgeId": 1,
                     "specialPowerName": "Alchemist",
                     "raceName": "Amazons"
                 },
                 {
-                    "tokenBadgeId": 1,
+                    "tokenBadgeId": 2,
                     "specialPowerName": "Berserk",
                     "raceName": "Dwarves"
                 },
                 {
-                    "tokenBadgeId": 2,
+                    "tokenBadgeId": 3,
                     "specialPowerName": "Bivouacking",
                     "raceName": "Elves"
                 },
                 {
-                    "tokenBadgeId": 3,
+                    "tokenBadgeId": 4,
                     "specialPowerName": "Commando",
                     "raceName": "Giants"
                 },
                 {
-                    "tokenBadgeId": 4,
+                    "tokenBadgeId": 5,
                     "specialPowerName": "Diplomat",
                     "raceName": "Halflings"
                 },
                 {
-                    "tokenBadgeId": 5,
+                    "tokenBadgeId": 6,
                     "specialPowerName": "DragonMaster",
                     "raceName": "Humans"
                 }
@@ -122,7 +122,7 @@
                     "coins": 5,
                     "tokensInHand": 14,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
                     },
@@ -139,32 +139,32 @@
             ],
             "visibleTokenBadges": [
                 {
-                    "tokenBadgeId": 1,
+                    "tokenBadgeId": 2,
                     "specialPowerName": "Berserk",
                     "raceName": "Dwarves"
                 },
                 {
-                    "tokenBadgeId": 2,
+                    "tokenBadgeId": 3,
                     "specialPowerName": "Bivouacking",
                     "raceName": "Elves"
                 },
                 {
-                    "tokenBadgeId": 3,
+                    "tokenBadgeId": 4,
                     "specialPowerName": "Commando",
                     "raceName": "Giants"
                 },
                 {
-                    "tokenBadgeId": 4,
+                    "tokenBadgeId": 5,
                     "specialPowerName": "Diplomat",
                     "raceName": "Halflings"
                 },
                 {
-                    "tokenBadgeId": 5,
+                    "tokenBadgeId": 6,
                     "specialPowerName": "DragonMaster",
                     "raceName": "Humans"
                 },
                 {
-                    "tokenBadgeId": 6,
+                    "tokenBadgeId": 7,
                     "specialPowerName": "Flying",
                     "raceName": "Orcs"
                 }

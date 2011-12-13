@@ -14,7 +14,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         },
         {
             "action": "conquer",
@@ -38,7 +38,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         },
         {
             "action": "redeploy",
@@ -62,7 +62,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         },
         {
             "action": "conquer",
@@ -71,7 +71,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         },
         {
             "action": "conquer",
@@ -80,7 +80,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         },
         {
             "action": "defend",
@@ -113,7 +113,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         },
         {
             "action": "redeploy",
@@ -132,7 +132,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         },
         {
             "action": "conquer",
@@ -141,7 +141,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         }
     ]
 }

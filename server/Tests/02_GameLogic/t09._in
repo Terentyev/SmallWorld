@@ -15,7 +15,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         },
         {
             "action": "conquer",
@@ -72,7 +72,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         }
     ]
 }

@@ -102,7 +102,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         },
         {
             "action": "selectRace",
@@ -196,7 +196,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         },
         {
             "action": "defend",

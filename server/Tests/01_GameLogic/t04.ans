@@ -38,7 +38,7 @@
                     "priority": 0,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
                     },
@@ -52,7 +52,7 @@
                     "tokensInHand": 11,
                     "coins": 4,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
                     },
@@ -61,32 +61,32 @@
             ],
             "visibleTokenBadges": [
                 {
-                    "tokenBadgeId": 1,
+                    "tokenBadgeId": 2,
                     "specialPowerName": "Berserk",
                     "raceName": "Dwarves"
                 },
                 {
-                    "tokenBadgeId": 3,
+                    "tokenBadgeId": 4,
                     "specialPowerName": "Commando",
                     "raceName": "Giants"
                 },
                 {
-                    "tokenBadgeId": 4,
+                    "tokenBadgeId": 5,
                     "specialPowerName": "Diplomat",
                     "raceName": "Halflings"
                 },
                 {
-                    "tokenBadgeId": 5,
+                    "tokenBadgeId": 6,
                     "specialPowerName": "DragonMaster",
                     "raceName": "Humans"
                 },
                 {
-                    "tokenBadgeId": 6,
+                    "tokenBadgeId": 7,
                     "specialPowerName": "Flying",
                     "raceName": "Orcs"
                 },
                 {
-                    "tokenBadgeId": 7,
+                    "tokenBadgeId": 8,
                     "specialPowerName": "Forest",
                     "raceName": "Ratmen"
                 }

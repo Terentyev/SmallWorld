@@ -3,7 +3,7 @@
     "test": [
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         },
 
 
@@ -57,7 +57,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         }
     ],
     "description": "test first stage in game (first turn of first player)"

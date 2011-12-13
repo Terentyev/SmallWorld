@@ -163,6 +163,6 @@
         "result": "ok"
     },
     {
-        "result": "badRegion"
+        "result": "badTokensNum"
     }
 ]

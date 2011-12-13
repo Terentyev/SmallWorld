@@ -71,7 +71,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         },
         {
             "action": "decline",
@@ -157,7 +157,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         },
         {
             "action": "finishTurn",

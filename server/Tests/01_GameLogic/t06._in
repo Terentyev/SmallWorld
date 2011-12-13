@@ -56,7 +56,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         }
     ],
     "description": "second player redeploy tokens"
