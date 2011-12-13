@@ -1,6 +1,6 @@
 [
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "badUserSid"
@@ -47,8 +47,8 @@
               "regions": [
                 { "currentRegionState": {"tokensNum": 0 }},
                 { "currentRegionState": {"tokensNum": 1 }},
-                { "currentRegionState": {"tokensNum": 2, "tokenBadgeId": 2, "ownerId": 1 }},
-                { "currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 2, "tokenBadgeId": 3, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 1 }},
                 { "currentRegionState": {"tokensNum": 0 }},
                 { "currentRegionState": {"tokensNum": 1 }}
               ]
@@ -60,7 +60,7 @@
                     "coins": 3,
                     "tokensInHand": 6,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
                     },

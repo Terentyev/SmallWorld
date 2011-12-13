@@ -32,7 +32,7 @@
         "result": "badTokensNum"
     },
     {
-        "result": "badTokensNum"
+        "result": "notEnoughTokensForRedeployment"
     },
     {
         "result": "badTokensNum"
@@ -47,8 +47,8 @@
             "map" : {
               "regions": [
                 { "currentRegionState": {"tokensNum": 0 }},
-                { "currentRegionState": {"tokensNum": 4, "tokenBadgeId": 2, "ownerId": 1 }},
-                { "currentRegionState": {"tokensNum": 7, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 4, "tokenBadgeId": 3, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 7, "tokenBadgeId": 3, "ownerId": 1 }},
                 { "currentRegionState": {"tokensNum": 0 }},
                 { "currentRegionState": {"tokensNum": 0 }},
                 { "currentRegionState": {"tokensNum": 1 }}
@@ -61,7 +61,7 @@
                     "coins": 3,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
                     },

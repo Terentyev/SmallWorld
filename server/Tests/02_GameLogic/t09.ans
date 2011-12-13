@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 1
+        "result": "ok", "tokenBadgeId": 2
     },
     {
         "result": "ok",
@@ -17,7 +17,7 @@
                     "coins": 4,
                     "tokensInHand": 7,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 1,
+                        "tokenBadgeId": 2,
                         "specialPowerName": "Forest",
                         "raceName": "Dwarves"
                     },
@@ -45,7 +45,7 @@
 
 
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok"
@@ -72,15 +72,15 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 2 }},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
-                {},
-                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
                 {},
                 {},
                 {}
@@ -93,7 +93,7 @@
                     "coins": 14,
                     "currentTokenBadge": {},
                     "declinedTokenBadge": {
-                        "tokenBadgeId": 1,
+                        "tokenBadgeId": 2,
                         "specialPowerName": "Forest",
                         "raceName": "Dwarves"
                     }
@@ -103,7 +103,7 @@
                     "username": "username2",
                     "tokensInHand": 9,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Alchemist",
                         "raceName": "Elves"
                     },

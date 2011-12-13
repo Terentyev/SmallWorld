@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 0
+        "result": "ok", "tokenBadgeId": 1
     },
     {
         "result": "ok"
@@ -19,7 +19,7 @@
     },
 
     {
-        "result": "ok", "tokenBadgeId": 1
+        "result": "ok", "tokenBadgeId": 2
     },
     {
         "result": "ok"
@@ -42,8 +42,8 @@
               "regions": [
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 0, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 1, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 1, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 2, "ownerId": 2 }},
                 {},
                 {},
                 {},
@@ -51,9 +51,9 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 2 }},
                 {},
-                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 1, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 2, "ownerId": 2 }},
                 {}
               ]
             },
@@ -63,7 +63,7 @@
                     "username": "username1",
                     "tokensInHand": 4,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Seafaring",
                         "raceName": "Tritons"
                     },
@@ -74,7 +74,7 @@
                     "username": "username2",
                     "tokensInHand": 3,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 1,
+                        "tokenBadgeId": 2,
                         "specialPowerName": "Underworld",
                         "raceName": "Giants"
                     },

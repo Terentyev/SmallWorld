@@ -1,6 +1,6 @@
 [
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "badStage"
@@ -26,7 +26,7 @@
 
 
     {
-        "result": "ok", "tokenBadgeId": 0
+        "result": "ok", "tokenBadgeId": 1
     },
     {
         "result": "ok"
@@ -63,9 +63,9 @@
               "regions": [
                 { "currentRegionState": {"tokensNum": 0 }},
                 { "currentRegionState": {"tokensNum": 1 }},
-                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
                 { "currentRegionState": {"tokensNum": 1 }},
-                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 0, "ownerId": 2 }},
+                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 2 }},
                 { "currentRegionState": {"tokensNum": 1 }}
               ]
             },
@@ -76,7 +76,7 @@
                     "coins": 5,
                     "currentTokenBadge": {},
                     "declinedTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
                     }
@@ -86,7 +86,7 @@
                     "username": "username2",
                     "tokensInHand": 13,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
                     },

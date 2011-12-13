@@ -6,7 +6,7 @@
         "result": "badStage"
     },
     {
-        "result": "ok", "tokenBadgeId": 5
+        "result": "ok", "tokenBadgeId": 6
     },
     {
         "result": "ok",
@@ -20,7 +20,7 @@
                     "coins": 0,
                     "tokensInHand": 10,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 5,
+                        "tokenBadgeId": 6,
                         "specialPowerName": "Diplomat",
                         "raceName": "Orcs"
                     },
@@ -71,7 +71,7 @@
     },
 
     {
-        "result": "ok", "tokenBadgeId": 1
+        "result": "ok", "tokenBadgeId": 2
     },
     {
         "result": "badRegion"

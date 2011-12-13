@@ -6,7 +6,7 @@
         "result": "badStage"
     },
     {
-        "result": "ok", "tokenBadgeId": 1
+        "result": "ok", "tokenBadgeId": 2
     },
     {
         "result": "badUserSid"
@@ -41,7 +41,7 @@
               "regions": [
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1, "dragon": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "dragon": 1 }},
                 {},
                 {},
                 {},
@@ -62,7 +62,7 @@
                     "username": "username1",
                     "tokensInHand": 9,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 1,
+                        "tokenBadgeId": 2,
                         "specialPowerName": "DragonMaster",
                         "raceName": "Wizards"
                     },
@@ -86,7 +86,7 @@
     },
 
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok"

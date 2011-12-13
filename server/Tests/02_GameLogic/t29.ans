@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 3
+        "result": "ok", "tokenBadgeId": 4
     },
     {
         "result": "ok",
@@ -16,7 +16,7 @@
                     "username": "username1",
                     "tokensInHand": 11,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 3,
+                        "tokenBadgeId": 4,
                         "specialPowerName": "Flying",
                         "raceName": "Giants"
                     },
@@ -48,7 +48,7 @@
         "result": "ok"
     },
     {
-        "result": "badRegion", "dice": 0
+        "result": "badTokensNum", "dice": 0
     },
     {
         "result": "ok"

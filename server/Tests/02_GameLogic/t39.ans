@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 5
+        "result": "ok", "tokenBadgeId": 6
     },
     {
         "result": "ok"
@@ -28,7 +28,7 @@
     },
 
     {
-        "result": "ok", "tokenBadgeId": 0
+        "result": "ok", "tokenBadgeId": 1
     },
     {
         "result": "ok"
@@ -41,7 +41,7 @@
     },
 
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok"
