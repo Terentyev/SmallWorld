@@ -440,7 +440,8 @@ sub checkTokensNum_redeploy {
 #  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
 #  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} < 0 } @{ $self->{json}->{regions} }) ||
 #         $tokensNum < 0;
-  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} < 0 } @{ $self->{json}->{regions} });
+  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} < 0 } @{ $self->{json}->{regions} }) ||
+         (scalar(@{$self->{json}->{regions}}) == 1 && !$self->{json}->{regions}->[0]->{tokensNum});
 }
 
 sub checkTokensNum_conquer {
