@@ -67,6 +67,7 @@ use constant R_NO_MORE_TOKENS_IN_STORAGE    => 'noMoreTokensInStorageTray'      
 use constant R_NO_TOKENS_FOR_REDEPLOYMENT   => 'noTokensForRedeployment'            ;
 use constant R_NOT_ENOUGH_ENCAMPS           => 'notEnoughEncampmentsForRedeployment';
 use constant R_NOT_ENOUGH_TOKENS            => 'notEnoughTokens'                    ;
+use constant R_NOT_ENOUGH_TOKENS_FOR_R      => 'notEnoughTokensForRedeployment'     ;
 use constant R_NOT_IN_GAME                  => 'notInGame'                          ;
 use constant R_NOTHING_TO_ENCHANT           => 'nothingToEnchant'                   ;
 use constant R_REGION_IS_IMMUNE             => 'regionIsImmune'                     ;
@@ -98,7 +99,7 @@ use constant VISIBLE_BADGES_NUM => 6  ;
 use constant CMD_ERRORS => {
   conquer            => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
-    R_REGION_IS_IMMUNE, R_BAD_REGION
+    R_REGION_IS_IMMUNE, R_BAD_REGION, R_BAD_TOKENS_NUM
   ],
   createDefaultMaps  => [],
   createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
@@ -129,7 +130,7 @@ use constant CMD_ERRORS => {
   logout             => [R_BAD_SID],
   redeploy           => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
-    R_BAD_REGION, R_USER_HAS_NOT_REGIONS, R_BAD_TOKENS_NUM,
+    R_BAD_REGION, R_USER_HAS_NOT_REGIONS, R_BAD_TOKENS_NUM, R_NOT_ENOUGH_TOKENS_FOR_R,
     R_TOO_MANY_FORTS_IN_REGION, R_TOO_MANY_FORTS, R_NOT_ENOUGH_ENCAMPS,
     R_BAD_SET_HERO_CMD, R_NO_TOKENS_FOR_REDEPLOYMENT, R_BAD_ENCAMPMENTS_NUM
   ],

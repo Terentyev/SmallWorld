@@ -265,7 +265,7 @@ sub checkRegionId {
 sub checkRegion {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
   my $js = $self->{json};
-  my $races = $game->{gameState}->{regions};
+#  my $races = $game->{gameState}->{regions};
 
   my $func = $self->can("checkRegion_$js->{action}"); # see UNIVERSAL::can
   return !defined $func || &$func(@_);
@@ -310,16 +310,10 @@ sub checkRegion_conquer {
   # 2. на первом завоевании можно захватывать только при отдельных условиях
   # 3. у рас и умений есть особые правила нападения на регионы
 
-  if ( $player->activeConq($region) ||
-    $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
-    !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
-    !$game->canAttack($player, $region, $race, $sp)
-  ) {
-    $result->{dice} = $player->{dice} if defined $player->{dice};
-    $player->{dice} = undef;
-    return 1;
-  }
-  return 0;
+  return $player->activeConq($region) ||
+         $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
+         !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
+         ($player->{friendTokenBadgeId} // -1) == ($region->{tokenBadgeId} // -2);
 }
 
 sub checkRegion_dragonAttack {
@@ -409,11 +403,20 @@ sub checkStage {
 }
 
 sub checkEnoughTokens {
-  my ($game, $player) = $_[0]->getGameVariables();
+  my ($self, $game, $player, $region, $race, $sp) = @_;
   my $tokensNum = 0;
   $tokensNum += $_->{tokensNum} // 0 for @{ $_[0]->{json}->{regions} };
   return $tokensNum > $player->{tokensInHand};
 }
+
+sub checkEnoughTokens_redeploy {
+  my ($self, $game, $player, $region, $race, $sp) = @_;
+  my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus($player);
+  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
+  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
+  return $tokensNum < 0;
+}
+
 
 sub checkTokensInHand {
   my ($game, $player) = $_[0]->getGameVariables();
@@ -423,13 +426,30 @@ sub checkTokensInHand {
 }
 
 sub checkTokensNum {
-  my ($self, $game, $player, $region, $race, $sp) = @_;
-  # только для redeploy
-  my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus($player);
-  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
-  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
-  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} <= 0 } @{ $self->{json}->{regions} }) ||
-         $tokensNum < 0;
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
+  my $js = $self->{json};
+
+  my $func = $self->can("checkTokensNum_$js->{action}"); # see UNIVERSAL::can
+  return !defined $func || &$func(@_);
+}
+
+sub checkTokensNum_redeploy {
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
+#  my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus($player);
+#  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
+#  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
+#  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} < 0 } @{ $self->{json}->{regions} }) ||
+#         $tokensNum < 0;
+  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} < 0 } @{ $self->{json}->{regions} });
+}
+
+sub checkTokensNum_conquer {
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
+  if ( !$game->canAttack($player, $region, $race, $sp) ) {
+    $result->{dice} = $player->{dice} if defined $player->{dice};
+    return 1;
+  }
+  return 0;
 }
 
 sub checkForts {
@@ -497,12 +517,13 @@ sub checkGameCommand {
     &R_BAD_SET_HERO_CMD             => sub { defined $js->{heroes} && scalar(@{$js->{heroes}}) != min (scalar(@{$js->{regions}}), HEROES_MAX); },
     &R_BAD_SID                      => sub { !$self->{db}->dbExists("players", "sid", $js->{sid});  },
     &R_BAD_STAGE                    => sub { $self->checkStage(@gameVariables); },
-    &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables); },
+    &R_BAD_TOKENS_NUM               => sub { $self->checkTokensNum(@gameVariables, $result); },
     &R_CANNOT_ENCHANT               => sub { $region->{inDecline}; },
     &R_NO_MORE_TOKENS_IN_STORAGE    => sub { $game->tokensInStorage(RACE_SORCERERS) == 0; },
     &R_NO_TOKENS_FOR_REDEPLOYMENT   => sub { $self->checkTokensForRedeployment(@gameVariables); },
     &R_NOT_ENOUGH_ENCAMPS           => sub { $self->checkEnoughEncamps(@gameVariables); },
     &R_NOT_ENOUGH_TOKENS            => sub { $self->checkEnoughTokens(@gameVariables); },
+    &R_NOT_ENOUGH_TOKENS_FOR_R      => sub { $self->checkEnoughTokens_redeploy(@gameVariables); },
     &R_NOTHING_TO_ENCHANT           => sub { $region->{tokensNum} == 0; },
     &R_REGION_IS_IMMUNE             => sub { $self->checkRegionIsImmune(@gameVariables); },
     &R_THERE_ARE_TOKENS_IN_THE_HAND => sub { $self->checkTokensInHand(@gameVariables); },
