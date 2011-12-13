@@ -60,12 +60,17 @@ sub debug {
 
 sub getGame {
   my $self = shift;
-  my ($version, $id) = @{ $self->{db}->getGameVersionAndId($self->{json}->{sid}) };
+  my $gameId = defined $self->{json}->{gameId}? $self->{json}->{gameId} :
+               $self->{db}->getGameId($self->{json}->{sid});
+
+  my ($version, $id) = @{ $self->{db}->getGameVersionAndId($gameId) };
+
+#  my ($version, $id) = @{ $self->{db}->getGameVersionAndId($self->{json}->{gameId}) };
   if ( !defined $self->{_game} ||
       (grep { $_->{isReady} == 0 } @{ $self->{_game}->{gameState}->{players} }) ||
       $self->{_game}->{gameState}->{gameInfo}->{gameId} != $id ||
       $self->{_game}->{_version} != $version ) {
-    $self->{_game} = SmallWorld::Game->new($self->{db}, $self->{json}->{sid}, $self->{json}->{action});
+    $self->{_game} = SmallWorld::Game->new($self->{db}, $gameId, $self->{json}->{action});
   }
   return $self->{_game};
 }
@@ -287,7 +292,7 @@ sub cmd_throwDice {
 
 sub cmd_getGameState {
   my ($self, $result) = @_;
-  $result->{gameState} = $self->getGame()->getGameStateForPlayer($self->{json}->{sid});
+  $result->{gameState} = $self->getGame()->getGameStateForPlayer($self->{json}->{gameId});
 }
 
 1;

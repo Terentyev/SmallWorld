@@ -36,8 +36,8 @@ sub mergeGameState {
 
 # загружает информацию об игре из БД
 sub load {
-  my ($self, $sid, $act) = @_;
-  my $game = $self->{db}->getGameState($sid);
+  my ($self, $gameId, $act) = @_;
+  my $game = $self->{db}->getGameState($gameId);
   my $map = $self->{db}->getMap($game->{MAPID});
 
   $self->{_version} = $game->{VERSION};

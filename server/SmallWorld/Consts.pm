@@ -121,7 +121,7 @@ use constant CMD_ERRORS => {
   ],
   finishTurn         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE], # R_BAD_GAME_STATE
   getGameList        => [R_BAD_SID],
-  getGameState       => [R_BAD_SID, R_NOT_IN_GAME],
+  getGameState       => [R_BAD_GAME_ID],
   getMapList         => [R_BAD_SID],
   getMessages        => [],
   joinGame           => [R_BAD_SID, R_BAD_GAME_ID, R_BAD_GAME_STATE, R_ALREADY_IN_GAME, R_TOO_MANY_PLAYERS],
@@ -472,8 +472,14 @@ use constant PATTERN => {
     {
       name => 'sid',
       type => 'int',
-      mandatory => 1,
+      mandatory => 0,
       errorCode => R_BAD_SID
+    },
+    {
+      name => 'gameId',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_GAME_ID
     }
   ]
 };
