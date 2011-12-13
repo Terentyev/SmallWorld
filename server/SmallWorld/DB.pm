@@ -189,7 +189,7 @@ sub getGameState {
       FROM GAMES g
       INNER JOIN CONNECTIONS c ON c.gameId = g.id
       INNER JOIN PLAYERS p ON p.id = c.playerId
-      WHERE p.sid = ?',
+      WHERE g.id = ?',
       undef,  $_[0]) or dbError;
 }
 
@@ -225,7 +225,7 @@ sub getPlayers {
 }
 
 # возвращает версию состояния игры и ее id по sid'у игрока
-sub getGameVersionAndId {
+sub getGameVersionAndIdBySid {
   my $self = shift;
   return $self->{dbh}->selectrow_arrayref('
       SELECT g.version, g.id FROM GAMES g
@@ -233,6 +233,11 @@ sub getGameVersionAndId {
       INNER JOIN PLAYERS p ON p.id = c.playerId
       WHERE p.sid = ?',
       undef, $_[0]) || [];
+}
+
+sub getGameVersionAndId {
+  my $self = shift;
+  return $self->{dbh}->selectrow_arrayref('SELECT version, id FROM GAMES WHERE id = ?', undef, $_[0]) || [];
 }
 
 
