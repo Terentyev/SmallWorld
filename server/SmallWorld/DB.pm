@@ -235,9 +235,10 @@ sub getGameVersionAndIdBySid {
       undef, $_[0]) || [];
 }
 
-sub getGameVersionAndId {
+sub getGameVersion {
   my $self = shift;
-  return $self->{dbh}->selectrow_arrayref('SELECT version, id FROM GAMES WHERE id = ?', undef, $_[0]) || [];
+#  return $self->{dbh}->selectrow_arrayref('SELECT version FROM GAMES WHERE id = ?', undef, $_[0]) || [];
+  return $self->query('SELECT version FROM GAMES WHERE id = ?', $_[0]);
 }
 
 

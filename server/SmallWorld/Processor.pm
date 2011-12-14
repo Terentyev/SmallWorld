@@ -60,17 +60,17 @@ sub debug {
 
 sub getGame {
   my $self = shift;
-  my $gameId = defined $self->{json}->{gameId}? $self->{json}->{gameId} :
-               $self->{db}->getGameId($self->{json}->{sid});
+  my $id = defined $self->{json}->{gameId} ? $self->{json}->{gameId} :
+           $self->{db}->getGameId($self->{json}->{sid});
 
-  my ($version, $id) = @{ $self->{db}->getGameVersionAndId($gameId) };
+  my $version = $self->{db}->getGameVersion($id);
 
 #  my ($version, $id) = @{ $self->{db}->getGameVersionAndId($self->{json}->{gameId}) };
   if ( !defined $self->{_game} ||
       (grep { $_->{isReady} == 0 } @{ $self->{_game}->{gameState}->{players} }) ||
       $self->{_game}->{gameState}->{gameInfo}->{gameId} != $id ||
       $self->{_game}->{_version} != $version ) {
-    $self->{_game} = SmallWorld::Game->new($self->{db}, $gameId, $self->{json}->{action});
+    $self->{_game} = SmallWorld::Game->new($self->{db}, $id, $self->{json}->{action});
   }
   return $self->{_game};
 }
