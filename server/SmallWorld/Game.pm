@@ -102,7 +102,6 @@ sub init {
       tokensInHand       => INITIAL_TOKENS_NUM,
       priority           => $i++,
 #      dice               => undef,                                       # число, которое выпало при броске костей берсерка
-      friendTokenBadgeId => undef,                                       # id активной расы игрока, который подружил нас с собой
       currentTokenBadge  => {
         tokenBadgeId     => undef,
         totalTokensNum   => undef,
@@ -120,6 +119,11 @@ sub init {
     currentTurn    => 0,
     tokenBadges    => $self->initTokenBadges(),
     storage        => $self->initStorage(),
+    defendingInfo  => undef,
+    friendInfo     => undef,
+    berserkDice    => undef,
+    dragonAttacked => undef,
+    enchanted      => undef
   });
 }
 
@@ -199,7 +203,12 @@ sub getGameStateForPlayer {
     defendingInfo      => $gs->{defendingInfo},
     currentTurn        => $gs->{currentTurn},
     map                => \%{ $gs->{map} },
-    visibleTokenBadges => $gs->{visibleTokenBadges}
+    visibleTokenBadges => $gs->{visibleTokenBadges},
+    defendingInfo      => $gs->{defendingInfo},
+    friendInfo         => $gs->{friendInfo},
+    berserkDice        => $gs->{berserkDice},
+    dragonAttacked     => $gs->{dragonAttacked},
+    enchanted          => $gs->{enchanted}
   };
   $result->{map}->{regions} = [];
   grep {
@@ -230,10 +239,8 @@ sub getGameStateForPlayer {
       coins    => $_->{coins},
       tokensInHand => $_->{tokensInHand},
       priority     => $_->{priority},
-#     dragonAttacked => undef,
 #     dice         => $_->{dice},
-      berserkDice  => $_->{berserkDice},
-      friendTokenBadgeId => $_->{friendTokenBadgeId},
+#      berserkDice  => $_->{berserkDice},
       currentTokenBadge => \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
     }
@@ -353,7 +360,7 @@ sub createSpecialPower {
       &SP_WEALTHY       => 'SmallWorld::SpWealthy'
     }->{ $badge->{specialPowerName} };
   }
-  return $power->new($player, $self->{gameState}->{regions}, $badge);
+  return $power->new($player, $self->{gameState}, $badge);
 }
 
 # возвращает первое ли это нападение (есть ли на карте регионы с этой расой)
@@ -546,6 +553,7 @@ sub selectRace {
 
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
+  $sp->activate($self->{gameState}, $player);
 
   $player->{coins} += $player->{currentTokenBadge}->{bonusMoney} - $p;
   delete $player->{currentTokenBadge}->{bonusMoney};
@@ -572,8 +580,10 @@ sub finishTurn {
   }
   $player->{coins} += $bonus;
   $result->{coins} = $bonus;
-
-  @{ $player }{qw( berserkDice friendTokenBadgeId dragonAttacked)} = ();
+  $sp->finishTurn($self->{gameState});
+  $self->{gameState}->{friendInfo}->{friendId} = undef
+    if defined $self->{gameState}->{friendInfo} && $self->{gameState}->{friendInfo}->{friendId} == $player->{playerId};
+  @{ $player }{qw( berserkDice )} = ();
   @ {$_}{qw (conquestIdx prevTokenBadgeId)} = () for @{ $self->{gameState}->{regions} };
 
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
@@ -669,18 +679,18 @@ sub enchant {
 
 sub selectFriend {
   my ($self, $friendId) = @_;
-  my $player = $self->getPlayer({ id => $friendId });
-  $player->{friendTokenBadgeId} = $self->getPlayer()->{currentTokenBadge}->{tokenBadgeId};
+#  my $player = $self->getPlayer({ id => $friendId });
+  $self->{gameState}->{friendInfo}->{friendId} = $self->getPlayer({ id => $friendId })->{playerId};
 }
 
 sub dragonAttack {
   my ($self, $regionId) = @_;
-  my $player = $self->getPlayer();
+#  my $player = $self->getPlayer();
   my $region = $self->getRegion($regionId);
   my $defender = undef;
   $self->{defendNum} = 1;
   $self->conquer($regionId);
-  $player->{dragonAttacked} = 1;
+  $self->{gameState}->{dragonAttacked} = 1;
   $region->{dragon} = 1;
 }
 
