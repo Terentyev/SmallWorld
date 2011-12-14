@@ -36,7 +36,12 @@
     {
         "result": "ok",
         "gameState": {
-            "activePlayerId": 1,
+            "activePlayerId": 2,
+            "defendingInfo": {
+              "regionId": 4,
+              "playerId": 1,
+              "tokensNum": 4
+            },
             "currentTurn": 0,
             "map" : {
               "regions": [
@@ -61,7 +66,7 @@
                 {
                     "userId": 1,
                     "username": "username1",
-                    "tokensInHand": 4,
+                    "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
                         "specialPowerName": "Seafaring",

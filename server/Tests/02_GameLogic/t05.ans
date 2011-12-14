@@ -44,12 +44,17 @@
     {
         "result": "ok",
         "gameState": {
-            "activePlayerId": 1,
+            "defendingInfo": {
+              "regionId": 3,
+              "playerId": 1,
+              "tokensNum": 2
+            },
+            "activePlayerId": 2,
             "currentTurn": 0,
             "players": [
               {
                 "userId": 1,
-                "tokensInHand": 2
+                "tokensInHand": 0
               },
               {}
             ]
