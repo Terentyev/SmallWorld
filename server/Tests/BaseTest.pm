@@ -69,9 +69,9 @@ sub check {
   foreach ( @{ $inTest->{test} } ) {
     my $req = encode_json($_);
     my $cnt = $self->sendRequest($req);
-    my $diff = '';
+    my $diff = [];
 
-    if ( $self->compare($answers->[$i], eval { return decode_json($cnt) || {}; }, $diff) ) {
+    if ( $self->compare($answers->[$i], eval { return decode_json($cnt) || {}; }, $diff, '') ) {
       print '.';
     }
     else {
@@ -114,52 +114,58 @@ sub outReport {
       print "    $_->{num}: Request:  $_->{query}\n";
       print "       Expected: $_->{ethalon}\n";
       print "       Get:      $_->{content}\n";
-      print "       Diff:     $_->{diff}\n";
+      print "       Diff:\n";
+      foreach ( @{ $_->{diff} } ) {
+        print "            $_\n";
+      }
     }
   }
 }
 
 sub compare {
-  my ($self, $eth, $cnt, $diff) = @_;
+  my ($self, $eth, $cnt, $diff, $path) = @_;
 
   return 1 if ! defined $eth && ! defined $cnt;
   return 0 if ! defined $eth || ! defined $cnt;
   return 0 if ref $eth ne ref $cnt;
+
+  my $result = 1;
 
   if ( ref $eth eq "HASH" ) {
 # не поддерживаю идею точного совпадения результата сервера и эталонного ответа.
 # Сервер должен только содержать ответ, но может быть более полным.
 #return 0 if scalar(keys %$eth) != scalar(keys %$cnt);
 #    if ( !$self->compare([sort keys %$eth], [sort keys %$cnt], $_[3]) ) {
-#      $_[3] .= ':different keys';
+#      $path .= ':different keys';
+#      push @{$diff}, $path;
 #      return 0;
 #    }
     foreach (keys %{ $eth }) {
-      my $tmpDiff = "$diff/$_";
-      if ( !$self->compare($eth->{$_}, $cnt->{$_}, $tmpDiff) ) {
-        $_[3] = $tmpDiff;
-        return 0;
+      my $tmpPath = "$path/$_";
+      if ( !$self->compare($eth->{$_}, $cnt->{$_}, $diff, $tmpPath) ) {
+        $result = 0;
       }
     }
   }
   elsif ( ref $eth eq "ARRAY" ) {
     if ( scalar(@$eth) != scalar(@$cnt) ) {
-      $_[3] .= ':different array length';
+      $path .= ':different array length';
+      push @{$diff}, $path;
       return 0;
     }
     for (my $i = 0; $i < @$eth; ++$i) {
-      my $tmpDiff = "$diff [$i]";
-      if ( !$self->compare($eth->[$i], $cnt->[$i], $tmpDiff) ) {
-        $_[3] = $tmpDiff;
-        return 0;
+      my $tmpPath = $path . "[$i]";
+      if ( !$self->compare($eth->[$i], $cnt->[$i], $diff, $tmpPath) ) {
+        $result = 0;
       }
     }
   }
   elsif ( $eth ne $cnt ) {
-    $_[3] .= ":{'$eth' vs '$cnt'}";
+    $path .= ":{'$eth' vs '$cnt'}";
+    push @{$diff}, $path;
     return 0;
   }
-  return 1;
+  return $result;
 }
 
 1;
