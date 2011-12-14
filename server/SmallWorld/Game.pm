@@ -678,26 +678,10 @@ sub dragonAttack {
   my $player = $self->getPlayer();
   my $region = $self->getRegion($regionId);
   my $defender = undef;
-
-  if ( defined $region->{ownerId} ) {
-    $defender = $self->getPlayer( { id => $region->{ownerId} } );
-    if ( $defender->activeConq($region) ) {
-      my $defRace = $self->createRace($defender->{currentTokenBadge});
-      $defender->{tokensInHand} += $region->{tokensNum} + $defRace->looseTokensBonus();
-    }
-  }
-
-  @{$region}{qw ( dragon tokensNum ownerId prevTokenBadgeId tokenBadgeId conquestIdx inDecline lair fortified encampment)} = (
-    1, 1, $player->{playerId}, $region->{tokenBadgeId}, $player->{currentTokenBadge}->{tokenBadgeId}, $self->nextConquestIdx() );
+  $self->{defendNum} = 1;
+  $self->conquer($regionId);
   $player->{dragonAttacked} = 1;
-  --$player->{tokensInHand};
-
-  if ( defined $defender && $self->canDefend($defender) ) {
-    $self->{gameState}->{conquerorId} = $player->{playerId};
-    $self->{gameState}->{activePlayerId} = $defender->{playerId};
-    $self->{gameState}->{state} = GS_DEFEND;
-  }
-  $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
+  $region->{dragon} = 1;
 }
 
 sub throwDice {
