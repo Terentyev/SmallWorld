@@ -281,7 +281,7 @@ function hdlSetReady(ans) {
 function cmdGetGameState() {
   var cmd = {
     action: "getGameState",
-    sid: data.sid
+    gameId: data.gameId
   };
   sendRequest(cmd, hdlGetGameState, '#divGameError');
 }
@@ -355,7 +355,7 @@ function errConquer(ans, cnt) {
         'Conquest is over.',
         ans.dice,
         et));
-  changeGameStage('redeploy');
+  setGameStage('redeploy');
 }
 
 function cmdDefend(regions) {
