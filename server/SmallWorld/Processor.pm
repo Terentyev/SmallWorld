@@ -292,7 +292,7 @@ sub cmd_throwDice {
 
 sub cmd_getGameState {
   my ($self, $result) = @_;
-  $result->{gameState} = $self->getGame()->getGameStateForPlayer($self->{json}->{gameId});
+  $result->{gameState} = $self->getGame()->getGameStateForPlayer();
 }
 
 1;

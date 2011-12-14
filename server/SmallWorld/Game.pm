@@ -185,7 +185,7 @@ sub setTokenBadge {
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
 sub getGameStateForPlayer {
   my $self = shift;
-  my $playerId = $self->{db}->getPlayerId(shift);
+#  my $playerId = $self->{db}->getPlayerId(shift);
   my $gs = \%{ $self->{gameState} };
   $gs->{visibleTokenBadges} = [ @{ $gs->{tokenBadges} }[0..5] ];
   my $result = {
