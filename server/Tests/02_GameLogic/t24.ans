@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 3
+        "result": "ok", "tokenBadgeId": 4
     },
     {
         "result": "ok",
@@ -17,7 +17,7 @@
                     "coins": 2,
                     "tokensInHand": 12,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 3,
+                        "tokenBadgeId": 4,
                         "specialPowerName": "Commando",
                         "raceName": "Ratmen"
                     },

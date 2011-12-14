@@ -21,7 +21,7 @@
         "result": "badPosition"
     },
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok",
@@ -33,7 +33,7 @@
                     "coins": 3,
                     "tokensInHand": 11,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
                     },
@@ -43,37 +43,37 @@
             ],
             "visibleTokenBadges": [
                 {
-                    "tokenBadgeId": 0,
+                    "tokenBadgeId": 1,
                     "specialPowerName": "Alchemist",
                     "raceName": "Amazons",
                     "bonusMoney": 1
                 },
                 {
-                    "tokenBadgeId": 1,
+                    "tokenBadgeId": 2,
                     "specialPowerName": "Berserk",
                     "raceName": "Dwarves",
                     "bonusMoney": 1
                 },
                 {
-                    "tokenBadgeId": 3,
+                    "tokenBadgeId": 4,
                     "specialPowerName": "Commando",
                     "raceName": "Giants",
                     "bonusMoney": 0
                 },
                 {
-                    "tokenBadgeId": 4,
+                    "tokenBadgeId": 5,
                     "specialPowerName": "Diplomat",
                     "raceName": "Halflings",
                     "bonusMoney": 0
                 },
                 {
-                    "tokenBadgeId": 5,
+                    "tokenBadgeId": 6,
                     "specialPowerName": "DragonMaster",
                     "raceName": "Humans",
                     "bonusMoney": 0
                 },
                 {
-                    "tokenBadgeId": 6,
+                    "tokenBadgeId": 7,
                     "specialPowerName": "Flying",
                     "raceName": "Orcs",
                     "bonusMoney": 0

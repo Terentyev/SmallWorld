@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 1
+        "result": "ok", "tokenBadgeId": 2
     },
     {
         "result": "ok"
@@ -29,12 +29,12 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 1, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
                 {},
                 {},
                 {},
@@ -47,7 +47,7 @@
                     "username": "username1",
                     "tokensInHand": 5,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 1,
+                        "tokenBadgeId": 2,
                         "specialPowerName": "Mounted",
                         "raceName": "Giants"
                     },

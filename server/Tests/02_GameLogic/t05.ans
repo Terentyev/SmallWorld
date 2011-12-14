@@ -1,6 +1,6 @@
 [
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok"
@@ -24,7 +24,7 @@
         "result": "ok", "coins": 4, "nextPlayer": 2
     },
     {
-        "result": "ok", "tokenBadgeId": 5
+        "result": "ok", "tokenBadgeId": 6
     },
     {
         "result": "badRegion"
@@ -115,10 +115,10 @@
             "map" : {
               "regions": [
                 { "currentRegionState": {"tokensNum": 0 }},
-                { "currentRegionState": {"tokensNum": 7, "tokenBadgeId": 2, "ownerId": 1 }},
-                { "currentRegionState": {"tokensNum": 4, "tokenBadgeId": 5, "ownerId": 2 }},
-                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
-                { "currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 7, "tokenBadgeId": 3, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 4, "tokenBadgeId": 6, "ownerId": 2 }},
+                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 1 }},
                 { "currentRegionState": {"tokensNum": 1 }}
               ]
             },
@@ -128,7 +128,7 @@
                     "username": "username1",
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
                     },
@@ -140,7 +140,7 @@
                     "coins": 1,
                     "tokensInHand": 6,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 5,
+                        "tokenBadgeId": 6,
                         "specialPowerName": "DragonMaster",
                         "raceName": "Humans"
                     },

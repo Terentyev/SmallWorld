@@ -133,7 +133,7 @@ sub initTokenBadges {
   my $j = 0;
   while ( @sp ) {
     push @result, {
-      tokenBadgeId     => $j++,
+      tokenBadgeId     => ++$j,
       specialPowerName => splice(@sp, rand(scalar(@sp)), 1),
       bonusMoney       => 0
     };

@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok",
@@ -17,7 +17,7 @@
                     "coins": 3,
                     "tokensInHand": 11,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Skeletons"
                     },               
@@ -59,13 +59,13 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 2, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 2, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 3, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 3, "ownerId": 1 }},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
                 {},
                 {}
               ]
@@ -84,7 +84,7 @@
         }
     },
     {
-        "result": "ok", "tokenBadgeId": 1
+        "result": "ok", "tokenBadgeId": 2
     },
 
     {

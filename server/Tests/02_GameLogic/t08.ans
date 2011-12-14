@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 0
+        "result": "ok", "tokenBadgeId": 1
     },
     {
         "result": "ok",
@@ -17,7 +17,7 @@
                     "coins": 5,
                     "tokensInHand": 14,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
                     },
@@ -64,7 +64,7 @@
               "regions": [
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 10, "tokenBadgeId": 0, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 10, "tokenBadgeId": 1, "ownerId": 1 }},
                 {},
                 {},
                 {},
@@ -86,7 +86,7 @@
                     "coins": 5,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
                     },
@@ -102,7 +102,7 @@
 
 
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok"
@@ -122,7 +122,7 @@
               "regions": [
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 0, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
                 {},
                 {},
                 {},
@@ -132,7 +132,7 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 11, "tokenBadgeId": 2, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 11, "tokenBadgeId": 3, "ownerId": 2 }},
                 {},
                 {}
               ]
@@ -144,7 +144,7 @@
                     "coins": 8,
                     "tokensInHand": 13,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
                     },

@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 3
+        "result": "ok", "tokenBadgeId": 4
     },
     {
         "result": "ok",
@@ -17,7 +17,7 @@
                     "coins": 2,
                     "tokensInHand": 10,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 3,
+                        "tokenBadgeId": 4,
                         "specialPowerName": "Commando",
                         "raceName": "Giants"
                     },
@@ -55,9 +55,9 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 3, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }}
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 4, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 4, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 4, "ownerId": 1 }}
               ]
             },
             "players": [
@@ -66,7 +66,7 @@
                     "username": "username1",
                     "tokensInHand": 6,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 3,
+                        "tokenBadgeId": 4,
                         "specialPowerName": "Commando",
                         "raceName": "Giants"
                     },

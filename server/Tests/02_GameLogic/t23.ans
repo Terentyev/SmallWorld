@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok",
@@ -17,7 +17,7 @@
                     "coins": 3,
                     "tokensInHand": 10,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Trolls"
                     },
@@ -76,13 +76,13 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1, "encampment": 3 }},
-                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 2, "ownerId": 1, "encampment": 1 }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 1, "encampment": 3 }},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 3, "ownerId": 1, "encampment": 1 }},
                 {},
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1, "encampment": 1 }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 1, "encampment": 1 }},
                 {},
                 {},
                 {}
@@ -105,7 +105,7 @@
         "result": "ok", "coins": 3, "nextPlayer": 2
     },
     {
-        "result": "ok", "tokenBadgeId": 1
+        "result": "ok", "tokenBadgeId": 2
     },
     {
         "result": "ok"
@@ -123,13 +123,13 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 2, "ownerId": 1, "encampment": 3 }},
-                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 2, "ownerId": 1, "encampment": 1 }},
+                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 3, "ownerId": 1, "encampment": 3 }},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 3, "ownerId": 1, "encampment": 1 }},
                 {},
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 7, "tokenBadgeId": 1, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 7, "tokenBadgeId": 2, "ownerId": 2 }},
                 {},
                 {},
                 {}
@@ -163,14 +163,14 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "encampment": 3 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "encampment": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1, "encampment": 3 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1, "encampment": 1 }},
                 {},
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 8, "tokenBadgeId": 1, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 8, "tokenBadgeId": 2, "ownerId": 2 }},
                 {},
                 {}
               ]
@@ -216,14 +216,14 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "inDecline": 1 }},
-                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 1, "ownerId": 2 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1, "inDecline": 1 }},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 2, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 2 }},
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "inDecline": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1, "inDecline": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 2 }},
                 {},
                 {}
               ]

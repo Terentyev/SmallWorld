@@ -42,7 +42,7 @@
                         "adjacentRegions": [ 2 ],
                         "currentRegionState": {
                             "tokensNum": 10,
-                            "tokenBadgeId": 0,
+                            "tokenBadgeId": 1,
                             "ownerId": 1
                         }
                     },
@@ -51,7 +51,7 @@
                         "adjacentRegions": [ 1 ],
                         "currentRegionState": {
                             "tokensNum": 2,
-                            "tokenBadgeId": 2,
+                            "tokenBadgeId": 3,
                             "ownerId": 2
                         }
                     }
@@ -65,7 +65,7 @@
                     "priority": 0,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
                     },
@@ -79,7 +79,7 @@
                     "tokensInHand": 9,
                     "coins": 4,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 2,
+                        "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
                     },

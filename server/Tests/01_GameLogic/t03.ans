@@ -19,7 +19,7 @@
                         "adjacentRegions": [ 2 ],
                         "currentRegionState": {
                             "tokensNum": 10,
-                            "tokenBadgeId": 0,
+                            "tokenBadgeId": 1,
                             "ownerId": 1
                         }
                     },
@@ -39,7 +39,7 @@
                     "coins": 8,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
                     },

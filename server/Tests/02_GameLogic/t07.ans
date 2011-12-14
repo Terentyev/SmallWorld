@@ -1,6 +1,6 @@
 [
     {
-        "result": "ok", "tokenBadgeId": 5
+        "result": "ok", "tokenBadgeId": 6
     },
     {
         "result": "ok"
@@ -27,7 +27,7 @@
         "result": "ok", "coins": 4, "nextPlayer": 2
     },
     {
-        "result": "ok", "tokenBadgeId": 6
+        "result": "ok", "tokenBadgeId": 7
     },
     {
         "result": "ok"
@@ -69,9 +69,9 @@
               "regions": [
                 { "currentRegionState": {"tokensNum": 0 }},
                 { "currentRegionState": {"tokensNum": 1 }},
-                { "currentRegionState": {"tokensNum": 8, "tokenBadgeId": 6, "ownerId": 2 }},
-                { "currentRegionState": {"tokensNum": 2, "tokenBadgeId": 6, "ownerId": 2 }},
-                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 5, "ownerId": 1 }},
+                { "currentRegionState": {"tokensNum": 8, "tokenBadgeId": 7, "ownerId": 2 }},
+                { "currentRegionState": {"tokensNum": 2, "tokenBadgeId": 7, "ownerId": 2 }},
+                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 6, "ownerId": 1 }},
                 { "currentRegionState": {"tokensNum": 0 }}
               ]
             },
@@ -82,7 +82,7 @@
                     "coins": 4,
                     "tokensInHand": 7,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 5,
+                        "tokenBadgeId": 6,
                         "specialPowerName": "DragonMaster",
                         "raceName": "Humans"
                     },
@@ -93,7 +93,7 @@
                     "username": "username2",
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 6,
+                        "tokenBadgeId": 7,
                         "specialPowerName": "Flying",
                         "raceName": "Orcs"
                     },
@@ -170,8 +170,8 @@
                 { "currentRegionState": {"tokensNum": 1 }},
                 { "currentRegionState": {"tokensNum": 0 }},
                 { "currentRegionState": {"tokensNum": 0 }},
-                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 6, "ownerId": 2 }},
-                { "currentRegionState": {"tokensNum": 8, "tokenBadgeId": 6, "ownerId": 2 }}
+                { "currentRegionState": {"tokensNum": 1, "tokenBadgeId": 7, "ownerId": 2 }},
+                { "currentRegionState": {"tokensNum": 8, "tokenBadgeId": 7, "ownerId": 2 }}
               ]
             },
             "players": [
@@ -180,7 +180,7 @@
                     "username": "username1",
                     "tokensInHand": 5,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 5,
+                        "tokenBadgeId": 6,
                         "specialPowerName": "DragonMaster",
                         "raceName": "Humans"
                     },
@@ -191,7 +191,7 @@
                     "username": "username2",
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 6,
+                        "tokenBadgeId": 7,
                         "specialPowerName": "Flying",
                         "raceName": "Orcs"
                     },

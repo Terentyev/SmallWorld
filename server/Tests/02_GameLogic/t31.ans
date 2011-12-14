@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 0
+        "result": "ok", "tokenBadgeId": 1
     },
     {
         "result": "ok"
@@ -28,7 +28,7 @@
     },
 
     {
-        "result": "ok", "tokenBadgeId": 3
+        "result": "ok", "tokenBadgeId": 4
     },
     {
         "result": "ok"
@@ -65,7 +65,7 @@
               "regions": [
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {},
                 {},
@@ -74,8 +74,8 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 0, "ownerId": 1, "fortified": 1 }},
-                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 0, "ownerId": 1, "fortified": 1 }},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 1, "ownerId": 1, "fortified": 1 }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 1, "ownerId": 1, "fortified": 1 }},
                 {},
                 {}
               ]
@@ -86,7 +86,7 @@
                     "username": "username1",
                     "tokensInHand": 0,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Fortified",
                         "raceName": "Tritons"
                     },
@@ -97,7 +97,7 @@
                     "username": "username2",
                     "tokensInHand": 9,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 3,
+                        "tokenBadgeId": 4,
                         "specialPowerName": "Alchemist",
                         "raceName": "Giants"
                     },
@@ -121,17 +121,17 @@
               "regions": [
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 3, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 0, "ownerId": 1, "fortified": 1 }},
-                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 3, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 1, "ownerId": 1, "fortified": 1 }},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {}
               ]
@@ -142,7 +142,7 @@
                     "username": "username1",
                     "tokensInHand": 2,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Fortified",
                         "raceName": "Tritons"
                     },
@@ -153,7 +153,7 @@
                     "username": "username2",
                     "tokensInHand": 1,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 3,
+                        "tokenBadgeId": 4,
                         "specialPowerName": "Alchemist",
                         "raceName": "Giants"
                     },
@@ -185,17 +185,17 @@
               "regions": [
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 3, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 0, "ownerId": 1, "fortified": 1, "inDecline": 1}},
-                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 3, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1, "fortified": 1, "inDecline": 1}},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {}
               ]

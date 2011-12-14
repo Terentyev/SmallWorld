@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 0
+        "result": "ok", "tokenBadgeId": 1
     },
     {
         "result": "ok"
@@ -24,9 +24,9 @@
             "currentTurn": 0,
             "map" : {
               "regions": [
-                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 0, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 0, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 0, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 1, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 1, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1 }},
                 {},
                 {},
                 {},
@@ -47,7 +47,7 @@
                     "username": "username1",
                     "tokensInHand": 6,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 0,
+                        "tokenBadgeId": 1,
                         "specialPowerName": "Seafaring",
                         "raceName": "Tritons"
                     },
@@ -65,7 +65,7 @@
     },
 
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok"

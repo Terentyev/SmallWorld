@@ -3,7 +3,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "tokenBadgeId": 1
+        "result": "ok", "tokenBadgeId": 2
     },
     {
         "result": "ok",
@@ -17,7 +17,7 @@
                     "coins": 4,
                     "tokensInHand": 9,
                     "currentTokenBadge": {
-                        "tokenBadgeId": 1,
+                        "tokenBadgeId": 2,
                         "specialPowerName": "Alchemist",
                         "raceName": "Orcs"
                     },
@@ -50,7 +50,7 @@
     },
 
     {
-        "result": "ok", "tokenBadgeId": 2
+        "result": "ok", "tokenBadgeId": 3
     },
     {
         "result": "ok"
