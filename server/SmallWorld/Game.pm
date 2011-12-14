@@ -130,7 +130,7 @@ sub initTokenBadges {
   my @races = @{ &RACES };
   my @result = ();
 
-  my $j = 1;
+  my $j = 0;
   while ( @sp ) {
     push @result, {
       tokenBadgeId     => ++$j,
@@ -193,9 +193,10 @@ sub getGameStateForPlayer {
     gameName           => $gs->{gameInfo}->{gameName},
     gameDescription    => $gs->{gameInfo}->{gameDescription},
     currentPlayersNum  => $gs->{gameInfo}->{currentPlayersNum},
-    activePlayerId     => $gs->{activePlayerId},
+    activePlayerId     => defined $gs->{conquerorId} ? $gs->{conquerorId} : $gs->{activePlayerId},
     state              => !(grep { $_->{isReady} == 0 } @{ $gs->{players} }),
     stage              => $gs->{state},
+    defendingInfo      => $gs->{defendingInfo},
     currentTurn        => $gs->{currentTurn},
     map                => \%{ $gs->{map} },
     visibleTokenBadges => $gs->{visibleTokenBadges}
@@ -438,17 +439,17 @@ sub canAttack {
 
 # возвращает может ли игрок, который должен защищаться, защищаться
 sub canDefend {
-  my ($self, $defender) = @_;
+  my ($self, $defender, $tokens) = @_;
   # игрок может защищаться, если у него остались регионы, на которые он может
   # перемещать фигурки и на руках есть фигурки расы
-  return $defender->{tokensInHand} &&
-         grep { $defender->activeConq($_) } @{ $self->{gameState}->{regions} };
+  return $tokens &&
+  return grep { $defender->activeConq($_) } @{ $self->{gameState}->{regions} };
 }
 
 sub conquer {
   my ($self, $regionId, $result) = @_;
   my $player = $self->getPlayer();
-  my $defender = undef;
+  my ($defender, $defTokens) = ();
   my $region = $self->getRegion($regionId);
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
@@ -460,7 +461,8 @@ sub conquer {
     if ( $defender->activeConq($region) ) {
       # то надо вернуть ему какие-то фигурки
       my $defRace = $self->createRace($defender->{currentTokenBadge});
-      $defender->{tokensInHand} += $region->{tokensNum} + $defRace->looseTokensBonus();
+      $defTokens = $region->{tokensNum} + $defRace->looseTokensBonus();
+#      $defender->{tokensInHand} += $region->{tokensNum} + $defRace->looseTokensBonus();
     }
     else {
       # иначе защищающийся ничего не делает
@@ -477,10 +479,19 @@ sub conquer {
   $race->placeObject($player, $region) if $race->canPlaceObj2Region($player, $region); # размещаем в регионе уникальные для рас объекты
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
 
-  if ( defined $defender && $self->canDefend($defender) ) {
-    $self->{gameState}->{conquerorId} = $player->{playerId};
-    $self->{gameState}->{activePlayerId} = $defender->{playerId};
-    $self->{gameState}->{state} = GS_DEFEND;
+  if ( defined $defender ) {
+    if ($self->canDefend($defender, $defTokens)) {
+      $self->{gameState}->{defendingInfo} = {
+        'playerId' => $defender->{playerId},
+        'regionId' => $region->{regionId},
+        'tokensNum' => $defTokens
+      };
+      $self->{gameState}->{conquerorId} = $player->{playerId};
+      $self->{gameState}->{activePlayerId} = $defender->{playerId};
+      $self->{gameState}->{state} = GS_DEFEND;
+    } else {
+      $defender->{tokensInHand} = $defTokens;
+    }
   }
   if (defined $player->{berserkDice}) {
     $result->{dice} = $player->{berserkDice};
@@ -637,13 +648,14 @@ sub redeploy {
 sub defend {
   my ($self, $regs) = @_;
   my $player = $self->getPlayer();
-  
+#  $player->{tokensInHand} = $self->{gameState}->{defendingInfo}->{tokensNum};
   foreach ( @{ $regs } ) {
     $self->getRegion($_->{regionId})->{tokensNum} += $_->{tokensNum};
-    $player->{tokensInHand} -= $_->{tokensNum};
+#    $player->{tokensInHand} -= $_->{tokensNum};
   }
-  $self->{gameState}->{state} = GS_CONQUEST;
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{conquerorId};
+  @{ $self->{gameState} }{qw(defendingInfo conquerorId)} = ();
+  $self->{gameState}->{state} = GS_CONQUEST;
 }
 
 sub enchant {

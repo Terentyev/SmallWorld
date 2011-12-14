@@ -392,12 +392,13 @@ sub checkStage {
   # 3. попытка завоевания с нулевым числом фигурок на руках
   # 4. команда окончания хода с ненулевым числом фигурок на руках
   # 5. после бросока кубика может идти только команда conquer
+  my $state = $game->{gameState}->{state};
 
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
-    !(grep { $_ eq $js->{action} } @{ $states{ $game->{gameState}->{state} } }) ||
+    !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    ($js->{action} ne 'conquer') && defined $player->{berserkDice} && ($game->{gameState}->{state} eq GS_CONQUEST) || #TODO
+    ($js->{action} ne 'conquer') && defined $player->{berserkDice} && ($state eq GS_CONQUEST) || #TODO
     !$sp->canCmd($js, $game->{gameState}->{state}) ||
     !$race->canCmd($js);
 }
@@ -406,7 +407,7 @@ sub checkEnoughTokens {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $tokensNum = 0;
   $tokensNum += $_->{tokensNum} // 0 for @{ $_[0]->{json}->{regions} };
-  return $tokensNum > $player->{tokensInHand};
+  return $tokensNum > $game->{gameState}->{defendingInfo}->{tokensNum}; #$player->{tokensInHand};
 }
 
 sub checkEnoughTokens_redeploy {
@@ -422,7 +423,7 @@ sub checkTokensInHand {
   my ($game, $player) = $_[0]->getGameVariables();
   my $tokensNum = 0;
   $tokensNum += $_->{tokensNum} // 0 for @{ $_[0]->{json}->{regions} };
-  return $tokensNum < $player->{tokensInHand};
+  return $tokensNum < $game->{gameState}->{defendingInfo}->{tokensNum}; #$player->{tokensInHand};
 }
 
 sub checkTokensNum {
