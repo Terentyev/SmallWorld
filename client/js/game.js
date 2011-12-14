@@ -20,10 +20,38 @@ function commitStageClick() {
   commitStageClickAction();
 }
 
-function declineClick() {
+function selectFriend() {
+  var pls = '';
+  for (var i in data.game.players) {
+    var cur = data.game.players[i];
+    if (player.isHe(cur.userId)) continue;
+    pls += addOption(cur.userId, cur.username);
+  }
+  $('#selectPlayers').html(pls).triggel('update');
+  showModal('#divSelectFriend');
+}
+
+function dragonAttack() {
+  // TODO
+  if (areaClick != areaDragonAttack) {
+    areaClick = areaDragonAttack;
+    $('#txtDragonAttack').css('color', '#FF0000');
+    alert('Now click on region for dragon attack');
+  }
+  else {
+    areaClick = areaConquer;
+    $('#txtDragonAttack').css('color', '#FFFFFF');
+  }
+}
+
+function decline() {
   if (confirm('Do you really want decline you race "' + player.curRace() + '"?')) {
     cmdDecline();
   }
+}
+
+function enchant() {
+  // TODO
 }
 
 /*******************************************************************************
@@ -37,7 +65,6 @@ function askNumBox(text, onOk, value) {
   $("#divAskNumQuestion").html(text).trigger("update");
   $("#inputAskNum").attr("value", value);
   askNumOkClick = onOk;
-  //$("#divAskNum").dialog({modal: true});
   showModal('#divAskNum');
 }
 
@@ -97,7 +124,10 @@ function mergeGameState(gs) {
   }
 }
 
-function changeGameStage() {
+function changeGameStage(stage) {
+  if (stage != null) {
+    data.game.stage = stage;
+  }
   if (data.game.stage == 'gameOver') {
     showScores();
     return;
@@ -168,36 +198,44 @@ function areaWrong() {
 }
 
 function areaConquer(regionId) {
-  // TODO: do needed checks
-  data.game.stage = 'conquest';
-  changeGameStage();
+  changeGameStage('conquest');
   if (!player.canAttack(regionId)) {
     return;
   }
+  player.setRegionId(regionId);
   cmdConquer(regionId);
+}
+
+function areaDragonAttack(regionId) {
+  changeGameStage('conquest');
+  if (!player.canDragonAttack(regionId)) {
+    return;
+  }
+  player.setRegionId(regionId);
+  cmdDragonAttack(regionId);
+  dragonAttack();
 }
 
 function areaPlaceTokens(regionId) {
   // TODO: do needed checks
-  place = { r: data.game.map.regions[regionId].currentRegionState, id: regionId };
-  if (place.r.tokenBadgeId != player.curTokenBadgeId()) {
+  place = new Region(regionId);
+  if (!place.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');
     return;
   }
 
   askNumBox('How much tokens deploy on region?',
             deployRegion,
-            place.r.tokensNum);
+            place.tokens());
 }
 
 function deployRegion() {
   if (checkAskNumber()) return;
   var v = parseInt($("#inputAskNum").attr("value"));
-  if (checkEnough(v - place.r.tokensNum > player.tokens(), '#divAskNumError')) return;
+  if (checkEnough(v - place.tokens() > player.tokens(), '#divAskNumError')) return;
 
-  player.addTokens(place.r.tokensNum -v);
-  place.r.tokensNum = v;
-  $("#aTokensNum" + place.id).html(place.r.tokensNum).trigger("update");
+  player.addTokens(place.tokens() - v);
+  place.rmTokens(place.tokens() - v);
   $.modal.close();
 }
 
@@ -251,14 +289,12 @@ function commitStageDefend() {
 }
 
 function commitStageBeforeConquest() {
-  data.game.stage = 'conquest';
-  changeGameStage();
+  changeGameStage('conquest');
 }
 
 function commitStageConquest() {
-  data.game.stage = 'redeploy';
   player.beforeRedeploy();
-  changeGameStage();
+  changeGameStage('redeploy');
 }
 
 function commitStageRedeploy() {
@@ -277,6 +313,13 @@ function commitStageFinishTurn() {
 
 function commitStageGetGameState() {
   cmdGetGameState();
+}
+
+/*******************************************************************************
+   *         Special powers commits                                            *
+   ****************************************************************************/
+function commitSelectFriend() {
+  cmdSelectFriend($('#selectPlayers').attr('value'));
 }
 
 /*******************************************************************************

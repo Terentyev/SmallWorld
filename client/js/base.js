@@ -13,10 +13,13 @@ var data = {
     };
 var needMakeCurrent = false;
 
+function getErrorText(errorCode) {
+  return cmdErrors[errorCode] != null
+    ? cmdErrors[errorCode]
+    : errorCode;
+}
+
 function showError(errorText, container) {
-  errorText = cmdErrors[errorText] != null
-    ? cmdErrors[errorText]
-    : errorText;
   if (container)
     $(container).html(errorText);
   else
@@ -43,7 +46,7 @@ function sendRequest(query, callback, errorContainer, errorCallback) {
       else if (errorCallback)
         errorCallback(response, errorContainer)
       else
-        showError(response.result, errorContainer);
+        showError(getErrorText(response.result), errorContainer);
       $.unblockUI();
     },
     error: function(jqXHR, textStatus, errorThrown) {
@@ -97,6 +100,10 @@ function addAreaPoly(coords, regionId) {
   return $.sprintf(
       '<area id="area%d" shape="poly" coords="%s" href="#" onclick="areaClick(%d);" />',
       regionId, s, regionId);
+}
+
+function addOption(value, string) {
+  return $.sprintf('<option value="%s">%s</option>', value, string);
 }
 
 function addPlayerInfo(player) {
@@ -160,16 +167,54 @@ function currentPlayerPower() {
   var s = [];
   switch (player.curPower()) {
     case 'Berserk':
-      s.push('Dice:');
-      if (player.berserkDice() == null) {
-        s.push($('#divThrowDice').html());
+      if (data.game.stage == 'beforeConquest' || data.game.stage == 'conquest') {
+        s.push('Dice:');
+        if (player.canBerserkThrowDice()) {
+          s.push($('#divThrowDice').html());
+        }
+        else {
+          s.push(player.berserkDice());
+        }
       }
-      else {
-        s.push(player.berserkDice());
+      break;
+    case 'Diplomat':
+      if (data.game.stage == 'beforeFinishTurn') {
+        s.push('');
+        s.push($('#divSelectFriend').html());
+      }
+      break;
+    case 'DragonMaster':
+      if (data.game.stage == 'beforeConquest' || data.game.stage == 'conquest') {
+        s.push('');
+        s.push($('#divDragonAttack').html());
+      }
+      break;
+    case 'Stout':
+      if (data.game.stage == 'beforeFinishTurn') {
+        s.push('');
+        s.push($('#divDecline').html());
       }
       break;
     // TODO: может быть стоит отображать для других умений какую-то информацию,
     // например, оставшееся число лагерей
+  }
+  if (s.length == 0) {
+    return '';
+  }
+  return $.sprintf('<tr><td>%s</td><td>%s</td></tr>', s[0], s[1]);
+}
+
+function currentPlayerRace() {
+  var s = [];
+  switch (palyer.curRace()) {
+    case 'Sorcerers':
+      if (data.game.stage == 'beforeConquest' || data.game.stage == 'conquest') {
+        s.push('');
+        s.push($('#divEnchant').html());
+      }
+      break;
+    // TODO: может быть стоит отображать для других рас какую-то информацию,
+    // например, сколько дополнительно денег они получат
   }
   if (s.length == 0) {
     return '';

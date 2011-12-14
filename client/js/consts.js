@@ -120,3 +120,16 @@ var objects = {
   'fortified': '/pics/objFortified.png',
   'hero': '/pics/objHero.png'
 };
+
+var gameStages = {
+  null: ['', ''],
+  '': ['', ''],
+  'defend': ["Wait other players", "Let's defend, my friend!"],
+  'selectRace': ["Wait other players", "So... You should select your path... or race"],
+  'beforeConquest': ["Wait other players", "<table><tr><td>May be you want</td><td><div id='placeDecline'></div></td><td>your race?</td></tr></table>"],
+  'conquest': ["Wait other players", "Do you want some fun? Let's conquer some regions"],
+  'redeploy': ["Wait other players", "Place your warriors to the world"],
+  'beforeFinishTurn': ["Wait other players", "Last actions"],
+  'finishTurn': ["Wait other players", "Click finish-turn button, dude"],
+  'gameOver': ["Oops!.. Game over", "Oops!.. Game over"]
+};

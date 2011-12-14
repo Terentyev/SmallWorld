@@ -119,6 +119,36 @@
     </div>
   </div>
 
+  <div id="divSelectFriend" class="modal">
+    <div class="header"><span>Select friend</span></div>
+    <div class="message">
+      <table width="100%">
+        <tr>
+          <td colspan="3" align="center">
+            <div id="divSelectFriendError" class="error"></div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" align="center">
+            <div id="divSelectFriendMsg" class="question">Select your friend</div>
+          </td>
+        </tr>
+        <tr>
+          <td width="100">Player name:</td>
+          <td><select id="selectPlayers"></select></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="buttons">
+              <div class="modal-close">Cancel</div>
+              <div onclick="commitSelectFriend();">OK</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
   <div id="divScores" class="modal">
     <div class="header"><span>Scores</span></div>
     <div class="message">
@@ -227,14 +257,7 @@
           </table>
           </div>
           <div class="buttons">
-            <table width="100%" align="left">
-            <tr><td>
-            <div id="btnCommitStage" onclick="commitStageClick();">Next &gt;&gt;</div><br>
-            </td></tr>
-            <tr><td>
-            <div id="btnDecline" onclick="declineClick();" style="display: none;">Decline</div>
-            </td></tr>
-            </table>
+            <div id="btnCommitStage" onclick="commitStageClick();">Next &gt;&gt;</div>
           </div>
         </td>
       </tr>
@@ -248,8 +271,20 @@
   </div>
 
   <div style="display: none;">
-    <div id="#divThrowDice">
-      <div class="buttons"><div onclick="cmdThrowDice();">Throw</div></div>
+    <div id="divThrowDice">
+      <div class="inplaceButton"><div class="buttons"><div onclick="cmdThrowDice();">Throw</div></div></div>
+    </div>
+    <div id="divSelectFriend">
+      <div class="inplaceButton"><div class="buttons"><div onclick="selectFriend();">Friend</div></div></div>
+    </div>
+    <div id="divDragonAttack">
+      <div class="inplaceButton"><div class="buttons"><div onclick="dragonAttack();">Dragon</div></div></div>
+    </div>
+    <div id="divDecline">
+      <div class="inplaceButton"><div class="buttons"><div onclick="decline();">Decline</div></div></div>
+    </div>
+    <div id="divEnchant">
+      <div class="inplaceButton"><div class="buttons"><div onclick="enchant();">Enchant</div></div></div>
     </div>
   </div>
   
