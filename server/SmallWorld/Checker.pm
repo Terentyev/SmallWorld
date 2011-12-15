@@ -417,7 +417,6 @@ sub checkEnoughTokens_redeploy {
   return $tokensNum < 0;
 }
 
-
 sub checkTokensInHand {
   my ($game, $player) = $_[0]->getGameVariables();
   my $tokensNum = 0;
@@ -435,22 +434,18 @@ sub checkTokensNum {
 
 sub checkTokensNum_redeploy {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
-#  my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus($player);
-#  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
-#  $tokensNum -= $_->{tokensNum} // 0 for @{ $self->{json}->{regions} };
-#  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} < 0 } @{ $self->{json}->{regions} }) ||
-#         $tokensNum < 0;
   return (grep { !defined $_->{tokensNum} || $_->{tokensNum} < 0 } @{ $self->{json}->{regions} }) ||
          (scalar(@{$self->{json}->{regions}}) == 1 && !$self->{json}->{regions}->[0]->{tokensNum});
 }
 
+sub checkTokensNum_defend {
+  my ($self, $game, $player, $region, $race, $sp, $result) = @_;
+  return (grep { !defined $_->{tokensNum} || $_->{tokensNum} < 0 } @{ $self->{json}->{regions} });
+}
+
 sub checkTokensNum_conquer {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
-  if ( !$game->canAttack($player, $region, $race, $sp) ) {
-    $result->{dice} = $player->{dice} if defined $player->{dice};
-    return 1;
-  }
-  return 0;
+  return !$game->canAttack($player, $region, $race, $sp, $result);
 }
 
 sub checkForts {

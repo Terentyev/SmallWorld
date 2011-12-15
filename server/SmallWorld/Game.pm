@@ -429,7 +429,7 @@ sub canFirstConquer {
 
 # возвращает хватает ли игроку фигурок для атаки региона (бросает кубик, если надо)
 sub canAttack {
-  my ($self, $player, $region, $race, $sp) = @_;
+  my ($self, $player, $region, $race, $sp, $result) = @_;
   my $regions = $self->{gameState}->{regions};
 
   $self->{defendNum} = max(1, $region->getDefendTokensNum() -
@@ -438,6 +438,7 @@ sub canAttack {
   if ( !defined $player->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости, если еще не кинули(berserk)
     $player->{dice} = $self->random();
+    $result->{dice} = $player->{dice};
   }
 
   # если игроку не хватает фигурок даже с подкреплением, это его последнее завоевание

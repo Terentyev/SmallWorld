@@ -95,7 +95,7 @@
         "result": "badRegion"
     },
     {
-        "result": "thereAreTokensInTheHand"
+        "result": "badTokensNum"
     },
     {
         "result": "notEnoughTokens"
