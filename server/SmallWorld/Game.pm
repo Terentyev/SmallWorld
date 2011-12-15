@@ -238,6 +238,7 @@ sub getGameStateForPlayer {
       coins              => $_->{coins},
       tokensInHand       => $_->{tokensInHand},
       priority           => $_->{priority},
+      totalTokensNum     => $self->getPlayerTotalTokensNum($_->{playerId}),
       currentTokenBadge  => \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => (
           defined $_->{declinedTokenBadge}->{tokenBadgeId}
@@ -247,6 +248,11 @@ sub getGameStateForPlayer {
   } @{ $gs->{players} };
   $self->removeNull($result);
   return $result;
+}
+
+sub getPlayerTotalTokensNum {
+  my ($self, $playerId) = @_;
+  return $self->getPlayer({id => $playerId})->getTotalTokensNum($self->{gameState}->{regions});
 }
 
 # удаляет из хеша _все_ ключи, значения которых неопределены
