@@ -52,6 +52,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 9, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 7], ["Tritons", 0], ["Alchemist", 2]]
     }
 ]

@@ -18,7 +18,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins":6, "nextPlayer": 2
+        "result": "ok", "statistic":[["region", 3], ["Wizards", 1], ["Alchemist", 2]]
     },
 
     {
@@ -34,21 +34,21 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins":2, "nextPlayer": 1
+        "result": "ok", "statistic":[["region", 2], ["Giants", 0], ["Commando", 0]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins":3, "nextPlayer": 2
+        "result": "ok", "statistic":[["region", 3], ["Wizards", 0], ["Alchemist", 0]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins":2, "nextPlayer": 1
+        "result": "ok", "statistic":[["region", 2], ["Giants", 0], ["Commando", 0]]
     },
 
     {
@@ -67,7 +67,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins":7, "nextPlayer": 2
+        "result": "ok", "statistic":[["region", 5], ["Orcs", 2], ["Diplomat", 0], ["Wizards", 0], ["Alchemist", 0]]
     },
 
     {

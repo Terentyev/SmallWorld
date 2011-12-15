@@ -24,7 +24,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 4, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 3], ["Humans", 1], ["DragonMaster", 0]]
     },
     {
         "result": "ok", "tokenBadgeId": 7
@@ -58,7 +58,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 4, "nextPlayer": 1
+        "result": "ok", "statistic": [["region", 2], ["Orcs", 2], ["Flying", 0]]
     },
     {
         "result": "ok",
@@ -115,7 +115,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 2], ["Humans", 1], ["DragonMaster", 0]]
     },
     {
         "result": "ok"
@@ -127,7 +127,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 1
+        "result": "ok", "statistic": [["region", 2], ["Orcs", 1], ["Flying", 0]]
     },
     {
         "result": "ok"
@@ -136,7 +136,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 2], ["Humans", 1], ["DragonMaster", 0]]
     },
     {
         "result": "ok"
@@ -148,13 +148,13 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 1
+        "result": "ok", "statistic": [["region", 1], ["Orcs", 1], ["Flying", 0]]
     },
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 1], ["Humans", 0], ["DragonMaster", 0]]
     },
     {
         "result": "ok"
@@ -204,7 +204,7 @@
         "result": "badStage"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 1
+        "result": "ok", "statistic": [["region", 2], ["Orcs", 1], ["Flying", 0]]
     },
     {
         "result": "badRegion"
