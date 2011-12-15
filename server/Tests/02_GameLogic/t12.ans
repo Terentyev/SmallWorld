@@ -20,8 +20,7 @@
                         "tokenBadgeId": 5,
                         "specialPowerName": "Forest",
                         "raceName": "Halflings"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
@@ -80,8 +79,7 @@
                         "tokenBadgeId": 5,
                         "specialPowerName": "Forest",
                         "raceName": "Halflings"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]

@@ -232,15 +232,17 @@ sub getGameStateForPlayer {
   $result->{players} = undef;
   grep {
     push @{ $result->{players} }, {
-      userId => $_->{playerId},
-      username => $_->{username},
-      isReady  => $_->{isReady},
-      coins    => $_->{coins},
-      tokensInHand => $_->{tokensInHand},
-      priority     => $_->{priority},
-#     dice         => $_->{dice},
-      currentTokenBadge =>  \%{ $_->{currentTokenBadge} },
-      declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
+      userId             => $_->{playerId},
+      username           => $_->{username},
+      isReady            => $_->{isReady},
+      coins              => $_->{coins},
+      tokensInHand       => $_->{tokensInHand},
+      priority           => $_->{priority},
+      currentTokenBadge  => \%{ $_->{currentTokenBadge} },
+      declinedTokenBadge => (
+          defined $_->{declinedTokenBadge}->{tokenBadgeId}
+          ? \%{ $_->{declinedTokenBadge} }
+          : undef)
     }
   } @{ $gs->{players} };
   $self->removeNull($result);

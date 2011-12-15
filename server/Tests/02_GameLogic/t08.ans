@@ -20,8 +20,7 @@
                         "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
@@ -89,8 +88,7 @@
                         "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
@@ -147,8 +145,7 @@
                         "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]

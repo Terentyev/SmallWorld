@@ -20,8 +20,7 @@
                         "tokenBadgeId": 2,
                         "specialPowerName": "Forest",
                         "raceName": "Elves"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
@@ -38,7 +37,7 @@
     },
     {
         "result": "ok"
-    },                      
+    },
     {
         "result": "ok", "statistic": [["region", 3], ["Elves", 0], ["Forest", 1]]
     },

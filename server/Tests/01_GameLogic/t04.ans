@@ -41,8 +41,7 @@
                         "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {
                     "userId": 2,
@@ -55,8 +54,7 @@
                         "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 }
             ],
             "visibleTokenBadges": [

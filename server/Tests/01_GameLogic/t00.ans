@@ -34,16 +34,14 @@
                     "isReady": 1,
                     "priority": 0,
                     "coins": 5,
-                    "currentTokenBadge": {},
-                    "declinedTokenBadge": {}
+                    "currentTokenBadge": {}
                 },
                 {
                     "userId": 2,
                     "username": "username2",
                     "isReady": 1,
                     "priority": 1,
-                    "currentTokenBadge": {},
-                    "declinedTokenBadge": {}
+                    "currentTokenBadge": {}
                 }
             ],
             "visibleTokenBadges": [
@@ -125,16 +123,14 @@
                         "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {
                     "userId": 2,
                     "username": "username2",
                     "isReady": 1,
                     "priority": 1,
-                    "currentTokenBadge": {},
-                    "declinedTokenBadge": {}
+                    "currentTokenBadge": {}
                 }
             ],
             "visibleTokenBadges": [

@@ -50,8 +50,7 @@
                         "tokenBadgeId": 2,
                         "specialPowerName": "Mounted",
                         "raceName": "Wizards"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
