@@ -85,8 +85,7 @@
                         "tokenBadgeId": 6,
                         "specialPowerName": "DragonMaster",
                         "raceName": "Humans"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {
                     "userId": 2,
@@ -96,8 +95,7 @@
                         "tokenBadgeId": 7,
                         "specialPowerName": "Flying",
                         "raceName": "Orcs"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 }                
             ]
         }
@@ -183,8 +181,7 @@
                         "tokenBadgeId": 6,
                         "specialPowerName": "DragonMaster",
                         "raceName": "Humans"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {
                     "userId": 2,
@@ -194,8 +191,7 @@
                         "tokenBadgeId": 7,
                         "specialPowerName": "Flying",
                         "raceName": "Orcs"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 }                
             ]
         }

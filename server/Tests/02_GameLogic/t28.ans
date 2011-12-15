@@ -65,8 +65,7 @@
                         "tokenBadgeId": 2,
                         "specialPowerName": "DragonMaster",
                         "raceName": "Wizards"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]

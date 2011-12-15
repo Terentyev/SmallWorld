@@ -33,13 +33,13 @@ function selectFriend() {
 
 function dragonAttack() {
   // TODO
-  if (areaClick != areaDragonAttack) {
-    areaClick = areaDragonAttack;
+  if (areaClickAction != areaDragonAttack) {
+    areaClickAction = areaDragonAttack;
     $('#txtDragonAttack').css('color', '#FF0000');
     alert('Now click on region for dragon attack');
   }
   else {
-    areaClick = areaConquer;
+    areaClickAction = areaConquer;
     $('#txtDragonAttack').css('color', '#FFFFFF');
   }
 }
@@ -69,7 +69,7 @@ function askNumBox(text, onOk, value) {
 }
 
 function updatePlayerInfo(gs) {
-  player = new Player(gs, data.playerId);
+  player = new Player(data.playerId, gs);
 }
 
 function notEqual(gs, game, attr) {
@@ -115,13 +115,20 @@ function mergeGameState(gs) {
 
   var acts = [];
   mergeMember(gs, 'activePlayerId',     [showPlayers, changeGameStage], acts);
-  mergeMember(gs, 'stage',              [changeGameStage], acts);
-  mergeMember(gs, 'visibleTokenBadges', [showBadges], acts);
-  mergeMember(gs, 'map',                [showMapObjects], acts);
-  mergeMember(gs, 'players',            [showPlayers], acts);
+  mergeMember(gs, 'defendingInfo',      [showPlayers, changeGameStage], acts);
+  mergeMember(gs, 'stage',              [changeGameStage, showPlayers], acts);
+  mergeMember(gs, 'visibleTokenBadges', [showBadges],                   acts);
+  mergeMember(gs, 'map',                [showMapObjects],               acts);
+  mergeMember(gs, 'players',            [showPlayers],                  acts);
   for (var i in acts) {
     acts[i]();
   }
+}
+
+function setGameStage(stage) {
+  var gs = clone(data.game);
+  gs.stage = stage;
+  mergeGameState(gs);
 }
 
 function changeGameStage(stage) {
@@ -136,13 +143,14 @@ function changeGameStage(stage) {
   areaClickAction = areaWrong;
   tokenBadgeClickAction = tokenBadgeWrong;
   commitStageClickAction = commitStageGetGameState;
-  if (data.game.activePlayerId != data.playerId) {
+  if (!player.isActive()) {
     return;
   }
 
   commitStageClickAction = commitStageWrong;
   switch (data.game.stage) {
     case 'defend':
+      player.addTokens(data.game.defendingInfo.tokensNum); // по какой-то причине некоторым показалось, что положить токены не в руки, а в отдельную структуру, очень по-умному!!!
       defend = { regions: [], regionId: null };
       areaClickAction = areaDefend;
       commitStageClickAction = commitStageDefend;
@@ -194,11 +202,11 @@ function tokenBadgeBuy(position) {
    *         Area actions                                                      *
    ****************************************************************************/
 function areaWrong() {
-  alert('Wrong action. Try: ' + gameStages[data.game.stage][data.game.activePlayerId == data.playerId ? 0 : 1]);
+  alert('Wrong action. Try: ' + gameStages[data.game.stage][player.isActive()]);
 }
 
 function areaConquer(regionId) {
-  changeGameStage('conquest');
+  setGameStage('conquest');
   if (!player.canAttack(regionId)) {
     return;
   }
@@ -207,7 +215,7 @@ function areaConquer(regionId) {
 }
 
 function areaDragonAttack(regionId) {
-  changeGameStage('conquest');
+  setGameStage('conquest');
   if (!player.canDragonAttack(regionId)) {
     return;
   }
@@ -241,18 +249,22 @@ function deployRegion() {
 
 function areaDefend(regionId) {
   // TODO: do needed checks
-  var regState = getRegState(regionId);
-  if (regState.tokenBadgeId != player.curTokenBadgeId()) {
+  var region = new Region(regionId);
+  if (!region.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');
     return;
   }
 
   // TODO: check adjacent regions
-  /*for (var i in data.game.map.regions) {
-    if (i == regionId) continue;
-    var cur = data.game.map.regions[i];
-    if (
-  }*/
+  var loose = new Region(data.game.defendingInfo.regionId);
+  if (loose.isAdjacent(regionId)) {
+    for (var i in data.game.map.regions) {
+      var cur = new Region(i);
+      if (loose.isAdjacent(i) || !cur.isOwned(player.curTokenBadgeId())) continue;
+      alert("You can't place tokens to this region. You should place tokens on not adjacent regions");
+      return;
+    }
+  }
   defend.regionId = regionId;
   if (defend.regions[regionId] == null) defend.regions[regionId] = 0;
   askNumBox('How much tokens deploy on region on defend?',
@@ -277,7 +289,7 @@ function defendRegion() {
    *         Commit stage actions                                              *
    ****************************************************************************/
 function commitStageWrong() {
-  alert('Wrong action. Try: ' + gameStages[data.game.stage][data.game.activePlayerId == data.playerId ? 0 : 1]);
+  alert('Wrong action. Try: ' + gameStages[data.game.stage][player.isActive()]);
 }
 
 function commitStageDefend() {
@@ -289,12 +301,12 @@ function commitStageDefend() {
 }
 
 function commitStageBeforeConquest() {
-  changeGameStage('conquest');
+  setGameStage('conquest');
 }
 
 function commitStageConquest() {
   player.beforeRedeploy();
-  changeGameStage('redeploy');
+  setGameStage('redeploy');
 }
 
 function commitStageRedeploy() {

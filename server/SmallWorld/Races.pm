@@ -218,7 +218,7 @@ sub placeObject {
 sub canFirstConquer {
   my ($self, $region) = @_;
   # полурослики на первом завоевании могут пытаться захватить любую сушу
-  return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState} });
+  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} });
 }
 
 # у полуросликов после упадка или отказа исчезают норы
@@ -344,9 +344,9 @@ sub initialTokens {
 sub conquestRegionTokensBonus {
   my ($self, $player, $region, $regions, $sp) = @_;
 
-  return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE } @{ $region->{constRegionState}}) &&
+  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState}}) &&
          (grep {
-           grep {$_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $_->{constRegionState} }
+           grep {$_ eq REGION_TYPE_SEA } @{ $_->{constRegionState} }
         } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
 }
 

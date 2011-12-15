@@ -20,8 +20,7 @@
                         "tokenBadgeId": 2,
                         "specialPowerName": "Forest",
                         "raceName": "Dwarves"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
@@ -106,8 +105,7 @@
                         "tokenBadgeId": 3,
                         "specialPowerName": "Alchemist",
                         "raceName": "Elves"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 }
 
             ]

@@ -42,7 +42,7 @@ sub process {
   if ( $ENV{LENA} ) {
     # у Лены sid проверяется только как число, а наш сервер почему-то возвращает
     # строку... Ничего лучше пока не придумано.
-    if ( $self->{json}->{action} eq 'login' ) {
+    if ( $self->{json}->{action} eq 'login' && $result->{result} eq R_ALL_OK ) {
       $result->{sid} *= 1;
     }
   }

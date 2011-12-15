@@ -76,7 +76,7 @@ sub check {
     }
     else {
       print 'X';
-      $self->addReport($in, $i, $req, encode_json($answers->[$i]), $cnt, $diff);
+      $self->addReport($in, $inTest->{description}, $i, $req, encode_json($answers->[$i]), $cnt, $diff);
     }
     $i++;
   }
@@ -102,15 +102,23 @@ sub sendRequest {
 }
 
 sub addReport {
-  my ($self, $file, $num, $query, $ethalon, $content, $diff) = @_;
-  push(@{ $self->{report}->{$file} }, { num => $num + 1, query => $query, ethalon => $ethalon, content => $content, diff => $diff});
+  my ($self, $file, $descr, $num, $query, $ethalon, $content, $diff) = @_;
+  if ( !exists $self->{report}->{$file} ) {
+    $self->{report}->{$file} = { descr => $descr, errors => [] };
+  }
+  push(@{ $self->{report}->{$file}->{errors} }, {
+      num     => $num + 1,
+      query   => $query,
+      ethalon => $ethalon,
+      content => $content,
+      diff    => $diff});
 }
 
 sub outReport {
   my ($self) = @_;
   foreach my $file (sort keys %{ $self->{report} }) {
-    print "  $file:\n";
-    foreach ( @{ $self->{report}->{$file} } ) {
+    print "  $file ( $self->{report}->{$file}->{descr} ):\n";
+    foreach ( @{ $self->{report}->{$file}->{errors} } ) {
       print "    $_->{num}: Request:  $_->{query}\n";
       print "       Expected: $_->{ethalon}\n";
       print "       Get:      $_->{content}\n";

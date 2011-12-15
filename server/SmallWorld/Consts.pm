@@ -125,7 +125,7 @@ use constant CMD_ERRORS => {
   getMessages        => [],
   joinGame           => [R_BAD_SID, R_BAD_GAME_ID, R_BAD_GAME_STATE, R_ALREADY_IN_GAME, R_TOO_MANY_PLAYERS],
   leaveGame          => [R_BAD_SID, R_NOT_IN_GAME],
-  login              => [R_BAD_LOGIN],
+  login              => [R_BAD_USERNAME, R_BAD_PASSWORD, R_BAD_LOGIN],
   logout             => [R_BAD_SID],
   redeploy           => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
@@ -169,7 +169,7 @@ use constant PATTERN => {
       mandatory => 1,
       min => MIN_USERNAME_LEN,
       max => MAX_USERNAME_LEN,
-      errorCode => R_BAD_LOGIN
+      errorCode => R_BAD_USERNAME
     },
     {
       name => 'password',
@@ -177,7 +177,7 @@ use constant PATTERN => {
       mandatory => 1,
       min => MIN_PASSWORD_LEN,
       max => MAX_PASSWORD_LEN,
-      errorCode => R_BAD_LOGIN
+      errorCode => R_BAD_PASSWORD
     }
   ],
   logout => [
@@ -811,7 +811,6 @@ use constant REGION_TYPE_COAST    => 'coast'   ;
 use constant REGION_TYPE_FARMLAND => 'farmland';
 use constant REGION_TYPE_FOREST   => 'forest'  ;
 use constant REGION_TYPE_HILL     => 'hill'    ;
-use constant REGION_TYPE_LAKE     => 'lake'    ;
 use constant REGION_TYPE_MAGIC    => 'magic'   ;
 use constant REGION_TYPE_MINE     => 'mine'    ;
 use constant REGION_TYPE_MOUNTAIN => 'mountain';
@@ -869,7 +868,7 @@ use constant SPECIAL_POWERS => [
 
 use constant REGION_TYPES => [
   REGION_TYPE_BORDER, REGION_TYPE_CAVERN, REGION_TYPE_COAST, REGION_TYPE_FARMLAND,
-  REGION_TYPE_FOREST, REGION_TYPE_HILL, REGION_TYPE_LAKE, REGION_TYPE_MAGIC,
+  REGION_TYPE_FOREST, REGION_TYPE_HILL, REGION_TYPE_MAGIC,
   REGION_TYPE_MINE, REGION_TYPE_MOUNTAIN, REGION_TYPE_SEA, REGION_TYPE_SWAMP
 ];
 

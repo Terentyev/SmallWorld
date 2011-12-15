@@ -1,6 +1,9 @@
 var player = null;
 
-function Player(gs, playerId) {
+function Player(playerId, gs) {
+  if (gs == null) {
+    gs = data.game;
+  }
   for (var i in gs.players) {
     this.p = gs.players[i];
     if (this.p.userId == playerId) break;
@@ -16,7 +19,12 @@ Player.prototype.isHe = function(playerId) {
 }
 
 Player.prototype.isActive = function() {
-  return this.isHe(data.game.activePlayerId) ? 1 : 0;
+  var r =
+    this.isHe(data.game.activePlayerId) ||
+    data.game.defendingInfo != null && this.isHe(data.game.defendingInfo.playerId)
+    ? 1
+    : 0;
+  return r;
 }
 
 Player.prototype.curTokenBadgeId = function() {

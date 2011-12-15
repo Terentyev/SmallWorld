@@ -233,19 +233,27 @@ sub getGameStateForPlayer {
   $result->{players} = undef;
   grep {
     push @{ $result->{players} }, {
-      userId => $_->{playerId},
-      username => $_->{username},
-      isReady  => $_->{isReady},
-      coins    => $_->{coins},
-      tokensInHand => $_->{tokensInHand},
-      priority     => $_->{priority},
-#     dice         => $_->{dice},
-      currentTokenBadge =>  \%{ $_->{currentTokenBadge} },
-      declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
+      userId             => $_->{playerId},
+      username           => $_->{username},
+      isReady            => $_->{isReady},
+      coins              => $_->{coins},
+      tokensInHand       => $_->{tokensInHand},
+      priority           => $_->{priority},
+      totalTokensNum     => $self->getPlayerTotalTokensNum($_->{playerId}),
+      currentTokenBadge  => \%{ $_->{currentTokenBadge} },
+      declinedTokenBadge => (
+          defined $_->{declinedTokenBadge}->{tokenBadgeId}
+          ? \%{ $_->{declinedTokenBadge} }
+          : undef)
     }
   } @{ $gs->{players} };
   $self->removeNull($result);
   return $result;
+}
+
+sub getPlayerTotalTokensNum {
+  my ($self, $playerId) = @_;
+  return $self->getPlayer({id => $playerId})->getTotalTokensNum($self->{gameState}->{regions});
 }
 
 # удаляет из хеша _все_ ключи, значения которых неопределены
@@ -414,7 +422,7 @@ sub canFirstConquer {
   }
 
   return
-    !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} }) &&
+    !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} }) &&
     ((grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} }) || $adj) ||
     $race->canFirstConquer($region) || $sp->canFirstConquer($region);
 }

@@ -28,7 +28,7 @@
     },
     {
         "result": "badRegion"
-    },    
+    }, 
     {
         "result": "ok"
     },
@@ -136,8 +136,7 @@
                         "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {
                     "userId": 2,
@@ -148,8 +147,7 @@
                         "tokenBadgeId": 6,
                         "specialPowerName": "DragonMaster",
                         "raceName": "Humans"
-                    },
-                    "declinedTokenBadge": {}
+                    }
 
                 }
             ]

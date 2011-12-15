@@ -119,12 +119,13 @@ function showRegions() {
 
 function showGameStage() {
   $('#spanGameStage').html(
-      gameStages[data.game.stage][player.isActive()]
-  ).trigger('update');
+      gameStages[data.game.stage][player.isActive()]);
+  $('#spanGameStage').trigger('update');
   $('#placeDecline').html(
       (player.isActive() && data.game.stage == 'beforeConquest'
        ? $('#divDecline').html()
-       : '')).trigger('update');
+       : ''));
+  $('#placeDecline').trigger('update');
 }
 
 function showLobby() {

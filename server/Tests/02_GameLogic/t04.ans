@@ -54,8 +54,7 @@
                         "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",
                         "raceName": "Elves"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
@@ -108,8 +107,7 @@
                         "tokenBadgeId": 1,
                         "specialPowerName": "Alchemist",
                         "raceName": "Amazons"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 }
             ]
         }

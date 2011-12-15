@@ -108,7 +108,7 @@ function addOption(value, string) {
 
 function addPlayerInfo(player) {
   var s = $.sprintf(
-    '<tr><td>%s</td><td>%s</td></tr>',
+    '<tr><td>%s</td><td align="center">%s</td></tr>',
     currentPlayerCursor(player.userId),
     player.username);
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
@@ -128,9 +128,9 @@ function addOurPlayerInfo(player) {
   var s = $.sprintf(
     '<tr><td>%s</td><td>' +
     '<table id="tableOurPlayer">' +
-    '<tr><td>%s</td><td></td></tr>' +
-    '<tr><td>Tokens in hand:</td><td><a id="aTokensInHand">%d</a></td></tr>' +
-    '<tr><td>Coins:</td><td>%d</td></tr>' +
+    '<tr><td colspan="2" align="center">%s</td></tr>' +
+    '<tr><td align="left">Tokens in hand:</td><td align="right"><a id="aTokensInHand">%d</a></td></tr>' +
+    '<tr><td align="left">Coins:</td><td align="right">%d</td></tr>' +
     '%s',
     currentPlayerCursor(player.userId),
     data.username,
@@ -158,7 +158,8 @@ function addOurPlayerInfo(player) {
 }
 
 function currentPlayerCursor(playerId) {
-  return playerId == data.game.activePlayerId
+  var tmp = new Player(playerId);
+  return tmp.isActive()
     ? '<img src="/pics/currentPlayerCursor.png" />'
     : '';
 }
@@ -201,7 +202,7 @@ function currentPlayerPower() {
   if (s.length == 0) {
     return '';
   }
-  return $.sprintf('<tr><td>%s</td><td>%s</td></tr>', s[0], s[1]);
+  return $.sprintf('<tr><td align="left">%s</td><td align="right">%s</td></tr>', s[0], s[1]);
 }
 
 function currentPlayerRace() {

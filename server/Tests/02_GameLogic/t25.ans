@@ -20,8 +20,7 @@
                         "tokenBadgeId": 4,
                         "specialPowerName": "Commando",
                         "raceName": "Giants"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
@@ -69,8 +68,7 @@
                         "tokenBadgeId": 4,
                         "specialPowerName": "Commando",
                         "raceName": "Giants"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]

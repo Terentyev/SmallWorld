@@ -50,8 +50,7 @@
                         "tokenBadgeId": 1,
                         "specialPowerName": "Seafaring",
                         "raceName": "Tritons"
-                    },
-                    "declinedTokenBadge": {}
+                    }
                 },
                 {}
             ]
