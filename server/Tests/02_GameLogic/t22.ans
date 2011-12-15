@@ -3,6 +3,66 @@
         "result": "ok"
     },
     {
+        "result": "badStage"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "ok", "dice": 1
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "currentTurn": 0,
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "coins": 5,
+                    "tokensInHand": 6,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 1,
+                        "specialPowerName": "Berserk",
+                        "raceName": "Tritons"
+                    }
+                },
+                {}
+            ]
+        }
+    },
+    {
+        "result": "ok", "dice": 1
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 2], ["Tritons", 0], ["Berserk", 0]]
+    },
+    {
         "result": "ok", "tokenBadgeId": 2
     },
     {
@@ -18,69 +78,28 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 4, "nextPlayer": 2
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 3], ["Wizards", 1], ["Alchemist", 2]]
     },
 
     {
-        "result": "ok"
+        "result": "ok", "dice": 1
     },
     {
         "result": "ok"
     },
     {
-        "result": "badUserSid"
+        "result": "ok"
     },
     {
-        "result": "badUserSid"
+        "result": "ok", "dice": 1
     },
     {
-        "result": "notInGame"
-    },
-    {
-        "result": "ok", "dice": 0
-    },
-
-    {
-        "result": "badStage"
-    },
-    {
-        "result": "badRegion"
+        "result": "badTokensNum"
     },
     {
         "result": "badStage"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "dice": 0
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "dice": 0
-    },
-    {
-        "result": "badStage"
-    },
-    {
-        "result": "badRegion"
-    },
-    {
-        "result": "badStage"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "badStage"
-    },
-    {
-        "result": "ok", "coins": 3, "nextPlayer": 1
     }
-
 ]

@@ -435,7 +435,7 @@ sub canAttack {
   $self->{defendNum} = max(1, $region->getDefendTokensNum() -
     $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $regions, $sp));
 
-  if ( !defined $player->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
+  if ( !defined $self->{gameState}->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости, если еще не кинули(berserk)
     $player->{dice} = $self->random();
     $result->{dice} = $player->{dice};
@@ -507,10 +507,8 @@ sub conquer {
       $defender->{tokensInHand} = $defTokens;
     }
   }
-  if (defined $player->{berserkDice}) {
-    $result->{dice} = $player->{berserkDice};
-    $player->{berserkDice} = undef;
-  }
+  $self->{gameState}->{berserkDice} = undef if exists $self->{gameState}->{berserkDice};
+
   if ( defined $player->{dice} ) {
     $result->{dice} = $player->{dice};
     $player->{dice} = undef;
@@ -612,7 +610,7 @@ sub finishTurn {
   $sp->finishTurn($self->{gameState});
   $self->{gameState}->{friendInfo}->{friendId} = undef
     if defined $self->{gameState}->{friendInfo} && ($self->{gameState}->{friendInfo}->{friendId} // -1) == $player->{playerId};
-  @{ $player }{qw( berserkDice )} = ();
+
   @ {$_}{qw (conquestIdx prevTokenBadgeId)} = () for @{ $self->{gameState}->{regions} };
 
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
@@ -726,9 +724,9 @@ sub dragonAttack {
 sub throwDice {
   my $self = shift;
   my $player = $self->getPlayer();
-  $player->{berserkDice} = $ENV{DEBUG} ? 1 : $self->random();
+  $self->{gameState}->{berserkDice} = $ENV{DEBUG} ? 1 : $self->random();
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
-  return $player->{berserkDice};
+  return $self->{gameState}->{berserkDice};
 }
 
 1;
