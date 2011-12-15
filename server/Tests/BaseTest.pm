@@ -135,7 +135,7 @@ sub compare {
 
   return 1 if ! defined $eth && ! defined $cnt;
   if ( ref $eth ne ref $cnt || defined $eth != defined $cnt ) {
-    $path .= ':{' . (defined $eth ? (ref $eth) : 'UNDEF') . ' vs. ' . (defined $cnt ? (ref $cnt) : 'UNDEF') . '}';
+    $path .= ':{' . (defined $eth ? (ref $eth) : 'UNDEF') . ' vs ' . (defined $cnt ? (ref $cnt) : 'UNDEF') . '}';
     push @{$diff}, $path;
     return 0;
   }
@@ -160,7 +160,7 @@ sub compare {
   }
   elsif ( ref $eth eq "ARRAY" ) {
     if ( scalar(@$eth) != scalar(@$cnt) ) {
-      $path .= ':different array length';
+      $path .= ':different array length:{' . scalar(@$eth) . ' vs ' . scalar(@$cnt) . '}';
       push @{$diff}, $path;
       return 0;
     }
