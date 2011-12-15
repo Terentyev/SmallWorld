@@ -189,7 +189,6 @@ sub setTokenBadge {
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
 sub getGameStateForPlayer {
   my $self = shift;
-#  my $playerId = $self->{db}->getPlayerId(shift);
   my $gs = \%{ $self->{gameState} };
   $gs->{visibleTokenBadges} = [ @{ $gs->{tokenBadges} }[0..5] ];
   my $result = {
@@ -240,12 +239,10 @@ sub getGameStateForPlayer {
       tokensInHand => $_->{tokensInHand},
       priority     => $_->{priority},
 #     dice         => $_->{dice},
-#      berserkDice  => $_->{berserkDice},
-      currentTokenBadge => \%{ $_->{currentTokenBadge} },
+      currentTokenBadge =>  \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => \%{ $_->{declinedTokenBadge} }
     }
   } @{ $gs->{players} };
-  # grep {delete $_->{coins} if $_->{userId} != $playerId} @{ $result->{players} } if $result->{stage} ne GS_IS_OVER;
   $self->removeNull($result);
   return $result;
 }
@@ -571,24 +568,34 @@ sub finishTurn {
 
   # возвращаем количество монет, полученных на этом ходу
   my $bonus = 0;
+  $result->{statistic} = [];
   if (exists $player->{declineBonus}) {
     $bonus = $player->{declineBonus};
     delete $player->{declineBonus};
   } else {
-    $bonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions }) + 
-             $sp->coinsBonus(!$self->{gameState}->{currentTurn}) + $race->coinsBonus() + $drace->declineCoinsBonus();
+    my $regionBonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions });
+    $bonus = $regionBonus + $sp->coinsBonus(!$self->{gameState}->{currentTurn}) + $race->coinsBonus() + $drace->declineCoinsBonus();
+    push @{$result->{statistic}}, ['region', $regionBonus];
+    if (defined $player->{currentTokenBadge}->{raceName} ){
+      push @{$result->{statistic}}, [$player->{currentTokenBadge}->{raceName}, $race->coinsBonus()];
+      push @{$result->{statistic}}, [$player->{currentTokenBadge}->{specialPowerName}, $sp->coinsBonus(!$self->{gameState}->{currentTurn})];
+    }
+    if (defined $player->{declinedTokenBadge}->{raceName} ){
+      push @{$result->{statistic}}, [$player->{declinedTokenBadge}->{raceName}, $drace->declineCoinsBonus()];
+      push @{$result->{statistic}}, [$player->{declinedTokenBadge}->{specialPowerName}, 0];
+    }
   }
   $player->{coins} += $bonus;
-  $result->{coins} = $bonus;
+
   $sp->finishTurn($self->{gameState});
   $self->{gameState}->{friendInfo}->{friendId} = undef
-    if defined $self->{gameState}->{friendInfo} && $self->{gameState}->{friendInfo}->{friendId} == $player->{playerId};
+    if defined $self->{gameState}->{friendInfo} && ($self->{gameState}->{friendInfo}->{friendId} // -1) == $player->{playerId};
   @{ $player }{qw( berserkDice )} = ();
   @ {$_}{qw (conquestIdx prevTokenBadgeId)} = () for @{ $self->{gameState}->{regions} };
 
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
     ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
-  $result->{nextPlayer} = $self->{gameState}->{activePlayerId};
+
   $player = $self->getPlayer();
   if ( $player->{priority} == 0 ) {
     $self->{gameState}->{currentTurn}++;
