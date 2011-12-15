@@ -19,11 +19,11 @@ sub new {
 
 # инициализация объекта
 sub _init {
-  my ($self, $player, $regions) = @_;
+  my ($self, $player, $state) = @_;
   $self->{player} = $player;
-  $self->{allRegions} = $regions;
+  $self->{allRegions} = $state->{regions};
   # извлекаем только свои регионы (остальные скорее всего не понадобятся)
-  $self->{regions} = [grep { $player->activeConq($_) } @{ $regions }] || [];
+  $self->{regions} = [grep { $player->activeConq($_) } @{ $state->{regions} }] || [];
 }
 
 # бонус монетками для способности
@@ -92,6 +92,16 @@ sub isAdjacent {
 #  return 0;
 }
 
+sub activate {
+  my ($self, $state, $player) = @_;
+}
+
+#сбрасывает флаги использования спец умения в конце хода
+sub finishTurn {
+  my ($self, $state) = @_;
+  return 0;
+}
+
 package SmallWorld::SpAlchemist;
 use strict;
 use warnings;
@@ -120,9 +130,9 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub _init {
-  my ($self, $player, $regions, $badge) = @_;
-  $self->SUPER::_init($player, $regions, $badge);
-  $self->{dice} = $player->{berserkDice};
+  my ($self, $player, $state, $badge) = @_;
+  $self->SUPER::_init($player, $state, $badge);
+  $self->{dice} = $state->{berserkDice};
 }
 
 sub conquestRegionTokensBonus {
@@ -140,6 +150,16 @@ sub canCmd {
 
 sub initialTokens {
   return BERSERK_TOKENS_NUM;
+}
+
+sub activate {
+  my ($self, $state, $player) = @_;
+  $state->{berserkDice} = undef;
+}
+
+sub finishTurn {
+  my ($self, $state) = @_;
+  $state->{berserkDice} = undef;
 }
 
 
@@ -213,6 +233,14 @@ sub initialTokens {
   return DIPLOMAT_TOKENS_NUM;
 }
 
+sub activate {
+  my ($self, $state, $player) = @_;
+  $state->{friendInfo} = {
+    'diplomatId' => $player->{playerId},
+    'friendId' => undef
+  };
+}
+
 
 package SmallWorld::SpDragonMaster;
 use strict;
@@ -224,9 +252,9 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub _init {
-  my ($self, $player, $regions, $badge) = @_;
-  $self->SUPER::_init($player, $regions, $badge);
-  $self->{dragonAttacked} = exists $player->{dragonAttacked} ? $player->{dragonAttacked}: 0;
+  my ($self, $player, $state, $badge) = @_;
+  $self->SUPER::_init($player, $state, $badge);
+  $self->{dragonAttacked} = ($state->{dragonAttacked} // 0);
 }
 
 sub declineRegion {
@@ -248,6 +276,16 @@ sub canCmd {
 
 sub initialTokens {
   return DRAGON_MASTER_TOKENS_NUM;
+}
+
+sub activate {
+  my ($self, $state, $player) = @_;
+  $state->{dragonAttacked} = 0;
+}
+
+sub finishTurn {
+  my ($self, $state) = @_;
+  $state->{dragonAttacked} = 0;
 }
 
 

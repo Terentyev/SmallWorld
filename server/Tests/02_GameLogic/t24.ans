@@ -64,6 +64,6 @@
         "result": "ok"
     },
     {
-        "result": "badRegion", "dice": 0
+        "result": "badTokensNum", "dice": 0
     }
 ]

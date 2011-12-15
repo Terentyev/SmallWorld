@@ -12,6 +12,7 @@ our @EXPORT = qw(
 );
 
 use constant SERVER_ADDRESS => "server.smallworld";
+#use constant SERVER_ADDRESS => "192.168.1.51/small_worlds";
 
 1;
 

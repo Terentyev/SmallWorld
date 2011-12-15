@@ -15,7 +15,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         },
 
         {
@@ -65,7 +65,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         },
         {
             "action": "finishTurn",
@@ -94,7 +94,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         }
     ]
 }

@@ -32,7 +32,7 @@
         "result": "badTokensNum"
     },
     {
-        "result": "badTokensNum"
+        "result": "notEnoughTokensForRedeployment"
     },
     {
         "result": "badTokensNum"

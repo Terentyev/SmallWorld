@@ -186,7 +186,7 @@
         "result": "ok"
     },
     {
-        "result": "badTokensNum"
+        "result": "notEnoughTokensForRedeployment"
     },
     {
         "result": "ok"

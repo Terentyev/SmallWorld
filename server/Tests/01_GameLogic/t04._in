@@ -50,7 +50,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 2
+            "gameId": 1
         }
     ],
     "description": "first turn second player"

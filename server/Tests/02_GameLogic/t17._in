@@ -14,7 +14,7 @@
         },
         {
             "action": "getGameState",
-            "sid": 1
+            "gameId": 1
         }
     ]
 }
