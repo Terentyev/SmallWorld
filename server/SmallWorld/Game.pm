@@ -14,6 +14,7 @@ use SmallWorld::Player;
 use SmallWorld::Races;
 use SmallWorld::Region;
 use SmallWorld::SpecialPowers;
+use SmallWorld::Utils;
 
 # принимает параметры:
 #   db  -- объект класса SmallWorld::DB
@@ -233,11 +234,10 @@ sub getGameStateForPlayer {
     push @{ $result->{players} }, {
       userId             => $_->{playerId},
       username           => $_->{username},
-      isReady            => $_->{isReady},
+      isReady            => $self->bool($_->{isReady}),
       coins              => $_->{coins},
       tokensInHand       => $_->{tokensInHand},
       priority           => $_->{priority} + 1,
-      totalTokensNum     => $self->getPlayerTotalTokensNum($_->{playerId}),
       currentTokenBadge  => \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => (
           defined $_->{declinedTokenBadge}->{tokenBadgeId}
@@ -245,13 +245,27 @@ sub getGameStateForPlayer {
           : undef)
     }
   } @{ $gs->{players} };
+  foreach ( @{ $result->{players} } ) {
+    if ( defined $_->{currentTokenBadge}->{tokenBadgeId} ) {
+      $_->{currentTokenBadge}->{totalTokensNum} = $_->{tokensInHand} +
+        $self->getTokensNum($_->{currentTokenBadge}->{tokenBadgeId});
+    }
+    if ( $_->{declinedTokenBadge}->{tokenBadgeId} ) {
+      $_->{declinedTokenBadge}->{totalTokensNum} =
+        $self->getTokensNum($_->{declinedTokenBadge}->{tokenBadge});
+    }
+  }
   $self->removeNull($result);
   return $result;
 }
 
-sub getPlayerTotalTokensNum {
-  my ($self, $playerId) = @_;
-  return $self->getPlayer({id => $playerId})->getTotalTokensNum($self->{gameState}->{regions});
+sub getTokensNum {
+  my ($self, $tokenBadgeId) = @_;
+  my $result = 0;
+  foreach ( @{ $self->{gameState}->{regions} } ) {
+    $result += $_->{tokensNum} if ($_->{tokenBadgeId} // -1) == $tokenBadgeId;
+  }
+  return $result;
 }
 
 # удаляет из хеша _все_ ключи, значения которых неопределены
@@ -716,6 +730,9 @@ sub selectFriend {
 sub dragonAttack {
   my ($self, $regionId) = @_;
 #  my $player = $self->getPlayer();
+  foreach ( @{ $self->{gameState}->{regions} } ) {
+    $_->{dragon} = undef;
+  }
   my $region = $self->getRegion($regionId);
   my $defender = undef;
   $self->{defendNum} = 1;

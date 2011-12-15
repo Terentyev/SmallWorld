@@ -13,6 +13,7 @@ use SmallWorld::Config;
 use SmallWorld::DB;
 use SmallWorld::Checker;
 use SmallWorld::Game;
+use SmallWorld::Utils;
 
 sub new {
   my $class = shift;
@@ -95,7 +96,6 @@ sub cmd_resetServer {
   return if !$ENV{DEBUG};
   my ($self, $result) = @_;
   $self->{db}->clear();
-  $self->cmd_createDefaultMaps() if $ENV{LENA};
 }
 
 sub cmd_register {
@@ -163,7 +163,7 @@ sub cmd_getGameList {
       map { {
         'userId' => $_->{ID},
         'username' => $_->{USERNAME},
-        'isReady' => $_->{ISREADY}
+        'isReady' => $self->bool($_->{ISREADY})
       } } @{$pl}
     ];
     my ($activePlayerId, $turn) = (undef, 0);
