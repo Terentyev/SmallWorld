@@ -208,7 +208,8 @@ sub getGameStateForPlayer {
     stoutStatistics    => $gs->{stoutStatistics},
     berserkDice        => $gs->{berserkDice},
     dragonAttacked     => $gs->{dragonAttacked},
-    enchanted          => $gs->{enchanted}
+    enchanted          => $gs->{enchanted},
+    gotWealthy         => $gs->{gotWealthy}
   };
   $result->{map}->{regions} = [];
   grep {
@@ -574,11 +575,11 @@ sub getPlayerBonus {
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
   my $regionBonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions });
-  my $bonus = $regionBonus + $sp->coinsBonus(!$self->{gameState}->{currentTurn}) + $race->coinsBonus() + $drace->declineCoinsBonus();
+  my $bonus = $regionBonus + $sp->coinsBonus($self->{gameState}) + $race->coinsBonus() + $drace->declineCoinsBonus();
   push @{$result}, ['Regions', $regionBonus];
   if (defined $player->{currentTokenBadge}->{raceName} ){
     push @{ $result }, [$player->{currentTokenBadge}->{raceName}, $race->coinsBonus()];
-    push @{ $result }, [$player->{currentTokenBadge}->{specialPowerName}, $sp->coinsBonus(!$state->{currentTurn})];
+    push @{ $result }, [$player->{currentTokenBadge}->{specialPowerName}, $sp->coinsBonus($self->{gameState})];
   }
   if (defined $player->{declinedTokenBadge}->{raceName} ){
     push @{ $result }, [$player->{declinedTokenBadge}->{raceName}, $drace->declineCoinsBonus()];

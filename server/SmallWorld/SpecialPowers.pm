@@ -615,11 +615,18 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  my ($self, $isFirstTurn) = @_;
-  die 'Stupid monkey forget pass parameter "isFirstTurn" to ' . __PACKAGE__ if !defined $isFirstTurn;
-  return $isFirstTurn
-    ? WEALTHY_COINS_NUM
-    : $self->SUPER::coinsBonus($isFirstTurn);
+  my ($self, $state) = @_;
+  return !$state->{gotWealthy} ? WEALTHY_COINS_NUM: $self->SUPER::coinsBonus($state);
+}
+
+sub activate {
+  my ($self, $state, $player) = @_;
+  $state->{gotWealthy} = 0;
+}
+
+sub finishTurn {
+  my ($self, $state) = @_;
+  $state->{gotWealthy} = 1;
 }
 
 sub initialTokens {
