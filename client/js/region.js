@@ -68,13 +68,23 @@ Region.prototype.adjacents = function() {
   return result;
 }
 
+Region.prototype.isAdjacent = function(regionId) {
+  for (var i in this.r.adjacentRegions) {
+    if (this.r.adjacentRegions[i] == regionId) {
+      return true;
+    }
+  }
+  return false;
+}
+
 Region.prototype.tokens = function() {
   return this.r.currentRegionState.tokensNum;
 }
 
 Region.prototype.rmTokens = function(tokens) {
-  this.r.currentRegionState -= tokens;
-  $('#aTokensNum' + this.regionId()).html(this.tokens()).trigger('update');
+  this.r.currentRegionState.tokensNum -= tokens;
+  $('#aTokensNum' + this.regionId()).html(this.tokens());
+  $('#aTokensNum' + this.regionId()).trigger('update');
 }
 
 Region.prototype.bonusTokens = function() {

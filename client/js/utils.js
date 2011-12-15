@@ -27,3 +27,10 @@ function checkEnough(cond, id) {
   }
   return false;
 }
+
+function Clone() { }
+
+function clone(obj) {
+  Clone.prototype = obj;
+  return new Clone();
+}
