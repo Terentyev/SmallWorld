@@ -239,7 +239,6 @@ sub getGameStateForPlayer {
       coins              => $_->{coins},
       tokensInHand       => $_->{tokensInHand},
       priority           => $_->{priority} + 1,
-      totalTokensNum     => $self->getPlayerTotalTokensNum($_->{playerId}),
       currentTokenBadge  => \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => (
           defined $_->{declinedTokenBadge}->{tokenBadgeId}
@@ -247,13 +246,27 @@ sub getGameStateForPlayer {
           : undef)
     }
   } @{ $gs->{players} };
+  foreach ( @{ $result->{players} } ) {
+    if ( defined $_->{currentTokenBadge}->{tokenBadgeId} ) {
+      $_->{currentTokenBadge}->{totalTokensNum} = $_->{tokensInHand} +
+        $self->getTokensNum($_->{currentTokenBadge}->{tokenBadgeId});
+    }
+    if ( defined $_->{declinedTokenBadge} ) {
+      $_->{declinedTokenBadge}->{totalTokensNum} =
+        $self->getTokensNum($_->{declinedTokenBadge}->{tokenBadge});
+    }
+  }
   $self->removeNull($result);
   return $result;
 }
 
-sub getPlayerTotalTokensNum {
-  my ($self, $playerId) = @_;
-  return $self->getPlayer({id => $playerId})->getTotalTokensNum($self->{gameState}->{regions});
+sub getTokensNum {
+  my ($self, $tokenBadgeId) = @_;
+  my $result = 0;
+  foreach ( @{ $self->{gameState}->{regions} } ) {
+    $result += $_->{tokensNum} if ($_->{tokenBadgeId} // -1) == $tokenBadgeId;
+  }
+  return $result;
 }
 
 # удаляет из хеша _все_ ключи, значения которых неопределены

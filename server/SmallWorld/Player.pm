@@ -14,14 +14,6 @@ sub activeConq {
     ($self->{currentTokenBadge}->{tokenBadgeId} // -1)  == ($region->{tokenBadgeId} // -2);
 }
 
-sub getTotalTokensNum {
-  my ($self, $regions) = @_;
-  my $result = $self->safe('tokensInHand');
-  foreach ( @{ $regions } ) {
-    $result += $_->{tokensNum} if $self->activeConq($_);
-  }
-}
-
 1;
 
 __END__
