@@ -14,6 +14,7 @@ use SmallWorld::Player;
 use SmallWorld::Races;
 use SmallWorld::Region;
 use SmallWorld::SpecialPowers;
+use SmallWorld::Utils;
 
 # принимает параметры:
 #   db  -- объект класса SmallWorld::DB
@@ -236,7 +237,7 @@ sub getGameStateForPlayer {
     push @{ $result->{players} }, {
       userId             => $_->{playerId},
       username           => $_->{username},
-      isReady            => $_->{isReady},
+      isReady            => $self->bool($_->{isReady}),
       coins              => $_->{coins},
       tokensInHand       => $_->{tokensInHand},
       priority           => $_->{priority} + 1,

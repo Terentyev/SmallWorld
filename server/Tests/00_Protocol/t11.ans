@@ -94,14 +94,14 @@
       "result": "ok",
       "games":[ {"gameId": 1, "gameName": "game name 1", "gameDescription": "", "mapId": 2, "maxPlayersNum": 3,
                  "turnsNum": 5, "turn": 0, "activePlayerId": null, "state": 1, "url": "/public/imgs/map_2.png",
-                 "players": [ {"userId": 3, "username": "username3", "isReady": 0},
-                              {"userId": 2, "username": "username2", "isReady": 1},
-                              {"userId": 5, "username": "username5", "isReady": 0} ]
+                 "players": [ {"userId": 3, "username": "username3", "isReady": false},
+                              {"userId": 2, "username": "username2", "isReady": true},
+                              {"userId": 5, "username": "username5", "isReady": false} ]
                 },
                 {"gameId": 2, "gameName": "game name 2", "gameDescription": "", "mapId": 1, "maxPlayersNum": 2,
                  "turnsNum": 5, "turn": 0, "activePlayerId": 4, "state": 2, "url": "/public/imgs/map_1.png",
-                 "players": [ {"userId": 4, "username": "username4", "isReady": 1},
-                              {"userId": 1, "username": "username1", "isReady": 1} ]
+                 "players": [ {"userId": 4, "username": "username4", "isReady": true},
+                              {"userId": 1, "username": "username1", "isReady": true} ]
                 }
               ]
     },

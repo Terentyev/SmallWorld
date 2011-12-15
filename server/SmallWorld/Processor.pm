@@ -13,6 +13,7 @@ use SmallWorld::Config;
 use SmallWorld::DB;
 use SmallWorld::Checker;
 use SmallWorld::Game;
+use SmallWorld::Utils;
 
 sub new {
   my $class = shift;
@@ -162,7 +163,7 @@ sub cmd_getGameList {
       map { {
         'userId' => $_->{ID},
         'username' => $_->{USERNAME},
-        'isReady' => $_->{ISREADY}
+        'isReady' => $self->bool($_->{ISREADY})
       } } @{$pl}
     ];
     my ($activePlayerId, $turn) = (undef, 0);
