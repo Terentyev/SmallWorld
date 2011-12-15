@@ -253,7 +253,7 @@ sub getGameStateForPlayer {
       $_->{currentTokenBadge}->{totalTokensNum} = $_->{tokensInHand} +
         $self->getTokensNum($_->{currentTokenBadge}->{tokenBadgeId});
     }
-    if ( defined $_->{declinedTokenBadge} ) {
+    if ( $_->{declinedTokenBadge}->{tokenBadgeId} ) {
       $_->{declinedTokenBadge}->{totalTokensNum} =
         $self->getTokensNum($_->{declinedTokenBadge}->{tokenBadge});
     }
