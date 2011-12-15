@@ -1,6 +1,6 @@
 [
         { "action": "resetServer" },
-	{ "action": "uploadMap", "mapName": "testMap", "playersNum": 2, "turnsNum": 5, "regions": 
+	{ "action": "uploadMap", "mapName": "testMap", "playersNum": 2, "turnsNum": 7, "regions":
           [
 		{ "landDescription": ["sea", "border"], "adjacent": [2, 6] },
 		{ "landDescription": ["sea", "border"], "adjacent": [1, 3, 7] },

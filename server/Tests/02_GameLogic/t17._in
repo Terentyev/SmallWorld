@@ -3,18 +3,300 @@
     "include": [ "_game2.inc" ],
     "test": [
         { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
-            "Amazons", "Sorcerers", "Ratmen", "Skeletons", "Orcs", "Humans", "Giants", "Elves", "Dwarves", "Halflings", "Tritons", "Trolls", "Wizard" ],
+            "Amazons", "Sorcerers", "Trolls", "Halflings", "Skeletons", "Orcs", "Humans", "Giants", "Elves", "Dwarves", "Tritons", "Ratmen", "Wizard" ],
           "visibleSpecialPowers": [
             "Berserk", "Alchemist", "Bivouacking", "Commando", "Forest", "Diplomat", "DragonMaster", "Flying", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
         },
         {
             "action": "selectRace",
             "sid": 1,
+            "position": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 11
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 12
+        },
+        {
+            "action": "enchant",
+            "sid": 1,
+            "regionId": 13
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 13
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 14
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 11, "tokensNum": 1}, {"regionId": 12, "tokensNum": 7}, {"regionId": 13, "tokensNum": 1}, {"regionId": 14, "tokensNum": 1}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 2,
             "position": 1
         },
         {
             "action": "getGameState",
             "gameId": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 6
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 7
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 8
+        },
+
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 11
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 7
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 3
+        },
+        {
+            "action": "enchant",
+            "regionId": 3
+        },
+        {
+            "action": "enchant",
+            "sid": 0,
+            "regionId": 3
+        },
+        {
+            "action": "enchant",
+            "sid": 3,
+            "regionId": 3
+        },
+        {
+            "action": "enchant",
+            "sid": 2
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 130
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 13
+        },
+        {
+            "action": "getGameState",
+            "gameId": 1
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 14
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 6, "tokensNum": 1}, {"regionId": 7, "tokensNum": 1}, {"regionId": 8, "tokensNum": 4}, {"regionId": 13, "tokensNum": 4}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 9
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 11, "tokensNum": 1}, {"regionId": 12, "tokensNum": 1}, {"regionId": 9, "tokensNum": 6}, {"regionId": 14, "tokensNum": 1}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 9
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 14
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 6, "tokensNum": 1}, {"regionId": 7, "tokensNum": 1}, {"regionId": 8, "tokensNum": 4}, {"regionId": 13, "tokensNum": 4}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "decline",
+            "sid": 1
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 12
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 6, "tokensNum": 1}, {"regionId": 7, "tokensNum": 1}, {"regionId": 8, "tokensNum": 4}, {"regionId": 13, "tokensNum": 4}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 12
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 7
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 6
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 6, "tokensNum": 8}, {"regionId": 12, "tokensNum": 1}, {"regionId": 7, "tokensNum": 1}],
+            "encampments": [{"regionId": 12, "encampmentsNum": 1}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 12
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 7
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 7, "tokensNum": 1}, {"regionId": 8, "tokensNum": 4}, {"regionId": 13, "tokensNum": 4}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "decline",
+            "sid": 1
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 7, "tokensNum": 1}, {"regionId": 8, "tokensNum": 4}, {"regionId": 13, "tokensNum": 4}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 2
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [{"regionId": 3, "tokensNum": 1}, {"regionId": 4, "tokensNum": 9}]
+        },
+        {
+            "action": "selectFriend",
+            "sid": 1,
+            "friendId": 2
+        },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
+        {
+            "action": "enchant",
+            "sid": 2,
+            "regionId": 3
         }
     ]
 }

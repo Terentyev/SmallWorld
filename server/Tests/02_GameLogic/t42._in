@@ -5,7 +5,7 @@
         { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
             "Tritons", "Giants", "Wizard", "Trolls", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
           "visibleSpecialPowers": [
-            "Seafaring", "Berserk", "Mounted", "Swamp", "Wealthy", "Merchant", "DragonMaster", "Stout", "Alchemist", "Pillaging", "Hill", "Forest", "Flying", "Bivouacking", "Commando", "Diplomat", "Fortified", "Heroic", "Underworld" ] 
+            "Seafaring", "Berserk", "Mounted", "Swamp", "Wealthy", "Merchant", "DragonMaster", "Stout", "Alchemist", "Pillaging", "Hill", "Forest", "Flying", "Bivouacking", "Commando", "Diplomat", "Fortified", "Heroic", "Underworld" ]
         },
         {
             "action": "selectRace",
