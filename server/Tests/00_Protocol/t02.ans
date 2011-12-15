@@ -11,16 +11,16 @@
 
 
     {
-        "result": "badUsernameOrPassword"
+        "result": "badUsername"
     },
     {
-        "result": "badUsernameOrPassword"
+        "result": "badUsername"
     },
     {
-        "result": "badUsernameOrPassword"
+        "result": "badPassword"
     },
     {
-        "result": "badUsernameOrPassword"
+        "result": "badPassword"
     },
     {
         "result": "ok",
