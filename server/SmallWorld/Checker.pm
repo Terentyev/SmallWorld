@@ -397,9 +397,7 @@ sub checkStage {
     !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    ($js->{action} ne 'conquer') && defined $player->{berserkDice} && ($state eq GS_CONQUEST) || #TODO
-    !$sp->canCmd($js, $game->{gameState}->{state}) ||
-    !$race->canCmd($js);
+    !$sp->canCmd($js, $state) || !$race->canCmd($js);
 }
 
 sub checkEnoughTokens {
