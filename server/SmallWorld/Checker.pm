@@ -392,12 +392,19 @@ sub checkStage {
   # 4. команда окончания хода с ненулевым числом фигурок на руках
   # 5. после бросока кубика может идти только команда conquer
   my $state = $game->{gameState}->{state};
+  my $func = $self->can("checkStage_$js->{action}"); # see UNIVERSAL::can
 
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    !$sp->canCmd($js, $state) || !$race->canCmd($js);
+    !$sp->canCmd($js, $state) || !$race->canCmd($js) ||
+    defined $func && &$func(@_);
+}
+
+sub checkStage_throwDice {
+  my ($self, $game, $player, $region, $race, $sp) = @_;
+  return $player->{tokensInHand} == 0;
 }
 
 sub checkEnoughTokens {
