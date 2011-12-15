@@ -47,9 +47,7 @@ sub canAttack {
 
   return
     # нельзя нападать на моря и озера
-    !(grep {
-      $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE
-    } @{ $region->{constRegionState} }) &&
+    !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} }) &&
     # можно нападать, если мы имеем регион, граничащий с регионом-жертвой
     (grep {
       grep { $_ == $region->{regionId} } @{ $_->{adjacentRegions} }
@@ -301,15 +299,13 @@ use SmallWorld::Consts;
 sub canFirstConquer() {
   my ($self, $region) = @_;
   #нельзя моря и озера
-  return !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} });
+  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} });
 }
 
 sub canAttack {
   my ($self, $region, $regions) = @_;
   return
-    !(grep {
-      $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE
-    } @{ $region->{constRegionState} })
+    !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} })
 }
 
 sub initialTokens {

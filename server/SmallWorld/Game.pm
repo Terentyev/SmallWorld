@@ -421,7 +421,7 @@ sub canFirstConquer {
   }
 
   return
-    !(grep { $_ eq REGION_TYPE_SEA || $_ eq REGION_TYPE_LAKE} @{ $region->{constRegionState} }) &&
+    !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} }) &&
     ((grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} }) || $adj) ||
     $race->canFirstConquer($region) || $sp->canFirstConquer($region);
 }

@@ -11,7 +11,7 @@
 		{ "landDescription": ["coast", "magic"], "adjacent": [2, 6, 8, 12] },
 		{ "landDescription": ["farmland"], "adjacent": [3, 7, 9, 13] },
 		{ "landDescription": ["forest", "magic"], "adjacent": [4, 8, 10, 14] },
-		{ "landDescription": ["lake", "border"], "adjacent": [5, 9, 15] },
+		{ "landDescription": ["sea", "border"], "adjacent": [5, 9, 15] },
 		{ "landDescription": ["hill", "border", "mine"], "adjacent": [6, 12] },
 		{ "landDescription": ["cavern", "border"], "adjacent": [7, 11, 13] },
 		{ "landDescription": ["forest", "border"], "adjacent": [8, 12, 14] },

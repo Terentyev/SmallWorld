@@ -811,7 +811,6 @@ use constant REGION_TYPE_COAST    => 'coast'   ;
 use constant REGION_TYPE_FARMLAND => 'farmland';
 use constant REGION_TYPE_FOREST   => 'forest'  ;
 use constant REGION_TYPE_HILL     => 'hill'    ;
-use constant REGION_TYPE_LAKE     => 'lake'    ;
 use constant REGION_TYPE_MAGIC    => 'magic'   ;
 use constant REGION_TYPE_MINE     => 'mine'    ;
 use constant REGION_TYPE_MOUNTAIN => 'mountain';
@@ -869,7 +868,7 @@ use constant SPECIAL_POWERS => [
 
 use constant REGION_TYPES => [
   REGION_TYPE_BORDER, REGION_TYPE_CAVERN, REGION_TYPE_COAST, REGION_TYPE_FARMLAND,
-  REGION_TYPE_FOREST, REGION_TYPE_HILL, REGION_TYPE_LAKE, REGION_TYPE_MAGIC,
+  REGION_TYPE_FOREST, REGION_TYPE_HILL, REGION_TYPE_MAGIC,
   REGION_TYPE_MINE, REGION_TYPE_MOUNTAIN, REGION_TYPE_SEA, REGION_TYPE_SWAMP
 ];
 
