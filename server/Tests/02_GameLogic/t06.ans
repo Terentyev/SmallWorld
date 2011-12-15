@@ -18,7 +18,7 @@
         "result": "badStage"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 1], ["Elves", 0], ["Bivouacking", 0]]
     },
     {
         "result": "badStage"
@@ -35,7 +35,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 1
+        "result": "ok", "statistic": [["region", 1], ["Amazons", 0], ["Alchemist", 2]]
     },
 
 
@@ -52,7 +52,7 @@
         "result": "badStage"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 1], ["Elves", 0], ["Bivouacking", 0]]
     },
     {
         "result": "ok",

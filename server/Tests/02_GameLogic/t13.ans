@@ -37,7 +37,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 5, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 2], ["Humans", 1], ["Alchemist", 2]]
     },
 
     {
@@ -50,12 +50,12 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 1
+        "result": "ok", "statistic": [["region", 1], ["Giants", 0], ["Bivouacking", 0]]
     },
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 2], ["Humans", 0], ["Alchemist", 0]]
     }
 ]

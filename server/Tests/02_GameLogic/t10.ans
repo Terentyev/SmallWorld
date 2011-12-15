@@ -40,7 +40,7 @@
         "result": "ok"
     },                      
     {
-        "result": "ok", "coins": 4, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 3], ["Elves", 0], ["Forest", 1]]
     },
 
     {
@@ -65,14 +65,14 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 1
+        "result": "ok", "statistic": [["region", 2], ["Humans", 0], ["Diplomat", 0]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 2], ["Elves", 0], ["Forest", 0]]
     },
 
     {

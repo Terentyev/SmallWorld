@@ -37,7 +37,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 4, "nextPlayer": 2
+        "result": "ok", "statistic":[["region", 2], ["Wizards", 0], ["Alchemist", 2]]
     },
 
     {
@@ -50,14 +50,14 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 1
+        "result": "ok", "statistic":[["region", 1], ["Tritons", 0], ["Forest", 0]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 2
+        "result": "ok", "statistic":[["region", 2], ["Wizards", 0], ["Alchemist", 0]]
     }
 
 ]

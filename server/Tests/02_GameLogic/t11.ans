@@ -46,7 +46,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "nextPlayer": 2, "coins": 8
+        "result": "ok", "statistic": [["region", 6], ["Giants", 0], ["Forest", 2]]
     },
 
     {

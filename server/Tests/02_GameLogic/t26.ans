@@ -67,7 +67,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 4, "nextPlayer": 2
+        "result": "ok", "statistic":[["region", 2], ["Orcs", 2], ["Diplomat", 0]]
     },
 
     {
@@ -89,7 +89,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 6, "nextPlayer": 1
+        "result": "ok", "statistic":[["region", 3], ["Wizards", 1], ["Alchemist", 2]]
     },
 
     {
@@ -102,7 +102,7 @@
         "result": "badFriend"
     },
     {
-        "result": "ok", "coins": 4, "nextPlayer": 2
+        "result": "ok", "statistic":[["region", 3], ["Orcs", 1], ["Diplomat", 0]]
     },
 
     {

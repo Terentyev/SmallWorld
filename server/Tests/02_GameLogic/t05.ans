@@ -21,7 +21,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 4, "nextPlayer": 2
+        "result": "ok", "statistic": [["region", 4], ["Elves", 0], ["Bivouacking", 0]]
     },
     {
         "result": "ok", "tokenBadgeId": 6

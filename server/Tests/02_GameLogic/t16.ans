@@ -46,7 +46,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "nextPlayer": 2, "coins": 5
+        "result": "ok", "statistic": [["region", 5], ["Skeletons", 0], ["Bivouacking", 0]]
     },
     {
         "result": "ok",
@@ -94,7 +94,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "nextPlayer": 1, "coins": 3
+        "result": "ok", "statistic": [["region", 1], ["Ratmen", 0], ["Alchemist", 2]]
     },
 
     {
@@ -107,7 +107,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "nextPlayer": 2, "coins": 1
+        "result": "ok", "statistic": [["region", 1], ["Skeletons", 0], ["Bivouacking", 0]]
     },
 
     {
@@ -117,32 +117,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "nextPlayer": 1, "coins": 3
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "nextPlayer": 2, "coins": 1
+        "result": "ok", "statistic": [["region", 1], ["Ratmen", 0], ["Alchemist", 2]]
     },
 
     {
@@ -158,7 +133,32 @@
         "result": "ok"
     },
     {
-        "result": "ok", "nextPlayer": 1, "coins": 3
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistic": [["region", 1], ["Skeletons", 0], ["Bivouacking", 0]]
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistic": [["region", 1], ["Ratmen", 0], ["Alchemist", 2]]
     },
 
     {
@@ -192,7 +192,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "nextPlayer": 2, "coins": 1
+        "result": "ok", "statistic": [["region", 1], ["Skeletons", 0], ["Bivouacking", 0]]
     },
 
     {
@@ -202,6 +202,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "nextPlayer": 1, "coins": 3
+        "result": "ok", "statistic": [["region", 1], ["Ratmen", 0], ["Alchemist", 2]]
     }
 ]
