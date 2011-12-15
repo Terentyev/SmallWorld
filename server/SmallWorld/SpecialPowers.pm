@@ -536,6 +536,11 @@ sub initialTokens {
   return STOUT_TOKENS_NUM;
 }
 
+sub activate {
+  my ($self, $state, $player) = @_;
+  $state->{stoutStatistics} = undef;
+}
+
 
 package SmallWorld::SpSwamp;
 use strict;
