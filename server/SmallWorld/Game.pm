@@ -727,6 +727,9 @@ sub selectFriend {
 sub dragonAttack {
   my ($self, $regionId) = @_;
 #  my $player = $self->getPlayer();
+  foreach ( @{ $self->{gameState}->{regions} } ) {
+    $_->{dragon} = undef;
+  }
   my $region = $self->getRegion($regionId);
   my $defender = undef;
   $self->{defendNum} = 1;
