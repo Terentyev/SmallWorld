@@ -252,7 +252,7 @@ sub getGameStateForPlayer {
     }
     if ( $_->{declinedTokenBadge}->{tokenBadgeId} ) {
       $_->{declinedTokenBadge}->{totalTokensNum} =
-        $self->getTokensNum($_->{declinedTokenBadge}->{tokenBadge});
+        $self->getTokensNum($_->{declinedTokenBadge}->{tokenBadgeId});
     }
   }
   $self->removeNull($result);
