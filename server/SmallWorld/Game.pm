@@ -575,7 +575,7 @@ sub finishTurn {
   } else {
     my $regionBonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions });
     $bonus = $regionBonus + $sp->coinsBonus(!$self->{gameState}->{currentTurn}) + $race->coinsBonus() + $drace->declineCoinsBonus();
-    push @{$result->{statistics}}, ['region', $regionBonus];
+    push @{$result->{statistics}}, ['Regions', $regionBonus];
     if (defined $player->{currentTokenBadge}->{raceName} ){
       push @{$result->{statistics}}, [$player->{currentTokenBadge}->{raceName}, $race->coinsBonus()];
       push @{$result->{statistics}}, [$player->{currentTokenBadge}->{specialPowerName}, $sp->coinsBonus(!$self->{gameState}->{currentTurn})];
