@@ -95,7 +95,6 @@ sub cmd_resetServer {
   return if !$ENV{DEBUG};
   my ($self, $result) = @_;
   $self->{db}->clear();
-  $self->cmd_createDefaultMaps() if $ENV{LENA};
 }
 
 sub cmd_register {
