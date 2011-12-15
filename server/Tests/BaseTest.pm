@@ -126,8 +126,11 @@ sub compare {
   my ($self, $eth, $cnt, $diff, $path) = @_;
 
   return 1 if ! defined $eth && ! defined $cnt;
-  return 0 if ! defined $eth || ! defined $cnt;
-  return 0 if ref $eth ne ref $cnt;
+  if ( ref $eth ne ref $cnt || defined $eth != defined $cnt ) {
+    $path .= ':{' . (defined $eth ? (ref $eth) : 'UNDEF') . ' vs. ' . (defined $cnt ? (ref $cnt) : 'UNDEF') . '}';
+    push @{$diff}, $path;
+    return 0;
+  }
 
   my $result = 1;
 
