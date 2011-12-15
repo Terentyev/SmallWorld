@@ -316,15 +316,11 @@ sub checkRegion_conquer {
          !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
          (defined $finfo && $finfo->{diplomatId} == ($region->{ownerId} // -1) &&
           ($finfo->{friendId} // -1) == $player->{playerId} && !$region->{inDecline});
-#         ($player->{friendTokenBadgeId} // -1) == ($region->{tokenBadgeId} // -2);
 }
 
 sub checkRegion_dragonAttack {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
-
-  return $player->activeConq($region) ||
-         $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
-         !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions});
+  return checkRegion_conquer(@_);
 }
 
 sub checkRegion_enchant {
