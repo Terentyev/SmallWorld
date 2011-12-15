@@ -568,21 +568,21 @@ sub finishTurn {
 
   # возвращаем количество монет, полученных на этом ходу
   my $bonus = 0;
-  $result->{statistic} = [];
+  $result->{statistics} = [];
   if (exists $player->{declineBonus}) {
     $bonus = $player->{declineBonus};
     delete $player->{declineBonus};
   } else {
     my $regionBonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions });
     $bonus = $regionBonus + $sp->coinsBonus(!$self->{gameState}->{currentTurn}) + $race->coinsBonus() + $drace->declineCoinsBonus();
-    push @{$result->{statistic}}, ['region', $regionBonus];
+    push @{$result->{statistics}}, ['region', $regionBonus];
     if (defined $player->{currentTokenBadge}->{raceName} ){
-      push @{$result->{statistic}}, [$player->{currentTokenBadge}->{raceName}, $race->coinsBonus()];
-      push @{$result->{statistic}}, [$player->{currentTokenBadge}->{specialPowerName}, $sp->coinsBonus(!$self->{gameState}->{currentTurn})];
+      push @{$result->{statistics}}, [$player->{currentTokenBadge}->{raceName}, $race->coinsBonus()];
+      push @{$result->{statistics}}, [$player->{currentTokenBadge}->{specialPowerName}, $sp->coinsBonus(!$self->{gameState}->{currentTurn})];
     }
     if (defined $player->{declinedTokenBadge}->{raceName} ){
-      push @{$result->{statistic}}, [$player->{declinedTokenBadge}->{raceName}, $drace->declineCoinsBonus()];
-      push @{$result->{statistic}}, [$player->{declinedTokenBadge}->{specialPowerName}, 0];
+      push @{$result->{statistics}}, [$player->{declinedTokenBadge}->{raceName}, $drace->declineCoinsBonus()];
+      push @{$result->{statistics}}, [$player->{declinedTokenBadge}->{specialPowerName}, 0];
     }
   }
   $player->{coins} += $bonus;
