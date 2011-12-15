@@ -329,9 +329,10 @@ sub checkRegion_enchant {
   # 1. это должен регион другого игрока, мы с ним не друзья
   # 2. регион с активной расой, без лагерей
   # 3. количество фигурок должно быть == 1
-  my $finfo = $game->{gameState}->{friendInfo};
-  return $player->activeConq($region) || !defined $region->{ownerId} ||
-         (defined $finfo && $finfo->{diplomatId} == ($region->{ownerId} // -1) && ($finfo->{friendId} // -1) == $player->{playerId}) ||
+#  my $finfo = $game->{gameState}->{friendInfo};
+#  return $player->activeConq($region) || !defined $region->{ownerId} ||
+#         (defined $finfo && $finfo->{diplomatId} == ($region->{ownerId} // -1) && ($finfo->{friendId} // -1) == $player->{playerId}) ||
+  return checkRegion_conquer(@_) ||
          $region->{inDecline} || $region->{encampment} || $region->{tokensNum} != 1;
 }
 
