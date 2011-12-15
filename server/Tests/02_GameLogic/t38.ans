@@ -61,7 +61,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 3], ["Tritons", 0], ["Seafaring", 0]]
     },
 
     {
@@ -74,13 +74,13 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 1
+        "result": "ok", "statistics":[["Regions", 1], ["Wizards", 0], ["Mounted", 0]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 3], ["Tritons", 0], ["Seafaring", 0]]
     }
 ]

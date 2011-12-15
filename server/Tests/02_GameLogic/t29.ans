@@ -54,6 +54,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 4], ["Giants", 0], ["Flying", 0]]
+        "result": "ok", "statistics":[["Regions", 4], ["Giants", 0], ["Flying", 0]]
     }
 ]

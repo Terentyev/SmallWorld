@@ -30,7 +30,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 1], ["Tritons", 0], ["Heroic", 0]]
     },
 
     {
@@ -52,7 +52,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 1
+        "result": "ok", "statistics":[["Regions", 1], ["Trolls", 0], ["DragonMaster", 0]]
     },
 
     {
@@ -65,7 +65,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 3], ["Tritons", 0], ["Heroic", 0]]
     },
 
     {
@@ -84,14 +84,14 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 1
+        "result": "ok", "statistics":[["Regions", 1], ["Trolls", 0], ["DragonMaster", 0]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 2], ["Tritons", 0], ["Heroic", 0]]
     },
 
     {

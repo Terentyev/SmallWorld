@@ -15,7 +15,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 2], ["Trolls", 0], ["Swamp", 1]]
     },
 
     {
@@ -28,7 +28,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 1
+        "result": "ok", "statistics":[["Regions", 1], ["Giants", 0], ["Berserk", 0]]
     },
 
     {
@@ -38,6 +38,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 2], ["Trolls", 0], ["Swamp", 0]]
     }
 ]

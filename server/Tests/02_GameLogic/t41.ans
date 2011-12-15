@@ -15,7 +15,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 2], ["Tritons", 0], ["Seafaring", 0]]
     },
 
     {

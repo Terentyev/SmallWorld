@@ -82,7 +82,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 2], ["Wizards", 0], ["DragonMaster", 0]]
+        "result": "ok", "statistics":[["Regions", 2], ["Wizards", 0], ["DragonMaster", 0]]
     },
 
     {
@@ -104,7 +104,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 2], ["Trolls", 0], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 2], ["Trolls", 0], ["Alchemist", 2]]
     },
 
     {
@@ -126,7 +126,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 2], ["Wizards", 0], ["DragonMaster", 0]]
+        "result": "ok", "statistics":[["Regions", 2], ["Wizards", 0], ["DragonMaster", 0]]
     },
 
     {

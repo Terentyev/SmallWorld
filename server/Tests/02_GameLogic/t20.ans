@@ -40,7 +40,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 3], ["Wizards", 2], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 3], ["Wizards", 2], ["Alchemist", 2]]
     },
 
     {
@@ -53,7 +53,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 1], ["Trolls", 0], ["Bivouacking", 0]]
+        "result": "ok", "statistics":[["Regions", 1], ["Trolls", 0], ["Bivouacking", 0]]
     },
 
     {
@@ -63,6 +63,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 3], ["Wizards", 1], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 3], ["Wizards", 1], ["Alchemist", 2]]
     }
 ]

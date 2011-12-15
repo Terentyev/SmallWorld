@@ -40,7 +40,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 3], ["Dwarves", 2], ["Forest", 0]]
+        "result": "ok", "statistics":[["Regions", 3], ["Dwarves", 2], ["Forest", 0]]
     },
 
 
@@ -54,13 +54,13 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 1], ["Elves", 0], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 1], ["Elves", 0], ["Alchemist", 2]]
     },
     {
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 3], ["Dwarves", 2], ["Forest", 0]]
+        "result": "ok", "statistics":[["Regions", 3], ["Dwarves", 2], ["Forest", 0]]
     },
     {
         "result": "ok",

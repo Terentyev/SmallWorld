@@ -21,7 +21,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 4], ["Elves", 0], ["Bivouacking", 0]]
+        "result": "ok", "statistics":[["Regions", 4], ["Elves", 0], ["Bivouacking", 0]]
     },
     {
         "result": "ok", "tokenBadgeId": 6

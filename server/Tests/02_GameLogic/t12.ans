@@ -91,7 +91,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 3], ["Halflings", 0], ["Forest", 1]]
+        "result": "ok", "statistics":[["Regions", 3], ["Halflings", 0], ["Forest", 1]]
     },
     {
         "result": "ok", "tokenBadgeId": 2
@@ -112,7 +112,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 2], ["Giants", 0], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 2], ["Giants", 0], ["Alchemist", 2]]
     },
     {
         "result": "ok"
@@ -121,7 +121,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 3], ["Halflings", 0], ["Forest", 1]]
+        "result": "ok", "statistics":[["Regions", 3], ["Halflings", 0], ["Forest", 1]]
     },
     {
         "result": "ok"
@@ -133,13 +133,13 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 5], ["Giants", 0], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 5], ["Giants", 0], ["Alchemist", 2]]
     },
     {
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 1], ["Halflings", 0], ["Forest", 0]]
+        "result": "ok", "statistics":[["Regions", 1], ["Halflings", 0], ["Forest", 0]]
     },
     {
         "result": "ok"

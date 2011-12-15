@@ -84,7 +84,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 3], ["Trolls", 0], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 3], ["Trolls", 0], ["Alchemist", 2]]
     },
 
     {
@@ -187,14 +187,14 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 3], ["Ratmen", 0], ["Bivouacking", 0]]
+        "result": "ok", "statistics":[["Regions", 3], ["Ratmen", 0], ["Bivouacking", 0]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 2], ["Trolls", 0], ["Alchemist", 0]]
+        "result": "ok", "statistics":[["Regions", 2], ["Trolls", 0], ["Alchemist", 0]]
     },
     {
         "result": "ok"
@@ -234,7 +234,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 4], ["Ratmen", 0], ["Bivouacking", 0]]
+        "result": "ok", "statistics":[["Regions", 4], ["Ratmen", 0], ["Bivouacking", 0]]
     },
 
     {

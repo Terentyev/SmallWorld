@@ -34,6 +34,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 1], ["Ratmen", 0], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 1], ["Ratmen", 0], ["Alchemist", 2]]
     }
 ]

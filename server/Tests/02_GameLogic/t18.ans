@@ -52,6 +52,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 7], ["Tritons", 0], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 7], ["Tritons", 0], ["Alchemist", 2]]
     }
 ]

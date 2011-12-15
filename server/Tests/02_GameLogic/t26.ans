@@ -67,7 +67,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 2], ["Orcs", 2], ["Diplomat", 0]]
+        "result": "ok", "statistics":[["Regions", 2], ["Orcs", 2], ["Diplomat", 0]]
     },
 
     {
@@ -89,7 +89,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic":[["region", 3], ["Wizards", 1], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 3], ["Wizards", 1], ["Alchemist", 2]]
     },
 
     {
@@ -102,7 +102,7 @@
         "result": "badFriend"
     },
     {
-        "result": "ok", "statistic":[["region", 3], ["Orcs", 1], ["Diplomat", 0]]
+        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 1], ["Diplomat", 0]]
     },
 
     {

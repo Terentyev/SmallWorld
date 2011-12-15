@@ -24,7 +24,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 6, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 3], ["Stout", 0]]
     },
 
     {
@@ -37,7 +37,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 1
+        "result": "ok", "statistics":[["Regions", 1], ["Tritons", 0], ["Seafaring", 0]]
     },
 
     {
@@ -50,6 +50,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 5, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 4], ["Wizards", 1], ["Mounted", 0], ["Orcs", 0], ["Stout", 0]]
     }
 ]

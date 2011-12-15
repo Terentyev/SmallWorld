@@ -12,7 +12,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 3, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 1], ["Trolls", 0], ["Alchemist", 2]]
     },
 
     {
@@ -25,14 +25,14 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 1
+        "result": "ok", "statistics":[["Regions", 1], ["Tritons", 0], ["Berserk", 0]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 1, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 1], ["Trolls", 0], ["Alchemist", 0]]
     },
 
     {
@@ -42,7 +42,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 2, "nextPlayer": 1
+        "result": "ok", "statistics":[["Regions", 2], ["Tritons", 0], ["Berserk", 0]]
     },
 
     {
@@ -58,6 +58,6 @@
         "result": "ok"
     },
     {
-        "result": "ok", "coins": 4, "nextPlayer": 2
+        "result": "ok", "statistics":[["Regions", 3], ["Ratmen", 0], ["Hill", 1], ["Trolls", 0], ["Alchemist", 0]]
     }
 ]

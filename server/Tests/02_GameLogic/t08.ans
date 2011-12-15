@@ -97,7 +97,7 @@
         }
     },
     {
-        "result": "ok", "statistic": [["region", 1], ["Amazons", 0], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 1], ["Amazons", 0], ["Alchemist", 2]]
     },
 
 
@@ -111,7 +111,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistic": [["region", 1], ["Elves", 0], ["Bivouacking", 0]]
+        "result": "ok", "statistics":[["Regions", 1], ["Elves", 0], ["Bivouacking", 0]]
     },
     {
         "result": "ok",
