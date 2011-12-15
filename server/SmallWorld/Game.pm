@@ -238,7 +238,7 @@ sub getGameStateForPlayer {
       isReady            => $_->{isReady},
       coins              => $_->{coins},
       tokensInHand       => $_->{tokensInHand},
-      priority           => $_->{priority},
+      priority           => $_->{priority} + 1,
       totalTokensNum     => $self->getPlayerTotalTokensNum($_->{playerId}),
       currentTokenBadge  => \%{ $_->{currentTokenBadge} },
       declinedTokenBadge => (

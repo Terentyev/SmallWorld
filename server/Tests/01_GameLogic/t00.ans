@@ -32,7 +32,7 @@
                     "userId": 1,
                     "username": "username1",
                     "isReady": 1,
-                    "priority": 0,
+                    "priority": 1,
                     "coins": 5,
                     "currentTokenBadge": {}
                 },
@@ -40,7 +40,7 @@
                     "userId": 2,
                     "username": "username2",
                     "isReady": 1,
-                    "priority": 1,
+                    "priority": 2,
                     "currentTokenBadge": {}
                 }
             ],
@@ -116,7 +116,7 @@
                     "userId": 1,
                     "username": "username1",
                     "isReady": 1,
-                    "priority": 0,
+                    "priority": 1,
                     "coins": 5,
                     "tokensInHand": 14,
                     "currentTokenBadge": {
@@ -129,7 +129,7 @@
                     "userId": 2,
                     "username": "username2",
                     "isReady": 1,
-                    "priority": 1,
+                    "priority": 2,
                     "currentTokenBadge": {}
                 }
             ],

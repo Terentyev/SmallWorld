@@ -35,7 +35,7 @@
                     "userId": 1,
                     "username": "username1",
                     "isReady": 1,
-                    "priority": 0,
+                    "priority": 1,
                     "tokensInHand": 0,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
@@ -47,7 +47,7 @@
                     "userId": 2,
                     "username": "username2",
                     "isReady": 1,
-                    "priority": 1,
+                    "priority": 2,
                     "tokensInHand": 11,
                     "coins": 4,
                     "currentTokenBadge": {
