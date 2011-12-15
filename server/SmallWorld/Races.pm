@@ -68,7 +68,7 @@ sub canPlaceObj2Region {
 }
 # размещает объект в регионе
 sub placeObject {
-  my ($self, $player, $region) = @_;
+  my ($self, $state, $region) = @_;
 }
 
 # возвращает может ли игрок на первом завоевании завоевать эту территорию (может
@@ -90,7 +90,7 @@ sub abandonRegion {
 
 # может ли раса выполнить это действие
 sub canCmd {
-  my ($self, $js) = @_;
+  my ($self, $js, $state) = @_;
   # любая раса может выполнять любую команду кроме зачарования
   return $js->{action} ne 'enchant';
 }
@@ -100,6 +100,14 @@ sub getOwnedRegionsNum {
   return 1 * (grep {
     grep { $_ eq $regType } @{ $_->{constRegionState} }
   } @{ $self->{regions} });
+}
+
+sub activate {
+  my ($self, $state) = @_;
+}
+
+sub finishTurn {
+  my ($self, $state) = @_;
 }
 
 
@@ -204,15 +212,15 @@ sub initialTokens {
 }
 
 sub canPlaceObj2Region {
-  my ($self, $player, $region) = @_;
+  my ($self, $player, $state, $region) = @_;
   return defined $region->{tokenBadgeId} && $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-         !defined $region->{holeInTheGround} && ($player->{currentTokenBadge}->{holesPlaced} // 0) < 2;
+         !defined $region->{holeInTheGround} && $state->{holesPlaced} < 2;
 }
 
 sub placeObject {
-  my ($self, $player, $region) = @_;
+  my ($self, $state, $region) = @_;
   $region->{holeInTheGround} = 1;
-  ++$player->{currentTokenBadge}->{holesPlaced};
+  ++$state->{holesPlaced};
 }
 
 sub canFirstConquer {
@@ -230,6 +238,11 @@ sub declineRegion {
 sub abandonRegion {
   my ($self, $region) = @_;
   $region->{holeInTheGround} = undef;
+}
+
+sub activate {
+  my ($self, $state) = @_;
+  $state->{holesPlaced} = 0;
 }
 
 
@@ -322,9 +335,19 @@ sub initialTokens {
 }
 
 sub canCmd {
-  my ($self, $js) = @_;
+  my ($self, $js, $state) = @_;
   # чародеи могут ещё и зачаровывать
-  return $js->{action} eq 'enchant' || $self->SUPER::canCmd($js);
+  return $js->{action} eq 'enchant' && !$state->{enchanted} || $self->SUPER::canCmd($js, $state);
+}
+
+sub activate {
+  my ($self, $state) = @_;
+  $state->{enchanted} = 0;
+}
+
+sub finishTurn {
+  my ($self, $state) = @_;
+  $state->{enchanted} = 0;
 }
 
 
@@ -365,13 +388,13 @@ sub initialTokens {
 }
 
 sub canPlaceObj2Region {
-  my ($self, $player, $region) = @_;
+  my ($self, $player, $state, $region) = @_;
   return $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
          !defined $region->{lair};
 }
 
 sub placeObject() {
-  my ($self, $player, $region) = @_;
+  my ($self, $state, $region) = @_;
   $region->{lair} = 1;
 }
 

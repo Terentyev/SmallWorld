@@ -3,27 +3,245 @@
         "result": "ok"
     },
     {
+        "result": "ok", "tokenBadgeId": 4
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 4], ["Halflings", 0], ["Commando", 0]]
+    },
+
+    {
         "result": "ok", "tokenBadgeId": 2
     },
     {
         "result": "ok",
         "gameState": {
-            "activePlayerId": 1,
+            "activePlayerId": 2,
             "currentTurn": 0,
             "players": [
                 {
                     "userId": 1,
                     "username": "username1",
-                    "coins": 4,
+                    "coins": 6,
+                    "tokensInHand": 0,
+                    "currentTokenBadge": {
+                        "tokenBadgeId": 4,
+                        "specialPowerName": "Commando",
+                        "raceName": "Halflings"
+                    }
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "coins": 5,
                     "tokensInHand": 9,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
                         "specialPowerName": "Alchemist",
                         "raceName": "Sorcerers"
                     }
-                },
-                {}
+                }
             ]
         }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+
+    {
+        "result": "regionIsImmune"
+    },
+    {
+        "result": "badAttackedRace"
+    },
+    {
+        "result": "nothingToEnchant"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "badUserSid"
+    },
+    {
+        "result": "notInGame"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "badRegionId"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 2,
+            "currentTurn": 0,
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 2, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 2, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 2, "tokenBadgeId": 2, "ownerId": 2 }},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 4, "ownerId": 1, "holeInTheGround": 1 }},
+                {"currentRegionState": {"tokensNum": 7, "tokenBadgeId": 4, "ownerId": 1, "holeInTheGround": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 2 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 4, "ownerId": 1 }},
+                {}
+              ]
+            },
+            "enchanted": 1
+        }
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 4], ["Sorcerers", 0], ["Alchemist", 2]]
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 4], ["Halflings", 0], ["Commando", 0]]
+    },
+
+    {
+        "result": "badTokensNum", "dice":0
+    },
+    {
+        "result": "badStage"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 4], ["Sorcerers", 0], ["Alchemist", 2]]
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 4], ["Halflings", 0], ["Commando", 0]]
+    },
+
+    {
+        "result": "cannotEnchantDeclinedRace"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 4], ["Sorcerers", 0], ["Alchemist", 2]]
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 3
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 6], ["Trolls", 0], ["Bivouacking", 0], ["Halflings", 0], ["Commando", 0]]
+    },
+
+    {
+        "result": "badRegion"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 3], ["Sorcerers", 0], ["Alchemist", 2]]
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 2], ["Trolls", 0], ["Bivouacking", 0]]
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 3], ["Sorcerers", 0], ["Alchemist", 2]]
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 6
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 4], ["Orcs", 2], ["Diplomat", 0], ["Trolls", 0], ["Bivouacking", 0]]
+    },
+
+    {
+        "result": "badRegion"
     }
 ]

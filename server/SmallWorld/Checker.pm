@@ -315,7 +315,7 @@ sub checkRegion_conquer {
          $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
          !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
          (defined $finfo && $finfo->{diplomatId} == ($region->{ownerId} // -1) &&
-          ($finfo->{friendId} // -1) == $player->{playerId} && !$region->{inDecline});
+         ($finfo->{friendId} // -1) == $player->{playerId} && !$region->{inDecline});
 }
 
 sub checkRegion_dragonAttack {
@@ -326,12 +326,13 @@ sub checkRegion_dragonAttack {
 sub checkRegion_enchant {
   my ($self, $game, $player, $region, $race, $sp, $result) = @_;
 
-  # 1. это должен быть не наш регион
-  # 2. регион с активной расой
+  # 1. это должен регион другого игрока, мы с ним не друзья
+  # 2. регион с активной расой, без лагерей
   # 3. количество фигурок должно быть == 1
-  return $player->activeConq($region) ||
-    $region->{inDecline} ||
-    $region->{tokensNum} == 1;
+  my $finfo = $game->{gameState}->{friendInfo};
+  return $player->activeConq($region) || !defined $region->{ownerId} ||
+         (defined $finfo && $finfo->{diplomatId} == ($region->{ownerId} // -1) && ($finfo->{friendId} // -1) == $player->{playerId}) ||
+         $region->{inDecline} || $region->{encampment} || $region->{tokensNum} != 1;
 }
 
 sub checkRegion_redeploy {
@@ -398,7 +399,7 @@ sub checkStage {
     !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    !$sp->canCmd($js, $state) || !$race->canCmd($js) ||
+    !$sp->canCmd($js, $state) || !$race->canCmd($js, $game->{gameState}) ||
     defined $func && &$func(@_);
 }
 
@@ -508,7 +509,7 @@ sub checkGameCommand {
   my $regions = $game->{gameState}->{regions};
 
   $result->{result} = $self->checkErrorHandlers({
-    &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == $region->{ownerId}; },
+    &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == ($region->{ownerId} // 0); },
     &R_BAD_ENCAMPMENTS_NUM          => sub { grep { !defined $_->{encampmentsNum} || $_->{encampmentsNum} <= 0 } @{ $js->{encampments} }; },
     &R_BAD_FRIEND                   => sub { $self->checkFriend(@gameVariables); },
     &R_BAD_FRIEND_ID                => sub { !(grep { $_->{playerId} == $js->{friendId} } @{ $game->{gameState}->{players} }); },
