@@ -119,11 +119,7 @@ sub init {
     currentTurn    => 0,
     tokenBadges    => $self->initTokenBadges(),
     storage        => $self->initStorage(),
-    defendingInfo  => undef,
-    friendInfo     => undef,
-    berserkDice    => undef,
-    dragonAttacked => undef,
-    enchanted      => undef
+    defendingInfo  => undef
   });
 }
 
@@ -209,6 +205,7 @@ sub getGameStateForPlayer {
     berserkDice        => $gs->{berserkDice},
     dragonAttacked     => $gs->{dragonAttacked},
     enchanted          => $gs->{enchanted},
+    holesPlaced        => $gs->{holesPlaced},
     gotWealthy         => $gs->{gotWealthy}
   };
   $result->{map}->{regions} = [];
@@ -491,7 +488,8 @@ sub conquer {
   $region->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
   @{ $region }{ qw(inDecline lair fortified encampment) } = ();
   $region->{tokensNum} = min($self->{defendNum}, $player->{tokensInHand}); # размещаем в регионе все фигурки, которые использовались для завоевания
-  $race->placeObject($player, $region) if $race->canPlaceObj2Region($player, $region); # размещаем в регионе уникальные для рас объекты
+  $race->placeObject($self->{gameState}, $region)                          # размещаем в регионе уникальные для рас объекты
+    if $race->canPlaceObj2Region($player, $self->{gameState}, $region);
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
 
   if ( defined $defender ) {
@@ -560,6 +558,7 @@ sub selectRace {
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
   $sp->activate($self->{gameState}, $player);
+  $race->activate($self->{gameState});
 
   $player->{coins} += $player->{currentTokenBadge}->{bonusMoney} - $p;
   delete $player->{currentTokenBadge}->{bonusMoney};
@@ -609,6 +608,7 @@ sub finishTurn {
   $player->{coins} += $bonus;
 
   $sp->finishTurn($self->{gameState});
+  $race->finishTurn($self->{gameState});
   $self->{gameState}->{friendInfo}->{friendId} = undef
     if defined $self->{gameState}->{friendInfo} && ($self->{gameState}->{friendInfo}->{friendId} // -1) == $player->{playerId};
 
@@ -699,9 +699,11 @@ sub defend {
 sub enchant {
   my ($self, $regionId) = @_;
   my $player = $self->getPlayer();
+
   @{ $self->getRegion($regionId) }{qw( ownerId tokenBadgeId conquestIdx )} = (
-      $player->{playerId}, $player->{currentTokenBadgeId}->{tokenBadgeId}, $self->nextConquestIdx() );
+      $player->{playerId}, $player->{currentTokenBadge}->{tokenBadgeId}, $self->nextConquestIdx() );
   $self->{gameState}->{storage}->{&RACE_SORCERERS} -= 1;
+  $self->{gameState}->{enchanted} = 1;
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
 
