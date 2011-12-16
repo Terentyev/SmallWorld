@@ -200,6 +200,9 @@
         "result": "badStage"
     },
     {
+        "result": "ok"
+    },
+    {
         "result": "ok", "statistics":[["Regions", 2], ["Orcs", 1], ["Flying", 0]]
     },
     {
