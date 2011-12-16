@@ -27,33 +27,19 @@
             "regionId": 12
         },
         {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 13
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 7
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 8
-        },
-        {
             "action": "redeploy",
             "sid": 1,
-            "regions": [{"regionId": 11, "tokensNum": 1}, {"regionId": 12, "tokensNum": 1}, {"regionId": 13, "tokensNum": 1}, {"regionId": 7, "tokensNum": 5}, {"regionId": 8, "tokensNum": 5}]
-        },
-        {
-            "action": "finishTurn",
-            "sid": 1
+            "regions": [{"regionId": 11, "tokensNum": 5}, {"regionId": 12, "tokensNum": 6}]
         },
         {
             "action": "getGameState",
             "gameId": 1
         },
+        {
+            "action": "finishTurn",
+            "sid": 1
+        },
+
         {
             "action": "selectRace",
             "sid": 2,
@@ -62,50 +48,37 @@
         {
             "action": "conquer",
             "sid": 2,
-            "regionId": 5
+            "regionId": 13
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 7
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 9
         },
         {
             "action": "redeploy",
             "sid": 2,
-            "regions": [{"regionId": 5, "tokensNum": 12}]
+            "regions": [{"regionId": 13, "tokensNum": 1}, {"regionId": 8, "tokensNum": 1}, {"regionId": 7, "tokensNum": 1}, {"regionId": 9, "tokensNum": 9}]
         },
         {
             "action": "finishTurn",
             "sid": 2
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 9
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 3
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
-            "regions": [{"regionId": 3, "tokensNum": 14}]
-        },
-        {
-            "action": "finishTurn",
-            "sid": 1
         },
 
         {
             "action": "conquer",
-            "sid": 2,
-            "regionId": 4
-        },
-        {
-            "action": "redeploy",
-            "sid": 2,
-            "regions": [{"regionId": 5, "tokensNum": 12}]
-        },
-        {
-            "action": "finishTurn",
-            "sid": 2
+            "sid": 1,
+            "regionId": 7
         },
         {
             "action": "conquer",
@@ -115,131 +88,20 @@
         {
             "action": "conquer",
             "sid": 1,
-            "regionId": 7
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 9
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
             "regionId": 13
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 12
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 11
         },
         {
             "action": "redeploy",
             "sid": 1,
-            "regions": [{"regionId": 3, "tokensNum": 17}]
+            "regions": [{"regionId": 11, "tokensNum": 5}, {"regionId": 12, "tokensNum": 4}, {"regionId": 13, "tokensNum": 1}, {"regionId": 7, "tokensNum": 1}, {"regionId": 8, "tokensNum": 1}]
         },
         {
             "action": "finishTurn",
             "sid": 1
         },
-
         {
-            "action": "conquer",
-            "sid": 2,
-            "regionId": 4
-        },
-        {
-            "action": "conquer",
-            "sid": 2,
-            "regionId": 9
-        },
-        {
-            "action": "conquer",
-            "sid": 2,
-            "regionId": 14
-        },
-        {
-            "action": "redeploy",
-            "sid": 2,
-            "regions": [{"regionId": 14, "tokensNum": 12}]
-        },
-        {
-            "action": "finishTurn",
-            "sid": 2
-        },
-
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 4
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 5
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 9
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 8
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 7
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 13
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 12
-        },
-        {
-            "action": "conquer",
-            "sid": 1,
-            "regionId": 11
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
-            "regions": [{"regionId": 3, "tokensNum": 21}]
-        },
-        {
-            "action": "redeploy",
-            "sid": 1,
-            "regions": [{"regionId": 3, "tokensNum": 20}]
-        },
-        {
-            "action": "finishTurn",
-            "sid": 1
-        },
-
-        {
-            "action": "conquer",
-            "sid": 2,
-            "regionId": 15
-        },
-        {
-            "action": "redeploy",
-            "sid": 2,
-            "regions": [{"regionId": 14, "tokensNum": 12}]
-        },
-        {
-            "action": "finishTurn",
-            "sid": 2
+            "action": "getGameState",
+            "gameId": 1
         }
     ]
 }

@@ -36,6 +36,43 @@
         "result": "ok"
     },
     {
+        "result": "ok",
+        "gameState": {
+            "map" : {
+              "regions": [
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 3, "ownerId": 1}},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 3, "ownerId": 1}},
+                {},
+                {},
+                {}
+              ]
+            }
+        }
+    },
+
+    {
+        "result": "ok", "statistics": [["Regions", 2], ["Skeletons", 0], ["Bivouacking", 0]]
+    },
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
         "result": "ok"
     },
     {
@@ -45,7 +82,23 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 5], ["Skeletons", 0], ["Bivouacking", 0]]
+        "result": "ok", "statistics": [["Regions", 4], ["Ratmen", 0], ["Alchemist", 2]]
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics": [["Regions", 5], ["Skeletons", 0], ["Bivouacking", 0]]
     },
     {
         "result": "ok",
@@ -58,149 +111,17 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 3, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 3, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1}},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1}},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1 }},
+                {"currentRegionState": {"tokensNum": 5, "tokenBadgeId": 3, "ownerId": 1}},
+                {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 3, "ownerId": 1}},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 3, "ownerId": 1}},
                 {},
                 {}
               ]
-            },
-            "activePlayerId": 2,
-            "currentTurn": 0,
-            "players": [
-                {
-                    "userId": 1,
-                    "username": "username1",
-                    "coins": 8,
-                    "tokensInHand": 0
-                },
-                {}
-            ]
+            }
         }
-    },
-    {
-        "result": "ok", "tokenBadgeId": 2
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "statistics":[["Regions", 1], ["Ratmen", 0], ["Alchemist", 2]]
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "statistics":[["Regions", 1], ["Skeletons", 0], ["Bivouacking", 0]]
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "statistics":[["Regions", 1], ["Ratmen", 0], ["Alchemist", 2]]
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "statistics":[["Regions", 1], ["Skeletons", 0], ["Bivouacking", 0]]
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "statistics":[["Regions", 1], ["Ratmen", 0], ["Alchemist", 2]]
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "notEnoughTokensForRedeployment"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "statistics":[["Regions", 1], ["Skeletons", 0], ["Bivouacking", 0]]
-    },
-
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok"
-    },
-    {
-        "result": "ok", "statistics":[["Regions", 1], ["Ratmen", 0], ["Alchemist", 2]]
     }
 ]
