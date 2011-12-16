@@ -280,7 +280,7 @@ sub initialTokens {
 sub coinsBonus {
   # получение дополнительных монет за захваченные территории
   return $_[0]->SUPER::coinsBonus() +
-    1 * (grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} });
+    1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} @{ $_[0]->{regions} });
 }
 
 
@@ -316,7 +316,7 @@ sub redeployTokensBonus {
   my ($self, $player) = @_;
   my $inGame = $player->{tokensInHand};
   map { $inGame += $_->{tokensNum} } @{ $self->{regions} };
-  my $bonus = int ((grep { defined $_->{conquestIdx} } @{ $self->{regions} }) / 2);
+  my $bonus = int ((grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} @{ $self->{regions} }) / 2);
   return min($bonus, SKELETONS_TOKENS_MAX -  $inGame);
 }
 

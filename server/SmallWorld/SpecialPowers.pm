@@ -476,7 +476,7 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * (grep { defined $_->{conquestIdx} } @{ $_[0]->{regions} });
+  return 1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} @{ $_[0]->{regions} });
 }
 
 sub initialTokens {
