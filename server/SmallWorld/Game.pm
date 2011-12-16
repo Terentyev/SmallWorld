@@ -183,6 +183,12 @@ sub setTokenBadge {
   }
 }
 
+sub getNotEmptyBadge {
+  return defined $_[1] && defined $_[1]->{tokenBadgeId}
+    ? \%{$_[1]}
+    : undef;
+}
+
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
 sub getGameStateForPlayer {
   my $self = shift;
@@ -237,11 +243,8 @@ sub getGameStateForPlayer {
       coins              => $_->{coins},
       tokensInHand       => $_->{tokensInHand},
       priority           => $_->{priority} + 1,
-      currentTokenBadge  => \%{ $_->{currentTokenBadge} },
-      declinedTokenBadge => (
-          defined $_->{declinedTokenBadge}->{tokenBadgeId}
-          ? \%{ $_->{declinedTokenBadge} }
-          : undef)
+      currentTokenBadge  => $self->getNotEmptyBadge($_->{currentTokenBadge}),
+      declinedTokenBadge => $self->getNotEmptyBadge($_->{declinedTokenBadge})
     }
   } @{ $gs->{players} };
   foreach ( @{ $result->{players} } ) {
