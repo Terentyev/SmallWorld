@@ -740,9 +740,9 @@ sub dragonAttack {
 }
 
 sub throwDice {
-  my $self = shift;
+  my ($self, $dice) = @_;
   my $player = $self->getPlayer();
-  $self->{gameState}->{berserkDice} = $ENV{DEBUG} ? 1 : $self->random();
+  $self->{gameState}->{berserkDice} = $ENV{DEBUG} && defined $dice ? $dice : $self->random();
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
   return $self->{gameState}->{berserkDice};
 }

@@ -286,7 +286,7 @@ sub cmd_dragonAttack {
 sub cmd_throwDice {
   my ($self, $result) = @_;
   my $game = $self->getGame();
-  $result->{dice} = $game->throwDice();
+  $result->{dice} = $game->throwDice($self->{json}->{dice});
   $game->save();
 }
 

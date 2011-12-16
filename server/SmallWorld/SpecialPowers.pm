@@ -71,7 +71,7 @@ sub abandonRegion {
 
 # можем ли мы с этим умением выполнить эту команду
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $js, $state, $player) = @_;
   return ! ( $js->{action} eq 'redeploy' && (grep { defined $js->{$_} } qw( heroes encampments fortified )) ||
              $js->{action} eq 'throwDice' || $js->{action} eq 'dragonAttack' || $js->{action} eq 'selectFriend' ||
              $js->{action} eq 'decline' && $state eq GS_BEFORE_FINISH_TURN
@@ -141,9 +141,10 @@ sub conquestRegionTokensBonus {
 }
 
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $js, $state, $player) = @_;
   # базовый класс + бросить кости (если мы их еще не бросали)
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'throwDice' && !defined $self->{dice};
+  return $self->SUPER::canCmd($js, $state, $player) ||
+         $js->{action} eq 'throwDice' && !defined $self->{dice} && $player->{tokensInHand};
 }
 
 sub initialTokens {
@@ -182,10 +183,10 @@ sub abandonRegion {
 }
 
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $js, $state, $player) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/форты
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'redeploy' &&
+  return $self->SUPER::canCmd($js, $state, $player) || $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( heroes fortified ));
 }
 
@@ -222,9 +223,9 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $js, $state, $player) = @_;
   # базовый класс + подружить
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'selectFriend';
+  return $self->SUPER::canCmd($js, $state, $player) || $js->{action} eq 'selectFriend';
 }
 
 sub initialTokens {
@@ -267,9 +268,9 @@ sub abandonRegion {
 }
 
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $js, $state, $player) = @_;
   # базовый класс + атаковать драконом
-  return $self->SUPER::canCmd($js, $state) || ($js->{action} eq 'dragonAttack') && !$self->{dragonAttacked};
+  return $self->SUPER::canCmd($js, $state, $player) || ($js->{action} eq 'dragonAttack') && !$self->{dragonAttacked};
 }
 
 sub initialTokens {
@@ -356,10 +357,10 @@ sub abandonRegion {
 }
 
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $js, $state, $player) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить героев/лагеря
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'redeploy' &&
+  return $self->SUPER::canCmd($js, $state, $player) || $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( heroes encampments ));
 }
 
@@ -388,10 +389,10 @@ sub abandonRegion {
 }
 
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $js, $state, $player) = @_;
   # только команда реорганизация войск при условии, что в команде не пытаются
   # установить лагеря/форты
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'redeploy' &&
+  return $self->SUPER::canCmd($js, $state, $player) || $js->{action} eq 'redeploy' &&
     !(grep { defined $js->{$_} } qw( encampments fortified ));
 }
 
@@ -523,9 +524,9 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $js, $state, $player) = @_;
   # команда decline после реорганизации войск
-  return $self->SUPER::canCmd($js, $state) || $js->{action} eq 'decline' && $state eq GS_BEFORE_FINISH_TURN;
+  return $self->SUPER::canCmd($js, $state, $player) || $js->{action} eq 'decline' && $state eq GS_BEFORE_FINISH_TURN;
 }
 
 sub initialTokens {

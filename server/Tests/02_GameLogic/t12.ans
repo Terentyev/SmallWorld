@@ -131,6 +131,9 @@
         "result": "ok"
     },
     {
+        "result": "ok"
+    },
+    {
         "result": "ok", "statistics":[["Regions", 5], ["Giants", 0], ["Alchemist", 2]]
     },
     {

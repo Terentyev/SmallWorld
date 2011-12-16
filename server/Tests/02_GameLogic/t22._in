@@ -38,7 +38,8 @@
         },
         {
             "action": "throwDice",
-            "sid": 1
+            "sid": 1,
+            "dice": 1
         },
         {
             "action": "throwDice",
@@ -55,7 +56,8 @@
         },
         {
             "action": "throwDice",
-            "sid": 1
+            "sid": 1,
+            "dice": 1
         },
         {
             "action": "redeploy",
@@ -103,7 +105,8 @@
 
         {
             "action": "throwDice",
-            "sid": 1
+            "sid": 1,
+            "dice": 1
         },
         {
             "action": "conquer",
@@ -117,7 +120,8 @@
         },
         {
             "action": "throwDice",
-            "sid": 1
+            "sid": 1,
+            "dice": 1
         },
         {
             "action": "conquer",

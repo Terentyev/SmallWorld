@@ -125,9 +125,15 @@
             "regionId": 4
         },
         {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 3, "tokensNum": 2}, {"regionId": 4, "tokensNum": 2}, {"regionId": 8, "tokensNum": 2}, {"regionId": 13, "tokensNum": 2}, {"regionId": 14, "tokensNum": 2}]
+        },
+        {
             "action": "finishTurn",
             "sid": 2
         },
+
         {
             "action": "decline",
             "sid": 1

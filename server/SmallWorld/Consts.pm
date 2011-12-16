@@ -437,7 +437,7 @@ use constant PATTERN => {
       mandatory => 1,
       errorCode => R_BAD_SID
     },
-    {name => 'dice', type => 'int', mandatory => 0}
+    {name => 'dice', type => 'int', mandatory => 0, min => 0, max => 3}
   ],
   dragonAttack => [
     {

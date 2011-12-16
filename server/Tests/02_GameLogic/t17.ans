@@ -96,6 +96,9 @@
         "result": "badRegionId"
     },
     {
+        "result": "badRegion"
+    },
+    {
         "result": "ok"
     },
     {

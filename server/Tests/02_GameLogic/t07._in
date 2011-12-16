@@ -204,6 +204,11 @@
             "regions": []
         },
         {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 6, "tokensNum": 8}, {"regionId": 5, "tokensNum": 1}]
+        },
+        {
             "action": "finishTurn",
             "sid": 2
         },
