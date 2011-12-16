@@ -71,7 +71,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 2], ["Elves", 0], ["Forest", 1]]
+        "result": "ok", "statistics":[["Regions", 2], ["Elves", 0], ["Forest", 0]]
     },
 
     {
