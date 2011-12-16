@@ -379,8 +379,8 @@ sub checkStage {
   my %states = (
     &GS_DEFEND             => [ 'defend' ],
     &GS_SELECT_RACE        => [ 'selectRace' ],
-    &GS_BEFORE_CONQUEST    => [ 'decline', 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'finishTurn' ],
-    &GS_CONQUEST           => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy', 'finishTurn' ],
+    &GS_BEFORE_CONQUEST    => [ 'decline', 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy' ],
+    &GS_CONQUEST           => [ 'conquer', 'throwDice', 'dragonAttack', 'enchant', 'redeploy' ],
     &GS_REDEPLOY           => [ 'redeploy' ],
     &GS_BEFORE_FINISH_TURN => [ 'finishTurn', 'selectFriend', 'decline' ],
     &GS_FINISH_TURN        => [ 'finishTurn' ],
@@ -394,14 +394,11 @@ sub checkStage {
   # 4. команда окончания хода с ненулевым числом фигурок на руках
   # 5. после бросока кубика может идти только команда conquer
   my $state = $game->{gameState}->{state};
-  my $func = $self->can("checkStage_$js->{action}"); # see UNIVERSAL::can
 
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
-    ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
     !$sp->canCmd($js, $state, $player) || !$race->canCmd($js, $game->{gameState});
-#    defined $func && &$func(@_);
 }
 
 sub checkStage_throwDice {
