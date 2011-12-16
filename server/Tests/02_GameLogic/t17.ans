@@ -241,7 +241,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics": [["Regions", 4], ["Orcs", 2], ["Diplomat", 0], ["Trolls", 0], ["Bivouacking", 0]]
+        "result": "ok", "statistics": [["Regions", 4], ["Orcs", 0], ["Diplomat", 0], ["Trolls", 0], ["Bivouacking", 0]]
     },
 
     {

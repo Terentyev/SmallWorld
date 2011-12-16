@@ -24,7 +24,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 3], ["Stout", 0]]
+        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 0], ["Stout", 0]]
     },
 
     {

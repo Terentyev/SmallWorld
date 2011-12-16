@@ -53,9 +53,19 @@
             "regionId": 6
         },
         {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 7
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 12
+        },
+        {
             "action": "redeploy",
             "sid": 2,
-            "regions": [{"regionId": 6, "tokensNum": 7}]
+            "regions": [{"regionId": 6, "tokensNum": 5}, {"regionId": 7, "tokensNum": 1}, {"regionId": 12, "tokensNum": 1}]
         },
         {
             "action": "finishTurn",
@@ -63,9 +73,19 @@
         },
 
         {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 7
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 12
+        },
+        {
             "action": "redeploy",
             "sid": 1,
-            "regions": [{"regionId": 3, "tokensNum": 4}, {"regionId": 8, "tokensNum": 2}, {"regionId": 9, "tokensNum": 4}]
+            "regions": [{"regionId": 3, "tokensNum": 4}, {"regionId": 8, "tokensNum": 2}, {"regionId": 9, "tokensNum": 2}, {"regionId": 12, "tokensNum": 2}]
         },
         {
             "action": "finishTurn",

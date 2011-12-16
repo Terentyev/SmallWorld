@@ -45,7 +45,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 3], ["Alchemist", 2]]
+        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 0], ["Alchemist", 2]]
     },
 
     {
@@ -58,7 +58,13 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 1], ["Humans", 0], ["Bivouacking", 0]]
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 3], ["Humans", 0], ["Bivouacking", 0]]
     },
 
     {
@@ -68,6 +74,9 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 0], ["Alchemist", 2]]
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 4], ["Orcs", 1], ["Alchemist", 2]]
     }
 ]

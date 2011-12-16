@@ -67,7 +67,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 5], ["Orcs", 2], ["Diplomat", 0], ["Wizards", 0], ["Alchemist", 0]]
+        "result": "ok", "statistics":[["Regions", 5], ["Orcs", 1], ["Diplomat", 0], ["Wizards", 0], ["Alchemist", 0]]
     },
 
     {

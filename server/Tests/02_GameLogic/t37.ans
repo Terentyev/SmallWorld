@@ -21,7 +21,7 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 3], ["Pillaging", 3]]
+        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 0], ["Pillaging", 0]]
     },
     {
         "result": "ok", "tokenBadgeId": 3
@@ -33,13 +33,25 @@
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 1], ["Wizards", 0], ["Merchant", 1]]
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 3], ["Wizards", 1], ["Merchant", 3]]
     },
 
     {
         "result": "ok"
     },
     {
-        "result": "ok", "statistics":[["Regions", 3], ["Orcs", 0], ["Pillaging", 0]]
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 4], ["Orcs", 1], ["Pillaging", 1]]
     }
 ]
