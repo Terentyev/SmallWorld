@@ -41,7 +41,7 @@
               "regions": [
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "dragon": 1 }},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 2, "ownerId": 1, "dragon": true }},
                 {},
                 {},
                 {},
