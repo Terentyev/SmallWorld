@@ -207,7 +207,6 @@ sub getGameStateForPlayer {
     currentTurn        => $gs->{currentTurn},
     map                => \%{ $gs->{map} },
     visibleTokenBadges => $gs->{visibleTokenBadges},
-    defendingInfo      => $gs->{defendingInfo},
     friendInfo         => $gs->{friendInfo},
     stoutStatistics    => $gs->{stoutStatistics},
     berserkDice        => $gs->{berserkDice},
@@ -511,17 +510,15 @@ sub conquer {
   $player->{tokensInHand} -= $region->{tokensNum};  # убираем из рук игрока фигурки, которые оставили в регионе
 
   if ( defined $defender ) {
+    $defender->{tokensInHand} = $defTokens;
     if ($self->canDefend($defender, $defTokens)) {
       $self->{gameState}->{defendingInfo} = {
         'playerId' => $defender->{playerId},
-        'regionId' => $region->{regionId},
-        'tokensNum' => $defTokens
+        'regionId' => $region->{regionId}
       };
       $self->{gameState}->{conquerorId} = $player->{playerId};
       $self->{gameState}->{activePlayerId} = $defender->{playerId};
       $self->{gameState}->{state} = GS_DEFEND;
-    } else {
-      $defender->{tokensInHand} = $defTokens;
     }
   }
   $self->{gameState}->{berserkDice} = undef if exists $self->{gameState}->{berserkDice};
@@ -704,10 +701,9 @@ sub redeploy {
 sub defend {
   my ($self, $regs) = @_;
   my $player = $self->getPlayer();
-#  $player->{tokensInHand} = $self->{gameState}->{defendingInfo}->{tokensNum};
+  $player->{tokensInHand} = 0;
   foreach ( @{ $regs } ) {
     $self->getRegion($_->{regionId})->{tokensNum} += $_->{tokensNum};
-#    $player->{tokensInHand} -= $_->{tokensNum};
   }
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{conquerorId};
   @{ $self->{gameState} }{qw(defendingInfo conquerorId)} = ();

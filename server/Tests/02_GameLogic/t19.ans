@@ -145,15 +145,14 @@
             "activePlayerId": 2,
             "defendingInfo": {
               "regionId": 7,
-              "playerId": 1,
-              "tokensNum": 2
+              "playerId": 1
             },
             "currentTurn": 0,
             "players": [
                 {
                     "userId": 1,
                     "username": "username1",
-                    "tokensInHand": 0,
+                    "tokensInHand": 2,
                     "currentTokenBadge": {
                         "tokenBadgeId": 2,
                         "specialPowerName": "Alchemist",

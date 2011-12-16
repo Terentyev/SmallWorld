@@ -410,7 +410,7 @@ sub checkEnoughTokens {
   my ($self, $game, $player, $region, $race, $sp) = @_;
   my $tokensNum = 0;
   $tokensNum += $_->{tokensNum} // 0 for @{ $_[0]->{json}->{regions} };
-  return $tokensNum > $game->{gameState}->{defendingInfo}->{tokensNum}; #$player->{tokensInHand};
+  return $tokensNum > $player->{tokensInHand};
 }
 
 sub checkEnoughTokens_redeploy {
@@ -425,7 +425,7 @@ sub checkTokensInHand {
   my ($game, $player) = $_[0]->getGameVariables();
   my $tokensNum = 0;
   $tokensNum += $_->{tokensNum} // 0 for @{ $_[0]->{json}->{regions} };
-  return $tokensNum < $game->{gameState}->{defendingInfo}->{tokensNum}; #$player->{tokensInHand};
+  return $tokensNum < $player->{tokensInHand};
 }
 
 sub checkTokensNum {

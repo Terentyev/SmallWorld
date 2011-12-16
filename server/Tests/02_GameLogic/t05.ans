@@ -46,15 +46,14 @@
         "gameState": {
             "defendingInfo": {
               "regionId": 3,
-              "playerId": 1,
-              "tokensNum": 2
+              "playerId": 1
             },
             "activePlayerId": 2,
             "currentTurn": 0,
             "players": [
               {
                 "userId": 1,
-                "tokensInHand": 0
+                "tokensInHand": 2
               },
               {}
             ]

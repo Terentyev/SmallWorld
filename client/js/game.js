@@ -150,7 +150,6 @@ function changeGameStage(stage) {
   commitStageClickAction = commitStageWrong;
   switch (data.game.stage) {
     case 'defend':
-      player.addTokens(data.game.defendingInfo.tokensNum); // по какой-то причине некоторым показалось, что положить токены не в руки, а в отдельную структуру, очень по-умному!!!
       defend = { regions: [], regionId: null };
       areaClickAction = areaDefend;
       commitStageClickAction = commitStageDefend;

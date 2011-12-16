@@ -116,8 +116,7 @@
             "activePlayerId": 2,
             "defendingInfo": {
               "regionId": 13,
-              "playerId": 1,
-              "tokensNum": 2
+              "playerId": 1
             },
             "currentTurn": 1,
             "map" : {
@@ -143,7 +142,7 @@
                 {
                     "userId": 1,
                     "username": "username1",
-                    "tokensInHand": 0,
+                    "tokensInHand": 2,
                     "currentTokenBadge": {
                         "tokenBadgeId": 1,
                         "specialPowerName": "Fortified",
