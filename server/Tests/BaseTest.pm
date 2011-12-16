@@ -71,7 +71,7 @@ sub check {
     my $cnt = $self->sendRequest($req);
     my $diff = [];
 
-    if ( $self->compare($answers->[$i], eval { return decode_json($cnt) || {}; }, $diff, '') ) {
+    if ( $self->compare($answers->[$i], eval { return decode_json($cnt) || {}; } || undef, $diff, '') ) {
       print '.';
     }
     else {

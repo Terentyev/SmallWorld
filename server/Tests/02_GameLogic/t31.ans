@@ -74,8 +74,8 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 1, "ownerId": 1, "fortified": 1 }},
-                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 1, "ownerId": 1, "fortified": 1 }},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 1, "ownerId": 1, "fortified": true }},
+                {"currentRegionState": {"tokensNum": 3, "tokenBadgeId": 1, "ownerId": 1, "fortified": true }},
                 {},
                 {}
               ]
@@ -133,7 +133,7 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 1, "ownerId": 1, "fortified": 1 }},
+                {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 1, "ownerId": 1, "fortified": true }},
                 {"currentRegionState": {"tokensNum": 6, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {}
@@ -195,7 +195,7 @@
                 {},
                 {},
                 {},
-                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1, "fortified": 1, "inDecline": 1}},
+                {"currentRegionState": {"tokensNum": 1, "tokenBadgeId": 1, "ownerId": 1, "fortified": true, "inDecline": true}},
                 {"currentRegionState": {"tokensNum": 4, "tokenBadgeId": 4, "ownerId": 2 }},
                 {},
                 {}

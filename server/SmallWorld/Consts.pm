@@ -136,7 +136,7 @@ use constant CMD_ERRORS => {
   register           => [R_BAD_USERNAME, R_BAD_PASSWORD, R_USERNAME_TAKEN],
   resetServer        => [],
   selectFriend       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_FRIEND_ID, R_BAD_FRIEND], # R_BAD_GAME_STATE
-  selectRace         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_MONEY_AMOUNT, R_BAD_STAGE], # R_BAD_POSITION R_BAD_GAME_STATE
+  selectRace         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_MONEY_AMOUNT], # R_BAD_POSITION R_BAD_GAME_STATE
   sendMessage        => [R_BAD_SID],
   setReadinessStatus => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE],
   throwDice          => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE], # R_BAD_GAME_STATE
@@ -395,7 +395,7 @@ use constant PATTERN => {
       name => 'regions',
       type => 'list',
       mandatory => 1,
-      errorCode => R_BAD_REGION
+      errorCode => R_BAD_REGIONS
     },
     {name => 'encampments', type => 'list', mandatory => 0},
     {name => 'fortified', type => 'hash', mandatory => 0},
@@ -412,7 +412,7 @@ use constant PATTERN => {
       name => 'regions',
       type => 'list',
       mandatory => 1,
-      errorCode => R_BAD_REGION
+      errorCode => R_BAD_REGIONS
     }
   ],
   enchant => [

@@ -90,7 +90,6 @@
                     "userId": 1,
                     "username": "username1",
                     "coins": 14,
-                    "currentTokenBadge": {},
                     "declinedTokenBadge": {
                         "tokenBadgeId": 2,
                         "specialPowerName": "Forest",

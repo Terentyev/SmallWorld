@@ -3,7 +3,7 @@
     "include": [ "_game2.inc" ],
     "test": [
         { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
-            "Tritons", "Wizard", "Trolls", "Giants", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
+            "Tritons", "Wizards", "Trolls", "Giants", "Ratmen", "Orcs", "Sorcerers", "Amazons", "Skeletons", "Humans", "Elves", "Dwarves", "Halflings" ],
           "visibleSpecialPowers": [
             "Fortified", "Berserk", "DragonMaster", "Alchemist", "Seafaring", "Forest", "Flying", "Bivouacking", "Commando", "Diplomat", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Stout", "Swamp", "Underworld", "Wealthy" ] 
         },

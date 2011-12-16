@@ -74,7 +74,6 @@
                     "userId": 1,
                     "username": "username1",
                     "coins": 5,
-                    "currentTokenBadge": {},
                     "declinedTokenBadge": {
                         "tokenBadgeId": 3,
                         "specialPowerName": "Bivouacking",

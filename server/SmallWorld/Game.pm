@@ -219,13 +219,12 @@ sub getGameStateForPlayer {
         ownerId         => $_->{ownerId},
         tokenBadgeId    => $_->{tokenBadgeId},
         tokensNum       => $_->{tokensNum},
-        holeInTheGround => $_->{holeInTheGround},
-        lair            => $_->{lair},
+        holeInTheGround => $self->bool($_->{holeInTheGround}),
         encampment      => $_->{encampment},
-        dragon          => $_->{dragon},
-        fortified       => $_->{fortified},
-        hero            => $_->{hero},
-        inDecline       => $_->{inDecline}
+        dragon          => $self->bool($_->{dragon}),
+        fortified       => $self->bool($_->{fortified}),
+        hero            => $self->bool($_->{hero}),
+        inDecline       => $self->bool($_->{inDecline})
       }
     }
   } @{ $gs->{regions} };

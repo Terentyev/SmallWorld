@@ -3,7 +3,7 @@
     "include": [ "_game2.inc" ],
     "test": [
         { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
-            "Amazons", "Giants", "Elves", "Dwarves", "Halflings", "Humans",       "Orcs",   "Ratmen", "Skeletons", "Sorcerers", "Tritons", "Trolls",   "Wizard" ],
+            "Amazons", "Giants", "Elves", "Dwarves", "Halflings", "Humans",       "Orcs",   "Ratmen", "Skeletons", "Sorcerers", "Tritons", "Trolls",   "Wizards" ],
           "visibleSpecialPowers": [
             "Berserk", "Forest", "Alchemist", "Bivouacking", "Commando", "Diplomat",  "DragonMaster", "Flying", "Fortified", "Heroic",    "Hill",    "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
         },
@@ -45,6 +45,18 @@
             "action": "conquer",
             "sid": 1,
             "regionId": 7
+        },
+        {
+            "action": "redeploy",
+            "sid": 1,
+            "regions": [
+              { "regionId": 7, "tokensNum": 2},
+              { "regionId": 8, "tokensNum": 2},
+              { "regionId": 9, "tokensNum": 1},
+              { "regionId":13, "tokensNum": 1},
+              { "regionId":15, "tokensNum": 1},
+              { "regionId":14, "tokensNum": 3}
+            ]
         },
         {
             "action": "finishTurn",
