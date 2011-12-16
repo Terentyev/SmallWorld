@@ -297,12 +297,6 @@ use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
 
-sub canFirstConquer {
-  my ($self, $region) = @_;
-  #нельзя моря и озера
-  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} });
-}
-
 sub canAttack {
   my ($self, $region, $regions) = @_;
   return

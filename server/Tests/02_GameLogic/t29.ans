@@ -29,7 +29,7 @@
         "result": "badRegion"
     },
     {
-        "result": "ok"
+        "result": "badRegion"
     },
     {
         "result": "ok"
@@ -39,6 +39,9 @@
     },
     {
         "result": "badRegion"
+    },
+    {
+        "result": "ok"
     },
     {
         "result": "ok"
