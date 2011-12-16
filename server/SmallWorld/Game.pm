@@ -81,6 +81,7 @@ sub init {
       tokensNum        => defined $_->{population} ? $_->{population}: 0, # количество фигурок
       conquestIdx      => undef,                                          # порядковый номер завоевания (обнуляется по окончанию хода)
       prevTokenBadgeId => undef,
+      prevTokensNum    => undef,
       holeInTheGround  => undef,                                          # 1 если присутствует нора полуросликов
       lair             => undef,                                          # кол-во пещер троллей
       encampment       => undef,                                          # кол-во лагерей (какая осень в лагерях...)
@@ -499,6 +500,7 @@ sub conquer {
 
   $region->{conquestIdx} = $self->nextConquestIdx();
   $region->{prevTokenBadgeId} = $region->{tokenBadgeId};
+  $region->{prevTokensNum} = $region->{tokensNum};
   $region->{ownerId} = $player->{playerId};
   $region->{tokenBadgeId} = $player->{currentTokenBadge}->{tokenBadgeId};
   @{ $region }{ qw(inDecline lair fortified encampment) } = ();
@@ -727,12 +729,10 @@ sub selectFriend {
 
 sub dragonAttack {
   my ($self, $regionId) = @_;
-#  my $player = $self->getPlayer();
   foreach ( @{ $self->{gameState}->{regions} } ) {
     $_->{dragon} = undef;
   }
   my $region = $self->getRegion($regionId);
-  my $defender = undef;
   $self->{defendNum} = 1;
   $self->conquer($regionId);
   $self->{gameState}->{dragonAttacked} = 1;
