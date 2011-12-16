@@ -113,6 +113,11 @@
         {
             "action": "enchant",
             "sid": 2,
+            "regionId": 14
+        },
+        {
+            "action": "enchant",
+            "sid": 2,
             "regionId": 13
         },
         {
