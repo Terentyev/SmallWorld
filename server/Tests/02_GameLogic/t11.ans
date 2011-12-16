@@ -45,6 +45,9 @@
         "result": "ok"
     },
     {
+        "result": "ok"
+    },
+    {
         "result": "ok", "statistics":[["Regions", 6], ["Giants", 0], ["Forest", 2]]
     },
 
