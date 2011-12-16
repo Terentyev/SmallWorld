@@ -400,8 +400,8 @@ sub checkStage {
     !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
     ($js->{action} eq 'finishTurn') && (defined $player->{tokensInHand} && $player->{tokensInHand} != 0) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    !$sp->canCmd($js, $state) || !$race->canCmd($js, $game->{gameState}) ||
-    defined $func && &$func(@_);
+    !$sp->canCmd($js, $state, $player) || !$race->canCmd($js, $game->{gameState});
+#    defined $func && &$func(@_);
 }
 
 sub checkStage_throwDice {
