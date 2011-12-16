@@ -36,7 +36,7 @@ sub canPlaceObj2Region {
   return 0;
 }
 
-sub canFirstConquer() {
+sub canFirstConquer {
   my ($self, $region) = @_;
   return 0;
 }
@@ -297,12 +297,6 @@ use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
 
-sub canFirstConquer() {
-  my ($self, $region) = @_;
-  #нельзя моря и озера
-  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} });
-}
-
 sub canAttack {
   my ($self, $region, $regions) = @_;
   return
@@ -493,7 +487,7 @@ use base ('SmallWorld::BaseSp');
 
 use SmallWorld::Consts;
 
-sub canFirstConquer() {
+sub canFirstConquer {
   my ($self, $region) = @_;
   #можно любой пограничный регион
   return grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} };
