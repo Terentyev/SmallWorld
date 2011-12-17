@@ -101,7 +101,7 @@ use constant CMD_ERRORS => {
     R_REGION_IS_IMMUNE, R_BAD_REGION, R_BAD_TOKENS_NUM
   ],
   createDefaultMaps  => [],
-  createGame         => [R_BAD_SID, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_ALREADY_IN_GAME],
+  createGame         => [R_BAD_SID, R_ALREADY_IN_GAME, R_GAME_NAME_TAKEN, R_BAD_MAP_ID],
   decline            => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE # R_BAD_GAME_STATE
   ],
@@ -274,7 +274,7 @@ use constant PATTERN => {
       errorCode => R_BAD_MAP_ID
     },
     {
-      name => 'gameDescr',
+      name => 'gameDescription',
       type => 'unicode',
       mandatory => 0,
       max => MAX_GAMEDESCR_LEN,
@@ -690,6 +690,11 @@ use constant LENA_DEFAULT_MAPS => [
         'adjacent' => [4]
       }
     ]
+  }, {
+    'mapName' => 'map1',
+    'playersNum' => 2,
+    'turnsNum' => 10,
+    'regions' => []
   }
 
 ];

@@ -149,7 +149,7 @@ sub cmd_uploadMap {
 
 sub cmd_createGame {
   my ($self, $result) = @_;
-  $result->{gameId} = $self->{db}->createGame( @{$self->{json}}{qw/sid gameName mapId gameDescr/} );
+  $result->{gameId} = $self->{db}->createGame( @{$self->{json}}{qw/sid gameName mapId gameDescription/} );
 }
 
 
