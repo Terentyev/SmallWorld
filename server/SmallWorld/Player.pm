@@ -14,6 +14,12 @@ sub activeConq {
     ($self->{currentTokenBadge}->{tokenBadgeId} // -1)  == ($region->{tokenBadgeId} // -2);
 }
 
+sub isFriend {
+  my ($self, $friendInfo) = @_;
+  return
+    defined $friendInfo && ($friendInfo->{friendId} // -1) == $self->{playerId};
+}
+
 1;
 
 __END__
