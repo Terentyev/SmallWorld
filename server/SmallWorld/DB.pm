@@ -225,11 +225,6 @@ sub finishGame {
       GST_FINISH, $id);
 }
 
-sub gameExists {
-  my ($self, $id, $all) = @_;
-  return defined $self->query('SELECT 1 FROM GAMES WHERE id = ?' . ($all ? '' : ' AND gstate <> ' . GST_EMPTY), $id);
-}
-
 sub gameWithNameExists {
   my ($self, $name, $all) = @_;
   return defined $self->query('SELECT 1 FROM GAMES WHERE name = ?' . ($all ? '' : ' AND gstate <> ' . GST_EMPTY), $name);

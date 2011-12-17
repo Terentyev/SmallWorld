@@ -62,9 +62,9 @@ sub checkGameState {
   my $gameId = exists($h->{gameId}) ? $h->{gameId} : $self->{db}->getGameId($h->{sid});
   my %gst = (
     &GST_WAIT    => ['setReadinessStatus', 'joinGame', 'leaveGame'],
-    &GST_BEGIN   => ['leaveGame', $self->getGameCommands()],
-    &GST_IN_GAME => ['leaveGame', $self->getGameCommands()],
-    &GST_FINISH  => ['leaveGame'],
+    &GST_BEGIN   => [$self->getGameCommands()],
+    &GST_IN_GAME => [$self->getGameCommands()],
+    &GST_FINISH  => [],
     &GST_EMPTY   => []
   );
   foreach ( @{ $gst{$self->{db}->getGameStateOnly($gameId)} } ) {
@@ -195,7 +195,7 @@ sub checkJsonCmd {
 
   $result->{result} = $self->checkErrorHandlers({
     &R_ALREADY_IN_GAME              => sub { $self->checkInGame(); },
-    &R_BAD_GAME_ID                  => sub { !$self->{db}->gameExists($self->{json}->{gameId}, $self->{json}->{action} eq 'getGameState'); },
+    &R_BAD_GAME_ID                  => sub { !$self->{db}->dbExists('GAMES', 'id', $self->{json}->{gameId}); },
     &R_BAD_GAME_STATE               => sub { $self->checkGameState($self->{json}); },
     &R_BAD_LOGIN                    => sub { $self->checkLoginAndPassword(); },
     &R_BAD_MAP_ID                   => sub { !$self->{db}->dbExists("maps", "id", $self->{json}->{mapId}); },
