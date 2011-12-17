@@ -194,7 +194,7 @@ function hdlGetGameList(ans) {
     }
     games[cur.gameId] = {"name": cur.gameName, "description": cur.gameDescription, "mapId": cur.mapId,
                          "turnsNum": cur.turnsNum, "players": players, "playersNum": cur.maxPlayersNum,
-                         "inGame": cur.state == 2};
+                         "inGame": cur.state != GST_WAIT};
     needLoadMaps = needLoadMaps || !maps[cur.mapId];
     if (gameId == null)
       for (var j in cur.players)
@@ -202,7 +202,7 @@ function hdlGetGameList(ans) {
           gameId = cur.gameId;
           break;
         }
-    gameStarted = gameStarted || (cur.state == 2 && data.gameId == cur.gameId);
+    gameStarted = gameStarted || (games[cur.gameId].inGame && data.gameId == cur.gameId);
     s += addRow([$.sprintf("<input type='radio' name='listGameId' value='%s'/>", cur.gameId),
                 cur.gameName,
                 $.sprintf("%d/%d", cur.players.length, cur.maxPlayersNum),
@@ -288,17 +288,25 @@ function cmdGetGameState() {
 
 function hdlGetGameState(ans) {
   var gs = ans.gameState;
-  var gameStarted = (data.game == null || data.game.state != 1) && gs.state == 1;
+  if (gs.state == GST_EMPTY) {
+    // TODO: что же делать, если произошла такая странная ситуация?
+    data.game = null;
+    data.gameId = null;
+    ShowLobby();
+    return;
+  }
+
+  var gameStarted = (data.game == null || data.game.state == GST_WAIT) && gs.state != GST_WAIT;
   var regions = new Array();
   for (var i in gs.map.regions) {
     regions[parseInt(i) + 1] = gs.map.regions[i];
   }
   gs.map.regions = regions;
   mergeGameState(gs);
-  if (data.game.state != 2) {
+  if (data.game.state == GST_WAIT) {
     updatePlayersInGame();
   }
-  if (gameStarted) alert('Started');
+  if (gameStarted) alert('In game');
 }
 
 /*******************************************************************************

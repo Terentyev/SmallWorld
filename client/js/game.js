@@ -104,7 +104,25 @@ function mergeMember(gs, attr, actions, acts) {
   }
 }
 
+function prepare(gs) {
+  // для совместимости
+  if (gs.stage != null) return;
+  switch (gs.state) {
+    case GST_WAIT:
+      break;
+    case GST_BEGIN:
+      gs.stage = GS_SELECT_RACE;
+      break;
+    case GST_IN_GAME:
+      break;
+    case ST_FINISH:
+      gs.stage = GS_IS_OVER;
+      break;
+  }
+}
+
 function mergeGameState(gs) {
+  prepare(gs);
   updatePlayerInfo(gs);
   if (data.game == null || data.game.state != gs.state) {
     data.game = gs;

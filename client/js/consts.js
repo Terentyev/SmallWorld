@@ -133,3 +133,9 @@ var gameStages = {
   'finishTurn': ["Wait other players", "Click finish-turn button, dude"],
   'gameOver': ["Oops!.. Game over", "Oops!.. Game over"]
 };
+
+var GST_WAIT    = 1;
+var GST_BEGIN   = 0;
+var GST_IN_GAME = 2;
+var GST_FINISH  = 3;
+var GST_EMPTY   = 4;

@@ -37,7 +37,7 @@ function showCurrentGame() {
 }
 
 function showGame() {
-  if (data.game == null || data.game.state != 1) return;
+  if (data.game == null || data.game.state == GST_WAIT) return;
 
   $("#divGame").css("display", "block");
   $("#divLobby").css("display", "none");
