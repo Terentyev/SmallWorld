@@ -210,10 +210,10 @@ sub getGameStateForPlayer {
     friendInfo         => $gs->{friendInfo},
     stoutStatistics    => $gs->{stoutStatistics},
     berserkDice        => $gs->{berserkDice},
-    dragonAttacked     => $gs->{dragonAttacked},
-    enchanted          => $gs->{enchanted},
+    dragonAttacked     => $self->bool($gs->{dragonAttacked}),
+    enchanted          => $self->bool($gs->{enchanted}),
     holesPlaced        => $gs->{holesPlaced},
-    gotWealthy         => $gs->{gotWealthy}
+    gotWealthy         => $self->bool($gs->{gotWealthy})
   };
   $result->{map}->{regions} = [];
   grep {
@@ -401,7 +401,7 @@ sub isImmuneRegion {
 # возвращает следующий порядковый номер завоевания регионов
 sub nextConquestIdx {
   my $result = -1;
-  grep { $result = max( $result, defined $_->{conquestIdx} ? $_->{conquestIdx} : -1 ) } @{ $_[0]->{gameState}->{regions} };
+  grep { $result = max( $result, ($_->{conquestIdx} // -1) ) } @{ $_[0]->{gameState}->{regions} };
   return $result + 1;
 }
 
@@ -614,7 +614,7 @@ sub finishTurn {
   my $bonus = 0;
   if (defined $self->{gameState}->{stoutStatistics}) {
     $bonus += $_->[1] for @{$self->{gameState}->{stoutStatistics}};
-    @ {$result->{statistics} } = @{ $self->{gameState}->{stoutStatistics} };
+    @{ $result->{statistics} } = @{ $self->{gameState}->{stoutStatistics} };
     delete $self->{gameState}->{stoutStatistics};
   } else {
     $result->{statistics} = [];
@@ -624,10 +624,10 @@ sub finishTurn {
 
   $sp->finishTurn($self->{gameState});
   $race->finishTurn($self->{gameState});
-  $self->{gameState}->{friendInfo}->{friendId} = undef
-    if defined $self->{gameState}->{friendInfo} && ($self->{gameState}->{friendInfo}->{friendId} // -1) == $player->{playerId};
+  @{ $self->{gameState}->{friendInfo} }{qw(friendId diplomatId)} = ()
+    if $player->isFriend($self->{gameState}->{friendInfo});
 
-  @ {$_}{qw (conquestIdx prevTokenBadgeId)} = () for @{ $self->{gameState}->{regions} };
+  @{$_}{qw (conquestIdx prevTokenBadgeId prevTokensNum)} = () for @{ $self->{gameState}->{regions} };
 
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
     ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
@@ -723,8 +723,7 @@ sub enchant {
 
 sub selectFriend {
   my ($self, $friendId) = @_;
-#  my $player = $self->getPlayer({ id => $friendId });
-  $self->{gameState}->{friendInfo}->{friendId} = $self->getPlayer({ id => $friendId })->{playerId};
+  $self->{gameState}->{friendInfo}->{friendId} = $friendId;
 }
 
 sub dragonAttack {
