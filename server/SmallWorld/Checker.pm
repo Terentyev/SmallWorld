@@ -32,6 +32,10 @@ sub errorCode {
   return $paramInfo->{errorCode} || R_BAD_JSON;
 }
 
+sub getGameCommands {
+  return qw( decline defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn );
+}
+
 sub checkLoginAndPassword {
   my $self = shift;
   return !defined $self->{db}->query('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
@@ -51,10 +55,22 @@ sub checkPlayersNum {
   return $self->{db}->playersCount($self->{json}->{gameId}) >= $n;
 }
 
-sub checkIsStarted {
+sub checkGameState {
   my ($self, $h) = @_;
+  return 0 if $h->{action} eq 'getGameState';
+
   my $gameId = exists($h->{gameId}) ? $h->{gameId} : $self->{db}->getGameId($h->{sid});
-  return $self->{db}->getGameIsStarted($gameId);
+  my %gst = (
+    &GST_WAIT    => ['setReadinessStatus', 'joinGame', 'leaveGame'],
+    &GST_BEGIN   => ['leaveGame', $self->getGameCommands()],
+    &GST_IN_GAME => ['leaveGame', $self->getGameCommands()],
+    &GST_FINISH  => ['leaveGame'],
+    &GST_EMPTY   => []
+  );
+  foreach ( @{ $gst{$self->{db}->getGameStateOnly($gameId)} } ) {
+    return 0 if $_ eq $h->{action};
+  }
+  return 1;
 }
 
 sub checkRegions {
@@ -179,15 +195,15 @@ sub checkJsonCmd {
 
   $result->{result} = $self->checkErrorHandlers({
     &R_ALREADY_IN_GAME              => sub { $self->checkInGame(); },
-    &R_BAD_GAME_ID                  => sub { !$self->{db}->dbExists('games', 'id', $self->{json}->{gameId}); },
-    &R_BAD_GAME_STATE               => sub { $self->checkIsStarted($self->{json}); },
+    &R_BAD_GAME_ID                  => sub { !$self->{db}->gameExists($self->{json}->{gameId}, $self->{json}->{action} eq 'getGameState'); },
+    &R_BAD_GAME_STATE               => sub { $self->checkGameState($self->{json}); },
     &R_BAD_LOGIN                    => sub { $self->checkLoginAndPassword(); },
     &R_BAD_MAP_ID                   => sub { !$self->{db}->dbExists("maps", "id", $self->{json}->{mapId}); },
     &R_BAD_PASSWORD                 => sub { $self->{json}->{password} !~ m/^.{6,18}$/; },
     &R_BAD_REGIONS                  => sub { $self->checkRegions(); },
     &R_BAD_SID                      => sub { defined $self->{json}->{sid} && !$self->{db}->dbExists("players", "sid", $self->{json}->{sid}); },
     &R_BAD_USERNAME                 => sub { $self->{json}->{username} !~ m/^[A-Za-z][\w\-]*$/; },
-    &R_GAME_NAME_TAKEN              => sub { $self->{db}->dbExists('games', 'name', $self->{json}->{gameName}); },
+    &R_GAME_NAME_TAKEN              => sub { $self->{db}->gameWithNameExists($self->{json}->{gameName}); },
     &R_MAP_NAME_TAKEN               => sub { $self->{db}->dbExists('maps', 'name', $self->{json}->{mapName}); },
     &R_NOT_IN_GAME                  => sub { !defined $self->{db}->getGameId($self->{json}->{sid}); },
     &R_TOO_MANY_PLAYERS             => sub { $self->checkPlayersNum(); },
@@ -196,7 +212,7 @@ sub checkJsonCmd {
 
   if (
       $result->{result} eq R_ALL_OK &&
-      (grep { $_ eq $cmd } qw( decline defend selectRace conquer throwDice dragonAttack enchant redeploy selectFriend finishTurn ))
+      (grep { $_ eq $cmd } ($self->getGameCommands()))
   ) {
     $self->checkGameCommand($result);
   }
@@ -494,11 +510,6 @@ sub checkFriend {
 
 sub checkGameCommand {
   my ($self, $result) = @_;
-  # если игра не начата, то выдаем ошибку
-  if ( !$self->checkIsStarted($self->{json}) ) {
-    $result->{result} = R_BAD_GAME_STATE;
-    return;
-  }
 
   my $js = $self->{json};
   my $cmd = $js->{action};

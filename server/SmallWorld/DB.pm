@@ -100,7 +100,21 @@ sub createGame {
   $self->_do('INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)',
              $gameName, $mapId, !defined $gameDescr ? '' : $gameDescr);
   my $gameId = $self->_getId('GAME');
-  $self->_do('INSERT INTO CONNECTIONS (gameId, playerId) VALUES (?, ?)', $gameId, $self->getPlayerId($sid));
+  $self->joinGame($gameId, $sid);
+  return $gameId;
+}
+
+sub updateGame {
+  my ($self, $sid, $gameName, $mapId, $gameDescr) = @_;
+  $self->_do('
+      UPDATE GAMES
+      SET mapId = ?, description = ?, gstate = ?, version = 0,
+          activePlayerId = NULL, currentTurn = NULL, state = NULL
+      WHERE name = ?',
+      $mapId, !defined $gameDescr ? '' : $gameDescr, GST_WAIT, $gameName);
+  my $gameId = $self->_getId('GAME');
+  $self->_do('DELETE FROM CONNECTIONS WHERE gameId = ?', $gameId);
+  $self->joinGame($gameId, $sid);
   return $gameId;
 }
 
@@ -132,17 +146,12 @@ sub readyCount {
                        WHERE c.isReady = 1 AND c.gameId = ?', $_[0]);
 }
 
-sub getGameIsStarted {
-  my $self = shift;
-  return $self->query('SELECT isStarted FROM GAMES WHERE id = ?', $_[0]);
-}
-
 sub leaveGame {
   my $self = shift;
   my $gameId = $self->getGameId($_[0]);
   if (defined $gameId) {
     $self->_do('DELETE FROM CONNECTIONS WHERE playerId = ?', $self->getPlayerId($_[0]));
-    $self->_do('DELETE FROM GAMES WHERE id = ?', $gameId) if !$self->playersCount($gameId);
+    $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_EMPTY, $gameId) if !$self->playersCount($gameId);
   }
 }
 
@@ -152,7 +161,7 @@ sub setIsReady {
   my $gameId = $self->getGameId($sid);
   $self->_do('UPDATE CONNECTIONS SET isReady = ? WHERE playerId = ?', $isReady, $self->getPlayerId($sid));
   if ( $self->readyCount($gameId) == $self->getMaxPlayers($gameId) ) {
-    $self->_do('UPDATE GAMES SET isStarted = 1 WHERE id = ?', $gameId);
+    $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_BEGIN, $gameId);
     return 1;
   }
   return 0;
@@ -182,10 +191,15 @@ sub getMaps {
       { Slice => {} }) or dbError;
 }
 
+sub getGameStateOnly {
+  my $self = shift;
+  return $self->query('SELECT gstate FROM GAMES WHERE id = ?', $_[0]);
+}
+
 sub getGameState {
   my $self = shift;
   return $self->{dbh}->selectrow_hashref('
-      SELECT g.id, g.name, g.description, g.mapId, g.state, g.version, g.activePlayerId, g.currentTurn
+      SELECT g.id, g.name, g.description, g.mapId, g.state, g.gstate, g.version, g.activePlayerId, g.currentTurn
       FROM GAMES g
       INNER JOIN CONNECTIONS c ON c.gameId = g.id
       INNER JOIN PLAYERS p ON p.id = c.playerId
@@ -202,6 +216,25 @@ sub saveGameState {
       @_);
 }
 
+sub finishGame {
+  my ($self, $id) = @_;
+  $self->_do('
+      UPDATE GAMES
+      SET gstate = ?
+      WHERE id = ?',
+      GST_FINISH, $id);
+}
+
+sub gameExists {
+  my ($self, $id, $all) = @_;
+  return defined $self->query('SELECT 1 FROM GAMES WHERE id = ?' . ($all ? '' : ' AND gstate <> ' . GST_EMPTY), $id);
+}
+
+sub gameWithNameExists {
+  my ($self, $name, $all) = @_;
+  return defined $self->query('SELECT 1 FROM GAMES WHERE name = ?' . ($all ? '' : ' AND gstate <> ' . GST_EMPTY), $name);
+}
+
 sub getMap {
   my $self = shift;
   return $self->{dbh}->selectrow_hashref('SELECT id, name, playersNum, turnsNum, regions FROM MAPS WHERE id = ?',
@@ -212,10 +245,11 @@ sub getGames {
   my $self = shift;
   return $self->{dbh}->selectall_arrayref('
       SELECT
-        g.id, g.name, g.description, g.mapId, g.isStarted, g.state, m.playersNum, m.turnsNum, g.activePlayerId,
+        g.id, g.name, g.description, g.mapId, g.gstate, m.playersNum, m.turnsNum, g.activePlayerId,
         g.currentTurn
-      FROM GAMES g INNER JOIN MAPS m ON g.mapId = m.id',
-      { Slice => {} } ) or dbError;
+      FROM GAMES g INNER JOIN MAPS m ON g.mapId = m.id
+      WHERE g.gstate <> ?',
+      { Slice => {} }, GST_EMPTY ) or dbError;
 }
 
 sub getPlayers {

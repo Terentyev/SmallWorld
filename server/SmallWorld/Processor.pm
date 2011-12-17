@@ -149,7 +149,11 @@ sub cmd_uploadMap {
 
 sub cmd_createGame {
   my ($self, $result) = @_;
-  $result->{gameId} = $self->{db}->createGame( @{$self->{json}}{qw/sid gameName mapId gameDescription/} );
+  my $js = $self->{json};
+  my @params = @{$js}{qw/sid gameName mapId gameDescription/};
+  $result->{gameId} = $self->{db}->gameWithNameExists($js->{gameName}, 1)
+    ? $self->{db}->updateGame( @params )
+    : $self->{db}->createGame( @params );
 }
 
 
@@ -167,13 +171,13 @@ sub cmd_getGameList {
       } } @{$pl}
     ];
     my ($activePlayerId, $turn) = (undef, 0);
-    if ( $_->{ISSTARTED} )
+    if ( $_->{GSTATE} != GST_WAIT )
     {
       ($activePlayerId, $turn) = ($_->{ACTIVEPLAYERID}, $_->{CURRENTTURN});
     }
     push @{$result->{games}}, { 'gameId' => $_->{ID}, 'gameName' => $_->{NAME}, 'gameDescription' => $_->{DESCRIPTION},
                                 'mapId' => $_->{MAPID}, 'maxPlayersNum' => $_->{PLAYERSNUM}, 'turnsNum' => $_->{TURNSNUM},
-                                'state' => $_->{ISSTARTED} + 1, 'activePlayerId' => $activePlayerId, 'turn' => $turn,
+                                'state' => $_->{GSTATE}, 'activePlayerId' => $activePlayerId, 'turn' => $turn,
                                 'players' => $players, 'url' => $self->getMapUrl($_->{MAPID})};
   }
 }

@@ -99,7 +99,7 @@
                               {"userId": 5, "username": "username5", "isReady": false} ]
                 },
                 {"gameId": 2, "gameName": "game name 2", "mapId": 1, "maxPlayersNum": 2,
-                 "turnsNum": 5, "turn": 0, "activePlayerId": 4, "state": 2,
+                 "turnsNum": 5, "turn": 0, "activePlayerId": 4, "state": 0,
                  "players": [ {"userId": 4, "username": "username4", "isReady": true},
                               {"userId": 1, "username": "username1", "isReady": true} ]
                 }

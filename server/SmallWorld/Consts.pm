@@ -877,7 +877,15 @@ use constant REGION_TYPES => [
   REGION_TYPE_MINE, REGION_TYPE_MOUNTAIN, REGION_TYPE_SEA, REGION_TYPE_SWAMP
 ];
 
-# внутриигровые состояния игры
+# состояния игры, не связанные с игровой логикой (в основном нужны для
+# совместимости)
+use constant GST_WAIT    => 1; # ожидаем игроков
+use constant GST_BEGIN   => 0; # игра началась, ждем первых действий
+use constant GST_IN_GAME => 2; # игра во всю идет (первое действие было сделано)
+use constant GST_FINISH  => 3; # игра закончилась, но игроки ее еще не покинули
+use constant GST_EMPTY   => 4; # игра закончилась, все игроки покинули ее
+
+# внутриигровые состояния игры (stages)
 use constant GS_DEFEND             => 'defend'           ;
 use constant GS_SELECT_RACE        => 'selectRace'       ;
 use constant GS_BEFORE_CONQUEST    => 'beforeConquest'   ;
