@@ -8,17 +8,24 @@
         },
         {
             "action": "uploadMap",
-            "mapName": "very-very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long map name"
+            "mapName": "very-very-very-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long map name",
+            "playersNum": 3,
+            "turnsNum": 6,
+            "regions": []
         },
         {
             "action": "uploadMap",
             "mapName": "map 1",
-            "playersNum": 1
+            "playersNum": 1,
+            "turnsNum": 6,
+            "regions": []
         },
         {
             "action": "uploadMap",
             "mapName": "map 1",
-            "playersNum": 10
+            "playersNum": 10,
+            "turnsNum": 6,
+            "regions": []
         },
         {
             "action": "uploadMap",
@@ -180,7 +187,7 @@
             "turnsNum": 6,
             "regions": [
               {
-                "population": "+1",
+                "population": 1,
                 "landDescription": [ "border", "coast", "sea", "mountain", "mine", "farmland", "magic", "forest", "hill", "swamp", "cavern" ],
                 "adjacent": [2, 3, 4, 5, 6]
               },
@@ -199,7 +206,7 @@
                 "adjacent": [1, 2, 5, 6, 7]
               },
               {
-                "population": "1",
+                "population": 1,
                 "landDescription": [ "mine", "farmland", "magic" ],
                 "adjacent": [1, 4, 6, 7]
               },

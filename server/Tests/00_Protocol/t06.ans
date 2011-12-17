@@ -43,7 +43,7 @@
         "gameId": 1
     },
     {
-        "result": "gameNameTaken"
+        "result": "alreadyInGame"
     },
     {
         "result": "alreadyInGame"
@@ -56,7 +56,7 @@
         "gameId": 2
     },
     {
-        "result": "gameNameTaken"
+        "result": "alreadyInGame"
     },
 
 

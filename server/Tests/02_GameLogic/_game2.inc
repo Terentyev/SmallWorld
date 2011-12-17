@@ -25,7 +25,7 @@
         { "action": "login", "username": "username2", "password": "password" },
         { "action": "register", "username": "username3", "password": "password" },
         { "action": "login", "username": "username3", "password": "password" },
-        { "action": "createGame", "sid": 1, "gameName": "game1", "mapId": 1, "gameDescr": "description1" },
+        { "action": "createGame", "sid": 1, "gameName": "game1", "mapId": 1, "gameDescription": "description1" },
         { "action": "joinGame", "sid": 2, "gameId": 1 },
         { "action": "setReadinessStatus", "sid": 1, "isReady": 1 }
 ]

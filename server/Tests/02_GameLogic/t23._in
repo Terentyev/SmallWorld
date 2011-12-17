@@ -120,8 +120,8 @@
         {
             "action": "redeploy",
             "sid": 2,
-            "regions": [{"regionId": 13, "tokensNum": 8}],
-            "encampments": [{"regionId": 13, "encampmentsNum": 3}]
+            "regions": [{"regionId": 12, "tokensNum": 8}],
+            "encampments": [{"regionId": 12, "encampmentsNum": 3}]
         },
 
         {
