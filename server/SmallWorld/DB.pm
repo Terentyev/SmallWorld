@@ -149,7 +149,6 @@ sub readyCount {
 sub leaveGame {
   my ($self, $sid) = @_;
   my $gameId = $self->getGameId($sid);
-  use SmallWorld::Processor; SmallWorld::Processor->debug("leaveGame=gameId=$gameId;sid=$sid");
   if ( defined $gameId ) {
     $self->_do('DELETE FROM CONNECTIONS WHERE playerId = ?', $self->getPlayerId($sid));
     if ( !$self->playersCount($gameId) ) {
