@@ -1,0 +1,25 @@
+[
+  { "result": "ok" },
+  { "result": "ok" },
+  { "result": "alreadyInGame" },
+  { "result": "ok" },
+
+  { "result": "ok" },
+  { "result": "ok" },
+  { "result": "ok" },
+
+  {
+    "result": "ok",
+    "actions": [
+      { "action": "createGame", "userId": 1, "gameName": "game1", "mapId": 1 },
+      { "action": "joinGame", "userId": 2, "gameId": 1 },
+      { "action": "leaveGame", "userId": 1 },
+
+      { "action": "joinGame", "userId": 1 },
+
+      { "action": "setReadinessStatus", "userId": 1, "isReady": 1 },
+      { "action": "setReadinessStatus", "userId": 1, "isReady": 0 },
+      { "action": "setReadinessStatus", "userId": 2, "isReady": 1 }
+    ]
+  }
+]

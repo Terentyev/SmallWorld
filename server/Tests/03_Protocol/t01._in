@@ -1,0 +1,16 @@
+{
+  "description": "save game",
+  "include": [ "_createGame.inc" ],
+  "test": [
+    { "action": "joinGame", "sid": 2, "gameId": 1 },
+    { "action": "leaveGame", "sid": 1 },
+    { "action": "joinGame", "sid": 2, "gameId": 1 },
+    { "action": "joinGame", "sid": 1, "gameId": 1 },
+
+    { "action": "setReadinessStatus", "sid": 1, "isReady": 1 },
+    { "action": "setReadinessStatus", "sid": 1, "isReady": 0 },
+    { "action": "setReadinessStatus", "sid": 2, "isReady": 1 },
+
+    { "action": "saveGame", "gameId": 1 }
+  ]
+}

@@ -1,0 +1,8 @@
+[
+  {
+    "result": "ok",
+    "actions": [
+      { "action": "createGame", "userId": 1, "gameName": "game1", "mapId": 1 }
+    ]
+  }
+]
