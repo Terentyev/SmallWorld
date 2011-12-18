@@ -36,12 +36,12 @@ sub process {
   my $result = { result => R_ALL_OK };
   $self->checkJsonCmd($result);
 
-  $self->saveCmd($result) if $self->{json}->{action} eq 'leaveGame';
+  $self->saveCmd($result) if ($self->{json}->{action} // '') eq 'leaveGame';
   if ( $result->{result} eq R_ALL_OK ) {
     no strict 'refs';
     &{"cmd_$self->{json}->{action}"}($self, $result);
   }
-  $self->saveCmd($result) if $self->{json}->{action} ne 'leaveGame';
+  $self->saveCmd($result) if ($self->{json}->{action} // 'leaveGame') ne 'leaveGame';
   if ( $ENV{LENA} ) {
     # у Лены sid проверяется только как число, а наш сервер почему-то возвращает
     # строку... Ничего лучше пока не придумано.
