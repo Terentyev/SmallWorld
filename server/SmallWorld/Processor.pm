@@ -36,10 +36,12 @@ sub process {
   my $result = { result => R_ALL_OK };
   $self->checkJsonCmd($result);
 
+  $self->saveCmd($result) if $self->{json}->{action} eq 'leaveGame';
   if ( $result->{result} eq R_ALL_OK ) {
     no strict 'refs';
     &{"cmd_$self->{json}->{action}"}($self, $result);
   }
+  $self->saveCmd($result) if $self->{json}->{action} ne 'leaveGame';
   if ( $ENV{LENA} ) {
     # у Лены sid проверяется только как число, а наш сервер почему-то возвращает
     # строку... Ничего лучше пока не придумано.
@@ -74,6 +76,33 @@ sub getGame {
     $self->{_game} = SmallWorld::Game->new($self->{db}, $id, $self->{json}->{action});
   }
   return $self->{_game};
+}
+
+sub needSaveCmd {
+  my ($self, $result) = @_;
+  return 1 if $self->{json}->{action} eq 'conquer' && defined $result->{dice};
+  return 0 if $result->{result} ne R_ALL_OK;
+  foreach ( qw( createGame joinGame leaveGame setReadinessStatus selectRace conquer dragonAttack enchant throwDice decline defend redeploy selectFriend finishTurn ) ) {
+    return 1 if $_ eq $self->{json}->{action};
+  }
+  return 0;
+}
+
+sub saveCmd {
+  my ($self, $result) = @_;
+  return if !$self->needSaveCmd($result);
+
+  my $cmd = { %{ $self->{json} } };
+  my $gameId = $cmd->{gameId};
+  if ( exists $cmd->{sid} ) {
+    $cmd->{userId} = $self->{db}->getPlayerId($cmd->{sid});
+    $gameId = $self->{db}->getGameId($cmd->{sid});
+    delete $cmd->{sid};
+  }
+#  if ( $self->{json}->{action} eq 'conquer' && defined $result->{dice} ) {
+#    $cmd->{dice} = $result->{dice};
+#  }
+  $self->{db}->saveCommand($gameId, encode_json($cmd));
 }
 
 # возвращает url до картинки с изображением карты
@@ -209,7 +238,11 @@ sub cmd_joinGame {
 
 sub cmd_leaveGame {
   my ($self, $result) = @_;
+  $self->debug();
+  my $gameId = $self->{db}->getGameId($self->{json}->{sid});
+  debug("gameId=$gameId");
   $self->{db}->leaveGame($self->{json}->{sid});
+  debug("count=" . $self->{db}->playersCount($gameId));
 }
 
 sub cmd_setReadinessStatus {
@@ -221,6 +254,17 @@ sub cmd_setReadinessStatus {
       $game->setTokenBadge('specialPowerName', $self->{json}->{visibleSpecialPowers});
     }
     $game->save();
+  }
+}
+
+sub cmd_saveGame {
+  my ($self, $result) = @_;
+  $result->{actions} = [];
+  foreach ( @{ $self->{db}->getHistory($self->{json}->{gameId}) } ) {
+    push @{ $result->{actions} }, decode_json($_);
+  }
+  foreach ( @{ $self->{db}->getConnectionsSid($self->{json}->{gameId}) } ) {
+    $self->{db}->leaveGame($_);
   }
 }
 

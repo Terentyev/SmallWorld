@@ -124,7 +124,7 @@ use constant CMD_ERRORS => {
   getMapList         => [R_BAD_SID],
   getMessages        => [],
   joinGame           => [R_BAD_SID, R_BAD_GAME_ID, R_BAD_GAME_STATE, R_ALREADY_IN_GAME, R_TOO_MANY_PLAYERS],
-  leaveGame          => [R_BAD_SID, R_NOT_IN_GAME],
+  leaveGame          => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_GAME_STATE],
   login              => [R_BAD_USERNAME, R_BAD_PASSWORD, R_BAD_LOGIN],
   logout             => [R_BAD_SID],
   redeploy           => [
@@ -135,6 +135,7 @@ use constant CMD_ERRORS => {
   ],
   register           => [R_BAD_USERNAME, R_BAD_PASSWORD, R_USERNAME_TAKEN],
   resetServer        => [],
+  saveGame           => [R_BAD_GAME_ID, R_BAD_GAME_STATE],
   selectFriend       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_FRIEND_ID, R_BAD_FRIEND], # R_BAD_GAME_STATE
   selectRace         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_MONEY_AMOUNT], # R_BAD_POSITION R_BAD_GAME_STATE
   sendMessage        => [R_BAD_SID],
@@ -336,6 +337,14 @@ use constant PATTERN => {
     },
     {name => 'visibleRaces', type => 'list', mandatory => 0},
     {name => 'visibleSpecialPowers', type => 'list', mandatory => 0}
+  ],
+  saveGame => [
+    {
+      name => 'gameId',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_GAME_ID
+    }
   ],
   selectRace => [
     {

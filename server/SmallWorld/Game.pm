@@ -186,14 +186,14 @@ sub setTokenBadge {
 
 sub getNotEmptyBadge {
   return defined $_[1] && defined $_[1]->{tokenBadgeId}
-    ? \%{$_[1]}
+    ? { %{$_[1]} }
     : undef;
 }
 
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
 sub getGameStateForPlayer {
   my $self = shift;
-  my $gs = \%{ $self->{gameState} };
+  my $gs = { %{ $self->{gameState} } };
   $gs->{visibleTokenBadges} = [ @{ $gs->{tokenBadges} }[0..5] ];
   my $result = {
     gameId             => $gs->{gameInfo}->{gameId},
@@ -205,7 +205,7 @@ sub getGameStateForPlayer {
     stage              => $gs->{state},
     defendingInfo      => $gs->{defendingInfo},
     currentTurn        => $gs->{currentTurn},
-    map                => \%{ $gs->{map} },
+    map                => { %{ $gs->{map} } },
     visibleTokenBadges => $gs->{visibleTokenBadges},
     friendInfo         => $gs->{friendInfo},
     stoutStatistics    => $gs->{stoutStatistics},

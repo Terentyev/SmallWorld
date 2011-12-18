@@ -112,7 +112,7 @@ sub updateGame {
           activePlayerId = NULL, currentTurn = NULL, state = NULL
       WHERE name = ?',
       $mapId, !defined $gameDescr ? '' : $gameDescr, GST_WAIT, $gameName);
-  my $gameId = $self->_getId('GAME');
+  my $gameId = $self->query('SELECT id FROM GAMES WHERE name = ?', $gameName);
   $self->_do('DELETE FROM CONNECTIONS WHERE gameId = ?', $gameId);
   $self->joinGame($gameId, $sid);
   return $gameId;
@@ -147,12 +147,26 @@ sub readyCount {
 }
 
 sub leaveGame {
-  my $self = shift;
-  my $gameId = $self->getGameId($_[0]);
-  if (defined $gameId) {
-    $self->_do('DELETE FROM CONNECTIONS WHERE playerId = ?', $self->getPlayerId($_[0]));
-    $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_EMPTY, $gameId) if !$self->playersCount($gameId);
+  my ($self, $sid) = @_;
+  my $gameId = $self->getGameId($sid);
+  use SmallWorld::Processor; SmallWorld::Processor->debug("leaveGame=gameId=$gameId;sid=$sid");
+  if ( defined $gameId ) {
+    $self->_do('DELETE FROM CONNECTIONS WHERE playerId = ?', $self->getPlayerId($sid));
+    if ( !$self->playersCount($gameId) ) {
+      $self->_do('DELETE FROM HISTORY WHERE gameId = ?', $gameId);
+      $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_EMPTY, $gameId);
+    }
   }
+}
+
+sub getConnectionsSid {
+  my $self = shift;
+  return $self->{dbh}->selectcol_arrayref('
+      SELECT p.sid
+      FROM CONNECTIONS c
+      INNER JOIN PLAYERS p ON p.id = c.playerId
+      WHERE c.gameId = ?',
+      { Columns => [1] }, $_[0]);
 }
 
 sub setIsReady {
@@ -268,6 +282,16 @@ sub getGameVersion {
   my $self = shift;
 #  return $self->{dbh}->selectrow_arrayref('SELECT version FROM GAMES WHERE id = ?', undef, $_[0]) || [];
   return $self->query('SELECT version FROM GAMES WHERE id = ?', $_[0]);
+}
+
+sub saveCommand {
+  my ($self, $gameId, $data) = @_;
+  $self->_do('INSERT INTO HISTORY(gameId, cmd) VALUES(?, ?)', $gameId, $data);
+}
+
+sub getHistory {
+  my ($self, $gameId) = @_;
+  return $self->{dbh}->selectcol_arrayref('SELECT cmd FROM HISTORY WHERE gameId = ?', { Columns => [1] }, $gameId );
 }
 
 

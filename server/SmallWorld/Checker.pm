@@ -61,10 +61,10 @@ sub checkGameState {
 
   my $gameId = exists($h->{gameId}) ? $h->{gameId} : $self->{db}->getGameId($h->{sid});
   my %gst = (
-    &GST_WAIT    => ['setReadinessStatus', 'joinGame', 'leaveGame'],
-    &GST_BEGIN   => [$self->getGameCommands()],
-    &GST_IN_GAME => [$self->getGameCommands()],
-    &GST_FINISH  => [],
+    &GST_WAIT    => ['setReadinessStatus', 'joinGame', 'leaveGame', 'saveGame'],
+    &GST_BEGIN   => ['saveGame', 'leaveGame', $self->getGameCommands()],
+    &GST_IN_GAME => ['saveGame', 'leaveGame', $self->getGameCommands()],
+    &GST_FINISH  => ['saveGame', 'leaveGame'],
     &GST_EMPTY   => []
   );
   foreach ( @{ $gst{$self->{db}->getGameStateOnly($gameId)} } ) {
