@@ -6,7 +6,16 @@ use warnings;
 use utf8;
 
 my $tests = Tests->new();
+
+$SIG{INT} = \&intHandler;
+
 $tests->run();
+
+sub intHandler {
+  warn "Tests canceled by user\n";
+  $tests->outReport();
+  exit(0);
+}
 
 package Tests;
 
@@ -40,6 +49,11 @@ sub run {
   }
 
   print "\nTest is over\n\n";
+  $self->outReport();
+}
+
+sub outReport {
+  my $self = shift;
   foreach ( @{ $self->{tests} } ) {
     $_->{obj}->outReport();
   }
