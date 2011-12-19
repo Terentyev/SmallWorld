@@ -55,6 +55,7 @@ sub run {
 sub outReport {
   my $self = shift;
   foreach ( @{ $self->{tests} } ) {
+    last if !defined $_->{obj};
     $_->{obj}->outReport();
   }
 }
