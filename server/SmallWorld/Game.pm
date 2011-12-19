@@ -197,6 +197,20 @@ sub getNotEmptyBadge {
     : undef;
 }
 
+sub getLastEvent {
+  my ($self, $st, $stg, $diceThrowed, $friended) = @_;
+  return $st               if $st == GST_WAIT || $st == GST_BEGIN;
+  return LE_THROW_DICE     if $diceThrowed;
+  return LE_SELECT_FRIEND  if $friended;
+  return LE_FINISH_TURN    if $stg eq GS_SELECT_RACE;
+  return LE_SELECT_RACE    if $stg eq GS_BEFORE_CONQUEST;
+  return LE_CONQUER        if $stg eq GS_CONQUEST;
+  return LE_FAILED_CONQUER if $stg eq GS_REDEPLOY;
+  return LE_REDEPLOY       if $stg eq GS_BEFORE_FINISH_TURN;
+  return LE_DECLINE        if $stg eq GS_FINISH_TURN;
+  return LE_FINISH_TURN    if $stg eq GS_IS_OVER;
+}
+
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
 sub getGameStateForPlayer {
   my $self = shift;
@@ -208,7 +222,7 @@ sub getGameStateForPlayer {
     gameDescription    => $gs->{gameInfo}->{gameDescription},
     currentPlayersNum  => $gs->{gameInfo}->{currentPlayersNum},
     activePlayerId     => defined $gs->{conquerorId} ? $gs->{conquerorId} : $gs->{activePlayerId},
-    state              => !(grep { $_->{isReady} == 0 } @{ $gs->{players} }),
+    state              => $gs->{gstate},
     stage              => $gs->{state},
     defendingInfo      => $gs->{defendingInfo},
     currentTurn        => $gs->{currentTurn},
@@ -222,6 +236,9 @@ sub getGameStateForPlayer {
     holesPlaced        => $gs->{holesPlaced},
     gotWealthy         => $self->bool($gs->{gotWealthy})
   };
+  $result->{lastEvent} = $self->getLastEvent(
+      $result->{state}, $result->{stage}, defined $gs->{berserkDice},
+      defined $gs->{friendInfo} && $gs->{friendInfo}->{diplomatId} == $gs->{activePlayerId});
   $result->{map}->{regions} = [];
   grep {
     push @{ $result->{map}->{regions} }, {

@@ -894,6 +894,19 @@ use constant GST_IN_GAME => 2; # игра во всю идет (первое д�
 use constant GST_FINISH  => 3; # игра закончилась, но игроки ее еще не покинули
 use constant GST_EMPTY   => 4; # игра закончилась, все игроки покинули ее
 
+# коды последних действий, которые меняют состояние игры (нужны для
+# совместимости)
+use constant LE_FINISH_TURN    =>  4;
+use constant LE_SELECT_RACE    =>  5;
+use constant LE_CONQUER        =>  6;
+use constant LE_DECLINE        =>  7;
+use constant LE_REDEPLOY       =>  8;
+use constant LE_THROW_DICE     =>  9;
+# а где б#@$ь 10 и 11??!!!!!111адын
+use constant LE_DEFEND         => 12;
+use constant LE_SELECT_FRIEND  => 13;
+use constant LE_FAILED_CONQUER => 14;
+
 # внутриигровые состояния игры (stages)
 use constant GS_DEFEND             => 'defend'           ;
 use constant GS_SELECT_RACE        => 'selectRace'       ;
