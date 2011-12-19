@@ -110,7 +110,7 @@ function addPlayerInfo(player) {
   var s = $.sprintf(
     '<tr><td>%s</td><td align="center">%s</td></tr>',
     currentPlayerCursor(player.userId),
-    player.username);
+    player.username + (player.inGame ? '' : '(not in game)'));
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
       '<tr><td></td><td><img src="%s" /></td></tr>',
