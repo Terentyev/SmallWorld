@@ -58,6 +58,11 @@ sub getGameId {
   return $self->query('SELECT c.gameId FROM CONNECTIONS c INNER JOIN PLAYERS p ON p.id = c.playerId WHERE p.sid = ?', @_);
 }
 
+sub getSid {
+  my ($self, $playerId) = @_;
+  return $self->query('SELECT sid FROM PLAYERS WHERE id = ?', $playerId);
+}
+
 sub query {
   my $self = shift;
   my $sql = shift;
@@ -151,9 +156,13 @@ sub leaveGame {
   my $gameId = $self->getGameId($sid);
   if ( defined $gameId ) {
     $self->_do('DELETE FROM CONNECTIONS WHERE playerId = ?', $self->getPlayerId($sid));
-    if ( !$self->playersCount($gameId) ) {
+    my $count = $self->playersCount($gameId);
+    if ( !$count ) {
       $self->_do('DELETE FROM HISTORY WHERE gameId = ?', $gameId);
       $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_EMPTY, $gameId);
+    }
+    elsif ( $count == 1 ) {
+      $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ? AND gstate <> ?', GST_FINISH, $gameId, GST_WAIT);
     }
   }
 }
@@ -166,6 +175,11 @@ sub getConnectionsSid {
       INNER JOIN PLAYERS p ON p.id = c.playerId
       WHERE c.gameId = ?',
       { Columns => [1] }, $_[0]);
+}
+
+sub getConnections {
+  my $self = shift;
+  return $self->{dbh}->selectcol_arrayref('SELECT playerId FROM CONNECTIONS WHERE gameId = ?', { Columns => [1] }, $_[0]);
 }
 
 sub setIsReady {

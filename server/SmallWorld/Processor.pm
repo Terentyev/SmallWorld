@@ -63,8 +63,11 @@ sub debug {
 
 sub getGame {
   my $self = shift;
-  my $id = defined $self->{json}->{gameId} ? $self->{json}->{gameId} :
-           $self->{db}->getGameId($self->{json}->{sid});
+  my $id = defined $_[0]
+    ? $_[0]
+    : (defined $self->{json}->{gameId}
+        ? $self->{json}->{gameId}
+        : $self->{db}->getGameId($self->{json}->{sid}));
 
   my $version = $self->{db}->getGameVersion($id);
 
@@ -191,18 +194,31 @@ sub cmd_getGameList {
   my $ref = $self->{db}->getGames();
   $result->{games} = [];
   foreach ( @{$ref} ) {
-    my $pl = $self->{db}->getPlayers($_->{ID});
-    my $players = [
-      map { {
-        'userId' => $_->{ID},
-        'username' => $_->{USERNAME},
-        'isReady' => $self->bool($_->{ISREADY})
-      } } @{$pl}
-    ];
+    my $players = [];
     my ($activePlayerId, $turn) = (undef, 0);
-    if ( $_->{GSTATE} != GST_WAIT )
-    {
-      ($activePlayerId, $turn) = ($_->{ACTIVEPLAYERID}, $_->{CURRENTTURN});
+    if ( $_->{GSTATE} == GST_WAIT ) {
+      my $pl = $self->{db}->getPlayers($_->{ID});
+      $players = [
+        map { {
+          'userId'   => $_->{ID},
+          'username' => $_->{USERNAME},
+          'isReady'  => $self->bool($_->{ISREADY}),
+          'inGame'   => $self->bool(1)
+        } } @{$pl}
+      ];
+    }
+    else {
+      my $game = $self->getGame($_->{ID});
+      $activePlayerId = $game->{gameState}->{activePlayerId};
+      $turn = $game->{gameState}->{currentTurn};
+      $players = [
+        map { {
+          'userId'   => $_->{playerId},
+          'username' => $_->{username},
+          'isReady'  => $self->bool(1),
+          'inGame'   => $self->bool($_->{inGame})
+        } } @{ $game->{gameState}->{players} }
+      ];
     }
     push @{$result->{games}}, { 'gameId' => $_->{ID}, 'gameName' => $_->{NAME}, 'gameDescription' => $_->{DESCRIPTION},
                                 'mapId' => $_->{MAPID}, 'maxPlayersNum' => $_->{PLAYERSNUM}, 'turnsNum' => $_->{TURNSNUM},
@@ -238,11 +254,15 @@ sub cmd_joinGame {
 
 sub cmd_leaveGame {
   my ($self, $result) = @_;
-  $self->debug();
-  my $gameId = $self->{db}->getGameId($self->{json}->{sid});
-  debug("gameId=$gameId");
-  $self->{db}->leaveGame($self->{json}->{sid});
-  debug("count=" . $self->{db}->playersCount($gameId));
+  my $sid = $self->{json}->{sid};
+  my $gameId = $self->{db}->getGameId($sid);
+  my $gst = $self->{db}->getGameStateOnly($gameId);
+  if ( $gst == GST_BEGIN || $gst == GST_IN_GAME ) {
+    my $game = $self->getGame($gameId);
+    $game->forceDecline($self->getPlayerId($sid));
+    $game->save();
+  }
+  $self->{db}->leaveGame($sid);
 }
 
 sub cmd_setReadinessStatus {

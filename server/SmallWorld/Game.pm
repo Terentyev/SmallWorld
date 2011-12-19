@@ -62,6 +62,13 @@ sub load {
   else {
     $self->mergeGameState(decode_json($game->{STATE}));
   }
+  my $connections = $self->{db}->getConnections($self->{gameState}->{gameInfo}->{gameId});
+  foreach my $p ( @{ $self->{gameState}->{players} } ) {
+    $p->{inGame} = (grep { $p->{playerId} == $_ } (@$connections));
+  }
+  if ( $game->{GSTATE} == GST_FINISH ) {
+    $self->{gameState}->{state} = GS_IS_OVER;
+  }
 }
 
 sub init {
@@ -240,6 +247,7 @@ sub getGameStateForPlayer {
       userId             => $_->{playerId},
       username           => $_->{username},
       isReady            => $self->bool($_->{isReady}),
+      inGame             => $self->bool($_->{inGame}),
       coins              => $_->{coins},
       tokensInHand       => $_->{tokensInHand},
       priority           => $_->{priority} + 1,
@@ -530,19 +538,14 @@ sub conquer {
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
 
-sub decline {
-  my ($self) = @_;
-  my $player = $self->getPlayer();
+sub baseDecline {
+  my ($self, $player) = @_;
   my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
   my $dsp = $self->createSpecialPower('declinedTokenBadge', $player);
   my $drace = $self->createRace($player->{declinedTokenBadge});
 
-  if ($self->{gameState}->{state} eq GS_BEFORE_FINISH_TURN) {
-    $self->{gameState}->{stoutStatistics} = [];
-    $self->getPlayerBonus($player, $self->{gameState}, $self->{gameState}->{stoutStatistics});
-  }
   foreach ( grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId} } @{ $regions } ) {
     if ( $_->{inDecline} ) {
       $_->{inDecline} = undef;
@@ -558,7 +561,33 @@ sub decline {
   }
   my $badge = $player->{currentTokenBadge};
   @{ $player }{qw( tokensInHand currentTokenBadge declinedTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
+}
+
+sub decline {
+  my $self = shift;
+  my $player = $self->getPlayer();
+
+  if ($self->{gameState}->{state} eq GS_BEFORE_FINISH_TURN) {
+    $self->{gameState}->{stoutStatistics} = [];
+    $self->getPlayerBonus($player, $self->{gameState}, $self->{gameState}->{stoutStatistics});
+  }
+  $self->baseDecline($player);
   $self->{gameState}->{state} = GS_FINISH_TURN;
+}
+
+sub forceDecline {
+  my ($self, $playerId) = @_;
+  my $player = $self->getPlayer($playerId);
+  if ( $playerId == $self->{gameState}->{activePlayerId} ) {
+    if ( $self->{gameState}->{state} eq GS_DEFEND ) {
+      $self->endDefend();
+    }
+    else {
+      my $dummy = {};
+      $self->finishTurn($dummy);
+    }
+  }
+  $self->baseDecline($player);
 }
 
 sub selectRace {
@@ -629,8 +658,10 @@ sub finishTurn {
 
   @{$_}{qw (conquestIdx prevTokenBadgeId prevTokensNum)} = () for @{ $self->{gameState}->{regions} };
 
-  $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
-    ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
+  do {
+    $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
+      ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId}
+  } while !$self->getPlayer()->{inGame};
 
   $player = $self->getPlayer();
   if ( $player->{priority} == 0 ) {
@@ -705,6 +736,11 @@ sub defend {
   foreach ( @{ $regs } ) {
     $self->getRegion($_->{regionId})->{tokensNum} += $_->{tokensNum};
   }
+  $self->endDefend();
+}
+
+sub endDefend {
+  my $self = shift;
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{conquerorId};
   @{ $self->{gameState} }{qw(defendingInfo conquerorId)} = ();
   $self->{gameState}->{state} = GS_CONQUEST;
