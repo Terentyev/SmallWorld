@@ -330,7 +330,7 @@ sub checkRegion_conquer {
   return $player->activeConq($region) ||
          $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
          !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
-         (defined $finfo && $finfo->{diplomatId} == ($region->{ownerId} // -1) &&
+         (defined $finfo && ($finfo->{diplomatId} // -2) == ($region->{ownerId} // -1) &&
          ($finfo->{friendId} // -1) == $player->{playerId} && !$region->{inDecline});
 }
 

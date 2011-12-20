@@ -48,6 +48,7 @@ sub load {
       gameName          => $game->{NAME},
       gameDescription   => $game->{DESCRIPTION},
       currentPlayersNum => $self->{db}->playersCount($game->{ID}),
+      gstate            => $game->{GSTATE},
     },
     map            => {
       mapId      => $game->{MAPID},
@@ -225,7 +226,7 @@ sub getGameStateForPlayer {
     gameDescription    => $gs->{gameInfo}->{gameDescription},
     currentPlayersNum  => $gs->{gameInfo}->{currentPlayersNum},
     activePlayerId     => defined $gs->{conquerorId} ? $gs->{conquerorId} : $gs->{activePlayerId},
-    state              => $gs->{gstate},
+    state              => $gs->{gameInfo}->{gstate},
     stage              => $gs->{state},
     defendingInfo      => $gs->{defendingInfo},
     currentTurn        => $gs->{currentTurn},
@@ -239,9 +240,7 @@ sub getGameStateForPlayer {
     holesPlaced        => $gs->{holesPlaced},
     gotWealthy         => $self->bool($gs->{gotWealthy})
   };
-  $result->{lastEvent} = $self->getLastEvent(
-      $result->{state}, $result->{stage}, defined $gs->{berserkDice},
-      defined $gs->{friendInfo} && $gs->{friendInfo}->{diplomatId} == $gs->{activePlayerId});
+  $result->{lastEvent} = $self->getLastEvent($result->{state});
   $result->{map}->{regions} = [];
   grep {
     push @{ $result->{map}->{regions} }, {
