@@ -307,6 +307,11 @@ sub getHistory {
   return $self->{dbh}->selectcol_arrayref('SELECT cmd FROM HISTORY WHERE gameId = ?', { Columns => [1] }, $gameId );
 }
 
+sub getLastCmd {
+  my ($self, $gameId) = @_;
+  return $self->{dbh}->query('SELECT cmd FROM HISTORY WHERE gameId = ?', $gameId);
+}
+
 
 1;
 

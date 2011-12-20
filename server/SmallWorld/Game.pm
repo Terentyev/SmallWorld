@@ -198,17 +198,20 @@ sub getNotEmptyBadge {
 }
 
 sub getLastEvent {
-  my ($self, $st, $stg, $diceThrowed, $friended) = @_;
-  return $st               if $st == GST_WAIT || $st == GST_BEGIN;
-  return LE_THROW_DICE     if $diceThrowed;
-  return LE_SELECT_FRIEND  if $friended;
-  return LE_FINISH_TURN    if $stg eq GS_SELECT_RACE;
-  return LE_SELECT_RACE    if $stg eq GS_BEFORE_CONQUEST;
-  return LE_CONQUER        if $stg eq GS_CONQUEST;
-  return LE_FAILED_CONQUER if $stg eq GS_REDEPLOY;
-  return LE_REDEPLOY       if $stg eq GS_BEFORE_FINISH_TURN;
-  return LE_DECLINE        if $stg eq GS_FINISH_TURN;
-  return LE_FINISH_TURN    if $stg eq GS_IS_OVER;
+  my ($self, $st) = @_;
+  return $st if $st == GST_WAIT || $st == GST_BEGIN;
+  my $cmd = decode_json($self->getLastCmd($self->{gameState}->{gameId}));
+  return LE_FAILED_CONQUER if $cmd->{action} eq 'conquer' && defined $cmd->{dice};
+  return {
+    decline       => LE_DECLINE,
+    selectRace    => LE_SELECT_RACE,
+    throwDice     => LE_THROW_DICE,
+    conquer       => LE_CONQUER,
+    defend        => LE_DEFEND,
+    redeploy      => LE_REDEPLOY,
+    selectFriend  => LE_SELECT_FRIEND,
+    finishTurn    => LE_FINISH_TURN
+  }->{$cmd->{action}};
 }
 
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
