@@ -114,6 +114,36 @@ function prepare(gs) {
       gs.stage = GS_SELECT_RACE;
       break;
     case GST_IN_GAME:
+      if (player.isDefender()) {
+        gs.stage = GS_DEFEND;
+        return;
+      }
+      switch (gs.lastEvent) {
+        case LE_FINISH_TURN:
+          gs.stage = player.haveActiveRace()
+            ? GS_BEFORE_CONQUEST
+            : GS_SELECT_RACE;
+          break;
+        case LE_SELECT_RACE:
+          gs.stage = GS_BEFORE_CONQUEST;
+          break;
+        case LE_CONQUER:
+          gs.stage = GS_CONQUEST;
+          break;
+        case LE_FAILED_CONQUER:
+          gs.stage = GS_REDEPLOY;
+          break;
+        case LE_REDEPLOY:
+          gs.stage = GS_BEFORE_FINISH_TURN;
+          break;
+        case LE_SELECT_FRIEND:
+        case LE_DECLINE:
+          gs.stage = GS_FINISH_TURN;
+          break;
+        case LE_THROW_DICE:
+          gs.stage = GS_CONQUEST;
+          break;
+      }
       break;
     case ST_FINISH:
       gs.stage = GS_IS_OVER;
@@ -122,8 +152,8 @@ function prepare(gs) {
 }
 
 function mergeGameState(gs) {
-  prepare(gs);
   updatePlayerInfo(gs);
+  prepare(gs);
   if (data.game == null || data.game.state != gs.state) {
     data.game = gs;
     changeGameStage();

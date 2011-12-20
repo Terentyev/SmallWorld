@@ -1,10 +1,11 @@
 var player = null;
 
 function Player(playerId, gs) {
-  if (gs == null) {
-    gs = data.game;
+  this.gs = gs;
+  if (this.gs == null) {
+    this.gs = data.game;
   }
-  for (var i in gs.players) {
+  for (var i in this.gs.players) {
     this.p = gs.players[i];
     if (this.p.userId == playerId) break;
   }
@@ -19,12 +20,20 @@ Player.prototype.isHe = function(playerId) {
 }
 
 Player.prototype.isActive = function() {
-  var r =
-    this.isHe(data.game.activePlayerId) ||
-    data.game.defendingInfo != null && this.isHe(data.game.defendingInfo.playerId)
+  return
+    this.isHe(this.gs.activePlayerId) ||
+    this.isDefender()
     ? 1
     : 0;
-  return r;
+}
+
+Player.prototype.isDefender = function() {
+  return
+    this.gs.defendingInfo != null && this.isHe(this.gs.defendingInfo.playerId);
+}
+
+Player.prototype.hasActiveRace = function() {
+  return this.p.currentTokenBadge != null && this.p.currentTokenBadge.tokenBadgeId != null;
 }
 
 Player.prototype.curTokenBadgeId = function() {
@@ -98,7 +107,7 @@ Player.prototype.beforeRedeploy = function() {
 
 Player.prototype.myRegions = function() {
   var result = []
-  for (var i in data.game.map.regions) {
+  for (var i in this.gs.map.regions) {
     var r = new Region(i);
     if (r.isOwned(this.curTokenBadgeId())) {
       result.push(r);

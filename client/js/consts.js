@@ -134,8 +134,17 @@ var gameStages = {
   'gameOver': ["Oops!.. Game over", "Oops!.. Game over"]
 };
 
-var GST_WAIT    = 1;
-var GST_BEGIN   = 0;
-var GST_IN_GAME = 2;
-var GST_FINISH  = 3;
-var GST_EMPTY   = 4;
+const GST_WAIT    = 1;
+const GST_BEGIN   = 0;
+const GST_IN_GAME = 2;
+const GST_FINISH  = 3;
+const GST_EMPTY   = 4;
+
+const GS_DEFEND             = 'defend';
+const GS_SELECT_RACE        = 'selectRace';
+const GS_BEFORE_CONQUEST    = 'beforeConquest';
+const GS_CONQUEST           = 'conquest';
+const GS_REDEPLOY           = 'redeploy';
+const GS_BEFORE_FINISH_TURN = 'beforeFinishTurn';
+const GS_FINISH_TURN        = 'finishTurn';
+const GS_IS_OVER            = 'gameOver';
