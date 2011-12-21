@@ -123,6 +123,10 @@ sub getMapUrl {
   return undef;
 }
 
+sub getGameInitialGeneratedNum {
+  return int(rand(RAND_EXPR));
+}
+
 # Команды, которые приходят от клиента
 sub cmd_resetServer {
   return if !$ENV{DEBUG};
@@ -182,7 +186,7 @@ sub cmd_uploadMap {
 sub cmd_createGame {
   my ($self, $result) = @_;
   my $js = $self->{json};
-  my @params = @{$js}{qw/sid gameName mapId gameDescription/};
+  my @params = (@{$js}{qw/sid gameName mapId gameDescription/}, $self->getGameInitialGeneratedNum());
   $result->{gameId} = $self->{db}->gameWithNameExists($js->{gameName}, 1)
     ? $self->{db}->updateGame( @params )
     : $self->{db}->createGame( @params );

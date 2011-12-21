@@ -129,7 +129,8 @@ sub init {
     currentTurn    => 0,
     tokenBadges    => $self->initTokenBadges(),
     storage        => $self->initStorage(),
-    defendingInfo  => undef
+    defendingInfo  => undef,
+    prevGenNum     => $game->{GENNUM}
   });
 }
 
@@ -144,14 +145,14 @@ sub initTokenBadges {
   while ( @sp ) {
     push @result, {
       tokenBadgeId     => ++$j,
-      specialPowerName => splice(@sp, rand(scalar(@sp)), 1),
+      specialPowerName => splice(@sp, int(rand(scalar(@sp))), 1),
       bonusMoney       => 0
     };
   }
 
   $j = 0;
   while ( @races ) {
-    $result[$j++]->{raceName} = splice(@races, rand(scalar(@races)), 1);
+    $result[$j++]->{raceName} = splice(@races, int(rand(scalar(@races))), 1);
   }
 
   return \@result;
@@ -435,8 +436,11 @@ sub nextConquestIdx {
 # бросаем кубик (возвращает число от 0 до 3) (кубик имеет три нулевых грани и
 # три грани 1,2,3)
 sub random {
+  my $self = shift;
   return 0 if $ENV{DEBUG};
-  return int(rand(1)) * (int(rand(2)) + 1);
+  $self->{gameState}->{prevGenNum} = (RAND_A * $self->{gameState}->{prevGenNum}) % RAND_M;
+  my $result = $self->{gameState}->{prevGenNum} % 6;
+  return $result > 3;
 }
 
 # возвращает количество фигурок в хранилище для определенной расы

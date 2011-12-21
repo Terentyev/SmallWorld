@@ -25,7 +25,8 @@ CREATE TABLE GAMES (
   state          BLOB SUB_TYPE 1,
   version        INTEGER DEFAULT 0 NOT NULL,
   activePlayerId INTEGER REFERENCES PLAYERS(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  currentTurn    INTEGER
+  currentTurn    INTEGER,
+  genNum         INTEGER
 );
 
 CREATE TABLE MESSAGES (

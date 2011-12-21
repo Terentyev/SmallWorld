@@ -101,22 +101,22 @@ sub addPlayer {
 
 sub createGame {
   my $self = shift;
-  my ($sid, $gameName, $mapId, $gameDescr) = @_;
-  $self->_do('INSERT INTO GAMES (name, mapId, description) VALUES (?, ?, ?)',
-             $gameName, $mapId, !defined $gameDescr ? '' : $gameDescr);
+  my ($sid, $gameName, $mapId, $gameDescr, $genNum) = @_;
+  $self->_do('INSERT INTO GAMES (name, mapId, description, genNum) VALUES (?, ?, ?, ?)',
+             $gameName, $mapId, !defined $gameDescr ? '' : $gameDescr, $genNum);
   my $gameId = $self->_getId('GAME');
   $self->joinGame($gameId, $sid);
   return $gameId;
 }
 
 sub updateGame {
-  my ($self, $sid, $gameName, $mapId, $gameDescr) = @_;
+  my ($self, $sid, $gameName, $mapId, $gameDescr, $genNum) = @_;
   $self->_do('
       UPDATE GAMES
-      SET mapId = ?, description = ?, gstate = ?, version = 0,
+      SET mapId = ?, description = ?, gstate = ?, genNum = ?, version = 0,
           activePlayerId = NULL, currentTurn = NULL, state = NULL
       WHERE name = ?',
-      $mapId, !defined $gameDescr ? '' : $gameDescr, GST_WAIT, $gameName);
+      $mapId, !defined $gameDescr ? '' : $gameDescr, GST_WAIT, $genNum, $gameName);
   my $gameId = $self->query('SELECT id FROM GAMES WHERE name = ?', $gameName);
   $self->_do('DELETE FROM CONNECTIONS WHERE gameId = ?', $gameId);
   $self->joinGame($gameId, $sid);

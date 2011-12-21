@@ -917,6 +917,11 @@ use constant GS_BEFORE_FINISH_TURN => 'finishTurn'       ;
 use constant GS_FINISH_TURN        => 'beforeFinishTurn' ;
 use constant GS_IS_OVER            => 'gameOver'         ;
 
+# константы для работы алгоритма случайных чисел
+use constant RAND_A    =>     16807;
+use constant RAND_M    => 2**31 - 1;
+use constant RAND_EXPR =>     47127;
+
 1;
 
 __END__
