@@ -291,9 +291,6 @@ sub cmd_saveGame {
     }
     push @{ $result->{actions} }, $cmd;
   }
-  foreach ( @{ $self->{db}->getConnectionsSid($self->{json}->{gameId}) } ) {
-    $self->{db}->leaveGame($_);
-  }
 }
 
 sub cmd_selectRace {
