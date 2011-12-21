@@ -411,6 +411,7 @@ function hdlFinishTurn(ans) {
   // first implementation
   // TODO: change game state handly
   cmdGetGameState();
+  showTurnScores(ans.statistics);
 }
 
 /*******************************************************************************
@@ -463,7 +464,8 @@ function hdlSelectFriend(ans) {
 function cmdDragonAttack(regionId) {
   var cmd = {
     action: "dragonAttack",
-    sid: data.sid
+    sid: data.sid,
+    regionId: regionId
   };
   sendRequest(cmd, hdlDragonAttack, '#divGameError');
 }
