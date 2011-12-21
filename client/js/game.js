@@ -45,7 +45,7 @@ function dragonAttack() {
 }
 
 function decline() {
-  if (confirm('Do you really want decline you race "' + player.curRace() + '"?')) {
+  if (confirm('Do you really want to decline your race "' + player.curRace() + '"?')) {
     cmdDecline();
   }
 }
@@ -171,6 +171,7 @@ function mergeGameState(gs) {
   for (var i in acts) {
     acts[i]();
   }
+  updatePlayerInfo(data.game);
 }
 
 function setGameStage(stage) {
