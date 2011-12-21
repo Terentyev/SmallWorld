@@ -6,7 +6,7 @@ function Player(playerId, gs) {
     this.gs = data.game;
   }
   for (var i in this.gs.players) {
-    this.p = gs.players[i];
+    this.p = this.gs.players[i];
     if (this.p.userId == playerId) break;
   }
 }
@@ -20,16 +20,12 @@ Player.prototype.isHe = function(playerId) {
 }
 
 Player.prototype.isActive = function() {
-  return
-    this.isHe(this.gs.activePlayerId) ||
-    this.isDefender()
-    ? 1
-    : 0;
+  return (this.isHe(this.gs.activePlayerId) || this.isDefender()) ? 1 : 0;
 }
 
 Player.prototype.isDefender = function() {
   return
-    this.gs.defendingInfo != null && this.isHe(this.gs.defendingInfo.playerId);
+    ((this.gs.defendingInfo != null) && this.isHe(this.gs.defendingInfo.playerId)) ? 1 : 0;
 }
 
 Player.prototype.hasActiveRace = function() {
