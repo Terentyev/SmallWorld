@@ -174,6 +174,24 @@
     </div>
   </div>
 
+  <div id ="divTurnScores" class="modal">
+    <div class="header"><span>Turn scores</span></div>
+    <div class="message">
+      <table width="100%">
+        <tr>
+          <td align="center"><table id="tableTurnScores" width="100%"><tbody></tbody></table></td>
+        </tr>
+        <tr>
+          <td align="left">
+          </td>
+        </tr>
+      </table>
+    </div>
+            <div class="buttons">
+              <div class="modal-close">OK</div>
+            </div>
+  </div>
+
   <div id="divRegister" class="modal">
     <div class="header"><span>Register</span></div>
     <div class="message">
@@ -234,7 +252,7 @@
                 <div id="divMap" align="center" style="position: relative;">
 
                   <div id="divMapImg" style="position: relative;">
-                    <img id="imgMap" class="corner-all" usemap="#mapLayer" onload="loadGameMapImg();" />
+                    <img id="imgMap" class="corner-all" usemap="#mapLayer" />
                     <map id="mapLayer" name="mapLayer"></map>
                   </div>
                   <div id="divMapObjects" style="position: relative; display: none;"></div>

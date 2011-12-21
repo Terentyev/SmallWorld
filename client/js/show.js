@@ -50,21 +50,24 @@ function showGame() {
 }
 
 function showGameMap() {
-  if (data.game == null || !data.game.state || maps[data.game.map.mapId] == null) {
+  if (data.game == null || data.game.state == GST_WAIT || maps[data.game.map.mapId] == null) {
     return;
   }
 
   if ($("#imgMap").attr("src") === maps[data.game.map.mapId].url) return;
 
-  $("#imgMap").attr("src", serverUrl + maps[data.game.map.mapId].url);
+  var img = new Image();
+  img.onload = loadGameMapImg;
+  img.src = serverUrl + maps[data.game.map.mapId].url;
   showRegions();
   showMapObjects();
 }
 
 function loadGameMapImg() {
-  $("#divMapObjects").css("width", document.getElementById("imgMap").clientWidth);
-  $("#divMapObjects").css("top", - document.getElementById("imgMap").clientHeight);
-  $("#divMapObjects").css("display", "block");
+  $('#imgMap').attr('src', this.src);
+  $("#divMapObjects").css("width", this.width);
+  $("#divMapObjects").css("top", - this.height);
+  $("#divMapObjects").show();
 }
 
 function showBadges() {
@@ -165,8 +168,23 @@ function showScores() {
       s += addRow([username, coins]);
     }
   }
-  $('#tableScores tbody').html(s).trigger('update');
+  $('#tableScores tbody').html(s);
+  $('#tableScores tbody').trigger('update');
   showModal('#divScores');
+}
+
+function showTurnScores(stats) {
+  var s = '';
+  for (var i in stats) {
+    if (stats[i][1] == 0) continue;
+    s += addRow([stats[i][0], stats[i][1]]);
+  }
+  if (s == '') {
+    s = addRow(['Not coins for turn']);
+  }
+  $('#tableTurnScores tbody').html(s);
+  $('#tableTurnScores tbody').trigger('update');
+  showModal('#divTurnScores');
 }
 
 function changeMap(mapId) {
