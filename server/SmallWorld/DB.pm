@@ -58,6 +58,11 @@ sub getGameId {
   return $self->query('SELECT c.gameId FROM CONNECTIONS c INNER JOIN PLAYERS p ON p.id = c.playerId WHERE p.sid = ?', @_);
 }
 
+sub getGameGenNum {
+  my ($self, $gameId) = @_;
+  return $self->query('SELECT genNum FROM GAMES WHERE id = ?', $gameId);
+}
+
 sub getSid {
   my ($self, $playerId) = @_;
   return $self->query('SELECT sid FROM PLAYERS WHERE id = ?', $playerId);

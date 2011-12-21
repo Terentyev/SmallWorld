@@ -285,7 +285,11 @@ sub cmd_saveGame {
   my ($self, $result) = @_;
   $result->{actions} = [];
   foreach ( @{ $self->{db}->getHistory($self->{json}->{gameId}) } ) {
-    push @{ $result->{actions} }, decode_json($_);
+    my $cmd = decode_json($_);
+    if ( $cmd->{action} eq 'createGame' ) {
+      $cmd->{randseed} = $self->{db}->getGameGenNum($self->{json}->{gameId});
+    }
+    push @{ $result->{actions} }, $cmd;
   }
   foreach ( @{ $self->{db}->getConnectionsSid($self->{json}->{gameId}) } ) {
     $self->{db}->leaveGame($_);
