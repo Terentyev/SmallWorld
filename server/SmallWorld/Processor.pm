@@ -102,9 +102,19 @@ sub saveCmd {
     $gameId = $self->{db}->getGameId($cmd->{sid});
     delete $cmd->{sid};
   }
-#  if ( $self->{json}->{action} eq 'conquer' && defined $result->{dice} ) {
-#    $cmd->{dice} = $result->{dice};
-#  }
+  if ( $cmd->{action} eq 'setReadinessStatus' ) {
+    # если игра началась, то сохраняем в историю сгенерированные пары рас и
+    # способностей
+    my $game = $self->getGame();
+    if ( $game->{gameState}->{gameInfo}->{gstate} != GST_WAIT ) {
+      $cmd->{visibleRaces} = [];
+      foreach ( @{ $game->{gameState}->{tokenBadges} } ) {
+        push @{ $cmd->{visibleRaces} }, $_->{raceName} if defined $_->{raceName};
+      }
+      $cmd->{visibleSpecialPowers} = [];
+      push @{ $cmd->{visibleSpecialPowers} }, $_->{specialPowerName} foreach ( @{ $game->{gameState}->{tokenBadges} } );
+    }
+  }
   $self->{db}->saveCommand($gameId, encode_json($cmd));
 }
 
