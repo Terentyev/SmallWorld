@@ -76,18 +76,15 @@ Player.prototype.getRegion = function() {
 
 Player.prototype.addTokens = function(tokens) {
   this.p.tokensInHand += tokens;
-  if (this.p.tokensInHand < 0) {
+  if (this.tokens() < 0) {
     // если на руках получилось отрицательное число, то надо "дополнить" руки
     // фигурками с регионов
     var regions = this.myRegions();
     for (var i in regions) {
-      var t = regions[i].tokens() + this.tokens();
-      if (t <= 0) {
-        this.p.tokensInHand += regions[i].tokens() - 1;
-        regions[i].rmTokens(regions[i].tokens() - 1);
-      }
-      else {
-        regions[i].rmTokens(this.tokens());
+      var t = min(regions[i].tokens() - 1, -this.tokens());
+      this.p.tokensInHand += t;
+      regions[i].rmTokens(t);
+      if (this.tokens() == 0) {
         break;
       }
     }

@@ -319,7 +319,7 @@ sub getHistory {
 
 sub getLastCmd {
   my ($self, $gameId) = @_;
-  return $self->{dbh}->query('SELECT cmd FROM HISTORY WHERE gameId = ?', $gameId);
+  return $self->query('SELECT cmd FROM HISTORY WHERE gameId = ? ORDER BY id DESC ROWS 1', $gameId);
 }
 
 
