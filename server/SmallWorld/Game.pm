@@ -489,8 +489,8 @@ sub canAttack {
   # если игроку не хватает фигурок даже с подкреплением, это его последнее завоевание
   if ( $player->{tokensInHand} + $player->safe('dice') < $self->{defendNum} ) {
     # если у игрока нет территорий то ждем команды конец хода
-    $self->{gameState}->{state} = (grep { $player->activeConq($_) } @{ $regions }) ?
-                                  GS_REDEPLOY : GS_BEFORE_FINISH_TURN;
+    $self->gotoRedeploy();
+    $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN if !(grep { $player->activeConq($_) } @$regions);
     return 0;
   }
   return 1;
@@ -708,6 +708,15 @@ sub finishTurn {
   }
 }
 
+sub gotoRedeploy {
+  my ($self) = @_;
+  return if $self->{gameState}->{state} eq GS_REDEPLOY;
+  $self->{gameState}->{state} = GS_REDEPLOY;
+  my $player = $self->getPlayer();
+  my $race = $self->createRace($player->{currentTokenBadge});
+  $player->{tokensInHand} += $race->redeployTokensBonus($player);
+}
+
 sub redeploy {
   my ($self, $regs, $encampments, $fortified, $heroes) = @_;
   my $player = $self->getPlayer();
@@ -715,7 +724,7 @@ sub redeploy {
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
   my $lastRegion = defined $regs->[-1] ? $self->getRegion($regs->[-1]->{regionId}): undef;
 
-  $player->{tokensInHand} += $race->redeployTokensBonus($player);
+  $self->gotoRedeploy();
   foreach ( @{ $race->{regions} } ) {
     $player->{tokensInHand} += $_->{tokensNum};
     @ {$_}{qw (tokensNum encampment hero) } = (0, undef, undef);
