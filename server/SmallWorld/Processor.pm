@@ -122,6 +122,9 @@ sub saveCmd {
       push @{ $cmd->{visibleSpecialPowers} }, $_->{specialPowerName} foreach ( @{ $game->{gameState}->{tokenBadges} } );
     }
   }
+  if ( $cmd->{action} eq 'conquer' && defined $result->{dice} ) {
+    $cmd->{dice} = 1;
+  }
   $self->{db}->saveCommand($gameId, encode_json($cmd));
 }
 
@@ -306,6 +309,9 @@ sub cmd_saveGame {
     my $cmd = decode_json($_);
     if ( $cmd->{action} eq 'createGame' ) {
       $cmd->{randseed} = $self->{db}->getGameGenNum($js->{gameId});
+    }
+    if ( exists $cmd->{dice} ) {
+      delete $cmd->{dice};
     }
     push @{ $result->{actions} }, $cmd;
   }
