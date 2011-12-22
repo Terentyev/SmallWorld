@@ -168,12 +168,13 @@ sub initStorage {
 # сохраняет состояние игры в БД
 sub save {
   my $self = shift;
-  my $gs = $self->{gameState};
+  my $gs = { %{ $self->{gameState} } };
+  delete $gs->{gameInfo};
   # вместо того, чтобы сохранять в json объекты-игроков, сохраняем только
   # информацию о них
   grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{players} };
   grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{regions} };
-  $self->{db}->saveGameState(encode_json($gs), $gs->{activePlayerId}, $gs->{currentTurn}, $gs->{gameInfo}->{gameId});
+  $self->{db}->saveGameState(encode_json($gs), $gs->{activePlayerId}, $gs->{currentTurn}, $self->{gameState}->{gameInfo}->{gameId});
   $self->{_version}++;
 }
 
@@ -202,7 +203,7 @@ sub getNotEmptyBadge {
 sub getLastEvent {
   my ($self, $st) = @_;
   return $st if $st == GST_WAIT || $st == GST_BEGIN;
-  my $cmd = decode_json($self->getLastCmd($self->{gameState}->{gameId}));
+  my $cmd = decode_json($self->{db}->getLastCmd($self->{gameState}->{gameInfo}->{gameId}));
   return LE_FAILED_CONQUER if $cmd->{action} eq 'conquer' && defined $cmd->{dice};
   return {
     decline       => LE_DECLINE,
