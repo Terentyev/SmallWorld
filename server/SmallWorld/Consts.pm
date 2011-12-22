@@ -27,6 +27,7 @@ use constant R_ALL_OK                       => 'ok'                             
 use constant R_ALREADY_IN_GAME              => 'alreadyInGame'                      ;
 use constant R_BAD_ACTION                   => 'badAction'                          ;
 use constant R_BAD_ACTIONS                  => 'badActions'                         ;
+use constant R_BAD_AI                       => 'badAi'                              ;
 use constant R_BAD_ATTACKED_RACE            => 'badAttackedRace'                    ;
 use constant R_BAD_BODY_OR_MAPID            => 'badBodyOrMapId'                     ;
 use constant R_BAD_COORDINATES              => 'badCoordinates'                     ;
@@ -73,6 +74,7 @@ use constant R_NOT_IN_GAME                  => 'notInGame'                      
 use constant R_NOTHING_TO_ENCHANT           => 'nothingToEnchant'                   ;
 use constant R_REGION_IS_IMMUNE             => 'regionIsImmune'                     ;
 use constant R_THERE_ARE_TOKENS_IN_THE_HAND => 'thereAreTokensInTheHand'            ;
+use constant R_TOO_MANY_AI                  => 'tooManyAI'                          ;
 use constant R_TOO_MANY_FORTS               => 'tooManyFortifieds'                  ;
 use constant R_TOO_MANY_FORTS_IN_REGION     => 'tooManyFortifiedsInRegion'          ;
 use constant R_TOO_MANY_PLAYERS             => 'tooManyPlayers'                     ;
@@ -90,6 +92,7 @@ use constant MAX_RACENAME_LEN   => 20 ;
 use constant MAX_SKILLNAME_LEN  => 20 ;
 use constant MAX_TURNS_NUM      => 10 ;
 use constant MAX_USERNAME_LEN   => 16 ;
+use constant MIN_AI_NUM         => 0  ;
 use constant MIN_GAMENAME_LEN   => 1  ;
 use constant MIN_PASSWORD_LEN   => 6  ;
 use constant MIN_PLAYERS_NUM    => 2  ;
@@ -99,12 +102,13 @@ use constant RACE_NUM           => 14 ;
 use constant VISIBLE_BADGES_NUM => 6  ;
 
 use constant CMD_ERRORS => {
+  aiJoin             => [R_BAD_GAME_ID, R_BAD_GAME_STATE, R_TOO_MANY_AI],
   conquer            => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_REGION_ID, # R_BAD_GAME_STATE
     R_REGION_IS_IMMUNE, R_BAD_REGION, R_BAD_TOKENS_NUM
   ],
   createDefaultMaps  => [],
-  createGame         => [R_BAD_SID, R_ALREADY_IN_GAME, R_GAME_NAME_TAKEN, R_BAD_MAP_ID],
+  createGame         => [R_BAD_SID, R_ALREADY_IN_GAME, R_GAME_NAME_TAKEN, R_BAD_MAP_ID, R_BAD_AI],
   decline            => [
     R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE # R_BAD_GAME_STATE
   ],
@@ -279,6 +283,13 @@ use constant PATTERN => {
       errorCode => R_BAD_MAP_ID
     },
     {
+      name => 'ai',
+      type => 'int',
+      mandatory => 0,
+      min => MIN_AI_NUM,
+      errorCode => R_BAD_AI
+    },
+    {
       name => 'gameDescription',
       type => 'unicode',
       mandatory => 0,
@@ -341,6 +352,14 @@ use constant PATTERN => {
     },
     {name => 'visibleRaces', type => 'list', mandatory => 0},
     {name => 'visibleSpecialPowers', type => 'list', mandatory => 0}
+  ],
+  aiJoin => [
+    {
+      name => 'gameId',
+      type => 'int',
+      mandatory => 1,
+      errorCode => R_BAD_GAME_ID
+    }
   ],
   saveGame => [
     {

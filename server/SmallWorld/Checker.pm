@@ -208,6 +208,7 @@ sub checkJsonCmd {
 
   $result->{result} = $self->checkErrorHandlers($js, {
     &R_ALREADY_IN_GAME              => sub { $self->checkInGame($js); },
+    &R_BAD_AI                       => sub { defined $js->{ai} && $js->{ai} > $self->{db}->getMapPlayersInMap($js->{mapId}); },
     &R_BAD_GAME_ID                  => sub { !$self->{db}->dbExists('GAMES', 'id', $js->{gameId}); },
     &R_BAD_GAME_STATE               => sub { $self->checkGameState($js); },
     &R_BAD_LOGIN                    => sub { $self->checkLoginAndPassword($js); },

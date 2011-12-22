@@ -36,6 +36,27 @@ sub disconnect {
   $_[0]->{dbh}->disconnect;
 }
 
+sub startTransaction {
+  my $self = shift;
+  $self->{dbh}->{AutoCommit} = 0;
+#  $self->{dbh}->{RaiseError} = 1
+}
+
+sub endTransaction {
+  my $self = shift;
+  $self->{dbh}->{AutoCommit} = 1;
+}
+
+sub commitTransaction {
+  my $self = shift;
+  $self->{dbh}->commit();
+}
+
+sub rollbackTransaction {
+  my $self = shift;
+  $self->{dbh}->rollback();
+}
+
 sub _do {
   my $self = shift;
   my ($s, @list) = @_;
@@ -106,22 +127,22 @@ sub addPlayer {
 
 sub createGame {
   my $self = shift;
-  my ($sid, $gameName, $mapId, $gameDescr, $genNum) = @_;
-  $self->_do('INSERT INTO GAMES (name, mapId, description, genNum) VALUES (?, ?, ?, ?)',
-             $gameName, $mapId, !defined $gameDescr ? '' : $gameDescr, $genNum);
+  my ($sid, $gameName, $mapId, $gameDescr, $aiNum, $genNum) = @_;
+  $self->_do('INSERT INTO GAMES (name, mapId, description, aiNum, genNum) VALUES (?, ?, ?, ?, ?)',
+             $gameName, $mapId, !defined $gameDescr ? '' : $gameDescr, $aiNum, $genNum);
   my $gameId = $self->_getId('GAME');
   $self->joinGame($gameId, $sid);
   return $gameId;
 }
 
 sub updateGame {
-  my ($self, $sid, $gameName, $mapId, $gameDescr, $genNum) = @_;
+  my ($self, $sid, $gameName, $mapId, $gameDescr, $aiNum, $genNum) = @_;
   $self->_do('
       UPDATE GAMES
-      SET mapId = ?, description = ?, gstate = ?, genNum = ?, version = 0,
+      SET mapId = ?, description = ?, gstate = ?, aiNum = ?, genNum = ?, version = 0,
           activePlayerId = NULL, currentTurn = NULL, state = NULL
       WHERE name = ?',
-      $mapId, !defined $gameDescr ? '' : $gameDescr, GST_WAIT, $genNum, $gameName);
+      $mapId, !defined $gameDescr ? '' : $gameDescr, GST_WAIT, $aiNum, $genNum, $gameName);
   my $gameId = $self->query('SELECT id FROM GAMES WHERE name = ?', $gameName);
   $self->_do('DELETE FROM CONNECTIONS WHERE gameId = ?', $gameId);
   $self->joinGame($gameId, $sid);
@@ -132,6 +153,22 @@ sub joinGame {
   my $self = shift;
   my ($gameId, $sid) = @_;
   $self->_do('INSERT INTO CONNECTIONS (gameId, playerId) VALUES (?, ?)', $gameId, $self->getPlayerId($sid));
+}
+
+sub aiJoin {
+  my ($self, $gameId) = @_;
+  my $aiNum = $self->query('SELECT aiNum FROM GAMES WHERE id = ?', $gameId);
+  my $sid = undef;
+  $self->startTransaction();
+  eval {
+    $sid = $self->query('EXECUTE PROCEDURE AIJOIN(?, ?)', $gameId, $aiNum);
+    $self->commitTransaction();
+  };
+  if ( $@ ) {
+    eval { $self->rollbackTransaction() };
+  }
+  $self->endTransaction();
+  return $sid;
 }
 
 sub makeSid {
@@ -204,6 +241,11 @@ sub getMaxPlayers {
   return $self->query('SELECT playersNum FROM MAPS m INNER JOIN GAMES g ON m.id = g.mapId WHERE g.id = ?', $_[0]);
 }
 
+sub getMaxPlayersInMap {
+  my ($self, $mapId) = @_;
+  return $self->query('SELECT playersNum FROM MAPS WHERE id = ?', $mapId);
+}
+
 sub addMessage {
   my $self = shift;
   my ($sid, $text) = @_;
@@ -236,7 +278,8 @@ sub updateGameStateOnly {
 sub getGameState {
   my $self = shift;
   return $self->{dbh}->selectrow_hashref('
-      SELECT g.id, g.name, g.description, g.mapId, g.state, g.gstate, g.version, g.activePlayerId, g.currentTurn
+      SELECT
+        g.id, g.name, g.description, g.mapId, g.state, g.aiNum, g.gstate, g.version, g.activePlayerId, g.currentTurn
       FROM GAMES g
       INNER JOIN CONNECTIONS c ON c.gameId = g.id
       INNER JOIN PLAYERS p ON p.id = c.playerId
@@ -278,7 +321,7 @@ sub getGames {
   return $self->{dbh}->selectall_arrayref('
       SELECT
         g.id, g.name, g.description, g.mapId, g.gstate, m.playersNum, m.turnsNum, g.activePlayerId,
-        g.currentTurn
+        g.currentTurn, g.aiNum
       FROM GAMES g INNER JOIN MAPS m ON g.mapId = m.id
       WHERE g.gstate <> ?',
       { Slice => {} }, GST_EMPTY ) or dbError;

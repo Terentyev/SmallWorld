@@ -207,7 +207,7 @@ sub cmd_uploadMap {
 
 sub cmd_createGame {
   my ($self, $js, $result) = @_;
-  my @params = (@$js{qw/sid gameName mapId gameDescription/}, $self->getGameInitialGeneratedNum($js));
+  my @params = (@$js{qw/sid gameName mapId gameDescription ai/}, $self->getGameInitialGeneratedNum($js));
   $result->{gameId} = $self->{db}->gameWithNameExists($js->{gameName}, 1)
     ? $self->{db}->updateGame( @params )
     : $self->{db}->createGame( @params );
@@ -248,7 +248,8 @@ sub cmd_getGameList {
     push @{$result->{games}}, { 'gameId' => $_->{ID}, 'gameName' => $_->{NAME}, 'gameDescription' => $_->{DESCRIPTION},
                                 'mapId' => $_->{MAPID}, 'maxPlayersNum' => $_->{PLAYERSNUM}, 'turnsNum' => $_->{TURNSNUM},
                                 'state' => $_->{GSTATE}, 'activePlayerId' => $activePlayerId, 'turn' => $turn,
-                                'players' => $players, 'url' => $self->getMapUrl($_->{MAPID})};
+                                'players' => $players, 'url' => $self->getMapUrl($_->{MAPID}),
+                                'aiRequiredNum' => $_->{AINUM} };
   }
 }
 
@@ -300,6 +301,16 @@ sub cmd_setReadinessStatus {
     }
     $game->save();
   }
+}
+
+sub cmd_aiJoin {
+  my ($self, $js, $result) = @_;
+  my $sid = $self->{db}->aiJoin($js->{gameId});
+  if ( !defined $sid ) {
+    $result->{result} = R_TOO_MANY_AI;
+    return;
+  }
+  $result->{sid} = $sid;
 }
 
 sub cmd_saveGame {
