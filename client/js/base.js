@@ -79,6 +79,15 @@ function uploadMap(id) {
  });
 }
 
+function init() {
+  $("#tabs").tabs();
+  $("#tableGameList").tablesorter({headers: { 0: { sorter: false } } });
+  $('.scroll-pane').jScrollPane({showArrows:true, scrollbarOnLeft: true});
+  $('#mapList').change(function () {
+    changeMap($(this).val());
+  });
+}
+
 function _setCookie(key, value) {
   for (var i in key) $.cookie(key[i], value[i]);
 }

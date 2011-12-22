@@ -1,10 +1,13 @@
-function showModal(divName) {
+function showModal(divName, h, w) {
+  h = h || 160;
+  w = w || 420;
   $(divName).modal({
     closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
     position: ["10%"],
     closeClass: "modal-close",
     overlayId: "modal-overlay",
     containerId: "modal-container",
+    containerCss: {height:h, width: w}
   });
 }
 
@@ -16,9 +19,9 @@ function saveServerUrl() {
 };
 
 function showSelectServer() {
-  var s = (serverUrl != null ? serverUrl : "is not defined");
-  $("#serverUrlModal").val(s);
-  showModal("#divSelectServer");
+  var s = (serverUrl != null ? serverUrl : "http://server.smallworld");
+  $("#inputServerUrl").val(s);
+  showModal("#divSelectServer", 110);
 }
 
 function showLogin() {

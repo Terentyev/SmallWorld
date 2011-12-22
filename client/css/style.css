@@ -25,6 +25,7 @@ body {font: 14px Verdana, Arial; text-align:left; padding: 30px 0 0 0;}
 .corner-top { border:2px solid #336699; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; border-radius: 10px 10px 0 0; }
 .tedit {width: 100%;}
 .error {font-weight:bold; color: #cd0a0a;}
+td.left {width: 100px;}
 
 /* tables */
 table.tablesorter {
@@ -79,8 +80,8 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
                           background:url(images/header.gif) repeat-x; -moz-border-radius: 6px 6px 0 0;
                           -webkit-border-radius: 6px 6px 0 0; border-radius: 6px 6px 0 0; text-align:center;}
 .header span {padding-left:8px;}
-.buttons {line-height:26px; width:180px; float:right; padding: 4px 0 0 0;}
-.buttons div {float:right; margin-left:4px; width:80px; height:26px; color:#666; font-weight:bold;
+.buttons {line-height:26px; width:180px; float:right; display: block; padding: 4px 0 0 0;}
+.buttons div { float:right; margin-left:4px; width:80px; height:26px; color:#666; font-weight:bold;
               text-align:center; background:url(images/button.gif) repeat-x; border:1px solid #336699;
               cursor:pointer;}
 .tbutton {margin-left:4px; padding-top: 4px; width:80px; height:22px; color:#666; font-weight:bold;
@@ -92,13 +93,15 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 #tabs {height: 600px;}
 
 .modal {display:none;}
+.message table {width: 100%;}
+
 #modal-overlay {background-color:#eee;}
-#modal-container {height:160px; width:420px; font: 14px Verdana, Arial; text-align:left;
-                  background:#fff; border:2px solid #336699; padding: 0 0 20px 0; -moz-border-radius: 10px;
+#modal-container {font: 14px Verdana, Arial; text-align:left;
+                  background:#fff; border:2px solid #336699; padding: 0 0 0px 0; -moz-border-radius: 10px;
                   -webkit-border-radius: 10px;  border-radius: 10px;}
 
 #modal-container .header  {text-align:left;}
-#modal-container .message {color:#333; font-size:14px; margin:0; padding:12px 4px 12px 8px;}
+#modal-container .message { color:#333; font-size:14px; margin:0; padding:4px;}
 
 #modal-container a.modal-close,
 #modal-container a.modal-close:link,

@@ -1,8 +1,10 @@
-function cmdRegister() {
+﻿function cmdRegister() {
+  var name = $("#inputRegisterUsername").val(), pass = $("#inputRegisterPassword").val();
+  if (!checkUsernameAndPassowrd(name, pass, "#divRegisterError")) return;
   var cmd = {
     action: "register",
-    username: $("#inputRegisterUsername").val(),
-    password: $("#inputRegisterPassword").val()
+    username: name,
+    password: pass
   };
   sendRequest(cmd, hdlRegister, '#divRegisterError');
 }
@@ -363,7 +365,8 @@ function errConquer(ans, cnt) {
         'Conquest is over.',
         ans.dice,
         et));
-  setGameStage('redeploy');
+        commitStageConquest();
+  //setGameStage('redeploy');
 }
 
 function cmdDefend(regions) {
