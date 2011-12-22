@@ -602,7 +602,7 @@ sub decline {
 
 sub forceDecline {
   my ($self, $playerId) = @_;
-  my $player = $self->getPlayer($playerId);
+  my $player = $self->getPlayer( { id => $playerId } );
   if ( $playerId == $self->{gameState}->{activePlayerId} ) {
     if ( $self->{gameState}->{state} eq GS_DEFEND ) {
       $self->endDefend();
