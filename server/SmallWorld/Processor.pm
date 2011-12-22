@@ -346,6 +346,7 @@ sub cmd_selectRace {
   my $game = $self->getGame($js);
   $game->selectRace($js->{position}, $result);
   $game->save();
+  $self->{db}->updateGameStateOnly($game->{gameState}->{gameInfo}->{gameId}, GST_IN_GAME);
 }
 
 sub cmd_conquer {
