@@ -489,6 +489,7 @@ sub canAttack {
   # если игроку не хватает фигурок даже с подкреплением, это его последнее завоевание
   if ( $player->{tokensInHand} + $player->safe('dice') < $self->{defendNum} ) {
     # если у игрока нет территорий то ждем команды конец хода
+    $player->{dice} = undef;
     $self->gotoRedeploy();
     $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN if !(grep { $player->activeConq($_) } @$regions);
     return 0;
