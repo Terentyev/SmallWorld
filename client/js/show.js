@@ -177,17 +177,19 @@ function showScores() {
 }
 
 function showTurnScores(stats) {
-  var s = '';
+  var s = '', c = 0;
   for (var i in stats) {
     if (stats[i][1] == 0) continue;
     s += addRow([stats[i][0], stats[i][1]]);
+    ++c;
   }
   if (s == '') {
     s = addRow(['Not coins for turn']);
+    ++c;
   }
   $('#tableTurnScores tbody').html(s);
   $('#tableTurnScores tbody').trigger('update');
-  showModal('#divTurnScores');
+  showModal('#divTurnScores', 70+c*40, 300);
 }
 
 function changeMap(mapId) {
