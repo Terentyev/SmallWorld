@@ -1,6 +1,6 @@
 {
   "description": "save token badges",
-  "include": [ "_createGame.inc" ],
+  "include": [ "_prepare.inc", "_createGame.inc" ],
   "test": [
     { "action": "joinGame", "sid": 2, "gameId": 1 },
     { "action": "setReadinessStatus", "sid": 1, "isReady": 1 },

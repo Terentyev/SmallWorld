@@ -1,0 +1,19 @@
+[
+  { "result": "badActions" },
+  { "result": "userNotLoggedIn" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+  { "result": "illegalAction" },
+
+  { "result": "ok" }
+]
