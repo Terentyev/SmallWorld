@@ -419,7 +419,7 @@
          <div class="body" id="divLogin">
            <table width="100%">
              <tr>
-               <td width="100">Username</td>
+               <td class="left">Username</td>
                <td>
                  <input class="tedit" type="text" id="inputLoginUsername" />
                </td>
@@ -476,12 +476,9 @@
             <tr><td>Max turns:</td><td><span id="cgameTurnsNum"></span></td></tr>
             <tr><td>Description:</td><td><div id="cgameDescription" class="wrap"></div></td></tr>
             <tr>
-              <td>Readiness:</td>
+              <td>Ready:</td>
               <td valign="middle">
-                <span>
-                <input id ="checkBoxReady" type="checkbox" onclick="cmdSetReady();" />
-                <span id="readinessStatus"></span>
-
+                <input id="checkBoxReady" type="checkbox" onclick="cmdSetReady();" />
               </td>
             </tr>
             <tr><td colspan="2">

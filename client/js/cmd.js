@@ -177,7 +177,6 @@ function updatePlayersInGame() {
         s += $.sprintf("%s %s<br>", username, isReady ? "ready" : "");
         if (userId == data.playerId) {
           $('#checkBoxReady').attr('checked', isReady ? "checked": null)
-          $('#readinessStatus').html(isReady ? "ready" : "not ready");
         }
       }
     }
@@ -200,7 +199,7 @@ function hdlGetGameList(ans) {
     needLoadMaps = needLoadMaps || !maps[cur.mapId];
     if (gameId == null)
       for (var j in cur.players)
-        if (cur.players[j].userId == data.playerId) {
+        if (cur.players[j].userId == data.playerId && cur.players[j].inGame) {
           gameId = cur.gameId;
           break;
         }
@@ -222,7 +221,6 @@ function hdlGetGameList(ans) {
      .click(function (){
        $("input:radio[name=listGameId]").eq(tmp.index(this)).attr("checked", 1);
      });
-
   if (gameId != null) {
     $("input:radio[name=listGameId]").attr("hidden", 1);
     setGame(gameId);
@@ -239,6 +237,7 @@ function cmdLeaveGame() {
 }
 
 function hdlLeaveGame(ans) {
+  data.game = null;
   data.gameId = null;
   _setCookie(["gameId"], [null]);
   showLobby();

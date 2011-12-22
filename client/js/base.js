@@ -298,7 +298,5 @@ function setGame(gameId) {
   data.gameId = gameId;
   _setCookie(["gameId"], gameId);
   makeCurrentGame(games[gameId]);
-  if (games[gameId].inGame) {
-    cmdGetGameState(hdlGetGameState);
-  }
+  cmdGetGameState();
 }

@@ -15,6 +15,7 @@ function saveServerUrl() {
   serverUrl = $("#inputServerUrl").val();
   $("#serverUrl").html(serverUrl);
   _setCookie(["serverUrl"], [serverUrl]);
+  data.game = null;
   showLobby();
 };
 
@@ -165,15 +166,16 @@ function showMessages() {
 }
 
 function showScores() {
-  var s = '';
+  var s = '', c = 0;
   for (var i in data.game.players) {
     with (data.game.players[i]) {
       s += addRow([username, coins]);
+      ++c;
     }
   }
   $('#tableScores tbody').html(s);
   $('#tableScores tbody').trigger('update');
-  showModal('#divScores');
+  showModal('#divScores', 70+c*40, 300);
 }
 
 function showTurnScores(stats) {
@@ -189,7 +191,7 @@ function showTurnScores(stats) {
   }
   $('#tableTurnScores tbody').html(s);
   $('#tableTurnScores tbody').trigger('update');
-  showModal('#divTurnScores', 60+c*35, 250);
+  showModal('#divTurnScores', 70+c*40, 250);
 }
 
 function changeMap(mapId) {
