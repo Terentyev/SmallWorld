@@ -25,7 +25,7 @@ our @EXPORT = qw(
 use constant DB_NAME          => $ENV{DB_PATH};
 use constant DB_LOGIN         => 'sysdba';
 use constant DB_PASSWORD      => 'masterkey';
-use constant DB_MAX_BLOB_SIZE => 1048576;
+use constant DB_MAX_BLOB_SIZE => 10485760;
 use constant TEST_MODE        => 1;
 use constant TEST_RANDSEED    => 12345;
 

@@ -17,7 +17,7 @@ use SmallWorld::Utils;
 
 sub new {
   my $class = shift;
-  my $self = { json => undef, db => undef, _game => undef };
+  my $self = { db => undef, _game => undef, loading => 0 };
 
   $self->{db} = SmallWorld::DB->new();
   $self->{db}->connect(DB_NAME, DB_LOGIN, DB_PASSWORD, DB_MAX_BLOB_SIZE);
@@ -31,26 +31,33 @@ sub process {
   if ( !defined $r ) {
     $r = '{}';
   }
-  $self->{json} = eval { return decode_json($r) or {}; };
+  my $js = eval { return decode_json($r) or {}; };
 
-  my $result = { result => R_ALL_OK };
-  $self->checkJsonCmd($result);
-
-  $self->saveCmd($result) if ($self->{json}->{action} // '') eq 'leaveGame';
-  if ( $result->{result} eq R_ALL_OK ) {
-    no strict 'refs';
-    &{"cmd_$self->{json}->{action}"}($self, $result);
-  }
-  $self->saveCmd($result) if ($self->{json}->{action} // 'leaveGame') ne 'leaveGame';
+  my $result = $self->checkAndDo($js);
   if ( $ENV{LENA} ) {
     # у Лены sid проверяется только как число, а наш сервер почему-то возвращает
     # строку... Ничего лучше пока не придумано.
-    if ( $self->{json}->{action} eq 'login' && $result->{result} eq R_ALL_OK ) {
+    if ( $js->{action} eq 'login' && $result->{result} eq R_ALL_OK ) {
       $result->{sid} *= 1;
     }
   }
   print encode_json($result)."\n" or die "Can not encode JSON-object\n";
   $self->{_game} = undef;
+}
+
+sub checkAndDo {
+  my ($self, $js) = @_;
+  my $result = { result => R_ALL_OK };
+  $self->checkJsonCmd($js, $result);
+
+  $self->saveCmd($js, $result) if ($js->{action} // '') eq 'leaveGame';
+  if ( $result->{result} eq R_ALL_OK ) {
+    no strict 'refs';
+    &{"cmd_$js->{action}"}($self, $js, $result);
+  }
+  $self->saveCmd($js, $result) if ($js->{action} // 'leaveGame') ne 'leaveGame';
+  
+  return $result;
 }
 
 sub debug {
@@ -62,40 +69,40 @@ sub debug {
 }
 
 sub getGame {
-  my $self = shift;
-  my $id = defined $_[0]
-    ? $_[0]
-    : (defined $self->{json}->{gameId}
-        ? $self->{json}->{gameId}
-        : $self->{db}->getGameId($self->{json}->{sid}));
+  my ($self, $js, $id) = @_;
+  $id = defined $id
+    ? $id
+    : (defined $js->{gameId}
+        ? $js->{gameId}
+        : $self->{db}->getGameId($js->{sid}));
 
   my $version = $self->{db}->getGameVersion($id);
 
-#  my ($version, $id) = @{ $self->{db}->getGameVersionAndId($self->{json}->{gameId}) };
+#  my ($version, $id) = @{ $self->{db}->getGameVersionAndId($js->{gameId}) };
   if ( !defined $self->{_game} ||
       (grep { $_->{isReady} == 0 } @{ $self->{_game}->{gameState}->{players} }) ||
       $self->{_game}->{gameState}->{gameInfo}->{gameId} != $id ||
       $self->{_game}->{_version} != $version ) {
-    $self->{_game} = SmallWorld::Game->new($self->{db}, $id, $self->{json}->{action});
+    $self->{_game} = SmallWorld::Game->new($self->{db}, $id, $js->{action});
   }
   return $self->{_game};
 }
 
 sub needSaveCmd {
-  my ($self, $result) = @_;
-  return 1 if $self->{json}->{action} eq 'conquer' && defined $result->{dice};
+  my ($self, $js, $result) = @_;
+  return 1 if $js->{action} eq 'conquer' && defined $result->{dice};
   return 0 if $result->{result} ne R_ALL_OK;
-  foreach ( qw( createGame joinGame leaveGame setReadinessStatus selectRace conquer dragonAttack enchant throwDice decline defend redeploy selectFriend finishTurn ) ) {
-    return 1 if $_ eq $self->{json}->{action};
+  foreach ( @{ &SAVED_COMMANDS } ) {
+    return 1 if $_ eq $js->{action};
   }
   return 0;
 }
 
 sub saveCmd {
-  my ($self, $result) = @_;
-  return if !$self->needSaveCmd($result);
+  my ($self, $js, $result) = @_;
+  return if !$self->needSaveCmd($js, $result);
 
-  my $cmd = { %{ $self->{json} } };
+  my $cmd = { %$js };
   my $gameId = $cmd->{gameId};
   if ( exists $cmd->{sid} ) {
     $cmd->{userId} = $self->{db}->getPlayerId($cmd->{sid});
@@ -105,7 +112,7 @@ sub saveCmd {
   if ( $cmd->{action} eq 'setReadinessStatus' ) {
     # если игра началась, то сохраняем в историю сгенерированные пары рас и
     # способностей
-    my $game = $self->getGame();
+    my $game = $self->getGame($js);
     if ( $game->{gameState}->{gameInfo}->{gstate} != GST_WAIT ) {
       $cmd->{visibleRaces} = [];
       foreach ( @{ $game->{gameState}->{tokenBadges} } ) {
@@ -134,40 +141,42 @@ sub getMapUrl {
 }
 
 sub getGameInitialGeneratedNum {
+  my ($self, $js) = @_;
+  return $js->{randseed} if defined $js->{randseed} && $self->{loading};
   return int(rand(RAND_EXPR));
 }
 
 # Команды, которые приходят от клиента
 sub cmd_resetServer {
   return if !$ENV{DEBUG};
-  my ($self, $result) = @_;
+  my ($self, $js, $result) = @_;
   $self->{db}->clear();
 }
 
 sub cmd_register {
-  my ($self, $result) = @_;
-  $self->{db}->addPlayer( @{$self->{json}}{qw/username password/} );
+  my ($self, $js, $result) = @_;
+  $self->{db}->addPlayer( @$js{qw/username password/} );
 }
 
 sub cmd_login {
-  my ($self, $result) = @_;
-  $result->{sid} = $self->{db}->makeSid( @{$self->{json}}{qw/username password/} );
+  my ($self, $js, $result) = @_;
+  $result->{sid} = $self->{db}->makeSid( @$js{qw/username password/} );
   $result->{userId} = $self->{db}->getPlayerId($result->{sid});
 }
 
 sub cmd_logout {
-  my ($self, $result) = @_;
-  $self->{db}->logout($self->{json}->{sid});
+  my ($self, $js, $result) = @_;
+  $self->{db}->logout($js->{sid});
 }
 
 sub cmd_sendMessage {
-  my ($self, $result) = @_;
-  $self->{db}->addMessage( @{$self->{json}}{qw/sid text/} );
+  my ($self, $js, $result) = @_;
+  $self->{db}->addMessage( @$js{qw/sid text/} );
 }
 
 sub cmd_getMessages {
-  my ($self, $result) = @_;
-  my $ref = $self->{db}->getMessages($self->{json}->{since});
+  my ($self, $js, $result) = @_;
+  my $ref = $self->{db}->getMessages($js->{since});
   my @a = ();
   foreach (@{$ref}) {
     push @a, { 'id' => $_->{ID}, 'text' => $_->{TEXT}, 'username' => $_->{USERNAME}, 'time' => TEST_MODE ? $_->{ID} : $_->{T} };
@@ -177,7 +186,7 @@ sub cmd_getMessages {
 
 sub cmd_createDefaultMaps {
   return if !$ENV{DEBUG};
-  my ($self, $result) = @_;
+  my ($self, $js, $result) = @_;
   my @maps = $ENV{LENA}
     ? @{ &LENA_DEFAULT_MAPS }
     : @{ &DEFAULT_MAPS };
@@ -187,16 +196,15 @@ sub cmd_createDefaultMaps {
 }
 
 sub cmd_uploadMap {
-  my ($self, $result) = @_;
+  my ($self, $js, $result) = @_;
   $result->{mapId} = $self->{db}->addMap(
-    @{$self->{json}}{qw/mapName playersNum turnsNum/},
-    encode_json($self->{json}->{regions}));
+    @$js{qw/mapName playersNum turnsNum/},
+    encode_json($js->{regions}));
 }
 
 sub cmd_createGame {
-  my ($self, $result) = @_;
-  my $js = $self->{json};
-  my @params = (@{$js}{qw/sid gameName mapId gameDescription/}, $self->getGameInitialGeneratedNum());
+  my ($self, $js, $result) = @_;
+  my @params = (@$js{qw/sid gameName mapId gameDescription/}, $self->getGameInitialGeneratedNum($js));
   $result->{gameId} = $self->{db}->gameWithNameExists($js->{gameName}, 1)
     ? $self->{db}->updateGame( @params )
     : $self->{db}->createGame( @params );
@@ -204,10 +212,10 @@ sub cmd_createGame {
 
 
 sub cmd_getGameList {
-  my ($self, $result) = @_;
+  my ($self, $js, $result) = @_;
   my $ref = $self->{db}->getGames();
   $result->{games} = [];
-  foreach ( @{$ref} ) {
+  foreach ( @$ref ) {
     my $players = [];
     my ($activePlayerId, $turn) = (undef, 0);
     if ( $_->{GSTATE} == GST_WAIT ) {
@@ -218,11 +226,11 @@ sub cmd_getGameList {
           'username' => $_->{USERNAME},
           'isReady'  => $self->bool($_->{ISREADY}),
           'inGame'   => $self->bool(1)
-        } } @{$pl}
+        } } @$pl
       ];
     }
     else {
-      my $game = $self->getGame($_->{ID});
+      my $game = $self->getGame($js, $_->{ID});
       $activePlayerId = $game->{gameState}->{activePlayerId};
       $turn = $game->{gameState}->{currentTurn};
       $players = [
@@ -242,7 +250,7 @@ sub cmd_getGameList {
 }
 
 sub cmd_getMapList {
-  my ($self, $result) = @_;
+  my ($self, $js, $result) = @_;
   $result->{maps} = [
     map { {
       'mapId'       => $_->{ID},
@@ -262,120 +270,150 @@ sub cmd_getMapList {
 }
 
 sub cmd_joinGame {
-  my ($self, $result) = @_;
-  $self->{db}->joinGame( @{$self->{json}}{qw/gameId sid/} );
+  my ($self, $js, $result) = @_;
+  $self->{db}->joinGame( @$js{qw/gameId sid/} );
 }
 
 sub cmd_leaveGame {
-  my ($self, $result) = @_;
-  my $sid = $self->{json}->{sid};
+  my ($self, $js, $result) = @_;
+  my $sid = $js->{sid};
   my $gameId = $self->{db}->getGameId($sid);
   my $gst = $self->{db}->getGameStateOnly($gameId);
   if ( $gst == GST_BEGIN || $gst == GST_IN_GAME ) {
-    my $game = $self->getGame($gameId);
-    $game->forceDecline($self->getPlayerId($sid));
+    my $game = $self->getGame($js, $gameId);
+    $game->forceDecline($self->{db}->getPlayerId($sid));
     $game->save();
   }
   $self->{db}->leaveGame($sid);
 }
 
 sub cmd_setReadinessStatus {
-  my ($self, $result) = @_;
-  if ($self->{db}->setIsReady( @{$self->{json}}{qw/isReady sid/} ) ) {
-    my $game = $self->getGame();
-    if ( $ENV{DEBUG} && exists $self->{json}->{visibleRaces} && exists $self->{json}->{visibleSpecialPowers} ) {
-      $game->setTokenBadge('raceName', $self->{json}->{visibleRaces});
-      $game->setTokenBadge('specialPowerName', $self->{json}->{visibleSpecialPowers});
+  my ($self, $js, $result) = @_;
+  if ($self->{db}->setIsReady( @$js{qw/isReady sid/} ) ) {
+    my $game = $self->getGame($js);
+    if ( $self->{loading} || $ENV{DEBUG} && exists $js->{visibleRaces} && exists $js->{visibleSpecialPowers} ) {
+      $game->setTokenBadge('raceName', $js->{visibleRaces});
+      $game->setTokenBadge('specialPowerName', $js->{visibleSpecialPowers});
     }
     $game->save();
   }
 }
 
 sub cmd_saveGame {
-  my ($self, $result) = @_;
+  my ($self, $js, $result) = @_;
   $result->{actions} = [];
-  foreach ( @{ $self->{db}->getHistory($self->{json}->{gameId}) } ) {
+  foreach ( @{ $self->{db}->getHistory($js->{gameId}) } ) {
     my $cmd = decode_json($_);
     if ( $cmd->{action} eq 'createGame' ) {
-      $cmd->{randseed} = $self->{db}->getGameGenNum($self->{json}->{gameId});
+      $cmd->{randseed} = $self->{db}->getGameGenNum($js->{gameId});
     }
     push @{ $result->{actions} }, $cmd;
   }
 }
 
+sub cmd_loadGame {
+  my ($self, $js, $result) = @_;
+  my @cmds = (@{ $js->{actions} });
+  my $gameId = undef;
+  $self->{loading} = 1;
+  foreach ( @cmds ) {
+    if ( exists $_->{userId} ) {
+      # если есть userId, то подменяем его на sid
+      $_->{sid} = $self->{db}->getSid($_->{userId});
+      delete $_->{userId};
+    }
+    my $res = $self->checkAndDo($_);
+    if ( $res->{result} eq R_ALL_OK && $_->{action} eq 'createGame' ) {
+      $gameId = $result->{gameId};
+    }
+    if ( $res->{result} ne R_ALL_OK && ($_->{action} ne 'conquer' || exists $res->{dice}) ) {
+      $result->{result} = $res->{result};
+      if ( defined $gameId ) {
+        # отключаем всех игроков от игры (заодно удалится история и игра
+        # пометиться на удаление
+        foreach ( @{ $self->{db}->getConnections($gameId) } ) {
+          $self->{db}->leaveGame($_);
+        }
+      }
+      last;
+    }
+  }
+  $self->{loading} = 0;
+}
+
 sub cmd_selectRace {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
-  $game->selectRace($self->{json}->{position}, $result);
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
+  $game->selectRace($js->{position}, $result);
   $game->save();
 }
 
 sub cmd_conquer {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
-  $game->conquer($self->{json}->{regionId}, $result);
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
+  $game->conquer($js->{regionId}, $result);
   $game->save();
 }
 
 sub cmd_decline {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
   $game->decline();
   $game->save();
 }
 
 sub cmd_finishTurn {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
   $game->finishTurn($result);
   $game->save();
 }
 
 sub cmd_redeploy {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
-  $game->redeploy(@{ $self->{json} }{qw( regions encampments fortified heroes )});
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
+  $game->redeploy(@$js{qw( regions encampments fortified heroes )});
   $game->save();
 }
 
 sub cmd_defend {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
-  $game->defend($self->{json}->{regions});
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
+  $game->defend($js->{regions});
   $game->save();
 }
 
 sub cmd_enchant {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
-  $game->enchant($self->{json}->{regionId});
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
+  $game->enchant($js->{regionId});
   $game->save();
 }
 
 sub cmd_selectFriend {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
-  $game->selectFriend($self->{json}->{friendId});
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
+  $game->selectFriend($js->{friendId});
   $game->save();
 }
 
 sub cmd_dragonAttack {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
-  $game->dragonAttack($self->{json}->{regionId});
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
+  $game->dragonAttack($js->{regionId});
   $game->save();
 }
 
 sub cmd_throwDice {
-  my ($self, $result) = @_;
-  my $game = $self->getGame();
-  $result->{dice} = $game->throwDice($self->{json}->{dice});
+  my ($self, $js, $result) = @_;
+  my $game = $self->getGame($js);
+  $result->{dice} = $game->throwDice($js->{dice});
   $game->save();
 }
 
 sub cmd_getGameState {
-  my ($self, $result) = @_;
-  $result->{gameState} = $self->getGame()->getGameStateForPlayer();
+  my ($self, $js, $result) = @_;
+  $result->{gameState} = $self->getGame($js)->getGameStateForPlayer();
 }
 
 1;
