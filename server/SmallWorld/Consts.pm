@@ -26,6 +26,7 @@ sub BEGIN {
 use constant R_ALL_OK                       => 'ok'                                 ;
 use constant R_ALREADY_IN_GAME              => 'alreadyInGame'                      ;
 use constant R_BAD_ACTION                   => 'badAction'                          ;
+use constant R_BAD_ACTIONS                  => 'badActions'                         ;
 use constant R_BAD_ATTACKED_RACE            => 'badAttackedRace'                    ;
 use constant R_BAD_BODY_OR_MAPID            => 'badBodyOrMapId'                     ;
 use constant R_BAD_COORDINATES              => 'badCoordinates'                     ;
@@ -61,6 +62,7 @@ use constant R_BAD_TURNS_NUM                => 'badTurnsNum'                    
 use constant R_BAD_USERNAME                 => 'badUsername'                        ;
 use constant R_CANNOT_ENCHANT               => 'cannotEnchantDeclinedRace'          ;
 use constant R_GAME_NAME_TAKEN              => 'gameNameTaken'                      ;
+use constant R_ILLEGAL_ACTION               => 'illegalAction'                      ;
 use constant R_MAP_NAME_TAKEN               => 'mapNameTaken'                       ;
 use constant R_NO_MORE_TOKENS_IN_STORAGE    => 'noMoreTokensInStorageTray'          ;
 use constant R_NO_TOKENS_FOR_REDEPLOYMENT   => 'noTokensForRedeployment'            ;
@@ -75,6 +77,7 @@ use constant R_TOO_MANY_FORTS               => 'tooManyFortifieds'              
 use constant R_TOO_MANY_FORTS_IN_REGION     => 'tooManyFortifiedsInRegion'          ;
 use constant R_TOO_MANY_PLAYERS             => 'tooManyPlayers'                     ;
 use constant R_USER_HAS_NOT_REGIONS         => 'userHasNotRegions'                  ;
+use constant R_USER_NOT_LOGGED_IN           => 'userNotLoggedIn'                    ;
 use constant R_USERNAME_TAKEN               => 'usernameTaken'                      ;
 
 use constant MAX_GAMEDESCR_LEN  => 300;
@@ -136,6 +139,7 @@ use constant CMD_ERRORS => {
   register           => [R_BAD_USERNAME, R_BAD_PASSWORD, R_USERNAME_TAKEN],
   resetServer        => [],
   saveGame           => [R_BAD_GAME_ID, R_BAD_GAME_STATE],
+  loadGame           => [R_ILLEGAL_ACTION, R_USER_NOT_LOGGED_IN],
   selectFriend       => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_FRIEND_ID, R_BAD_FRIEND], # R_BAD_GAME_STATE
   selectRace         => [R_BAD_SID, R_NOT_IN_GAME, R_BAD_STAGE, R_BAD_MONEY_AMOUNT], # R_BAD_POSITION R_BAD_GAME_STATE
   sendMessage        => [R_BAD_SID],
@@ -346,6 +350,14 @@ use constant PATTERN => {
       errorCode => R_BAD_GAME_ID
     }
   ],
+  loadGame => [
+    {
+      name => 'actions',
+      type => 'list',
+      mandatory => 1,
+      errorCode => R_BAD_ACTIONS
+    }
+  ],
   selectRace => [
     {
       name => 'sid',
@@ -491,6 +503,39 @@ use constant PATTERN => {
     }
   ]
 };
+
+use constant SAVED_COMMANDS => [
+  qw(
+      createGame
+      joinGame
+      leaveGame
+      setReadinessStatus
+      selectRace
+      conquer
+      dragonAttack
+      enchant
+      throwDice
+      decline
+      defend
+      redeploy
+      selectFriend
+      finishTurn
+    )
+];
+use constant GAME_COMMANDS => [
+  qw(
+      decline
+      defend
+      selectRace
+      conquer
+      throwDice
+      dragonAttack
+      enchant
+      redeploy
+      selectFriend
+      finishTurn
+    )
+];
 
 use constant DB_GENERATORS_NAMES => ['GEN_MAP_ID', 'GEN_GAME_ID', 'GEN_MESSAGE_ID', 'GEN_SID', 'GEN_PLAYER_ID', 'GEN_CONNECTION_ID'];
 use constant DB_TABLES_NAMES     => ['PLAYERS', 'MAPS', 'GAMES', 'MESSAGES', 'CONNECTIONS']                                         ;

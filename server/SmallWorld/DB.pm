@@ -228,6 +228,11 @@ sub getGameStateOnly {
   return $self->query('SELECT gstate FROM GAMES WHERE id = ?', $_[0]);
 }
 
+sub updateGameStateOnly {
+  my ($self, $gameId, $gstate) = @_;
+  return $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ?', $gstate, $gameId);
+}
+
 sub getGameState {
   my $self = shift;
   return $self->{dbh}->selectrow_hashref('

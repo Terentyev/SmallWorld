@@ -1,6 +1,6 @@
 {
   "description": "save game",
-  "include": [ "_createGame.inc" ],
+  "include": [ "_prepare.inc", "_createGame.inc" ],
   "test": [
     { "action": "saveGame", "gameId": 1 }
   ]

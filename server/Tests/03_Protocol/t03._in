@@ -1,0 +1,42 @@
+{
+  "description": "load game",
+  "include": [ "_prepare.inc" ],
+  "test": [
+    { "action": "loadGame" },
+    {
+      "action": "loadGame",
+      "actions": [ { "action": "createGame", "userId": 3, "gameName": "game2", "mapId": 1, "randseed": 1 } ]
+    },
+    { "action": "loadGame", "actions": [ { "action": "getGameList" } ] },
+    { "action": "loadGame", "actions": [ { "action": "getGameState" } ] },
+    { "action": "loadGame", "actions": [ { "action": "getMapList" } ] },
+    { "action": "loadGame", "actions": [ { "action": "getMessages" } ] },
+    { "action": "loadGame", "actions": [ { "action": "login" } ] },
+    { "action": "loadGame", "actions": [ { "action": "logout" } ] },
+    { "action": "loadGame", "actions": [ { "action": "register" } ] },
+    { "action": "loadGame", "actions": [ { "action": "resetServer" } ] },
+    { "action": "loadGame", "actions": [ { "action": "saveGame" } ] },
+    { "action": "loadGame", "actions": [ { "action": "loadGame" } ] },
+    { "action": "loadGame", "actions": [ { "action": "sendMessage" } ] },
+    { "action": "loadGame", "actions": [ { "action": "uploadMap" } ] },
+    { "action": "loadGame", "actions": [ { "action": "trash" } ] },
+
+    {
+      "action": "loadGame",
+      "actions": [
+        { "action": "createGame", "userId": 1, "gameName": "game2", "mapId": 1, "randseed": 47127 },
+        { "action": "joinGame", "userId": 2, "gameId": 1 },
+        { "action": "setReadinessStatus", "userId": 1, "isReady": 1 },
+        {
+          "action": "setReadinessStatus", "userId": 2, "isReady": 1,
+          "visibleRaces": [
+            "Amazons",   "Dwarves", "Elves", "Giants", "Halflings", "Humans", "Orcs", "Ratmen", "Skeletons", "Sorcerers", "Tritons", "Trolls", "Wizards"
+          ],
+          "visibleSpecialPowers": [
+            "Alchemist", "Berserk", "Bivouacking", "Commando", "Diplomat", "DragonMaster", "Flying", "Forest", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy"
+          ]
+        }
+      ]
+    }
+  ]
+}

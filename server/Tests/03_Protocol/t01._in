@@ -1,6 +1,6 @@
 {
   "description": "save game",
-  "include": [ "_createGame.inc" ],
+  "include": [ "_prepare.inc", "_createGame.inc" ],
   "test": [
     { "action": "joinGame", "sid": 2, "gameId": 1 },
     { "action": "leaveGame", "sid": 1 },
