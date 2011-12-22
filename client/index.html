@@ -24,6 +24,7 @@
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/base.js"></script>
   <script type="text/javascript" src="js/show.js"></script>
+  <script type="text/javascript" src="js/checker.js"></script>
   <script type="text/javascript" src="js/cmd.js"></script>
   <script type="text/javascript" src="js/game.js"></script>
   <script type="text/javascript" src="js/player.js"></script>
@@ -33,12 +34,7 @@
   <script type="text/javascript">
 
   $(document).ready(function() {
-    $("#tableGameList").tablesorter({headers: { 0: { sorter: false } } });
-    $('.scroll-pane').jScrollPane({showArrows:true, scrollbarOnLeft: true});
-    $('#mapList').change(function () {
-      changeMap($(this).val());
-    });
-    $("#tabs").tabs();
+    init();
     if ($.cookie("serverUrl")) {
       serverUrl = $.cookie("serverUrl");
       $("#serverUrl").html(serverUrl);
@@ -66,13 +62,8 @@
   <div id="divSelectServer" class="modal">
     <div class="header"><span>SmallWorld server</span></div>
     <div class="message">
-      <table width="100%">
-        <tr>
-          <td width="170">Current server URL:</td>
-          <td><input class="tedit" type="text" id="serverUrlModal" readonly=1/></td>
-        </tr>
-        <tr>
-          <td>New server URL:</td>
+      <table>
+          <td class="left">Server URL:</td>
           <td>
             <input class="tedit" type="text" id="inputServerUrl"
                    value="http://server.smallworld" />
@@ -81,7 +72,7 @@
         <tr><td colspan="2">
           <div class="buttons">
             <div class="modal-close">Cancel</div>
-            <div class="modal-close" onclick="saveServerUrl();">Save</div>
+            <div class="modal-close" onclick="saveServerUrl();">Connect</div>
           </div>
         </td></tr>
       </table>
@@ -91,21 +82,20 @@
   <div id="divAskNum" class="modal">
     <div class="header"><span>How much?</span></div>
     <div class="message">
-      <table width="100%">
+      <table>
         <tr>
-          <td colspan="3" align="center">
+          <td colspan="2" align="center">
             <div id="divAskNumError" class="error"></div>
           </td>
         </tr>
         <tr>
-          <td colspan="3" align="center">
+          <td colspan="2" align="center">
             <div id="divAskNumQuestion" class="question"></div>
           </td>
         </tr>
         <tr>
-          <td width="100">Number:</td>
+          <td class="left">Number:</td>
           <td><input class="tedit" type="text" id="inputAskNum" onkeyup="this.value = this.value.replace(/[^0-9]/g, '');" /></td>
-          <td width="30">*</td>
         </tr>
         <tr>
           <td colspan="2">
@@ -122,7 +112,7 @@
   <div id="divSelectFriend" class="modal">
     <div class="header"><span>Select friend</span></div>
     <div class="message">
-      <table width="100%">
+      <table>
         <tr>
           <td colspan="3" align="center">
             <div id="divSelectFriendError" class="error"></div>
@@ -152,7 +142,7 @@
   <div id="divScores" class="modal">
     <div class="header"><span>Scores</span></div>
     <div class="message">
-      <table width="100%">
+      <table>
         <tr><td>
           <table id="tableScores" width="100%">
             <thead>
@@ -177,7 +167,7 @@
   <div id ="divTurnScores" class="modal">
     <div class="header"><span>Turn scores</span></div>
     <div class="message">
-      <table width="100%">
+      <table>
         <tr>
           <td align="center"><table id="tableTurnScores" width="100%"><tbody></tbody></table></td>
         </tr>
@@ -185,31 +175,33 @@
           <td align="left">
           </td>
         </tr>
+        <tr><td>
+          <div class="buttons">
+          <div class="modal-close">OK</div>
+        </td></tr>
+      </div>
       </table>
     </div>
-            <div class="buttons">
-              <div class="modal-close">OK</div>
-            </div>
   </div>
 
   <div id="divRegister" class="modal">
     <div class="header"><span>Register</span></div>
     <div class="message">
-      <table width="100%">
+      <table>
         <tr>
-          <td colspan="3" align="center">
-            <div id="divRegisterError" class="error"> </div>
+          <td colspan="2" align="center">
+            <div id="divRegisterError" class="error">&nbsp;</div>
           </td>
         </tr>
         <tr>
-          <td width="100">Username:</td>
+          <td class="left" title="3-16 symbols starting from Latin letter, only Latin characters, numbers, underlines, hyphens are allowed">
+            Username:
+          </td>
           <td><input class="tedit" type="text" id="inputRegisterUsername"/></td>
-          <td width="30">*</td>
         </tr>
         <tr>
-          <td>Password:</td>
+          <td title="6-18 symbols, any ASCII characters are allowed">Password:</td>
           <td><input class="tedit" type="password" id="inputRegisterPassword" /></td>
-          <td>*</td>
         </tr>
         <tr>
           <td colspan="2">
@@ -224,7 +216,8 @@
 
   </div>
   
-  <div id="divCurrentServer" class="corner-all" onclick="showSelectServer();">
+  <div id="divCurrentServer" class="corner-all" onclick="showSelectServer();"
+    title="Click here to change server url">
     Server URL: <span id="serverUrl"></span>
   </div>
 
@@ -426,7 +419,7 @@
          <div class="body" id="divLogin">
            <table width="100%">
              <tr>
-               <td width="100">Username</td>
+               <td class="left">Username</td>
                <td>
                  <input class="tedit" type="text" id="inputLoginUsername" />
                </td>
@@ -483,12 +476,9 @@
             <tr><td>Max turns:</td><td><span id="cgameTurnsNum"></span></td></tr>
             <tr><td>Description:</td><td><div id="cgameDescription" class="wrap"></div></td></tr>
             <tr>
-              <td>Readiness:</td>
+              <td>Ready:</td>
               <td valign="middle">
-                <span>
-                <input id ="checkBoxReady" type="checkbox" onclick="cmdSetReady();" />
-                <span id="readinessStatus"></span>
-
+                <input id="checkBoxReady" type="checkbox" onclick="cmdSetReady();" />
               </td>
             </tr>
             <tr><td colspan="2">

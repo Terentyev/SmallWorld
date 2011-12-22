@@ -1,10 +1,13 @@
-function showModal(divName) {
+function showModal(divName, h, w) {
+  h = h || 160;
+  w = w || 420;
   $(divName).modal({
     closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
     position: ["10%"],
     closeClass: "modal-close",
     overlayId: "modal-overlay",
     containerId: "modal-container",
+    containerCss: {height:h, width: w}
   });
 }
 
@@ -12,13 +15,14 @@ function saveServerUrl() {
   serverUrl = $("#inputServerUrl").val();
   $("#serverUrl").html(serverUrl);
   _setCookie(["serverUrl"], [serverUrl]);
+  data.game = null;
   showLobby();
 };
 
 function showSelectServer() {
-  var s = (serverUrl != null ? serverUrl : "is not defined");
-  $("#serverUrlModal").val(s);
-  showModal("#divSelectServer");
+  var s = (serverUrl != null ? serverUrl : "http://server.smallworld");
+  $("#inputServerUrl").val(s);
+  showModal("#divSelectServer", 110);
 }
 
 function showLogin() {
@@ -162,29 +166,32 @@ function showMessages() {
 }
 
 function showScores() {
-  var s = '';
+  var s = '', c = 0;
   for (var i in data.game.players) {
     with (data.game.players[i]) {
       s += addRow([username, coins]);
+      ++c;
     }
   }
   $('#tableScores tbody').html(s);
   $('#tableScores tbody').trigger('update');
-  showModal('#divScores');
+  showModal('#divScores', 70+c*40, 300);
 }
 
 function showTurnScores(stats) {
-  var s = '';
+  var s = '', c = 0;
   for (var i in stats) {
     if (stats[i][1] == 0) continue;
-    s += addRow([stats[i][0], stats[i][1]]);
+    s += addRow([stats[i][0]+":", stats[i][1]]);
+    ++c;
   }
   if (s == '') {
     s = addRow(['Not coins for turn']);
+    ++c;
   }
   $('#tableTurnScores tbody').html(s);
   $('#tableTurnScores tbody').trigger('update');
-  showModal('#divTurnScores');
+  showModal('#divTurnScores', 70+c*40, 250);
 }
 
 function changeMap(mapId) {

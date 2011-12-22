@@ -79,6 +79,15 @@ function uploadMap(id) {
  });
 }
 
+function init() {
+  $("#tabs").tabs();
+  $("#tableGameList").tablesorter({headers: { 0: { sorter: false } } });
+  $('.scroll-pane').jScrollPane({showArrows:true, scrollbarOnLeft: true});
+  $('#mapList').change(function () {
+    changeMap($(this).val());
+  });
+}
+
 function _setCookie(key, value) {
   for (var i in key) $.cookie(key[i], value[i]);
 }
@@ -153,6 +162,7 @@ function addOurPlayerInfo(player) {
       races[player.declinedTokenBadge.raceName],
       specialPowers[player.declinedTokenBadge.specialPowerName]);
   }
+  s += '<tr><td colspan="2"> <div class="buttons"> <div onclick="cmdLeaveGame();">Leave</div></div></td></tr>';
   s += '</table></td></tr>';
   return s;
 }
@@ -288,7 +298,5 @@ function setGame(gameId) {
   data.gameId = gameId;
   _setCookie(["gameId"], gameId);
   makeCurrentGame(games[gameId]);
-  if (games[gameId].inGame) {
-    cmdGetGameState(hdlGetGameState);
-  }
+  cmdGetGameState();
 }
