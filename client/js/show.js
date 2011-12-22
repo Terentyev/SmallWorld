@@ -180,7 +180,7 @@ function showTurnScores(stats) {
   var s = '', c = 0;
   for (var i in stats) {
     if (stats[i][1] == 0) continue;
-    s += addRow([stats[i][0], stats[i][1]]);
+    s += addRow([stats[i][0]+":", stats[i][1]]);
     ++c;
   }
   if (s == '') {
@@ -189,7 +189,7 @@ function showTurnScores(stats) {
   }
   $('#tableTurnScores tbody').html(s);
   $('#tableTurnScores tbody').trigger('update');
-  showModal('#divTurnScores', 70+c*40, 300);
+  showModal('#divTurnScores', 60+c*35, 250);
 }
 
 function changeMap(mapId) {

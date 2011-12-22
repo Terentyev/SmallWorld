@@ -162,6 +162,7 @@ function addOurPlayerInfo(player) {
       races[player.declinedTokenBadge.raceName],
       specialPowers[player.declinedTokenBadge.specialPowerName]);
   }
+  s += '<tr><td colspan="2"> <div class="buttons"> <div onclick="cmdLeaveGame();">Leave</div></div></td></tr>';
   s += '</table></td></tr>';
   return s;
 }
