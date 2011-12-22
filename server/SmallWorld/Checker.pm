@@ -440,7 +440,10 @@ sub checkEnoughTokens {
 
 sub checkEnoughTokens_redeploy {
   my ($self, $js, $game, $player, $region, $race, $sp) = @_;
-  my $tokensNum = $player->{tokensInHand} + $race->redeployTokensBonus($player);
+  my $tokensNum = $player->{tokensInHand};
+  if ( $game->{gameState}->{state} ne GS_REDEPLOY ) {
+    $tokensNum += $race->redeployTokensBonus($player);
+  }
   $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
   $tokensNum -= $_->{tokensNum} // 0 for @{ $js->{regions} };
   return $tokensNum < 0;
