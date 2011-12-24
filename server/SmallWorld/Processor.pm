@@ -104,9 +104,14 @@ sub saveCmd {
 
   my $cmd = { %$js };
   my $gameId = $cmd->{gameId};
+  if ( $cmd->{action} eq 'createGame' ) {
+    # если игра создается этой командой, то id этой игры лушче искать по имени
+    # игры, т. к. игрок, который создает эту игру необязательно играет в нее.
+    $gameId = $self->{db}->getGameIdByName($cmd->{gameName});
+  }
   if ( exists $cmd->{sid} ) {
     $cmd->{userId} = $self->{db}->getPlayerId($cmd->{sid});
-    $gameId = $self->{db}->getGameId($cmd->{sid});
+    $gameId = $gameId // $self->{db}->getGameId($cmd->{sid});
     delete $cmd->{sid};
   }
   if ( $cmd->{action} eq 'setReadinessStatus' ) {
@@ -311,7 +316,9 @@ sub cmd_aiJoin {
     $result->{result} = R_TOO_MANY_AI;
     return;
   }
+  $result->{id} = $id;
   $result->{sid} = $sid;
+  $self->{db}->tryBeginGame($js->{gameId});
 }
 
 sub cmd_saveGame {

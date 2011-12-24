@@ -58,6 +58,11 @@ sub getGameId {
   return $self->query('SELECT c.gameId FROM CONNECTIONS c INNER JOIN PLAYERS p ON p.id = c.playerId WHERE p.sid = ?', @_);
 }
 
+sub getGameIdByName {
+  my ($self, $gameName) = @_;
+  return $self->query('SELECT id FROM GAMES WHERE name = ?', $gameName);
+}
+
 sub getGameGenNum {
   my ($self, $gameId) = @_;
   return $self->query('SELECT genNum FROM GAMES WHERE id = ?', $gameId);
@@ -145,7 +150,7 @@ sub aiJoin {
   my ($self, $gameId) = @_;
   my ($id, $sid) = ();
   eval {
-    ($id, $sid) = @{ $self->selectrow_arrayref('SELECT aiId, aiSid FROM AIJOIN(?)', undef, $gameId) || [] };
+    ($id, $sid) = @{ $self->{dbh}->selectrow_arrayref('SELECT aiId, aiSid FROM AIJOIN(?)', undef, $gameId) || [] };
   };
   return ($id, $sid);
 }
@@ -211,13 +216,16 @@ sub getConnections {
 sub setIsReady {
   my $self = shift;
   my ($isReady, $sid) = @_;
-  my $gameId = $self->getGameId($sid);
   $self->_do('UPDATE CONNECTIONS SET isReady = ? WHERE playerId = ?', $isReady, $self->getPlayerId($sid));
-  if ( $self->readyCount($gameId) == $self->getMaxPlayers($gameId) ) {
-    $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_BEGIN, $gameId);
-    return 1;
-  }
-  return 0;
+  return $self->tryBeginGame($self->getGameId($sid));
+}
+
+sub tryBeginGame {
+  my ($self, $gameId) = @_;
+  return 0 if $self->readyCount($gameId) != $self->getMaxPlayers($gameId);
+
+  $self->_do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_BEGIN, $gameId);
+  return 1;
 }
 
 sub getMaxPlayers {
@@ -268,11 +276,9 @@ sub getGameState {
   my $self = shift;
   return $self->{dbh}->selectrow_hashref('
       SELECT
-        g.id, g.name, g.description, g.mapId, g.state, g.aiNum, g.gstate, g.version, g.activePlayerId, g.currentTurn
-      FROM GAMES g
-      INNER JOIN CONNECTIONS c ON c.gameId = g.id
-      INNER JOIN PLAYERS p ON p.id = c.playerId
-      WHERE g.id = ?',
+        id, name, description, mapId, state, aiNum, gstate, version, activePlayerId, currentTurn
+      FROM GAMES
+      WHERE id = ?',
       undef,  $_[0]) or dbError;
 }
 
