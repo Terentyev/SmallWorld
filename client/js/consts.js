@@ -70,6 +70,22 @@ var races = {
   'Wizards': '/pics/raceWizards.png'
 };
 
+var raceDescription = {
+  'Amazons': 'Four of your Amazon tokens may only be used for conquest, not for defense. So you start each turn with +4 Amazon token. At the end of each Troop Redeployments four tokens removed from the map, and back to your hand at the start of next turn.',
+  'Dwarves': 'Each Mine Region your Dwarves occupy is worth 1 bonus Victory coin, at the end of your turn. This power is kept even when the Dwarves are In Decline',
+  'Elves': 'When the enemy conquers one of your Regions, keep all your Elf tokens in hand for redeployment, rather than discarding 1 Elf token back into the storage tray',
+  'Giants': 'Your Giants may conquer any Region adjacent to a Mountain Region they occupy at a cost of 1 less Giant token than normal. A minimum of 1 Giant token is still required',
+  'Halflings': 'Your Halfling tokens may enter the map through any Region, not just border ones. Place a Hole-in-the-Ground in each of the first 2 Regions you conquer, to make them immune to enemy conquests as well as racial and special powers. You lost your Holes-in-the-Ground when your Halflings go into Decline, or if you choose to abandon a Region containing a Hole-in-the-Ground',
+  'Humans': 'Each Farmland Region your Humans occupy is worth 1 bonus Victory coin, at the end of your turn',
+  'Orcs': 'Each not empty Region your Orcs conquered this turn is worth 1 bonus Victory coin, at the end of your turn',
+  'Ratmen': 'No Race benefit; their sheer number of tokens is enough!',
+  'Skeletons': 'During your Troop Redeployment, you receive 1 new Skeleton token from the storage tray for every 2 non-empty Regions you conquered this turn, and add it to the troops you redeploy at the end of your turn. If there are no more tokens in the storage tray, you do not receive any additional tokens',
+  'Sorcerers': 'Once per turn, your Sorcerers can conquer adjacent Region by substituting one of your opponent\'s Active tokens with one of your own taken from the storage tray. If there are no more tokens in the storage tray, then you cannot conquer a new Region in this way. The token your Sorcerers replaces must be the only race token in its Region',
+  'Tritons': 'Your Tritons may conquer all Coastal Regions (those bordering a Sea or Lake) at a cost of 1 less Triton token than normal. A minimum of 1 Triton token is still required',
+  'Trolls': 'Place a Troll\'s Lair in each Region your Trolls occupy. The Troll\'s Lair augments your region\'s defense by 1, and stays in the Region even after your Trolls go into Decline. Remove the Troll\'s Lair if you abandon the Region or when an enemy conquers it',
+  'Wizards': 'Each Magic Region your Wizards occupy is worth 1 bonus Victory coin, at the end of your turn'
+}
+
 var specialPowers = {
   null: '/pics/spNone.png',
   '': '/pics/spNone.png',
@@ -109,7 +125,7 @@ var tokens = {
   'Sorcerers': '/pics/tokenSorcerers.png',
   'Tritons': '/pics/tokenTritons.png',
   'Trolls': '/pics/tokenTrolls.png',
-  'Wizards': '/pics/tokenWizard.png'
+  'Wizards': '/pics/tokenWizards.png'
 };
 
 var objects = {
