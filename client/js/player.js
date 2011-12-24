@@ -20,11 +20,11 @@ Player.prototype.isHe = function(playerId) {
 }
 
 Player.prototype.isActive = function() {
-  return (this.isHe(this.gs.activePlayerId) || this.isDefender()) ? 1 : 0;
+  return (this.isHe(this.gs.activePlayerId) && (this.gs.stage != 'defend') || this.isDefender()) ? 1 : 0;
 }
 
 Player.prototype.isDefender = function() {
-  return
+  return (this.gs.stage == 'defend') &&
     ((this.gs.defendingInfo != null) && this.isHe(this.gs.defendingInfo.playerId)) ? 1 : 0;
 }
 
