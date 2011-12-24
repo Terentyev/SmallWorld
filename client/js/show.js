@@ -197,4 +197,9 @@ function showTurnScores(stats) {
 function changeMap(mapId) {
   $("#spanMaxTurns").html(maps[mapId].turns);
   $("#spanMaxPlayers").html(maps[mapId].players);
+  var s = '';
+  for (var i = 0; i <= maps[mapId].players; ++i) {
+    s += addOption(i, i);
+  }
+  $("#selectAINum").html(s);
 }
