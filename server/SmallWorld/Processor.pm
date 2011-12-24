@@ -207,6 +207,7 @@ sub cmd_uploadMap {
 
 sub cmd_createGame {
   my ($self, $js, $result) = @_;
+  $js->{ai} = $js->{ai} // 0;
   my @params = (@$js{qw/sid gameName mapId gameDescription ai/}, $self->getGameInitialGeneratedNum($js));
   $result->{gameId} = $self->{db}->gameWithNameExists($js->{gameName}, 1)
     ? $self->{db}->updateGame( @params )
@@ -305,8 +306,8 @@ sub cmd_setReadinessStatus {
 
 sub cmd_aiJoin {
   my ($self, $js, $result) = @_;
-  my $sid = $self->{db}->aiJoin($js->{gameId});
-  if ( !defined $sid ) {
+  my ($id, $sid) = $self->{db}->aiJoin($js->{gameId});
+  if ( !defined $id ) {
     $result->{result} = R_TOO_MANY_AI;
     return;
   }

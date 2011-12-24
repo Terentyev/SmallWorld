@@ -36,27 +36,6 @@ sub disconnect {
   $_[0]->{dbh}->disconnect;
 }
 
-sub startTransaction {
-  my $self = shift;
-  $self->{dbh}->{AutoCommit} = 0;
-#  $self->{dbh}->{RaiseError} = 1
-}
-
-sub endTransaction {
-  my $self = shift;
-  $self->{dbh}->{AutoCommit} = 1;
-}
-
-sub commitTransaction {
-  my $self = shift;
-  $self->{dbh}->commit();
-}
-
-sub rollbackTransaction {
-  my $self = shift;
-  $self->{dbh}->rollback();
-}
-
 sub _do {
   my $self = shift;
   my ($s, @list) = @_;
@@ -152,23 +131,23 @@ sub updateGame {
 sub joinGame {
   my $self = shift;
   my ($gameId, $sid) = @_;
-  $self->_do('INSERT INTO CONNECTIONS (gameId, playerId) VALUES (?, ?)', $gameId, $self->getPlayerId($sid));
+  my ($plNum, $aiNum) = @{ $self->{dbh}->selectrow_arrayref('
+      SELECT m.playersNum, g.aiNum
+      FROM GAMES g
+      INNER JOIN MAPS m ON (m.id = g.mapId)
+      WHERE g.id = ?', undef, $gameId) };
+  if ( $plNum > $aiNum ) {
+    $self->_do('INSERT INTO CONNECTIONS (gameId, playerId) VALUES (?, ?)', $gameId, $self->getPlayerId($sid));
+  }
 }
 
 sub aiJoin {
   my ($self, $gameId) = @_;
-  my $aiNum = $self->query('SELECT aiNum FROM GAMES WHERE id = ?', $gameId);
-  my $sid = undef;
-  $self->startTransaction();
+  my ($id, $sid) = ();
   eval {
-    $sid = $self->query('EXECUTE PROCEDURE AIJOIN(?, ?)', $gameId, $aiNum);
-    $self->commitTransaction();
+    ($id, $sid) = @{ $self->selectrow_arrayref('SELECT aiId, aiSid FROM AIJOIN(?)', undef, $gameId) || [] };
   };
-  if ( $@ ) {
-    eval { $self->rollbackTransaction() };
-  }
-  $self->endTransaction();
-  return $sid;
+  return ($id, $sid);
 }
 
 sub makeSid {
@@ -185,6 +164,11 @@ sub logout {
 sub playersCount {
   my $self = shift;
   return $self->query('SELECT COUNT(*) FROM CONNECTIONS WHERE gameId = ?', $_[0]);
+}
+
+sub realPlayersCount {
+  my ($self, $gameId) = @_;
+  return $self->query('SELECT COUNT(*) FROM CONNECTIONS c INNER JOIN PLAYERS p ON p.id = c.playerId WHERE c.gameId = ? AND p.isAI = 0', $gameId);
 }
 
 sub readyCount {
@@ -239,6 +223,11 @@ sub setIsReady {
 sub getMaxPlayers {
   my $self = shift;
   return $self->query('SELECT playersNum FROM MAPS m INNER JOIN GAMES g ON m.id = g.mapId WHERE g.id = ?', $_[0]);
+}
+
+sub getAINum {
+  my ($self, $gameId) = @_;
+  return $self->query('SELECT aiNum FROM GAMES WHERE id = ?', $gameId);
 }
 
 sub getMaxPlayersInMap {

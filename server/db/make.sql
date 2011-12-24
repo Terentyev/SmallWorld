@@ -5,7 +5,8 @@ CREATE TABLE PLAYERS (
   id        INTEGER NOT NULL PRIMARY KEY,
   username  VARCHAR(16) NOT NULL UNIQUE,
   pass      VARCHAR(18), 
-  sid       INTEGER DEFAULT NULL
+  sid       INTEGER DEFAULT NULL,
+  isAI      INTEGER DEFAULT 0
 );
 
 CREATE TABLE MAPS (
@@ -50,12 +51,6 @@ CREATE TABLE HISTORY (
   cmd    BLOB SUB_TYPE 1
 );
 
-CREATE TABLE AIS (
-  idx      INTEGER NOT NULL,
-  playerId INTEGER NOT NULL REFERENCES PLAYERS(id) ON UPDATE CASCADE ON DELETE CASCADE,
-  gameId   INTEGER NOT NULL REFERENCES GAMES(id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
 
 CREATE GENERATOR GEN_PLAYER_ID;
 CREATE GENERATOR GEN_SID;
@@ -93,25 +88,45 @@ BEGIN
   UPDATE PLAYERS SET sid = NULL WHERE sid = :sid;
 END^ 
 
-CREATE PROCEDURE AIJOIN(gameId INTEGER, aiMaxNum INTEGER)
-RETURNS (newSid INTEGER)
+CREATE PROCEDURE AIJOIN(gameId INTEGER)
+RETURNS (aiId INTEGER, aiSid INTEGER)
 AS
+DECLARE VARIABLE aiMaxNum INTEGER;
 DECLARE VARIABLE aiNum INTEGER;
-DECLARE VARIABLE aiName VARCHAR(12);
-DECLARE VARIABLE aiId INTEGER;
+DECLARE VARIABLE aiName VARCHAR(16);
 BEGIN
-  newSid = GEN_ID(GEN_SID, 1);
-  SELECT COUNT(*) + 1 FROM AIS WHERE gameId = :gameId INTO :aiNum;
+  -- подсчитаем количество уже подключенных к игру ИИ
+  SELECT
+    COUNT(*) + 1
+  FROM
+    PLAYERS p
+    INNER JOIN
+      CONNECTIONS c
+    ON c.playerId = p.id
+  WHERE
+    c.gameId = :gameId AND isAI = 1
+  INTO :aiNum;
+
+  -- узнаем сколько максимум может быть ИИ в игре
+  SELECT aiNum FROM GAMES WHERE id = :gameId INTO :aiMaxNum;
+
   IF (aiNum > aiMaxNum) THEN
     EXCEPTION;
-  aiName = CAST(aiNum AS VARCHAR(10));
+
+  aiSid = GEN_ID(GEN_SID, 1);
+  aiName = '_ai' || CAST(gameId AS VARCHAR(8)) || '.' || CAST(aiNum AS VARCHAR(2));
   SELECT id FROM PLAYERS WHERE username = :aiName INTO :aiId;
   IF (aiId IS NULL) THEN
   BEGIN
-    INSERT INTO PLAYERS(sid, username, pass) VALUES(:newSid, :aiName, 'ai');
+    INSERT INTO PLAYERS(sid, username, pass, isAI) VALUES(:aiSid, :aiName, 'ai', 1);
     SELECT id FROM PLAYERS WHERE username = :aiName INTO :aiId;
   END
-  INSERT INTO AIS(playerId, gameId) VALUES(:aiId, :gameId);
+  ELSE
+  BEGIN
+    UPDATE PLAYERS SET sid = :aiSid WHERE id = :aiId;
+    DELETE FROM CONNECTIONS WHERE playerId = :aiId;
+  END
+  INSERT INTO CONNECTIONS(playerId, gameId, isReady) VALUES(:aiId, :gameId, 1);
   SUSPEND;
 END^
 
