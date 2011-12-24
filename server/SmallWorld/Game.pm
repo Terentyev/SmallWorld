@@ -47,7 +47,7 @@ sub load {
       gameId            => $game->{ID},
       gameName          => $game->{NAME},
       gameDescription   => $game->{DESCRIPTION},
-      currentPlayersNum => $self->{db}->playersCount($game->{ID}),
+      currentPlayersNum => $self->{db}->playersCount($gameId),
       gstate            => $game->{GSTATE},
     },
     map            => {
@@ -61,9 +61,9 @@ sub load {
     $self->init($game, $map);
   }
   else {
-    $self->mergeGameState(decode_json($game->{STATE}));
+    $self->mergeGameState(eval { decode_json($game->{STATE}) } || {});
   }
-  my $connections = $self->{db}->getConnections($self->{gameState}->{gameInfo}->{gameId});
+  my $connections = $self->{db}->getConnections($gameId);
   foreach my $p ( @{ $self->{gameState}->{players} } ) {
     $p->{inGame} = (grep { $p->{playerId} == $_ } (@$connections));
   }
@@ -119,11 +119,13 @@ sub init {
         specialPowerName => undef
       },
       declinedTokenBadge => undef
-    } } @{$players}
+    } } @$players
   ];
 
   $self->mergeGameState({
-    activePlayerId => $self->{gameState}->{players}->[0]->{playerId},
+    activePlayerId => scalar(@$players) > 0
+                      ? $self->{gameState}->{players}->[0]->{playerId}
+                      : undef,
     conquerorId    => undef,
     state          => GS_SELECT_RACE,
     currentTurn    => 0,
@@ -202,7 +204,7 @@ sub getNotEmptyBadge {
 
 sub getLastEvent {
   my ($self, $st) = @_;
-  return $st if $st == GST_WAIT || $st == GST_BEGIN;
+  return $st if $st == GST_WAIT || $st == GST_BEGIN || $st == GST_EMPTY;
   my $cmd = decode_json($self->{db}->getLastCmd($self->{gameState}->{gameInfo}->{gameId}));
   return LE_FAILED_CONQUER if $cmd->{action} eq 'conquer' && defined $cmd->{dice};
   return {

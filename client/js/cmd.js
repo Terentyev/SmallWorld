@@ -124,20 +124,23 @@ function cmdCreateGame() {
     gameName: $("#inputGameName").val(),
     mapId: $("#mapList").val(),
     gameDescr: $("#inputGameDescr").val(),
+    ai: $('#selectAINum').val(),
     sid: data.sid
   };
   sendRequest(cmd, hdlCreateGame);
 }
 
 function hdlCreateGame(ans) {
-  data.gameId = ans.gameId;
-  _setCookie(["gameId"], [data.gameId]);
-  makeCurrentGame({
-    name: $("#inputGameName").val(),
-    description: $("#inputGameDescr").val(),
-    mapId: $("#mapList").val(),
-    turnsNum: maps[$("#mapList").val()].turnsNum
-  });
+  if ( $('#selectAINum').val() < maps[$('#mapList').val()].players ) {
+    data.gameId = ans.gameId;
+    _setCookie(["gameId"], [data.gameId]);
+    makeCurrentGame({
+      name: $("#inputGameName").val(),
+      description: $("#inputGameDescr").val(),
+      mapId: $("#mapList").val(),
+      turnsNum: maps[$("#mapList").val()].turnsNum
+    });
+  }
   showLobby();
 }
 

@@ -97,7 +97,7 @@ DECLARE VARIABLE aiName VARCHAR(16);
 BEGIN
   -- подсчитаем количество уже подключенных к игру ИИ
   SELECT
-    COUNT(*) + 1
+    COUNT(*)
   FROM
     PLAYERS p
     INNER JOIN
@@ -110,7 +110,7 @@ BEGIN
   -- узнаем сколько максимум может быть ИИ в игре
   SELECT aiNum FROM GAMES WHERE id = :gameId INTO :aiMaxNum;
 
-  IF (aiNum > aiMaxNum) THEN
+  IF (aiNum + 1 > aiMaxNum) THEN
     EXCEPTION;
 
   aiSid = GEN_ID(GEN_SID, 1);

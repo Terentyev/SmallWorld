@@ -4,7 +4,7 @@ use File::Basename qw( dirname );
 
 $ENV{WIN32} = ($^O =~ m/MSWin32/i);
 $ENV{DEBUG} = 1;
-$ENV{LENA}  = 1; # для тестов Лены Васильевой
+$ENV{LENA}  = 0; # для тестов Лены Васильевой
 
 BEGIN
 {
