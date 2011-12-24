@@ -117,34 +117,36 @@ function addOption(value, string) {
 
 function addPlayerInfo(player) {
   var s = $.sprintf(
-    '<tr><td>%s</td><td align="center">%s</td></tr>',
+    '<tr><td width="16">%s</td><td>%s</td></tr>',
     currentPlayerCursor(player.userId),
     player.username + (player.inGame ? '' : '(not in game)'));
+  s += '<tr><td></td><td>';
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
-      '<tr><td></td><td><img src="%s" /></td></tr>',
-      tokens[player.currentTokenBadge.raceName]);
+      '<img src="%s" title="%s"/>',
+      tokens[player.currentTokenBadge.raceName], player.currentTokenBadge.raceName);
   }
   if (player.declinedTokenBadge && player.declinedTokenBadge.raceName != null) {
+    if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) s += '&nbsp;';
     s += $.sprintf(
-      '<tr><td></td><td><img src="%s" /></td></tr>',
-      tokens[player.declinedTokenBadge.raceName]);
+      '<img src="%s" title="%s"/>',
+      tokens[player.declinedTokenBadge.raceName], player.declinedTokenBadge.raceName);
   }
+  s += '</td></tr>';
   return s;
 }
 
 function addOurPlayerInfo(player) {
   var s = $.sprintf(
-    '<tr><td>%s</td><td>' +
+    '<tr><td>' +
     '<table id="tableOurPlayer">' +
     '<tr><td colspan="2" align="center">%s</td></tr>' +
-    '<tr><td align="left">Tokens in hand:</td><td align="right"><a id="aTokensInHand">%d</a></td></tr>' +
-    '<tr><td align="left">Coins:</td><td align="right">%d</td></tr>' +
+    '<tr><td class="smallLeft">In hand:</td><td><a id="aTokensInHand">%d</a></td></tr>' +
+    '<tr><td class="smallLeft">Coins:</td><td>%s</td></tr>' +
     '%s',
-    currentPlayerCursor(player.userId),
     data.username,
     player.tokensInHand,
-    player.coins,
+    showCoins(player.coins, 1, 0),
     currentPlayerPower());
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
