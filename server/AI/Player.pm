@@ -234,8 +234,8 @@ sub _cmd_redeploy {
   $tokens += ($_->{tokens} // 0) for @$regs;
   my $n = scalar(@$regs);
   foreach ( @$regs ) {
-    push @regions, { regionId => $_->{regionId}, tokensNum => $tokens / $n };
-    $tokens -= $tokens / $n;
+    push @regions, { regionId => $_->{regionId}, tokensNum => int($tokens / $n) };
+    $tokens -= int($tokens / $n);
     if ( $tokens < $n ) {
       $regions[-1]->{tokensNum} += $tokens;
       last;
