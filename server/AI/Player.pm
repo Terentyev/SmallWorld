@@ -13,6 +13,7 @@ use SmallWorld::Game;
 use SW::Util qw( swLog );
 
 use AI::Config;
+use AI::Consts;
 use AI::Output qw( printGames printDebug );
 
 
@@ -49,6 +50,12 @@ sub do {
     return;
   }
 
+  if ( $game->{state} == GST_FINISH ) {
+    my $ais = $self->games->{$game->{gameId}}->{ais};
+    $self->_leaveGame($game) if defined $ais && scalar(@$ais);
+    return;
+  }
+
   if ( $self->_ourTurn($game) ) {
     $self->_play($game);
     return;
@@ -73,6 +80,15 @@ sub _join2Game {
   $self->games->{$game->{gameId}} = $g;
 }
 
+sub _leaveGame {
+  my ($self, $game) = @_;
+  my $g = $self->games->{$game->{gameId}};
+  for ( my $i = 0; $i < scalar(@{ $g->{ais} }); ++$i ) {
+    $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $g->{ais}->[$i]->{sid});
+  }
+  $g->{ais} = [];
+}
+
 sub _ourTurn {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
@@ -82,7 +98,7 @@ sub _ourTurn {
   return 0 if $r->{result} ne R_ALL_OK;
 
   $g->{gs} = SmallWorld::Game->new(gameState => $r->{gameState});
-  return (grep { $_->{id} == $g->{gs}->activePlayerId } @{ $g->{ais} });
+  return (grep { $_->{id} == ($g->{gs}->activePlayerId // -1) } @{ $g->{ais} });
 }
 
 sub _play {
@@ -97,10 +113,12 @@ sub _sendGameCmd {
   my $self = shift;
   my $cmd = {@_};
   my $g = delete $cmd->{game};
-  foreach ( @{ $g->{ais} } ){
-    if ( $_->{id} == $g->{gs}->activePlayerId ) {
-      $cmd->{sid} = $_->{sid};
-      last;
+  if ( !defined $cmd->{sid} ) {
+    foreach ( @{ $g->{ais} } ){
+      if ( $_->{id} == $g->{gs}->activePlayerId ) {
+        $cmd->{sid} = $_->{sid};
+        last;
+      }
     }
   }
   die "Can't define sid of player\n" if !defined $cmd->{sid};
@@ -111,6 +129,37 @@ sub _sendGameCmd {
 sub _decline {
   my ($self, $g) = @_;
   $self->_sendGameCmd(game => $g, action => 'decline');
+}
+
+sub _conquer {
+  my ($self, $g) = @_;
+  my $res = NOT_CONQUERED;
+  my $ans = {};
+  my $dummy = {};
+  my $repeat = 0;
+  do {
+    $repeat = 0;
+    foreach ( @{ $g->{gs}->regions } ) {
+      # TODO: сделать с учетом бросания кубика и подсчета вероятности
+      next if !$self->_canAttack($g, $_->{regionId});
+      $ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $_->{regionId});
+      # если это было последнее завоевание, то возможна одна из ситуаций:
+      #  1. У нас есть региона -> redeploy
+      #  2. У нас нет регионов -> beforeFinishTurn
+      # Пока не будем мудрить и спросим сервер, какое у нас состояние
+      return ABORT if defined $ans->{dice};
+      # если захватить не получилось, то пытаемся захватить следующий регион
+      next if $ans ne R_ALL_OK;
+      # надо дать шанс защититься, если регион пренадлежал расе не в упадке
+      return ABORT if $ans eq R_ALL_OK && !$_->{inDecline};
+      # состояние игры изменилось на conquest, поэтому продолжаем воевать там
+      $res = CONQUERED;
+      $repeat = 1; # надо повторить, вдруг сможем ещё что-то захватить
+      # изменяем все состояние согласно правилам
+      $g->{gs}->conquer($_->{regionId}, $dummy);
+    }
+  } while ( $repeat );
+  return $res;
 }
 
 sub _canBaseAttack {
@@ -127,6 +176,7 @@ sub _canAttack {
   my ($self, $g, $regionId) = @_;
   my $r = $g->{gs}->getRegion($regionId);
   my $p = $g->{gs}->getPlayer();
+  $p->{dice} = 3; # максимум возможное # TODO: переделать
   my $ar = $p->activeRace();
   my $asp = $p->activeSp();
   return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, undef);
@@ -157,45 +207,19 @@ sub _cmd_selectRace {
 
 sub _cmd_beforeConquest {
   my ($self, $g) = @_;
-  my $res = {};
-  foreach ( @{ $g->{gs}->regions } ) {
-    next if !$self->_canAttack($g, $_->{regionId});
-    $res = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $_->{regionId});
-    if ( $res->{result} eq R_ALL_OK ) {
-      if ( $_->{ownerId} ) {
-        # надо дать шанс защититься
-        return;
-      }
-      # если мы в начале хода умудрились что-то захватить, то продолжаем завоевание
-      $self->_cmd_conquest($g, 1);
-      return;
-    }
-    if ( defined $res->{dice} ) {
-      # если бросили кубики, то размещаем войска
-#      $self->_cmd_redeploy($g);
-      return;
-    }
-  }
-  # у нас ничего не получилось завоевать, значит расу в упадок, ибо УГ
+  my $res = $self->_conquer($g);
+  return if $res == ABORT;
+  # размещаем войска
+  return $self->_cmd_redeploy($g) if $res == CONQUERED;
+  # у нас ничего не получилось завоевать и состояние игры не изменилось, значит
+  # расу в упадок, ибо УГ
   $self->_decline($g);
 }
 
 sub _cmd_conquest {
   my ($self, $g, $i) = (@_, 0);
-  my $res = {};
-  foreach ( @{ $g->{gs}->regions } ) {
-    next if !$self->_canAttack($g, $_->{regionId});
-    $res = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $_->{regionId});
-    if ( $res->{result} eq R_ALL_OK && defined $_->{ownerId} ) {
-      # надо дать шанс защититься
-      return;
-    }
-    if ( $res->{result} eq R_ALL_OK ) {
-      $g->{gs}->getPlayer()->{dice} = $res->{dice};
-      $g->{gs}->conquer($_->{regionId}, $res);
-      ++$i;
-    }
-  }
+  my $res = $self->_conquer($g);
+  return if $res == ABORT;
   # размещаем войска
   $self->_cmd_redeploy($g);
 }
@@ -228,17 +252,6 @@ sub _cmd_beforeFinishTurn {
 sub _cmd_finishTurn {
   my ($self, $g) = @_;
   $self->_sendGameCmd(game => $g, action => 'finishTurn');
-}
-
-sub _cmd_gameOver {
-  my ($self, $g) = @_;
-  $self->_sendGameCmd(game => $g, action => 'leaveGame');
-  for ( my $i = 0; $i < scalar(@{ $g->{ais} }); ++$i ) {
-    if ( $g->{ais}->[$i]->{id} == $g->{gs}->activePlayerId ) {
-      delete $g->{ais}->[$i];
-      last;
-    }
-  }
 }
 
 sub games { return $_[0]->{games}; }
