@@ -53,7 +53,6 @@ sub do {
   if ( $game->{state} == GST_FINISH ) {
     my $ais = $self->games->{$game->{gameId}}->{ais};
     $self->_leaveGame($game) if defined $ais && scalar(@$ais);
-    return;
   }
 
   if ( $self->_ourTurn($game) ) {
@@ -128,7 +127,67 @@ sub _sendGameCmd {
 
 sub _decline {
   my ($self, $g) = @_;
-  $self->_sendGameCmd(game => $g, action => 'decline');
+  die 'Fail decline' if
+    $self->_sendGameCmd(game => $g, action => 'decline')->{result} ne R_ALL_OK;
+}
+
+sub _useSpConquer {
+  my ($self, $g, $regionId, $ans) = @_;
+  if ( $self->_canEnchant($g, $regionId) ) {
+    $ans = $self->_sendGameCmd(game => $g, action => 'enchant', regionId => $regionId);
+    die "Fail enchant" if $ans->{result} ne R_ALL_OK;
+    $g->{gs}->enchant($regionId);
+    return 1;
+  }
+  if ( $self->_canDragonAttack($g, $regionId) ) {
+    $ans = $self->_sendGameCmd(game => $g, action => 'dragonAttack', regionId => $regionId);
+    die "Fail dragon attack" if $ans->{result} ne R_ALL_OK;
+    $g->{gs}->dragonAttack($regionId);
+    return 1;
+  }
+  if ( $self->_canThrowDice($g) ) {
+    $ans = $self->_sendGameCmd(game => $g, action => 'throwDice');
+    die "Fail throw dice" if $ans->{result} ne R_ALL_OK;
+    $g->{gs}->throwDice($ans->{dice});
+    return 0;
+  }
+  return 0;
+}
+
+sub _canEnchant {
+  my ($self, $g, $regionId) = @_;
+  my $p = $g->{gs}->getPlayer();
+  my $ar = $p->activeRace;
+  my $r = $g->{gs}->getRegion($regionId);
+  return $self->_canBaseAttack($g, $regionId) &&
+    $ar->canCmd('enchant', $g->{gs}->{gameState}) &&
+    !$r->inDecline && $r->tokens == 1 && !$r->encampment;
+}
+
+sub _canDragonAttack {
+  my ($self, $g, $regionId) = @_;
+  my $p = $g->{gs}->getPlayer();
+  my $asp = $p->activeSp;
+  my $js = { action => 'dragonAttack' };
+  return $self->_canBaseAttack($g, $regionId) &&
+    $asp->canCmd($js, $g->{gs}->state, $p);
+}
+
+sub _canThrowDice {
+  my ($self, $g) = @_;
+  my $p = $g->{gs}->getPlayer();
+  my $asp = $p->activeSp;
+  my $js = { action => 'throwDice' };
+  return $asp->canCmd($js, $g->{gs}->state, $p);
+}
+
+sub _conquerRegion {
+  my ($self, $g, $regionId, $ans) = @_;
+  return 1 if $self->_useSpConquer($g, $regionId, $ans);
+  # TODO: сделать с учетом бросания кубика и подсчета вероятности
+  return 0 if !$self->_canAttack($g, $regionId);
+  $ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $regionId);
+  return 1;
 }
 
 sub _conquer {
@@ -140,9 +199,7 @@ sub _conquer {
   do {
     $repeat = 0;
     foreach ( @{ $g->{gs}->regions } ) {
-      # TODO: сделать с учетом бросания кубика и подсчета вероятности
-      next if !$self->_canAttack($g, $_->{regionId});
-      $ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $_->{regionId});
+      next if !$self->_conquerRegion($g, $_->{regionId}, $ans);
       # если это было последнее завоевание, то возможна одна из ситуаций:
       #  1. У нас есть региона -> redeploy
       #  2. У нас нет регионов -> beforeFinishTurn
@@ -176,17 +233,17 @@ sub _canAttack {
   my ($self, $g, $regionId) = @_;
   my $r = $g->{gs}->getRegion($regionId);
   my $p = $g->{gs}->getPlayer();
-  $p->{dice} = 3; # максимум возможное # TODO: переделать
+  $p->{dice} = defined $g->{gs}->berserkDice ? 0 : 3; # максимум возможное # TODO: переделать
   my $ar = $p->activeRace();
   my $asp = $p->activeSp();
-  return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, undef);
+  return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, {});
 }
 
 sub _cmd_defend {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
   foreach ( @{ $p->activeRace()->regions } ) {
-    last if $self->_sendGameCmd(
+    return if $self->_sendGameCmd(
         game => $g,
         action => 'defend',
         regions => [
@@ -197,12 +254,14 @@ sub _cmd_defend {
         ]
     )->{result} eq R_ALL_OK;
   }
+  die 'Fail defend';
 }
 
 sub _cmd_selectRace {
   my ($self, $g) = @_;
   my $p = int(rand(6));
-  $self->_sendGameCmd(game => $g, action => 'selectRace', position => $p);
+  die 'Fail select race' if
+    $self->_sendGameCmd(game => $g, action => 'selectRace', position => $p)->{result} ne R_ALL_OK;
 }
 
 sub _cmd_beforeConquest {
