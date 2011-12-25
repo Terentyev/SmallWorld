@@ -46,11 +46,15 @@ function showGame() {
   $("#divGame").css("display", "block");
   $("#divLobby").css("display", "none");
   $("#tdGameChat").append($("#divChat").detach());
-
+  showGameTurn();
   showGameMap();
   showBadges();
   showPlayers();
   showGameStage();
+}
+
+function showGameTurn(){
+  $("#spanGameTurn").html($.sprintf("%d from %d", data.game.currentTurn, data.game.map.turnsNum));
 }
 
 function showGameMap() {
@@ -74,15 +78,42 @@ function loadGameMapImg() {
   $("#divMapObjects").show();
 }
 
+function showCoin(type, num, dx, dy, off){
+  var s = '';
+  for (var i = 0; i < num; ++i){
+    s += $.sprintf('<img src="./pics/coin%d.png" class="coin" style="top:%d; left:%d" />',
+                    type, off.y-4*i*dy, off.x-4*i*dx);
+  }
+  off.x -= 4*num*dx;
+  off.y -= 4*num*dy;
+  return s;
+}
+
+function showCoins(num, dx, dy) {
+  dx = dx == null ? 1 : dx;
+  dy = dy == null ? 0 : dy;
+  if (num <= 0) return '';
+  var w = 16+(num-1)*4*dx, h = 16+(num-1)*4*dy;
+  var s = $.sprintf('<div class="coin-container" style="width:%d; height:%d" title="%s">', w, h, num);
+  var a = Math.floor(num / 25), b = Math.floor((num - a*25)/5);
+  num = num - a*25 - b*5;
+  var off = { x: 4*(num + a + b -1)*dx, y : 4*(num + a + b -1)*dy };
+  s += showCoin(1, num, dx, dy, off);
+  s += showCoin(5, b, dx, dy, off);
+  s += showCoin(25, a, dx, dy, off);
+  s += '</div>';
+  return s;
+}
+
 function showBadges() {
   var s = '';
   for (var i in data.game.visibleTokenBadges) {
     var cur = data.game.visibleTokenBadges[i];
-    s += addRow([$.sprintf(
+    s += addRow([showCoins(cur.bonusMoney, 0, 1), $.sprintf(
           "<a href='#' class='clickable' onclick='tokenBadgeClick(%d)'>" +
-          "<img src='%s' class='badge' />" +
+          "<img src='%s' class='badge' title=\"%s\"/>" +
           "<img src='%s' class='badge' /></a>",
-          i, races[cur.raceName], specialPowers[cur.specialPowerName])]);
+          i, races[cur.raceName], raceDescription[cur.raceName], specialPowers[cur.specialPowerName])]);
   }
   $("#tableTokenBadges tbody").html(s);
   $("#tableTokenBadges").trigger("update");
@@ -92,12 +123,9 @@ function showPlayers() {
   var s = '';
   for (var i in data.game.players) {
     var cur = data.game.players[i];
-    if (cur.userId == data.playerId) {
-      s = addOurPlayerInfo(cur) + s;
-    }
-    else {
-      s += addPlayerInfo(cur);
-    }
+    if (cur.userId == data.playerId)
+      $("#tableCurrentPlayer tbody").html(addOurPlayerInfo(cur));
+    s += addPlayerInfo(cur);
   }
   $("#tablePlayers tbody").html(s);
   $("#tablePlayers").trigger("update");
@@ -169,20 +197,20 @@ function showScores() {
   var s = '', c = 0;
   for (var i in data.game.players) {
     with (data.game.players[i]) {
-      s += addRow([username, coins]);
+      s += addRow([username, showCoins(coins, 1, 0)]);
       ++c;
     }
   }
   $('#tableScores tbody').html(s);
   $('#tableScores tbody').trigger('update');
-  showModal('#divScores', 70+c*40, 300);
+  showModal('#divScores', 90+c*30, 300);
 }
 
 function showTurnScores(stats) {
   var s = '', c = 0;
   for (var i in stats) {
     if (stats[i][1] == 0) continue;
-    s += addRow([stats[i][0]+":", stats[i][1]]);
+    s += addRow([stats[i][0]+":", showCoins(stats[i][1], 1, 0)]);
     ++c;
   }
   if (s == '') {
@@ -191,7 +219,7 @@ function showTurnScores(stats) {
   }
   $('#tableTurnScores tbody').html(s);
   $('#tableTurnScores tbody').trigger('update');
-  showModal('#divTurnScores', 70+c*40, 250);
+  showModal('#divTurnScores', 80+c*30, 250);
 }
 
 function changeMap(mapId) {

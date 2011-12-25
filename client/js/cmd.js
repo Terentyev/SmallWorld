@@ -189,7 +189,7 @@ function updatePlayersInGame() {
 
 function hdlGetGameList(ans) {
   var cur, s = '', needLoadMaps = false, gameStarted = false, gameId = null;
-
+  needLoadMaps = needLoadMaps || !ans.length;
   for (var i in ans.games) {
     cur = ans.games[i];
     var players = new Array();
