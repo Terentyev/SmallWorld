@@ -394,11 +394,6 @@ sub checkRegion_redeploy {
   }
 }
 
-sub checkRegionIsImmune {
-  my ($self, $js, $game, $player, $region, $race, $sp) = @_;
-  return $game->isImmuneRegion($region);
-}
-
 sub checkStage {
   my ($self, $js, $game, $player, $region, $race, $sp) = @_;
 
@@ -514,7 +509,7 @@ sub checkTokensForRedeployment {
 sub checkFriend {
   my ($self, $js, $game, $player, $region, $race, $sp) = @_;
   # мы не можем подружиться с игроком, если мы нападали на его aктивную расу на этом ходу
-  my $tid = $game->getPlayer( {id => $js->{friendId}} )->{currentTokenBadge}->{tokenBadgeId};
+  my $tid = $game->getPlayer( id => $js->{friendId} )->{currentTokenBadge}->{tokenBadgeId};
   return $player->{playerId} == $js->{friendId} || grep {
     ($_->{prevTokenBadgeId} // -1 ) == ($tid // -2)
   } @{ $game->{gameState}->{regions} };
@@ -546,7 +541,7 @@ sub checkGameCommand {
     &R_NOT_ENOUGH_TOKENS            => sub { $self->checkEnoughTokens($js, @gameVariables); },
     &R_NOT_ENOUGH_TOKENS_FOR_R      => sub { $self->checkEnoughTokens_redeploy($js, @gameVariables); },
     &R_NOTHING_TO_ENCHANT           => sub { $region->{tokensNum} == 0; },
-    &R_REGION_IS_IMMUNE             => sub { $self->checkRegionIsImmune($js, @gameVariables); },
+    &R_REGION_IS_IMMUNE             => sub { $region->isImmune(); },
     &R_THERE_ARE_TOKENS_IN_THE_HAND => sub { $self->checkTokensInHand($js, @gameVariables); },
     &R_TOO_MANY_FORTS               => sub { $self->checkForts($js, @gameVariables); },
     &R_TOO_MANY_FORTS_IN_REGION     => sub { $self->checkFortsInRegion($js, @gameVariables); },

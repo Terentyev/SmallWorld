@@ -7,7 +7,8 @@ use utf8;
 
 # конструктор, на вход принимает ссылку на хэш с информацией об объекте
 sub new {
-  my ($class, $self) = @_;
+  my $class = shift;
+  my $self = {@_}->{self};
 
   bless $self, $class;
 

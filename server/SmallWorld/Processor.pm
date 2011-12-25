@@ -8,6 +8,8 @@ use utf8;
 use JSON qw(encode_json decode_json);
 use File::Basename qw(basename);
 
+use SW::Util qw(swLog);
+
 use SmallWorld::Consts;
 use SmallWorld::Config;
 use SmallWorld::DB;
@@ -61,11 +63,7 @@ sub checkAndDo {
 }
 
 sub debug {
-  return if !$ENV{DEBUG};
-  use Data::Dumper;
-  open FL, '>>' . LOG_FILE;
-  print FL Dumper(@_);
-  close FL;
+  swLog(LOG_FILE, @_);
 }
 
 sub getGame {
@@ -83,7 +81,7 @@ sub getGame {
       (grep { $_->{isReady} == 0 } @{ $self->{_game}->{gameState}->{players} }) ||
       $self->{_game}->{gameState}->{gameInfo}->{gameId} != $id ||
       $self->{_game}->{_version} != $version ) {
-    $self->{_game} = SmallWorld::Game->new($self->{db}, $id, $js->{action});
+    $self->{_game} = SmallWorld::Game->new(db => $self->{db}, id => $id);
   }
   return $self->{_game};
 }
@@ -318,7 +316,9 @@ sub cmd_aiJoin {
   }
   $result->{id} = $id;
   $result->{sid} = $sid;
-  $self->{db}->tryBeginGame($js->{gameId});
+  if ( $self->{db}->tryBeginGame($js->{gameId}) ) {
+    $self->getGame($js)->save();
+  }
 }
 
 sub cmd_saveGame {
@@ -393,6 +393,7 @@ sub cmd_finishTurn {
   my $game = $self->getGame($js);
   $game->finishTurn($result);
   $game->save();
+  $self->{db}->finishGame($game->id) if $game->stage eq GS_IS_OVER;
 }
 
 sub cmd_redeploy {

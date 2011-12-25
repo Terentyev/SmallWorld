@@ -107,6 +107,8 @@ function mergeMember(gs, attr, actions, acts) {
 function prepare(gs) {
   // для совместимости
   if (gs.stage != null) return;
+  // можно смотреть также в SmallWorld::Game->getStageForGameState (он работает
+  // однозначно правильно (т. к. тастировался)
   switch (gs.state) {
     case GST_WAIT:
       break;
@@ -114,34 +116,32 @@ function prepare(gs) {
       gs.stage = GS_SELECT_RACE;
       break;
     case GST_IN_GAME:
-      if (player.isDefender()) {
+      if (gs.defendingInfo != null && gs.defendingInfo != null) {
         gs.stage = GS_DEFEND;
         return;
       }
       switch (gs.lastEvent) {
-        case LE_FINISH_TURN:
-          gs.stage = player.haveActiveRace()
-            ? GS_BEFORE_CONQUEST
-            : GS_SELECT_RACE;
-          break;
-        case LE_SELECT_RACE:
-          gs.stage = GS_BEFORE_CONQUEST;
-          break;
+        case LE_THROW_DICE:
         case LE_CONQUER:
+        case LE_DEFEND:
+        case LE_SELECT_RACE:
           gs.stage = GS_CONQUEST;
-          break;
-        case LE_FAILED_CONQUER:
-          gs.stage = GS_REDEPLOY;
-          break;
-        case LE_REDEPLOY:
-          gs.stage = GS_BEFORE_FINISH_TURN;
           break;
         case LE_SELECT_FRIEND:
         case LE_DECLINE:
           gs.stage = GS_FINISH_TURN;
           break;
-        case LE_THROW_DICE:
-          gs.stage = GS_CONQUEST;
+        case LE_REDEPLOY:
+          gs.stage = GS_BEFORE_FINISH_TURN;
+          break;
+        case LE_FAILED_CONQUER:
+          gs.stage = GS_REDEPLOY;
+          break;
+        //case LE_FINISH_TURN:
+        default:
+          gs.stage = player.haveActiveRace()
+            ? GS_BEFORE_CONQUEST
+            : GS_SELECT_RACE;
           break;
       }
       break;
