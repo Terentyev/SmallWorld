@@ -115,6 +115,13 @@ function addOption(value, string) {
   return $.sprintf('<option value="%s">%s</option>', value, string);
 }
 
+function getRaceImage(raceName, type, decline) {
+  var name = 'None', prefix = './pics/', ext = '.png', postfix = decline ? '_decline': '';
+  for (var i in races)
+    if (raceName == races[i]) name = raceName;
+  return prefix + type + name + postfix + ext;
+}
+
 function addPlayerInfo(player) {
   var s = $.sprintf(
     '<tr><td width="16">%s</td><td>%s</td></tr>',
@@ -124,13 +131,13 @@ function addPlayerInfo(player) {
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
       '<img src="%s" title="%s"/>',
-      tokens[player.currentTokenBadge.raceName], player.currentTokenBadge.raceName);
+      getRaceImage(player.currentTokenBadge.raceName, 'token'), player.currentTokenBadge.raceName+'+'+player.currentTokenBadge.specialPowerName);
   }
   if (player.declinedTokenBadge && player.declinedTokenBadge.raceName != null) {
     if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) s += '&nbsp;';
     s += $.sprintf(
       '<img src="%s" title="%s"/>',
-      tokens[player.declinedTokenBadge.raceName], player.declinedTokenBadge.raceName);
+      getRaceImage(player.declinedTokenBadge.raceName, 'token', 1), player.declinedTokenBadge.raceName+'+'+player.declinedTokenBadge.specialPowerName);
   }
   s += '</td></tr>';
   return s;
@@ -150,19 +157,19 @@ function addOurPlayerInfo(player) {
     currentPlayerPower());
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
-      '<tr><td colspan="2">' +
-      '<img src="%s" class="badge" /><img src="%s" class="badge" />' +
+      '<tr><td colspan="2">Active race:</td></tr><tr><td colspan="2">' +
+      '<img src="%s" class="badge" title="%s"/><img src="%s" class="badge" title="%s"/>' +
       '</td></tr>',
-      races[player.currentTokenBadge.raceName],
-      specialPowers[player.currentTokenBadge.specialPowerName]);
+      getRaceImage(player.currentTokenBadge.raceName, 'race'), player.currentTokenBadge.raceName,
+      specialPowers[player.currentTokenBadge.specialPowerName], player.currentTokenBadge.specialPowerName);
   }
   if (player.declinedTokenBadge && player.declinedTokenBadge.raceName != null) {
     s += $.sprintf(
-      '<tr><td colspan="2">' +
-      '<img src="%s" class="badge"/><img src="%s" class="badge" />' +
+      '<tr><td colspan="2">Declined race:</td></tr><tr><td colspan="2">' +
+      '<img src="%s" class="badge"title="%s"/><img src="%s" class="badge" title="%s"/>' +
       '</td></tr>',
-      races[player.declinedTokenBadge.raceName],
-      specialPowers[player.declinedTokenBadge.specialPowerName]);
+      getRaceImage(player.declinedTokenBadge.raceName, 'race', 1), player.declinedTokenBadge.raceName,
+      specialPowers[player.declinedTokenBadge.specialPowerName], player.declinedTokenBadge.specialPowerName);
   }
   s += '<tr><td colspan="2"> <div class="buttons"> <div onclick="cmdLeaveGame();">Leave</div></div></td></tr>';
   s += '</table></td></tr>';
@@ -257,7 +264,7 @@ function addTokensToMap(region, i) {
       maps[data.game.map.mapId].regions[i].raceCoords[0],
       maps[data.game.map.mapId].regions[i].raceCoords[1],
       i, i, i,
-      tokens[race], i, region.currentRegionState.tokensNum);
+      getRaceImage(race, 'token', region.currentRegionState.inDecline), i, region.currentRegionState.tokensNum);
 }
 
 function addObjectsToMap(region, i) {
