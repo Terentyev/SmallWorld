@@ -10,6 +10,7 @@ use URI::Escape;
 use JSON qw( decode_json );
 
 use AI::Config;
+use AI::Output qw( printRequestLog );
 
 
 our $requester = undef;
@@ -36,12 +37,14 @@ sub _init {
 }
 
 sub get {
-  my ($self, $cmd) = @_;
+  my ($self, $cmd, $add2log) = @_;
   my $req = HTTP::Request->new(POST => "http://$self->{server}/");
 #  $req->content_type('application/x-www-form-urlencoded');
 #  $req->content('request=' . uri_escape($cmd));
   $req->add_content_utf8($cmd);
-  return eval { decode_json($self->{ua}->request($req)->content) } || {};
+  my $result = eval { decode_json($self->{ua}->request($req)->content) } || {};
+  printRequestLog($cmd, $result) if $add2log;
+  return $result;
 }
 
 1;
