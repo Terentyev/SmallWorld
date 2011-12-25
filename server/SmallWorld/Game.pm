@@ -318,6 +318,8 @@ sub getLastEvent {
     selectRace    => LE_SELECT_RACE,
     throwDice     => LE_THROW_DICE,
     conquer       => LE_CONQUER,
+    dragonAttack  => LE_CONQUER,
+    enchant       => LE_CONQUER,
     defend        => LE_DEFEND,
     redeploy      => LE_REDEPLOY,
     selectFriend  => LE_SELECT_FRIEND,
