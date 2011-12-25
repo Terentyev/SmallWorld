@@ -419,7 +419,7 @@ sub checkStage {
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    !$sp->canCmd($js, $state, $player) || !$race->canCmd($js, $game->{gameState});
+    !$sp->canCmd($js, $state, $player) || !$race->canCmd($js->{action}, $game->{gameState});
 }
 
 sub checkStage_throwDice {

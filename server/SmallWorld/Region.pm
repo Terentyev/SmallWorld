@@ -33,8 +33,11 @@ sub isImmune {
   return grep $self->{$_}, qw( holeInTheGround dragon hero );
 }
 
-sub id      { return $_[0]->{regionId};      }
-sub ownerId { return $_[0]->{ownerId} // -1; }
+sub id         { return $_[0]->{regionId};         }
+sub ownerId    { return $_[0]->{ownerId} // -1;    }
+sub tokens     { return $_[0]->safe('tokensNum');  }
+sub inDecline  { return $_[0]->safe('inDecline');  }
+sub encampment { return $_[0]->safe('encampment'); }
 
 1;
 
