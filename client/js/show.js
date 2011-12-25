@@ -123,8 +123,7 @@ function showPlayers() {
   var s = '';
   for (var i in data.game.players) {
     var cur = data.game.players[i];
-    if (cur.userId == data.playerId)
-      $("#tableCurrentPlayer tbody").html(addOurPlayerInfo(cur));
+    if (cur.userId == data.playerId) $("#tableCurrentPlayer tbody").html(addOurPlayerInfo(cur));
     s += addPlayerInfo(cur);
   }
   $("#tablePlayers tbody").html(s);
@@ -194,32 +193,31 @@ function showMessages() {
 }
 
 function showScores() {
-  var s = '', c = 0;
-  for (var i in data.game.players) {
-    with (data.game.players[i]) {
-      s += addRow([username, showCoins(coins, 1, 0)]);
-      ++c;
-    }
-  }
+  var s = '', c = data.game.players.length, sum = 0;
+  var p = [];
+  for (var i in data.game.players)
+    p.push( {'username': data.game.players[i].username, 'coins': data.game.players[i].coins});
+  p.sort(function(a, b){ return b.coins - a.coins});
+  for (var i in p)
+    s += addRow([(parseInt(i)+1)+'.', p[i].username, showCoins(p[i].coins, 1, 0)]);
   $('#tableScores tbody').html(s);
   $('#tableScores tbody').trigger('update');
-  showModal('#divScores', 90+c*30, 300);
+  showModal('#divScores', 110+c*28, 300);
 }
 
 function showTurnScores(stats) {
-  var s = '', c = 0;
+  var s = '', c = stats.length, sum = 0;
   for (var i in stats) {
     if (stats[i][1] == 0) continue;
     s += addRow([stats[i][0]+":", showCoins(stats[i][1], 1, 0)]);
-    ++c;
+    sum += stats[i][1];
   }
-  if (s == '') {
-    s = addRow(['Not coins for turn']);
+  if (!sum) {
+    s = '<tr><td colspan="2">Not coins for turn</td></tr>';
     ++c;
   }
   $('#tableTurnScores tbody').html(s);
-  $('#tableTurnScores tbody').trigger('update');
-  showModal('#divTurnScores', 80+c*30, 250);
+  showModal('#divTurnScores', 110+c*28, 250);
 }
 
 function changeMap(mapId) {
@@ -230,4 +228,7 @@ function changeMap(mapId) {
     s += addOption(i, i);
   }
   $("#selectAINum").html(s);
+}
+
+function test() {
 }

@@ -144,10 +144,11 @@
     <div class="message">
       <table>
         <tr><td>
-          <table id="tableScores" width="100%">
+          <table id="tableScores">
             <thead>
               <tr>
-                <td>User name</td>
+                <td width="30">&nbsp;</td>
+                <td width="150">Name</td>
                 <td>Coins</td>
               </tr>
             </thead>
@@ -157,7 +158,7 @@
        </td></tr>
        <tr><td>
          <div class="buttons">
-           <div class="modal-close" onclick="showLobby();">OK</div>
+           <div class="modal-close">OK</div>
          </div>
        </td></tr>
       </table>
@@ -168,18 +169,22 @@
     <div class="header"><span>Turn scores</span></div>
     <div class="message">
       <table>
-        <tr>
-          <td align="center"><table id="tableTurnScores" width="100%"><tbody></tbody></table></td>
-        </tr>
-        <tr>
-          <td align="left">
-          </td>
-        </tr>
+        <tr><td align="center">
+          <table id="tableTurnScores" width="100%">
+            <thead>
+              <tr>
+                <td class="left">Type</td>
+                <td>Bonus</td>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </td></tr>
         <tr><td>
           <div class="buttons">
-          <div class="modal-close">OK</div>
+            <div class="modal-close">OK</div>
+          </div>
         </td></tr>
-      </div>
       </table>
     </div>
   </div>
@@ -246,7 +251,7 @@
             </tr>
             <tr>
               <td colspan="2">
-                <div id="divMap" align="center" style="position: relative;">
+                <div id="divMap" align="center">
 
                   <div id="divMapImg" style="position: relative;">
                     <img id="imgMap" class="corner-all" usemap="#mapLayer" />
@@ -273,6 +278,7 @@
               </table>
               <div class="buttons">
                 <div id="btnCommitStage" onclick="commitStageClick();">Next &gt;&gt;</div>
+                <div id="btnTest" onclick="test();">Test</div>
               </div>
             </div>
           </div> <br><br>
