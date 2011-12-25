@@ -72,7 +72,6 @@ sub loadFromState {
     conquerorId    => $gs{defendingInfo}->{playerId}
                       ? $gs{activePlayerId}
                       : undef,
-    state          => $self->getStageFromGameState(\%gs),
     currentTurn    => $gs{currentTurn},
     tokenBadges    => $gs{visibleTokenBadges},
     defendingInfo  => $gs{defendingInfo},
@@ -84,6 +83,9 @@ sub loadFromState {
     holesPlaced    => $gs{holesPlaced},
     gotWealthy     => $gs{gotWealthy} ? 1 : 0
   };
+  my $state = $self->getStageFromGameState(\%gs);
+  die "Wrong calculate stage\n" if defined $gs{stage} && $gs{stage} ne $state;
+  $self->{gameState}->{state} = $state;
   my $i = 0;
   foreach ( @{ $gs{map}->{regions} } ) {
     push @{ $self->{gameState}->{regions} }, {
@@ -121,14 +123,17 @@ sub getStageFromGameState {
   my $st = $gs->{state};
   return undef if $st == GST_WAIT;
   return GS_SELECT_RACE if $st == GST_BEGIN;
-  return GS_IS_OVER     if $st == GST_FINISH;
+  return GS_IS_OVER     if $st == GST_FINISH || $st == GST_EMPTY;
 
   my $le = $gs->{lastEvent};
   return GS_DEFEND             if defined $gs->{defendingInfo} && defined $gs->{defendingInfo}->{playerId};
   return GS_CONQUEST           if $le == LE_THROW_DICE || $le == LE_CONQUER || $le == LE_DEFEND || $le == LE_SELECT_RACE;
   return GS_FINISH_TURN        if $le == LE_DECLINE || $le == LE_SELECT_FRIEND;
-  return GS_BEFORE_FINISH_TURN if $le == LE_REDEPLOY;
-  return GS_REDEPLOY           if $le == LE_FAILED_CONQUER;
+  return GS_REDEPLOY           if $le == LE_FAILED_CONQUER && (grep {
+      !$_->{inDecline} &&
+      ($_->{ownerId} // -1) == $gs->{activePlayerId}
+    } @{ $gs->{map}->{regions} });
+  return GS_BEFORE_FINISH_TURN if $le == LE_REDEPLOY || $le == LE_FAILED_CONQUER;
   return GS_SELECT_RACE        if (grep {
       (
        !defined $_->{currentTokenBadge} ||
@@ -543,7 +548,7 @@ sub nextConquestIdx {
 # три грани 1,2,3)
 sub random {
   my $self = shift;
-  return 0 if $ENV{DEBUG};
+  return (defined $_[0] ? ($_[0]->{dice} // 0) : 0) if $ENV{DEBUG};
   $self->{gameState}->{prevGenNum} = (RAND_A * $self->{gameState}->{prevGenNum}) % RAND_M;
   my $result = $self->{gameState}->{prevGenNum} % 6;
   return $result > 3;
@@ -588,7 +593,7 @@ sub canAttack {
 
   if ( !defined $self->{gameState}->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости, если еще не кинули(berserk)
-    $player->{dice} = $self->random();
+    $player->{dice} = $self->random($result);
     $result->{dice} = $player->{dice};
   }
 
