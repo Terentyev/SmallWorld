@@ -110,6 +110,8 @@ sub finishTurn {
   my ($self, $state) = @_;
 }
 
+sub regions { return $_[0]->{regions}; }
+
 
 package SmallWorld::RaceAmazons;
 use strict;

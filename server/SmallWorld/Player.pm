@@ -7,6 +7,16 @@ use utf8;
 
 use base ('SmallWorld::SafeObj');
 
+sub new {
+  my $class = shift;
+  my $self = $class->SUPER::new(@_);
+  $self->{game} = {@_}->{game};
+
+  bless $self, $class;
+
+  return $self;
+}
+
 # определяет принадлежит ли регион активной расе
 sub activeConq {
   my ($self, $region) = @_;
@@ -19,6 +29,13 @@ sub isFriend {
   return
     defined $friendInfo && ($friendInfo->{friendId} // -1) == $self->{playerId};
 }
+
+sub id         { return $_[0]->{playerId};                                             }
+sub name       { return $_[0]->{username};                                             }
+sub coins      { return $_[0]->{coins};                                                }
+sub activeRace { return $_[0]->{game}->createRace($_[0]->{currentTokenBadge});         }
+sub activeSp   { return $_[0]->{game}->createSpecialPower('currentTokenBadge', $_[0]); }
+sub tokens     { return $_[0]->{tokensInHand};                                         }
 
 1;
 

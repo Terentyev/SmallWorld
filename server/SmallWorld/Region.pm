@@ -27,6 +27,15 @@ sub getAdjacentRegions {
   return \@ans;
 }
 
+# возвращает есть ли у региона иммунитет к нападению
+sub isImmune {
+  my $self = shift;
+  return grep $self->{$_}, qw( holeInTheGround dragon hero );
+}
+
+sub id      { return $_[0]->{regionId};      }
+sub ownerId { return $_[0]->{ownerId} // -1; }
+
 1;
 
 __END__
