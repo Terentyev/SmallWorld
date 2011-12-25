@@ -88,7 +88,7 @@ sub loadFromState {
   foreach ( @{ $gs{map}->{regions} } ) {
     push @{ $self->{gameState}->{regions} }, {
       regionId          => ++$i,
-      constRegionsState => $_->{constRegionState},
+      constRegionState => $_->{constRegionState},
       adjacentRegions   => $_->{adjacentRegions},
       ownerId           => $_->{currentRegionState}->{ownerId},
       tokenBadgeId      => $_->{currentRegionState}->{tokenBadgeId},
@@ -594,7 +594,6 @@ sub canAttack {
 
   # если игроку не хватает фигурок даже с подкреплением, это его последнее завоевание
   if ( $player->{tokensInHand} + $player->safe('dice') < $self->{defendNum} ) {
-    # если у игрока нет территорий то ждем команды конец хода
     $player->{dice} = undef;
     $self->gotoRedeploy();
     $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN if !(grep { $player->activeConq($_) } @$regions);
@@ -929,6 +928,11 @@ sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};   }
 sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};       }
 sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};        }
 sub regions        { return $_[0]->{gameState}->{regions};              }
+sub berserkDice {
+  my $self = shift;
+  $self->{gameState}->{berserkDice} = $_[0] if scalar(@_) == 1;
+  return $self->{gameState}->{berserkDice};
+}
 
 1;
 
