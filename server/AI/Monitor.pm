@@ -12,27 +12,28 @@ use AI::Requester;
 
 sub new {
   my $class = shift;
-  my $self = {
-    timeout => DEFAULT_TIMEOUT,
-    @_
-  };
+  my $self = { timeout => DEFAULT_TIMEOUT };
 
   bless $self, $class;
-  $self->_init();
+  $self->_init(@_);
 
   return $self;
 }
 
 sub _init {
   my $self = shift;
-  $self->{req} = AI::Requester->new(%$self);
-  $self->{ai} = AI::Player->new(req => $self->{req});
+  my %p = (@_);
+  $self->{req} = AI::Requester->new(%p);
+  $p{req} = $self->{req};
+  $self->{ai} = AI::Player->new(%p);
+  $self->{game} = $p{game};
 }
 
 sub run {
   my $self = shift;
   while ( 1 ) {
     $self->_do();
+    $self->_printStatus();
     sleep( $self->{timeout} );
   }
 }
@@ -56,9 +57,16 @@ sub _getGames {
 sub _do {
   my $self = shift;
   foreach ( $self->_getGames() ) {
-    $self->{ai}->do($_);
+    $self->ai->do($_);
   }
 }
+
+sub _printStatus {
+  my $self = shift;
+  $self->ai->printStatus();
+}
+
+sub ai { return $_[0]->{ai}; }
 
 1;
 
