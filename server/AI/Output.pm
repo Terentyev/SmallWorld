@@ -26,6 +26,7 @@ our @reqLog = ();
 sub printGames {
   return if !win();
   $gamesW = $gamesW // $win->new(100, 80, 0, 0);
+  $gamesW->clear();
   my $games = shift;
   my $top = 0;
   _printGamesHeader(\$top);
@@ -47,6 +48,7 @@ sub printGames {
       my $p = $g->getPlayer(id => $player->{id});
       $gamesW->addstr($top, 4, $p->name);
       $gamesW->addstr($top, 20, $p->coins);
+      $gamesW->addstr($top, 30, $p->activeRaceName . ' ' . $p->activeSpName);
       ++$top;
     }
   }
@@ -96,10 +98,11 @@ sub _printGamesHeader {
 
 sub _printPlayersHeader {
   my $top = shift;
-  $win->addstr($$top, 3, '|player name' . (' ' x 4) . '|');
-  $win->addstr($$top, 20, 'coins |');
+  $gamesW->addstr($$top, 3, '|player name' . (' ' x 4) . '|');
+  $gamesW->addstr($$top, 20, 'coins |');
+  $gamesW->addstr($$top, 30, 'race + power' . (' ' x 36) . '|');
   ++$$top;
-  $gamesW->addstr($$top, 3, '-' x 26);
+  $gamesW->addstr($$top, 3, '-' x 76);
   ++$$top;
 }
 
