@@ -791,8 +791,9 @@ sub finishTurn {
       ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId}
   } while !$self->getPlayer()->{inGame};
 
+  my $prevPriority = $player->{priority};
   $player = $self->getPlayer();
-  if ( $player->{priority} == 0 ) {
+  if ( $player->{priority} < $prevPriority ) {
     $self->{gameState}->{currentTurn}++;
   }
   if ( $self->{gameState}->{currentTurn} >= $self->{gameState}->{map}->{turnsNum}) {
