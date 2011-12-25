@@ -7,9 +7,17 @@ use utf8;
 
 use Getopt::Std;
 
+use SW::Util qw( swLog );
+
+use AI::Config;
 use AI::Monitor;
 
+BEGIN {
+  $SIG{__DIE__} = \&log_die;
+  $SIG{__WARN__} = \&log_warn;
+}
 
+$ENV{DEBUG} = 1;
 my $monitor = AI::Monitor->new(parseArgs());
 $monitor->run();
 
@@ -23,14 +31,41 @@ sub renameKey {
 
 sub parseArgs {
   my %result = ();
-  getopts('s:g:t:', \%result) || HELP_MESSAGE();
+  getopts('s:g:t:u:', \%result) || HELP_MESSAGE();
   renameKey('s', 'server',  \%result);
   renameKey('g', 'game',    \%result);
   renameKey('t', 'timeout', \%result);
+  renameKey('u', 'ais',     \%result);
   return %result;
 }
 
 sub HELP_MESSAGE {
-  print "AI for SmallWorld game.\nUsage: $0 [[-s server_address] [-g game_id] [-t timeout_in_seconds] | [--help]]\n";
+  my $s = DEFAULT_SERVER_ADDRESS;
+  my $t = DEFAULT_TIMEOUT;
+  print qq!
+AI for SmallWorld game.
+Usage: $0 [[-s server_address] [[-g game_id] [|[-u ais]] [-t timeout] | [--help]]
+  -s server_address     specify server address (default server address $s)
+  -g game_id            specify game id for play
+  -t timeout            specify refresh timeout in seconds (default timeout $t)
+  -u ais                specify AIs info (see more below)
+  --help                show this information
+AIs info:
+  AIs info is a json with format:
+    [ { "id": <id>, "sid": <sid>}, ... ]
+!;
   exit(0);
+}
+
+sub log_die {
+  swLog(LOG_FILE, getTime(), 'DIE', @_);
+}
+
+sub log_warn {
+  swLog(LOG_FILE, getTime(), 'WARN', @_);
+}
+
+sub getTime {
+  my ($s, $m, $h) = localtime();
+  return "$h:$m:$s";
 }
