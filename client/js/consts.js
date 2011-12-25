@@ -52,23 +52,8 @@ var cmdErrors = {
   'usernameTaken': 'Username already taken'
 };
 
-var races = {
-  null: '/pics/raceNone.png',
-  '': '/pics/raceNone.png',
-  'Amazons': '/pics/raceAmazons.png',
-  'Dwarves': '/pics/raceDwarves.png',
-  'Elves': '/pics/raceElves.png',
-  'Giants': '/pics/raceGiants.png',
-  'Halflings': '/pics/raceHalflings.png',
-  'Humans': '/pics/raceHumans.png',
-  'Orcs': '/pics/raceOrcs.png',
-  'Ratmen': '/pics/raceRatmen.png',
-  'Skeletons': '/pics/raceSkeletons.png',
-  'Sorcerers': '/pics/raceSorcerers.png',
-  'Tritons': '/pics/raceTritons.png',
-  'Trolls': '/pics/raceTrolls.png',
-  'Wizards': '/pics/raceWizards.png'
-};
+var races = ['Amazons', 'Dwarves', 'Elves', 'Giants', 'Halflings', 'Humans', 'Orcs', 'Ratmen', 'Skeletons',
+             'Sorcerers', 'Tritons', 'Trolls', 'Wizards'];
 
 var raceDescription = {
   'Amazons': 'Four of your Amazon tokens may only be used for conquest, not for defense. So you start each turn with +4 Amazon token. At the end of each Troop Redeployments four tokens removed from the map, and back to your hand at the start of next turn.',
@@ -108,24 +93,6 @@ var specialPowers = {
   'Swamp': '/pics/spSwamp.png',
   'Underworld': '/pics/spUnderworld.png',
   'Wealthy': '/pics/spWealthy.png'
-};
-
-var tokens = {
-  null: '/pics/tokenNone.png',
-  '': '/pics/tokenNone.png',
-  'Amazons': '/pics/tokenAmazons.png',
-  'Dwarves': '/pics/tokenDwarves.png',
-  'Elves': '/pics/tokenElves.png',
-  'Giants': '/pics/tokenGiants.png',
-  'Halflings': '/pics/tokenHalflings.png',
-  'Humans': '/pics/tokenHumans.png',
-  'Orcs': '/pics/tokenOrcs.png',
-  'Ratmen': '/pics/tokenRatmen.png',
-  'Skeletons': '/pics/tokenSkeletons.png',
-  'Sorcerers': '/pics/tokenSorcerers.png',
-  'Tritons': '/pics/tokenTritons.png',
-  'Trolls': '/pics/tokenTrolls.png',
-  'Wizards': '/pics/tokenWizards.png'
 };
 
 var objects = {
