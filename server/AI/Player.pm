@@ -8,7 +8,7 @@ use utf8;
 use JSON qw( decode_json encode_json );
 use List::Util qw( min );
 
-use SmallWorld::Checker qw( checkRegion_conquer );
+use SmallWorld::Checker qw( checkRegion_conquer checkFriend );
 use SmallWorld::Consts;
 use SmallWorld::Game;
 use SW::Util qw( swLog );
@@ -169,17 +169,39 @@ sub _canDragonAttack {
   my ($self, $g, $regionId) = @_;
   my $p = $g->{gs}->getPlayer();
   my $asp = $p->activeSp;
-  my $js = { action => 'dragonAttack' };
   return $self->_canBaseAttack($g, $regionId) &&
-    $asp->canCmd($js, $g->{gs}->state, $p);
+    $asp->canCmd({ action => 'dragonAttack' }, $g->{gs}->stage, $p);
 }
 
 sub _canThrowDice {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
   my $asp = $p->activeSp;
-  my $js = { action => 'throwDice' };
-  return $asp->canCmd($js, $g->{gs}->state, $p);
+  return $asp->canCmd({ action => 'throwDice' }, $g->{gs}->stage, $p);
+}
+
+sub _canStoutDecline {
+  my ($self, $g) = @_;
+  my $p = $g->{gs}->getPlayer();
+  my $asp = $p->activeSp();
+  return $asp->canCmd({ action => 'decline' }, $g->{gs}->stage, $p);
+}
+
+sub _canSelectFriend {
+  my ($self, $g, $playerId) = (@_, 0);
+  return 0; # TODO: удалить, когда ИИ научится работать с БД
+  my $p = $g->{gs}->getPlayer();
+  my $asp = $p->activeSp;
+  my $js = { action => 'selectFriend', friendId => $playerId };
+  my $can = $asp->canCmd($js, $g->{gs}->stage, $p);
+  return $can if !$can || $playerId == 0;
+  return !$self->checkFriend($js, $g->{gs}->state, $p);
+}
+
+sub _needStoutDecline {
+  # TODO: наверное, это уже будет продвинутый ИИ, если он будет решать нужно ли
+  # ему приводить расу в упадок способностью Stout
+  return !int(rand(5));
 }
 
 sub _conquerRegion {
@@ -311,6 +333,18 @@ sub _cmd_redeploy {
 
 sub _cmd_beforeFinishTurn {
   my ($self, $g) = @_;
+  if ( $self->_canStoutDecline($g) && $self->_needStoutDecline($g) ) {
+    $self->_decline($g);
+  }
+  if ( $self->_canSelectFriend($g) ) {
+    foreach ( @{ $g->{gs}->players } ) {
+      if ( $self->_canSelectFriend($g, $_->{playerId}) ) {
+        die 'Fail select friend' if
+          $self->_sendGameCmd(game => $g, action => 'selectFriend', friendId => $_->{playerId})->{result} ne R_ALL_OK;
+        last;
+      }
+    }
+  }
   $self->_sendGameCmd(game => $g, action => 'finishTurn');
 }
 

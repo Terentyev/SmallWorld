@@ -946,6 +946,7 @@ sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};   }
 sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};       }
 sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};        }
 sub regions        { return $_[0]->{gameState}->{regions};              }
+sub players        { return $_[0]->{gameState}->{players};              }
 sub berserkDice {
   my $self = shift;
   $self->{gameState}->{berserkDice} = $_[0] if scalar(@_) == 1;
