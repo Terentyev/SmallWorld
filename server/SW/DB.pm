@@ -32,7 +32,7 @@ sub disconnect {
 
 sub dbError {
   my $self = shift;
-  my $error = ($self->{dbh}->errstr // '') . "\n" . ($_[0] // '');
+  my $error = (defined $self->{dbh} ? ($self->{dbh}->errstr // '') : '') . "\n" . ($_[0] // '');
   die "DB error: $error\n";
 }
 
