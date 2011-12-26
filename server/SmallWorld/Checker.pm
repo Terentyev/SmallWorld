@@ -34,13 +34,13 @@ sub errorCode {
 
 sub checkLoginAndPassword {
   my ($self, $js) = @_;
-  return !defined $self->{db}->query('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
+  return !defined $self->{db}->fetch1('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
                                      @{ $js }{qw/username password/} );
 }
 
 sub checkInGame {
   my ($self, $js) = @_;
-  my $gameId = $self->{db}->query('SELECT c.gameId FROM PLAYERS p INNER JOIN CONNECTIONS c 
+  my $gameId = $self->{db}->fetch1('SELECT c.gameId FROM PLAYERS p INNER JOIN CONNECTIONS c 
                                    ON p.id = c.playerId WHERE p.sid = ?', $js->{sid});
   return defined $gameId;
 }
