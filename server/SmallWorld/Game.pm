@@ -84,7 +84,7 @@ sub loadFromState {
     gotWealthy     => $gs{gotWealthy} ? 1 : 0
   };
   my $state = $self->getStageFromGameState(\%gs);
-  die "Wrong calculate stage\n" if defined $gs{stage} && $gs{stage} ne $state;
+  die "Wrong calculate stage: $gs{stage} vs $state\n" if defined $gs{stage} && $gs{stage} ne $state;
   $self->{gameState}->{state} = $state;
   my $i = 0;
   foreach ( @{ $gs{map}->{regions} } ) {
@@ -96,6 +96,7 @@ sub loadFromState {
       tokenBadgeId      => $_->{currentRegionState}->{tokenBadgeId},
       tokensNum         => $_->{currentRegionState}->{tokensNum},
       holeInTheGround   => $_->{currentRegionState}->{holeInTheGround} ? 1 : 0,
+      lair              => $self->getLairFromGameState(\%gs, $_->{tokenBadgeId}),
       encampment        => $_->{currentRegionState}->{encampment},
       dragon            => $_->{currentRegionState}->{dragon} ? 1 : 0,
       fortified         => $_->{currentRegionState}->{fortified} ? 1 : 0,
@@ -118,6 +119,18 @@ sub loadFromState {
   }
 }
 
+sub getLairFromGameState {
+  my ($self, $gs, $tokenBadgeId) = @_;
+  return undef if !defined $tokenBadgeId;
+  return (grep {
+      defined $_->{currentTokenBadge} && ($_->{currentTokenBadge}->{tokenBadgeId} // -1) == $tokenBadgeId &&
+      $_->{currentTokenBadge}->{raceName} eq RACE_TROLLS ||
+      defined $_->{declinedTokenBadge} && ($_->{declinedTokenBadge}->{tokenBadgeId} // -1) == $tokenBadgeId &&
+      $_->{declinedTokenBadge}->{raceName} eq RACE_TROLLS
+    } @{ $gs->{players} })
+    ? 1 : undef;
+}
+
 sub getStageFromGameState {
   my ($self, $gs) = @_;
   my $st = $gs->{state};
@@ -130,8 +143,8 @@ sub getStageFromGameState {
   return GS_CONQUEST           if $le == LE_THROW_DICE || $le == LE_CONQUER || $le == LE_DEFEND || $le == LE_SELECT_RACE;
   return GS_FINISH_TURN        if $le == LE_DECLINE || $le == LE_SELECT_FRIEND;
   return GS_REDEPLOY           if $le == LE_FAILED_CONQUER && (grep {
-      !$_->{inDecline} &&
-      ($_->{ownerId} // -1) == $gs->{activePlayerId}
+      !$_->{currentRegionState}->{inDecline} &&
+      ($_->{currentRegionState}->{ownerId} // -1) == $gs->{activePlayerId}
     } @{ $gs->{map}->{regions} });
   return GS_BEFORE_FINISH_TURN if $le == LE_REDEPLOY || $le == LE_FAILED_CONQUER;
   return GS_SELECT_RACE        if (grep {
