@@ -293,15 +293,21 @@ sub initStorage {
 # сохраняет состояние игры в БД
 sub save {
   my $self = shift;
+  $self->dropObjects();
   my $gs = { %{ $self->{gameState} } };
   delete $gs->{gameInfo};
-  # вместо того, чтобы сохранять в json объекты-игроков, сохраняем только
-  # информацию о них
-  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{players} };
-  delete $_->{game} for @{ $gs->{players} };
-  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{regions} };
   $self->{db}->saveGameState(encode_json($gs), $gs->{activePlayerId}, $gs->{currentTurn}, $self->{gameState}->{gameInfo}->{gameId});
   $self->{_version}++;
+}
+
+# вместо созданных объектов игроков и регионов ставим обратно хэши
+sub dropObjects {
+  my $self = shift;
+  # вместо того, чтобы сохранять в json объекты-игроков, сохраняем только
+  # информацию о них
+  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $self->players };
+  delete $_->{game} for @{ $self->players };
+  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $self->regions };
 }
 
 # устанавливает определенные карточки рас и умений
