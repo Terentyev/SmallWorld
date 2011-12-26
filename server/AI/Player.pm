@@ -6,6 +6,7 @@ use warnings;
 use utf8;
 
 use JSON qw( decode_json encode_json );
+use List::Util qw( min );
 
 use SmallWorld::Checker qw( checkRegion_conquer );
 use SmallWorld::Consts;
@@ -134,21 +135,21 @@ sub _decline {
 sub _useSpConquer {
   my ($self, $g, $regionId, $ans) = @_;
   if ( $self->_canEnchant($g, $regionId) ) {
-    $ans = $self->_sendGameCmd(game => $g, action => 'enchant', regionId => $regionId);
-    die "Fail enchant" if $ans->{result} ne R_ALL_OK;
+    $$ans = $self->_sendGameCmd(game => $g, action => 'enchant', regionId => $regionId);
+    die "Fail enchant" if $$ans->{result} ne R_ALL_OK;
     $g->{gs}->enchant($regionId);
     return 1;
   }
   if ( $self->_canDragonAttack($g, $regionId) ) {
-    $ans = $self->_sendGameCmd(game => $g, action => 'dragonAttack', regionId => $regionId);
-    die "Fail dragon attack" if $ans->{result} ne R_ALL_OK;
+    $$ans = $self->_sendGameCmd(game => $g, action => 'dragonAttack', regionId => $regionId);
+    die "Fail dragon attack" if $$ans->{result} ne R_ALL_OK;
     $g->{gs}->dragonAttack($regionId);
     return 1;
   }
   if ( $self->_canThrowDice($g) ) {
-    $ans = $self->_sendGameCmd(game => $g, action => 'throwDice');
-    die "Fail throw dice" if $ans->{result} ne R_ALL_OK;
-    $g->{gs}->throwDice($ans->{dice});
+    $$ans = $self->_sendGameCmd(game => $g, action => 'throwDice');
+    die "Fail throw dice" if $$ans->{result} ne R_ALL_OK;
+    $g->{gs}->throwDice($$ans->{dice});
     return 0;
   }
   return 0;
@@ -184,9 +185,15 @@ sub _canThrowDice {
 sub _conquerRegion {
   my ($self, $g, $regionId, $ans) = @_;
   return 1 if $self->_useSpConquer($g, $regionId, $ans);
+  $$ans = {}; # надо очистить, чтобы мусора типа dice не было
   # TODO: сделать с учетом бросания кубика и подсчета вероятности
   return 0 if !$self->_canAttack($g, $regionId);
-  $ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $regionId);
+  $$ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $regionId);
+  # изменяем все состояние согласно правилам
+  if ( $$ans->{result} eq R_ALL_OK ) {
+    $g->{gs}->getPlayer()->dice($$ans->{dice});
+    $g->{gs}->conquer($regionId, {});
+  }
   return 1;
 }
 
@@ -194,26 +201,25 @@ sub _conquer {
   my ($self, $g) = @_;
   my $res = NOT_CONQUERED;
   my $ans = {};
-  my $dummy = {};
   my $repeat = 0;
   do {
     $repeat = 0;
     foreach ( @{ $g->{gs}->regions } ) {
-      next if !$self->_conquerRegion($g, $_->{regionId}, $ans);
+      my $needDefend = ($_->{tokenBadgeId} // 0) != 0 && !$_->{inDecline};
+      next if !$self->_conquerRegion($g, $_->{regionId}, \$ans);
+      swLog(LOG_FILE, '_conquer', $ans, $needDefend);
       # если это было последнее завоевание, то возможна одна из ситуаций:
       #  1. У нас есть региона -> redeploy
       #  2. У нас нет регионов -> beforeFinishTurn
       # Пока не будем мудрить и спросим сервер, какое у нас состояние
       return ABORT if defined $ans->{dice};
       # если захватить не получилось, то пытаемся захватить следующий регион
-      next if $ans ne R_ALL_OK;
+      next if $ans->{result} ne R_ALL_OK;
       # надо дать шанс защититься, если регион пренадлежал расе не в упадке
-      return ABORT if $ans eq R_ALL_OK && !$_->{inDecline};
-      # состояние игры изменилось на conquest, поэтому продолжаем воевать там
+      return ABORT if $ans->{result} eq R_ALL_OK && $needDefend;
+      # состояние игры изменилось на conquest, поэтому продолжаем воевать
       $res = CONQUERED;
       $repeat = 1; # надо повторить, вдруг сможем ещё что-то захватить
-      # изменяем все состояние согласно правилам
-      $g->{gs}->conquer($_->{regionId}, $dummy);
     }
   } while ( $repeat );
   return $res;
@@ -226,17 +232,17 @@ sub _canBaseAttack {
   my $ar = $p->activeRace();
   my $asp = $p->activeSp();
   return !$r->isImmune() &&
-    $self->checkRegion_conquer(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
+    !$self->checkRegion_conquer(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
 }
 
 sub _canAttack {
   my ($self, $g, $regionId) = @_;
   my $r = $g->{gs}->getRegion($regionId);
   my $p = $g->{gs}->getPlayer();
-  $p->{dice} = defined $g->{gs}->berserkDice ? 0 : 3; # максимум возможное # TODO: переделать
+  my $dummy = {dice => defined $g->{gs}->berserkDice ? 0 : 3}; # максимум возможное # TODO: переделать
   my $ar = $p->activeRace();
   my $asp = $p->activeSp();
-  return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, {});
+  return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, $dummy);
 }
 
 sub _cmd_defend {
@@ -259,7 +265,7 @@ sub _cmd_defend {
 
 sub _cmd_selectRace {
   my ($self, $g) = @_;
-  my $p = int(rand(6));
+  my $p = min(int(rand(6)), $g->{gs}->getPlayer()->coins);
   die 'Fail select race' if
     $self->_sendGameCmd(game => $g, action => 'selectRace', position => $p)->{result} ne R_ALL_OK;
 }
@@ -290,7 +296,7 @@ sub _cmd_redeploy {
   my $tokens = $p->tokens;
   my $regs = $p->activeRace()->regions;
   my @regions = ();
-  $tokens += ($_->{tokens} // 0) for @$regs;
+  $tokens += ($_->{tokensNum} // 0) for @$regs;
   my $n = scalar(@$regs);
   foreach ( @$regs ) {
     push @regions, { regionId => $_->{regionId}, tokensNum => int($tokens / $n) };
