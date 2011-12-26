@@ -15,6 +15,7 @@ use SW::Util qw( swLog );
 
 use AI::Config;
 use AI::Consts;
+use AI::DB;
 use AI::Output qw( printGames printDebug );
 
 
@@ -37,11 +38,53 @@ sub _init {
   if ( defined $p{game} && defined $p{ais} ) {
     $self->{games}->{$p{game}}->{ais} = eval { decode_json($p{ais}) } || [];
   }
+  $self->{db} = AI::DB->new(
+      db          => DB_NAME,
+      user        => DB_LOGIN,
+      passwd      => DB_PASSWORD,
+      maxBlobSize => DB_MAX_BLOB_SIZE);
 }
 
 sub _get {
   my ($self, $cmd, $add2log) = (@_, 0);
   return $self->{req}->get($cmd, $add2log);
+}
+
+sub _save {
+  my ($self, $g) = @_;
+  $g->{gs}->dropObjects();
+  my $state = {
+    'regions' => [
+      map { {
+        regionId         => $_->{regionId},
+        conquestIdx      => $_->{conquestIdx},
+        prevTokensNum    => $_->{prevTokensNum},
+        prevTokenBadgeId => $_->{prevTokenBadgeId}
+      } } @{ $g->{gs}->regions }
+    ],
+  };
+  $state = encode_json($state);
+  my $where = { playerId => $g->{gs}->activePlayerId };
+  if ( $self->{db}->select1(from => STATES_TABLE, fields => [ 1 ], where => $where) ) {
+    $self->{db}->update(update => STATES_TABLE, set => { state => $state }, where  => $where);
+  }
+  else {
+    $self->{db}->insert(into => STATES_TABLE, values => { %$where, state => $state });
+  }
+}
+
+sub _load {
+  my ($self, $g) = @_;
+  my $state = $self->{db}->select1(
+      from   => STATES_TABLE,
+      fields => ['state'],
+      where  => { playerId => $g->{gs}->activePlayerId });
+  return if !defined $state;
+  $state = decode_json($state);
+  foreach ( @{ $state->{regions} // [] } ) {
+    my $r = $g->{gs}->getRegion($_->{regionId});
+    (@$r{qw(conquestIdx prevTokensNum prevTokenBadgeId)}) = (@$_{qw(conquestIdx prevTokensNum prevTokenBadgeId)});
+  }
 }
 
 sub do {
@@ -104,9 +147,10 @@ sub _ourTurn {
 sub _play {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
-  swLog(LOG_FILE, $g->{gs}->stage, $g->{gs}->activePlayerId);
+  $self->_load($g);
   my $func = $self->can("_cmd_" . $g->{gs}->stage);
   &$func($self, $g) if defined $func;
+  $self->_save($g);
 }
 
 sub _sendGameCmd {
@@ -124,12 +168,6 @@ sub _sendGameCmd {
   die "Can't define sid of player\n" if !defined $cmd->{sid};
   $cmd = eval { encode_json($cmd) } || die "Can't encode json :(\n";
   $self->_get($cmd, 1);
-}
-
-sub _decline {
-  my ($self, $g) = @_;
-  die 'Fail decline' if
-    $self->_sendGameCmd(game => $g, action => 'decline')->{result} ne R_ALL_OK;
 }
 
 sub _useSpConquer {
@@ -153,6 +191,26 @@ sub _useSpConquer {
     return 0;
   }
   return 0;
+}
+
+sub _canBaseAttack {
+  my ($self, $g, $regionId) = @_;
+  my $r = $g->{gs}->getRegion($regionId);
+  my $p = $g->{gs}->getPlayer();
+  my $ar = $p->activeRace();
+  my $asp = $p->activeSp();
+  return !$r->isImmune() &&
+    !$self->checkRegion_conquer(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
+}
+
+sub _canAttack {
+  my ($self, $g, $regionId) = @_;
+  my $r = $g->{gs}->getRegion($regionId);
+  my $p = $g->{gs}->getPlayer();
+  my $dummy = {dice => defined $g->{gs}->berserkDice ? 0 : 3}; # максимум возможное # TODO: переделать
+  my $ar = $p->activeRace();
+  my $asp = $p->activeSp();
+  return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, $dummy);
 }
 
 sub _canEnchant {
@@ -247,24 +305,17 @@ sub _conquer {
   return $res;
 }
 
-sub _canBaseAttack {
-  my ($self, $g, $regionId) = @_;
-  my $r = $g->{gs}->getRegion($regionId);
-  my $p = $g->{gs}->getPlayer();
-  my $ar = $p->activeRace();
-  my $asp = $p->activeSp();
-  return !$r->isImmune() &&
-    !$self->checkRegion_conquer(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
+sub _decline {
+  my ($self, $g) = @_;
+  die 'Fail decline' if
+    $self->_sendGameCmd(game => $g, action => 'decline')->{result} ne R_ALL_OK;
+  $g->{gs}->decline();
 }
 
-sub _canAttack {
-  my ($self, $g, $regionId) = @_;
-  my $r = $g->{gs}->getRegion($regionId);
-  my $p = $g->{gs}->getPlayer();
-  my $dummy = {dice => defined $g->{gs}->berserkDice ? 0 : 3}; # максимум возможное # TODO: переделать
-  my $ar = $p->activeRace();
-  my $asp = $p->activeSp();
-  return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, $dummy);
+sub _finishTurn {
+  my ($self, $g) = @_;
+  $self->_sendGameCmd(game => $g, action => 'finishTurn');
+  $g->{gs}->finishTurn({});
 }
 
 sub _cmd_defend {
@@ -345,12 +396,12 @@ sub _cmd_beforeFinishTurn {
       }
     }
   }
-  $self->_sendGameCmd(game => $g, action => 'finishTurn');
+  $self->_finishTurn($g);
 }
 
 sub _cmd_finishTurn {
   my ($self, $g) = @_;
-  $self->_sendGameCmd(game => $g, action => 'finishTurn');
+  $self->_finishTurn($g);
 }
 
 sub games { return $_[0]->{games}; }
