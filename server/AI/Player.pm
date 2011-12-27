@@ -8,7 +8,11 @@ use utf8;
 use JSON qw( decode_json encode_json );
 use List::Util qw( min );
 
-use SmallWorld::Checker qw( checkRegion_conquer checkFriend );
+use SmallWorld::Checker qw(
+    checkRegion_conquer
+    checkRegion_enchant
+    checkFriend
+);
 use SmallWorld::Consts;
 use SmallWorld::Game;
 use SW::Util qw( swLog );
@@ -115,6 +119,9 @@ sub _join2Game {
   my $r = $self->_get('{ "action": "aiJoin", "gameId": ' . $game->{gameId} . ' }');
   return if $r->{result} ne R_ALL_OK;
 
+  # удалить все что касается данных о игре для нового игрока (если что-то
+  # осталось)
+  $self->{db}->delete(from => STATES_TABLE, where => { playerId => $r->{id} });
   my $g = $self->games->{$game->{gameId}};
   if ( !defined $g ) {
     $g = { gs => undef, ais => [] };
@@ -217,10 +224,10 @@ sub _canEnchant {
   my ($self, $g, $regionId) = @_;
   my $p = $g->{gs}->getPlayer();
   my $ar = $p->activeRace;
+  my $asp = $p->activeSp;
   my $r = $g->{gs}->getRegion($regionId);
-  return $self->_canBaseAttack($g, $regionId) &&
-    $ar->canCmd('enchant', $g->{gs}->{gameState}) &&
-    !$r->inDecline && $r->tokens == 1 && !$r->encampment;
+  return !$self->checkRegion_enchant(undef, $g->{gs}, $p, $r, $ar, $asp, undef) &&
+    $ar->canCmd('enchant', $g->{gs}->{gameState});
 }
 
 sub _canDragonAttack {
