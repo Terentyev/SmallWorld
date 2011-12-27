@@ -35,9 +35,28 @@ sub isImmune {
 
 sub id         { return $_[0]->{regionId};         }
 sub ownerId    { return $_[0]->{ownerId} // -1;    }
-sub tokens     { return $_[0]->safe('tokensNum');  }
 sub inDecline  { return $_[0]->safe('inDecline');  }
-sub encampment { return $_[0]->safe('encampment'); }
+sub dragon     { return $_[0]->safe('dragon');     }
+sub tokens {
+  my $self = shift;
+  $self->{tokensNum} = $_[0] if defined $_[0];
+  return $self->safe('tokensNum');
+}
+sub hero {
+  my $self = shift;
+  $self->{hero} = $_[0] if defined $_[0];
+  return $self->safe('hero');
+}
+sub encampment {
+  my $self = shift;
+  $self->{encampment} = $_[0] if defined $_[0];
+  return $self->safe('encampment');
+}
+sub fortified {
+  my $self = shift;
+  $self->{fortified} = $_[0] if defined $_[0];
+  return $self->safe('fortified');
+}
 
 1;
 
