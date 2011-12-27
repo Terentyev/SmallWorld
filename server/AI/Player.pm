@@ -100,7 +100,7 @@ sub do {
 
   if ( $game->{state} == GST_FINISH ) {
     my $ais = $self->games->{$game->{gameId}}->{ais};
-    $self->_leaveGame($game) if defined $ais && scalar(@$ais);
+    $self->_allLeaveGame($game) if defined $ais && scalar(@$ais);
   }
 
   if ( $self->_ourTurn($game) ) {
@@ -130,11 +130,11 @@ sub _join2Game {
   $self->games->{$game->{gameId}} = $g;
 }
 
-sub _leaveGame {
+sub _allLeaveGame {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
   for ( my $i = 0; $i < scalar(@{ $g->{ais} }); ++$i ) {
-    $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $g->{ais}->[$i]->{sid});
+    $self->_leaveGame($g, $g->{ais}->[$i]->{sid});
   }
   $g->{ais} = [];
 }
@@ -283,6 +283,11 @@ sub _conquerRegion {
   return 1;
 }
 
+sub _leaveGame {
+  my ($self, $g, $sid) = @_;
+  $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $sid);
+}
+
 sub _conquer {
   my ($self, $g) = @_;
   my $res = NOT_CONQUERED;
@@ -384,6 +389,16 @@ sub _cmd_redeploy {
       $regions[-1]->{tokensNum} += $tokens;
       last;
     }
+  }
+  if ( scalar(@regions) == 0 ) {
+    # если мы попали в redeploy и у нас нет регионов, то значит на сервере
+    # воссоздалась ошибочная ситуация (когда нет регионов, которые мы могли бы
+    # захватить (т. е. все возможные под иммунитетом) и нас заставляют захватывать.
+    # Единственное, что мы можем сделать, так это redeploy. Но и его мы не можем
+    # сделать, т. к. нельзя делать redeploy, когда нет регионов.
+    # Значит признаём возможное поражение и покидаем игру.
+    $self->_leaveGame($g);
+    return;
   }
   $self->_sendGameCmd(game => $g, action => 'redeploy', regions => \@regions);
 }
