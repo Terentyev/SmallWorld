@@ -29,7 +29,7 @@ sub insert {
 
 sub delete {
   my ($self, %p) = @_;
-  my %where = $self->_getCondition('WHERE', $p{where});
+  my %where = $self->_getWhereStmnt($p{where});
   return ("DELETE FROM $p{from} $where{stmnt}", @{ $where{binds} });
 }
 
