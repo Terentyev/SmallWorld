@@ -254,7 +254,6 @@ sub _canStoutDecline {
 
 sub _canSelectFriend {
   my ($self, $g, $playerId) = (@_, 0);
-  return 0; # TODO: удалить, когда ИИ научится работать с БД
   my $p = $g->{gs}->getPlayer();
   my $asp = $p->activeSp;
   my $js = { action => 'selectFriend', friendId => $playerId };
