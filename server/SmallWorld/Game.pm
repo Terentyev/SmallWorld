@@ -84,7 +84,8 @@ sub loadFromState {
     gotWealthy     => $gs{gotWealthy} ? 1 : 0
   };
   my $state = $self->getStageFromGameState(\%gs);
-  die "Wrong calculate stage: $gs{stage} vs $state\n" if defined $gs{stage} && $gs{stage} ne $state;
+  die "Wrong calculate stage: $gs{stage} vs $state\n"
+    if defined $gs{stage} && $gs{stage} ne $state && ($gs{state} == GST_BEGIN || $gs{state} == GST_IN_GAME);
   $self->{gameState}->{state} = $state;
   my $i = 0;
   foreach ( @{ $gs{map}->{regions} } ) {
@@ -96,7 +97,7 @@ sub loadFromState {
       tokenBadgeId      => $_->{currentRegionState}->{tokenBadgeId},
       tokensNum         => $_->{currentRegionState}->{tokensNum},
       holeInTheGround   => $_->{currentRegionState}->{holeInTheGround} ? 1 : 0,
-      lair              => $self->getLairFromGameState(\%gs, $_->{tokenBadgeId}),
+      lair              => $self->getLairFromGameState(\%gs, $_->{currentRegionState}->{tokenBadgeId}),
       encampment        => $_->{currentRegionState}->{encampment},
       dragon            => $_->{currentRegionState}->{dragon} ? 1 : 0,
       fortified         => $_->{currentRegionState}->{fortified} ? 1 : 0,
@@ -618,9 +619,11 @@ sub canAttack {
 
   # если игроку не хватает фигурок даже с подкреплением, это его последнее завоевание
   if ( $player->{tokensInHand} + $player->safe('dice') < $self->{defendNum} ) {
-    $player->{dice} = undef;
-    $self->gotoRedeploy();
-    $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN if !(grep { $player->activeConq($_) } @$regions);
+    if ( defined $player->{dice} ) {
+      $player->{dice} = undef;
+      $self->gotoRedeploy();
+      $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN if !(grep { $player->activeConq($_) } @$regions);
+    }
     return 0;
   }
   return 1;
