@@ -27,7 +27,7 @@ function selectFriend() {
     if (player.isHe(cur.userId)) continue;
     pls += addOption(cur.userId, cur.username);
   }
-  $('#selectPlayers').html(pls).triggel('update');
+  $('#selectPlayers').html(pls).trigger('update');
   showModal('#divSelectFriend');
 }
 
