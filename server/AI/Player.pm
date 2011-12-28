@@ -55,20 +55,12 @@ sub _get {
 }
 
 sub _save {
-  my ($self, $g) = @_;
+  my ($self, $g, $playerId) = @_;
   $g->{gs}->dropObjects();
-  my $state = {
-    'regions' => [
-      map { {
-        regionId         => $_->{regionId},
-        conquestIdx      => $_->{conquestIdx},
-        prevTokensNum    => $_->{prevTokensNum},
-        prevTokenBadgeId => $_->{prevTokenBadgeId}
-      } } @{ $g->{gs}->regions }
-    ],
-  };
+  my $state = { };
+  $self->_saveState($g, $state);
   $state = encode_json($state);
-  my $where = { playerId => $g->{gs}->activePlayerId };
+  my $where = { playerId => $playerId };
   if ( $self->{db}->select1(from => STATES_TABLE, fields => [ 1 ], where => $where) ) {
     $self->{db}->update(update => STATES_TABLE, set => { state => $state }, where  => $where);
   }
@@ -77,17 +69,33 @@ sub _save {
   }
 }
 
+sub _saveState {
+  my ($self, $g, $state) = @_;
+  $state->{regions} = [];
+  foreach ( @{ $g->{gs}->regions } ) {
+    my $r = $g->{gs}->getRegion(region => $_);
+    my $s = {};
+    $s->{$_} = $r->{$_} for qw(regionId conquestIdx prevTokensNum prevTokenBadgeId);
+    push @{ $state->{regions} }, $s;
+  };
+}
+
 sub _load {
-  my ($self, $g) = @_;
+  my ($self, $g, $playerId) = @_;
   my $state = $self->{db}->select1(
       from   => STATES_TABLE,
       fields => ['state'],
-      where  => { playerId => $g->{gs}->activePlayerId });
+      where  => { playerId => $playerId });
   return if !defined $state;
   $state = decode_json($state);
-  foreach ( @{ $state->{regions} // [] } ) {
-    my $r = $g->{gs}->getRegion($_->{regionId});
-    (@$r{qw(conquestIdx prevTokensNum prevTokenBadgeId)}) = (@$_{qw(conquestIdx prevTokensNum prevTokenBadgeId)});
+  $self->_loadState($g, $state);
+}
+
+sub _loadState {
+  my ($self, $g, $state) = @_;
+  foreach my $s ( @{ $state->{regions} // [] } ) {
+    my $r = $g->{gs}->getRegion(id => $s->{regionId});
+    $r->{$_} = $s->{$_} for qw(conquestIdx prevTokensNum prevTokenBadgeId);
   }
 }
 
@@ -133,8 +141,8 @@ sub _join2Game {
 sub _allLeaveGame {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
-  for ( my $i = 0; $i < scalar(@{ $g->{ais} }); ++$i ) {
-    $self->_leaveGame($g, $g->{ais}->[$i]->{sid});
+  for ( 0..$#{ $g->{ais} } ) {
+    $self->_leaveGame($g, $g->{ais}->[$_]->{sid});
   }
   $g->{ais} = [];
 }
@@ -144,7 +152,7 @@ sub _ourTurn {
   my $g = $self->games->{$game->{gameId}};
   return 0 if !defined $g;
 
-  my $r = $self->_get('{ "action": "getGameState", "gameId": ' . $game->{gameId} . ' }', 1);
+  my $r = $self->_get('{ "action": "getGameState", "gameId": ' . $game->{gameId} . ' }');
   return 0 if $r->{result} ne R_ALL_OK;
 
   $g->{gs} = SmallWorld::Game->new(gameState => $r->{gameState});
@@ -154,10 +162,11 @@ sub _ourTurn {
 sub _play {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
-  $self->_load($g);
+  my $playerId = $g->{gs}->activePlayerId;
+  $self->_load($g, $playerId);
   my $func = $self->can("_cmd_" . $g->{gs}->stage);
   &$func($self, $g) if defined $func;
-  $self->_save($g);
+  $self->_save($g, $playerId);
 }
 
 sub _sendGameCmd {
@@ -185,7 +194,7 @@ sub _useSpConquer {
     $g->{gs}->enchant($regionId);
     return 1;
   }
-  if ( $self->_canDragonAttack($g, $regionId) ) {
+  if ( $self->_canDragonAttack($g, $regionId) && $self->_shouldDragonAttack($g, $regionId) ) {
     $$ans = $self->_sendGameCmd(game => $g, action => 'dragonAttack', regionId => $regionId);
     die "Fail dragon attack" if $$ans->{result} ne R_ALL_OK;
     $g->{gs}->dragonAttack($regionId);
@@ -211,19 +220,22 @@ sub _alienEncampNum {
 
 sub _canBaseAttack {
   my ($self, $g, $regionId) = @_;
-  my $r = $g->{gs}->getRegion($regionId);
+  my $r = $g->{gs}->getRegion(id => $regionId);
   my $p = $g->{gs}->getPlayer();
   my $ar = $p->activeRace();
   my $asp = $p->activeSp();
-  return !$r->isImmune() &&
+  return !$r->isImmune() && $p->tokens > 0 &&
     !$self->checkRegion_conquer(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
 }
 
 sub _canAttack {
   my ($self, $g, $regionId) = @_;
-  my $r = $g->{gs}->getRegion($regionId);
+  my $r = $g->{gs}->getRegion(id => $regionId);
   my $p = $g->{gs}->getPlayer();
-  my $dummy = {dice => defined $g->{gs}->berserkDice ? 0 : 3}; # максимум возможное # TODO: переделать
+  my $dummy = {
+    dice => defined $g->{gs}->berserkDice ? 0 : 3, # максимум возможное # TODO: переделать
+    readOnly => 1
+  };
   my $ar = $p->activeRace();
   my $asp = $p->activeSp();
   return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, $dummy);
@@ -234,8 +246,9 @@ sub _canEnchant {
   my $p = $g->{gs}->getPlayer();
   my $ar = $p->activeRace;
   my $asp = $p->activeSp;
-  my $r = $g->{gs}->getRegion($regionId);
-  return !$self->checkRegion_enchant(undef, $g->{gs}, $p, $r, $ar, $asp, undef) &&
+  my $r = $g->{gs}->getRegion(id => $regionId);
+  return $self->_canBaseAttack($g, $regionId) &&
+    !$self->checkRegion_enchant(undef, $g->{gs}, $p, $r, $ar, $asp, undef) &&
     $ar->canCmd('enchant', $g->{gs}->{gameState});
 }
 
@@ -243,7 +256,7 @@ sub _canDragonAttack {
   my ($self, $g, $regionId) = @_;
   my $p = $g->{gs}->getPlayer();
   my $asp = $p->activeSp;
-  return $self->_canBaseAttack($g, $regionId) &&
+  return (!defined $regionId || $self->_canBaseAttack($g, $regionId)) &&
     $asp->canCmd({ action => 'dragonAttack' }, $g->{gs}->stage, $p);
 }
 
@@ -294,58 +307,72 @@ sub _canPlaceFortified {
     scalar(grep $_->{fortified}, @{ $g->{gs}->regions }) < FORTRESS_MAX;
 }
 
-sub _needStoutDecline {
+sub _shouldStoutDecline {
   # TODO: наверное, это уже будет продвинутый ИИ, если он будет решать нужно ли
   # ему приводить расу в упадок способностью Stout
   return !int(rand(5));
 }
 
+sub _shouldDragonAttack {
+  my ($self, $g, $regionId) = @_;
+  # простой ИИ при первой же возможности пользуется атакой дракона
+  return 1;
+}
+
+sub _getRegionsForConquest {
+  my ($self, $g) = @_;
+  return @{ $g->{gs}->regions };
+}
+
+sub _beginConquest { }
+
+sub _endConquest { }
+
 sub _conquerRegion {
-  my ($self, $g, $regionId, $ans) = @_;
-  return 1 if $self->_useSpConquer($g, $regionId, $ans);
-  $$ans = {}; # надо очистить, чтобы мусора типа dice не было
+  my ($self, $g, $regionId) = @_;
+  my $ans = {};
+  return 1 if $self->_useSpConquer($g, $regionId, \$ans);
   # TODO: сделать с учетом бросания кубика и подсчета вероятности
   return 0 if !$self->_canAttack($g, $regionId);
-  $$ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $regionId);
-  # изменяем все состояние согласно правилам
-  if ( $$ans->{result} eq R_ALL_OK ) {
-    $g->{gs}->getPlayer()->dice($$ans->{dice});
-    $g->{gs}->conquer($regionId, {});
+  $ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $regionId);
+  if ( defined $ans->{dice} ) {
+    my $p = $g->{gs}->getPlayer();
+    # изменяем все состояние согласно правилам
+    $g->{gs}->canAttack($p, $g->{gs}->getRegion(id => $regionId), $p->activeRace, $p->activeSp, $ans);
   }
-  return 1;
+  if ( $ans->{result} eq R_ALL_OK ) {
+    # изменяем все состояние согласно правилам
+    $g->{gs}->conquer($regionId, {});
+    return 1;
+  }
+  return 0;
 }
 
 sub _leaveGame {
   my ($self, $g, $sid) = @_;
   $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $sid);
+  return if !defined $g->{gs}->activePlayerId;
+  return if defined $sid;
+  for ( @{ $g->{ais} } ) {
+    $sid = $_->{sid};
+    last if $_->{id} == $g->{gs}->activePlayerId;
+  }
+  $g->{ais} = [grep $_->{sid} != $sid, @{ $g->{ais} }];
 }
 
 sub _conquer {
   my ($self, $g) = @_;
-  my $res = NOT_CONQUERED;
-  my $ans = {};
   my $repeat = 0;
   do {
+    $self->_beginConquest($g);
     $repeat = 0;
-    foreach ( @{ $g->{gs}->regions } ) {
-      my $needDefend = ($_->{tokenBadgeId} // 0) != 0 && !$_->{inDecline};
-      next if !$self->_conquerRegion($g, $_->{regionId}, \$ans);
-      swLog(LOG_FILE, '_conquer', $ans, $needDefend);
-      # если это было последнее завоевание, то возможна одна из ситуаций:
-      #  1. У нас есть региона -> redeploy
-      #  2. У нас нет регионов -> beforeFinishTurn
-      # Пока не будем мудрить и спросим сервер, какое у нас состояние
-      return ABORT if defined $ans->{dice};
-      # если захватить не получилось, то пытаемся захватить следующий регион
-      next if $ans->{result} ne R_ALL_OK;
-      # надо дать шанс защититься, если регион пренадлежал расе не в упадке
-      return ABORT if $ans->{result} eq R_ALL_OK && $needDefend;
-      # состояние игры изменилось на conquest, поэтому продолжаем воевать
-      $res = CONQUERED;
-      $repeat = 1; # надо повторить, вдруг сможем ещё что-то захватить
+    foreach ( $self->_getRegionsForConquest($g) ) {
+      my $conq = $self->_conquerRegion($g, $_->{regionId});
+      $repeat = $repeat || $conq; # надо повторить, вдруг сможем ещё что-то захватить
+      return if $g->{gs}->stage ne GS_CONQUEST && $g->{gs}->stage ne GS_BEFORE_CONQUEST;
     }
+    $self->_endConquest($g);
   } while ( $repeat );
-  return $res;
 }
 
 sub _decline {
@@ -388,7 +415,7 @@ sub _redeploy {
   # за регионом, который мы захватили драконом, а также подсчитать общее
   # количество фигурок
   foreach ( @$regs ) {
-    my $r = $g->{gs}->getRegion($_->{regionId});
+    my $r = $g->{gs}->getRegion(region => $_);
     if ( $r->dragon ) {
       push @regions, { regionId => $r->id, tokensNum => 1 };
       $n -= 1;
@@ -403,7 +430,7 @@ sub _redeploy {
     $_->{hero} = 0 for @$regs;
     my $i = 0; # счетчик героев
     foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion($_->{regionId});
+      my $r = $g->{gs}->getRegion(region => $_);
       $r->hero(1);
       $r->tokens(1);
       $tokens -= 1;
@@ -431,7 +458,7 @@ sub _redeploy {
     my $delta = max(1, int($encampNum / $n));
     my $r = undef;
     foreach ( @$regs ) {
-      $r = $g->{gs}->getRegion($_->{regionId});
+      $r = $g->{gs}->getRegion(region => $_);
       my $num = $delta;
       $encampNum -= $num;
       if ( $encampNum < 0 ) {
@@ -450,7 +477,7 @@ sub _redeploy {
 
   if ( $self->_canPlaceFortified($g) ) {
     foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion($_->{regionId});
+      my $r = $g->{gs}->getRegion(region => $_);
       $tokens += 1;
       if ( !$r->fortified ) {
         $r->fortified(1);
@@ -466,7 +493,7 @@ sub _redeploy {
     # в этих оставшихся регионах
     my $delta = max(1, int($tokens / $n));
     foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion($_->{regionId});
+      my $r = $g->{gs}->getRegion(region => $_);
       next if $r->hero || $r->dragon;
 
       my $num = $delta;
@@ -485,7 +512,7 @@ sub _redeploy {
   }
   if ( $tokens != 0 ) {
     $regions[-1]->{tokensNum} += $tokens;
-    my $r = $g->{gs}->getRegion($regions[-1]->{regionId});
+    my $r = $g->{gs}->getRegion(id => $regions[-1]->{regionId});
     $r->tokens($r->tokens + $tokens);
   }
   $p->tokens(0);
@@ -525,10 +552,10 @@ sub _cmd_selectRace {
 
 sub _cmd_beforeConquest {
   my ($self, $g) = @_;
-  my $res = $self->_conquer($g);
-  return if $res == ABORT;
+  $self->_conquer($g);
+  return if $g->{gs}->stage eq GS_BEFORE_FINISH_TURN;
   # размещаем войска
-  return $self->_redeploy($g) if $res == CONQUERED;
+  return $self->_redeploy($g) if $g->{gs}->stage ne GS_BEFORE_CONQUEST;
   # у нас ничего не получилось завоевать и состояние игры не изменилось, значит
   # расу в упадок, ибо УГ
   $self->_decline($g);
@@ -536,10 +563,9 @@ sub _cmd_beforeConquest {
 
 sub _cmd_conquest {
   my ($self, $g, $i) = (@_, 0);
-  my $res = $self->_conquer($g);
-  return if $res == ABORT;
+  $self->_conquer($g);
   # размещаем войска
-  $self->_redeploy($g);
+  $self->_redeploy($g) if $g->{gs}->stage eq GS_CONQUEST || $g->{gs}->stage eq GS_REDEPLOY;
 }
 
 sub _cmd_redeploy {
@@ -549,7 +575,7 @@ sub _cmd_redeploy {
 
 sub _cmd_beforeFinishTurn {
   my ($self, $g) = @_;
-  if ( $self->_canStoutDecline($g) && $self->_needStoutDecline($g) ) {
+  if ( $self->_canStoutDecline($g) && $self->_shouldStoutDecline($g) ) {
     $self->_decline($g);
   }
   if ( $self->_canSelectFriend($g) ) {
