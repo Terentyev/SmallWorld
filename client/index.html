@@ -78,7 +78,7 @@
       </table>
     </div>
   </div>
-  
+
   <div id="divAskNum" class="modal">
     <div class="header"><span>How much?</span></div>
     <div class="message">
@@ -102,36 +102,6 @@
             <div class="buttons">
               <div class="modal-close">Cancel</div>
               <div onclick="askNumOkClick();">OK</div>
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
-  </div>
-
-  <div id="divSelectFriend" class="modal">
-    <div class="header"><span>Select friend</span></div>
-    <div class="message">
-      <table>
-        <tr>
-          <td colspan="3" align="center">
-            <div id="divSelectFriendError" class="error"></div>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="3" align="center">
-            <div id="divSelectFriendMsg" class="question">Select your friend</div>
-          </td>
-        </tr>
-        <tr>
-          <td width="100">Player name:</td>
-          <td><select id="selectPlayers"></select></td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <div class="buttons">
-              <div class="modal-close">Cancel</div>
-              <div onclick="commitSelectFriend();">OK</div>
             </div>
           </td>
         </tr>
@@ -220,7 +190,7 @@
     </div>
 
   </div>
-  
+
   <div id="divCurrentServer" class="corner-all" onclick="showSelectServer();"
     title="Click here to change server url">
     Server URL: <span id="serverUrl"></span>
@@ -232,6 +202,20 @@
     <tbody valign="top">
       <tr>
         <td width="200">
+        <div class="corner-all">
+            <div class="header"><span>Game info</span></div>
+            <div class="message" id="gameInfoBody">
+              <table>
+                <tr><td>Turn: <span id="spanGameTurn">X from Y</span></td></tr>
+                <tr><td>Players:</td></tr>
+                <tr><td>
+                  <table id="tablePlayers">
+                    <tbody></tbody>
+                  </table>
+                </td></tr>
+              </table>
+            </div>
+          </div> <br>
           <div class="corner-all">
             <div class="header"><span>Race/special power</span></div>
             <div class="message">
@@ -246,8 +230,10 @@
 
           <table id="tableCenter" width="100%" align="center">
             <tr>
-              <td align="right" width="50%"><span id="spanGameStage"></span></td>
-              <td align="left" width="50%"><div id="divGameError" class="error"><div></td>
+              <td colspan="2" align="center"><span id="spanGameStage"></span></td>
+            </tr>
+            <tr>
+              <td colspan="2" align="center"><div id="divGameError" class="error"><div></td>
             </tr>
             <tr>
               <td colspan="2">
@@ -270,32 +256,94 @@
           </div>
         </td>
         <td width="10%">
+         <div class="corner-all">
+            <div class="header"><span>Actions</span></div>
+            <div class="message">
+              <table id="tableActions" width="100%" height="100%" align="center">
+                <tr><td>
+                  <div id="divActions">
+                      <div id="divSelectFriend">
+                        <table>
+                          <tr>
+                            <td colspan="2">Select your friend</td>
+                          </tr>
+                          <tr>
+                            <td class="smallLeft">Name:</td>
+                            <td><select id="selectPlayers"></select></td>
+                          </tr>
+                          <tr>
+                            <td colspan="2">
+                              <div class="buttons">
+                                <div onclick="commitStageClick();">Finish</div>
+                                <div onclick="commitSelectFriend();">Select</div>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                      <div id="divRedeploy">Redeploy:</div>
+                      <div id="divConquest">
+                        <table>
+                          <tr>
+                            <td>Conquer:</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div id="divThrowDice">
+                                <table>
+                                  <tr>
+                                    <td class="smallLeft">Dice:</td>
+                                    <td><span id="spanDiceValue"></span></td>
+                                  </tr>
+                                </table>
+                              </div>
+                              <div id="divDragonAttack">
+                                <input id="checkBoxDragon" type="checkbox" onclick="dragonAttack()"/>Use dragon
+                              </div>
+                              <div id="divEnchant">
+                                <input id="checkBoxEnchant" type="checkbox" onclick="enchant()"/>Use enchant
+                              </div>
+                            <td>
+                          </tr>
+                        </table>
+                      </div>
+                      <div id="divDecline">
+                        <table>
+                          <tr>
+                            <td>Do you want decline you race?</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div class="buttons">
+                                <div onclick="commitStageClick();">No</div>
+                                <div onclick="decline();">Yes</div>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                  </div>
+                </td></tr>
+                <tr><td>
+                  <div class="buttons" id="buttonActions">
+                    <div id="btnCommitStage" onclick="commitStageClick();">Scores</div>
+                  </div>
+                </td></tr>
+                <tr><td></td></tr>
+              </table>
+            </div>
+          </div> <br>
           <div class="corner-all">
             <div class="header"><span>Current player</span></div>
             <div class="message">
               <table id="tableCurrentPlayer" width="100%" height="100%" align="center">
                 <tbody valign="top"></tbody>
               </table>
-              <div class="buttons">
-                <div id="btnCommitStage" onclick="commitStageClick();">Next &gt;&gt;</div>
-                <div id="btnTest" onclick="test();">Test</div>
-              </div>
             </div>
-          </div> <br><br>
-          <div class="corner-all">
-            <div class="header"><span>Game info</span></div>
-            <div class="message">
-              <table>
-                <tr><td>Turn: <span id="spanGameTurn">X from Y</span></td></tr>
-                <tr><td>Players:</td></tr>
-                <tr><td>
-                  <table id="tablePlayers">
-                    <tbody></tbody>
-                  </table>
-                </td></tr>
-              </table>
+          </div> <br>
+            <div class="buttons">
+              <div id="btnTest" onclick="test();">Test</div>
             </div>
-          </div>
         </td>
       </tr>
       <tr>
@@ -308,23 +356,9 @@
   </div>
 
   <div style="display: none;">
-    <div id="divThrowDice">
-      <div class="inplaceButton"><div class="buttons"><div onclick="cmdThrowDice();">Throw</div></div></div>
-    </div>
-    <div id="divSelectFriend">
-      <div class="inplaceButton"><div class="buttons"><div onclick="selectFriend();">Friend</div></div></div>
-    </div>
-    <div id="divDragonAttack">
-      <div class="inplaceButton"><div class="buttons"><div onclick="dragonAttack();">Dragon</div></div></div>
-    </div>
-    <div id="divDecline">
-      <div class="inplaceButton"><div class="buttons"><div onclick="decline();">Decline</div></div></div>
-    </div>
-    <div id="divEnchant">
-      <div class="inplaceButton"><div class="buttons"><div onclick="enchant();">Enchant</div></div></div>
-    </div>
+
   </div>
-  
+
   <div id="divLobby">
    <table align="center" width="990" >
       <tr valign="top"><td width="680">
@@ -443,7 +477,7 @@
           </div>
         </div>
      </td><td width="310">
-     
+
        <div id="divCurrentPlayer" class="corner-all">
          <div class="header"><span>Current player</span></div>
          <div class="body" id="divLogin">
@@ -494,7 +528,7 @@
             </table>
          </div>
        </div>
-       
+
        <br>
        <div id="divCurrentGame" class="corner-all">
         <div class="header"><span>Current game</span></div>
