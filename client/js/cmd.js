@@ -232,6 +232,7 @@ function hdlGetGameList(ans) {
 }
 
 function cmdLeaveGame() {
+  if (!confirm('Do you really want to leave game')) return;
   var cmd = {
     action: "leaveGame",
     sid: data.sid
@@ -291,6 +292,7 @@ function cmdGetGameState() {
 }
 
 function hdlGetGameState(ans) {
+  $('#divGameError').empty();
   var gs = ans.gameState;
   if (gs.state == GST_EMPTY) {
     // TODO: что же делать, если произошла такая странная ситуация?
@@ -349,8 +351,8 @@ function hdlConquer(ans) {
           'Dice: %d.\n' +
           'Conquest is over.',
           ans.dice));
-    player.getRegion().conquerBy(player);
   }
+  player.getRegion().conquerByPlayer(player, ans.dice);
   cmdGetGameState();
 }
 
@@ -367,8 +369,7 @@ function errConquer(ans, cnt) {
         'Conquest is over.',
         ans.dice,
         et));
-        commitStageConquest();
-  //setGameStage('redeploy');
+  commitStageConquest();
 }
 
 function cmdDefend(regions) {
@@ -452,18 +453,19 @@ function hdlThrowDice(ans) {
   showPlayers();
 }
 
-function cmdSelectFriend(friendId) {
+function cmdSelectFriend(fid) {
   var cmd = {
     action: "selectFriend",
-    sid: data.sid
+    sid: data.sid,
+    friendId: fid
   };
-  sendRequest(cmd, hdlSelectFriend, '#divSelectFriendError');
+  sendRequest(cmd, hdlSelectFriend);
 }
 
 function hdlSelectFriend(ans) {
   player.setSelectFriend();
-  showPlayers();
-  $.modal.close();
+  setGameStage(GS_FINISH_TURN);
+  cmdGetGameState();
 }
 
 function cmdDragonAttack(regionId) {
