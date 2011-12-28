@@ -154,14 +154,93 @@ function showRegions() {
 }
 
 function showGameStage() {
-  $('#spanGameStage').html(
-      gameStages[data.game.stage][player.isActive()]);
-  $('#spanGameStage').trigger('update');
-  $('#placeDecline').html(
-      (player.isActive() && data.game.stage == 'beforeConquest'
-       ? $('#divDecline').html()
-       : ''));
-  $('#placeDecline').trigger('update');
+  var act = '', txt = '', btn = $('#btnCommitStage');
+  hideAllActions();
+  if (data.game.stage == null || data.game.stage == '') return;
+  btn.show();
+  if (data.game.state == GST_FINISH) {
+    $('#spanGameStage').html('Oops!.. Game over. You can see final scores');
+    btn.html('Scores').attr('title', 'See final scores');
+    commitStageClickAction = showScores;
+    return;
+  }
+
+  if (!player.isActive()) {
+    btn.html('Update').attr('title', 'Update game state');
+    $('#spanGameStage').html('Wait other players');
+    return;
+  }
+
+  switch (data.game.stage) {
+    case GS_DEFEND:
+      txt = 'Let\'s defend, my friend!';
+      btn.html('Defend').attr('title', 'Finish defend');
+      break;
+    case GS_SELECT_RACE:
+      txt = 'So... You should select your path... or race';
+      btn.hide();
+      break;
+    case GS_BEFORE_CONQUEST:
+      txt = 'You may decline you active race, or start conquer';
+      $('#divDecline').show();
+      btn.hide();
+      break;
+    case GS_CONQUEST:
+      txt = 'Do you want some fun? Let\'s conquer some regions. Click on region to try';
+      $('#divConquest').show();
+      btn.html('Skip').attr('title', 'Start redeploy');
+      switch (player.curPower()) {
+        case 'Berserk':
+          $('#divThrowDice').show();
+          if (player.canBerserkThrowDice())
+            $('#spanDiceValue').html('<div class="tbutton" onclick="cmdThrowDice();">Throw</div>');
+          else
+            $('#spanDiceValue').html(player.berserkDice());
+          break;
+        case 'DragonMaster':
+          $('#divDragonAttack').show();
+          $('#checkBoxDragon').attr('checked', data.game.dragonAttacked).
+                               attr('disabled', data.game.dragonAttacked);
+          dragonAttack();
+      }
+      if (player.curRace() == 'Sorcerers') {
+          $('#divEnchant').show();
+          $('#checkBoxEnchant').attr('checked', data.game.enchanted).
+                                attr('disabled', data.game.enchanted);
+          enchant();
+      }
+      break;
+    case GS_REDEPLOY:
+      txt = 'Place your warriors to the world';
+      $('#divRedeploy').show();
+      btn.html('Finish').attr('title', 'Finish redeploy');
+      break;
+    case GS_BEFORE_FINISH_TURN:
+      btn.html('Finish').attr('title', 'Finish turn');
+      switch (player.curPower()) {
+        case 'Stout':
+          txt = 'You may decline you active race, or finish turn';
+          $('#divDecline').show();
+          btn.hide();
+          break;
+        case 'Diplomat':
+          if (data.game.friendInfo == null || data.game.friendInfo.friendId == null) {
+            txt =  'Select your friend';
+            selectFriend();
+            $('#divSelectFriend').show();
+            btn.hide();
+            break;
+          }
+        default:
+          txt = 'Click finish-turn button, dude';
+      }
+      break;
+    case GS_FINISH_TURN:
+      txt = 'Click finish-turn button, dude';
+      btn.html('Finish').attr('title', 'Finish turn');
+  }
+
+  $('#spanGameStage').html(txt);
 }
 
 function showLobby() {
@@ -195,6 +274,7 @@ function showMessages() {
 }
 
 function showScores() {
+  if (data.game.state != GST_FINISH) return;
   var s = '', sum = 0;
   var p = [];
   for (var i in data.game.players)
@@ -233,5 +313,10 @@ function changeMap(mapId) {
   $("#selectAINum").html(s);
 }
 
+function hideAllActions() {
+  for (var i in actionDivs) $(actionDivs[i]).hide();
+}
+
 function test() {
+  data.sid = data.playerId;
 }
