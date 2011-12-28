@@ -15,6 +15,10 @@ Player.prototype.userId = function() {
   return this.p.userId;
 }
 
+Player.prototype.username = function() {
+  return this.p.username;
+}
+
 Player.prototype.isHe = function(playerId) {
   return playerId == this.userId();
 }
@@ -37,11 +41,11 @@ Player.prototype.curTokenBadgeId = function() {
 }
 
 Player.prototype.curRace = function() {
-  return this.p.currentTokenBadge.raceName;
+  return this.hasActiveRace() ? this.p.currentTokenBadge.raceName : '';
 }
 
 Player.prototype.curPower = function() {
-  return this.p.currentTokenBadge.specialPowerName;
+  return this.hasActiveRace() ? this.p.currentTokenBadge.specialPowerName : '';
 }
 
 Player.prototype.coins = function() {
@@ -81,7 +85,7 @@ Player.prototype.addTokens = function(tokens) {
     // фигурками с регионов
     var regions = this.myRegions();
     for (var i in regions) {
-      var t = min(regions[i].tokens() - 1, -this.tokens());
+      var t = Math.min(regions[i].tokens() - 1, -this.tokens());
       this.p.tokensInHand += t;
       regions[i].rmTokens(t);
       if (this.tokens() == 0) {
@@ -99,9 +103,9 @@ Player.prototype.beforeRedeploy = function() {
 }
 
 Player.prototype.myRegions = function() {
-  var result = []
+  var result = [], r;
   for (var i in this.gs.map.regions) {
-    var r = new Region(i);
+    r = new Region(parseInt(i));
     if (r.isOwned(this.curTokenBadgeId())) {
       result.push(r);
     }
