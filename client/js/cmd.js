@@ -214,7 +214,7 @@ function hdlGetGameList(ans) {
                 $.sprintf("%d/%d", cur.turn, cur.turnsNum),
                 $.sprintf("<div class='wrap' width='100'>%s</div>", cur.gameDescription)]);
   }
-
+  gameId = gameId || data.gameId;
   $("#tableGameList tbody").html(s);
   $("#tableGameList").trigger("update");
   $("input:radio[name=listGameId]").first().attr("checked", 1);
@@ -226,12 +226,15 @@ function hdlGetGameList(ans) {
      });
   if (gameId != null) {
     $("input:radio[name=listGameId]").attr("hidden", 1);
+    $('#btnJoin').hide();
     setGame(gameId);
-  }
+  } else
+    $('#btnJoin').show();
   if (needLoadMaps) cmdGetMapList();
 }
 
 function cmdLeaveGame() {
+  if (!confirm('Do you really want to leave game')) return;
   var cmd = {
     action: "leaveGame",
     sid: data.sid
@@ -243,6 +246,7 @@ function hdlLeaveGame(ans) {
   data.game = null;
   data.gameId = null;
   _setCookie(["gameId"], [null]);
+  $("#tdLobbyChat").append($("#divChat").detach());
   showLobby();
 }
 
@@ -291,9 +295,9 @@ function cmdGetGameState() {
 }
 
 function hdlGetGameState(ans) {
+  $('#divGameError').empty();
   var gs = ans.gameState;
   if (gs.state == GST_EMPTY) {
-    // TODO: что же делать, если произошла такая странная ситуация?
     data.game = null;
     data.gameId = null;
     ShowLobby();
@@ -349,8 +353,8 @@ function hdlConquer(ans) {
           'Dice: %d.\n' +
           'Conquest is over.',
           ans.dice));
-    player.getRegion().conquerBy(player);
   }
+  player.getRegion().conquerByPlayer(player, ans.dice);
   cmdGetGameState();
 }
 
@@ -367,8 +371,7 @@ function errConquer(ans, cnt) {
         'Conquest is over.',
         ans.dice,
         et));
-        commitStageConquest();
-  //setGameStage('redeploy');
+  commitStageConquest();
 }
 
 function cmdDefend(regions) {
@@ -452,18 +455,19 @@ function hdlThrowDice(ans) {
   showPlayers();
 }
 
-function cmdSelectFriend(friendId) {
+function cmdSelectFriend(fid) {
   var cmd = {
     action: "selectFriend",
-    sid: data.sid
+    sid: data.sid,
+    friendId: fid
   };
-  sendRequest(cmd, hdlSelectFriend, '#divSelectFriendError');
+  sendRequest(cmd, hdlSelectFriend);
 }
 
 function hdlSelectFriend(ans) {
   player.setSelectFriend();
-  showPlayers();
-  $.modal.close();
+  setGameStage(GS_FINISH_TURN);
+  cmdGetGameState();
 }
 
 function cmdDragonAttack(regionId) {

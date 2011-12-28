@@ -124,37 +124,63 @@ function getRaceImage(raceName, type, decline) {
 
 function addPlayerInfo(player) {
   var s = $.sprintf(
-    '<tr><td width="16">%s</td><td>%s</td></tr>',
+    '<tr><td width="16">%s</td><td>%s</td>',
     currentPlayerCursor(player.userId),
     player.username + (player.inGame ? '' : '(not in game)'));
-  s += '<tr><td></td><td>';
+  s += '<td>';
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
-      '<img src="%s" title="%s"/>',
+      '<img src="%s" title="%s" class="token"/>',
       getRaceImage(player.currentTokenBadge.raceName, 'token'), player.currentTokenBadge.raceName+'+'+player.currentTokenBadge.specialPowerName);
   }
   if (player.declinedTokenBadge && player.declinedTokenBadge.raceName != null) {
     if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) s += '&nbsp;';
     s += $.sprintf(
-      '<img src="%s" title="%s"/>',
+      '<img src="%s" title="%s" class="token"/>',
       getRaceImage(player.declinedTokenBadge.raceName, 'token', 1), player.declinedTokenBadge.raceName+'+'+player.declinedTokenBadge.specialPowerName);
   }
   s += '</td></tr>';
   return s;
 }
 
+function getObjectsInHand(player) {
+  var s = '<table id="tableInHand"><tbody>';
+  if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
+    s += addRow([$.sprintf('<img src="%s"" class="token"/>', getRaceImage(player.currentTokenBadge.raceName, 'token')),
+         $.sprintf('<a id="aTokensInHand">%d</a>', player.tokensInHand)]);
+    switch (player.currentTokenBadge.specialPowerName) {
+      case 'DragonMaster':
+        s += addRow([$.sprintf('<img src="%s""/>', objects['dragon']), 1 - data.game.dragonAttacked]);
+        break;
+      case 'Heroic':
+        s += addRow([$.sprintf('<img src="%s""/>', objects['hero']), 2]);
+        break;
+      case 'Fortified':
+        s += addRow([$.sprintf('<img src="%s""/>', objects['fortified']), 1]);
+        break;
+      case 'Bivouacking':
+        s += addRow([$.sprintf('<img src="%s""/>', objects['encampment']), 5]);
+        break;
+    }
+  }
+  s += '</tbody></table>';
+  return s;
+}
+
 function addOurPlayerInfo(player) {
   var s = $.sprintf(
-    '<tr><td>' +
-    '<table id="tableOurPlayer">' +
-    '<tr><td colspan="2" align="center">%s</td></tr>' +
-    '<tr><td class="smallLeft">In hand:</td><td><a id="aTokensInHand">%d</a></td></tr>' +
-    '<tr><td class="smallLeft">Coins:</td><td>%s</td></tr>' +
-    '%s',
+    '<tr><td class="smallLeft">Name:</td><td>%s</td></tr>' +
+    '<tr><td class="smallLeft">In hand:</td><td>%s</td></tr>' +
+    '<tr><td class="smallLeft">Coins:</td><td>%s</td></tr>',
     data.username,
-    player.tokensInHand,
-    showCoins(player.coins, 1, 0),
-    currentPlayerPower());
+    getObjectsInHand(player),
+    showCoins(player.coins, 1, 0)
+    );
+
+  if (data.game.friendInfo != null && data.game.friendInfo.friendId != null && data.game.friendInfo.friendId == player.userId) {
+    var tmp = new Player(data.game.friendInfo.diplomatId);
+    s += $.sprintf('<tr><td class="smallLeft">Friend:</td><td>%s</td></tr>', tmp.username());
+  }
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
       '<tr><td colspan="2">Active race:</td></tr><tr><td colspan="2">' +
@@ -171,8 +197,8 @@ function addOurPlayerInfo(player) {
       getRaceImage(player.declinedTokenBadge.raceName, 'race', 1), player.declinedTokenBadge.raceName,
       specialPowers[player.declinedTokenBadge.specialPowerName], player.declinedTokenBadge.specialPowerName);
   }
-  s += '<tr><td colspan="2"> <div class="buttons"> <div onclick="cmdLeaveGame();">Leave</div></div></td></tr>';
-  s += '</table></td></tr>';
+  s += '<tr><td colspan="2"> <div class="buttons"> <div onclick="cmdLeaveGame();">Leave</div>'+
+       '<div onclick="cmdSaveGame();">Save</div></div></td></tr>';
   return s;
 }
 
@@ -181,65 +207,6 @@ function currentPlayerCursor(playerId) {
   return tmp.isActive()
     ? '<img src="/pics/currentPlayerCursor.png" />'
     : '';
-}
-
-function currentPlayerPower() {
-  var s = [];
-  switch (player.curPower()) {
-    case 'Berserk':
-      if (data.game.stage == 'beforeConquest' || data.game.stage == 'conquest') {
-        s.push('Dice:');
-        if (player.canBerserkThrowDice()) {
-          s.push($('#divThrowDice').html());
-        }
-        else {
-          s.push(player.berserkDice());
-        }
-      }
-      break;
-    case 'Diplomat':
-      if (data.game.stage == 'beforeFinishTurn') {
-        s.push('');
-        s.push($('#divSelectFriend').html());
-      }
-      break;
-    case 'DragonMaster':
-      if (data.game.stage == 'beforeConquest' || data.game.stage == 'conquest') {
-        s.push('');
-        s.push($('#divDragonAttack').html());
-      }
-      break;
-    case 'Stout':
-      if (data.game.stage == 'beforeFinishTurn') {
-        s.push('');
-        s.push($('#divDecline').html());
-      }
-      break;
-    // TODO: может быть стоит отображать для других умений какую-то информацию,
-    // например, оставшееся число лагерей
-  }
-  if (s.length == 0) {
-    return '';
-  }
-  return $.sprintf('<tr><td align="left">%s</td><td align="right">%s</td></tr>', s[0], s[1]);
-}
-
-function currentPlayerRace() {
-  var s = [];
-  switch (palyer.curRace()) {
-    case 'Sorcerers':
-      if (data.game.stage == 'beforeConquest' || data.game.stage == 'conquest') {
-        s.push('');
-        s.push($('#divEnchant').html());
-      }
-      break;
-    // TODO: может быть стоит отображать для других рас какую-то информацию,
-    // например, сколько дополнительно денег они получат
-  }
-  if (s.length == 0) {
-    return '';
-  }
-  return $.sprintf('<tr><td>%s</td><td>%s</td></tr>', s[0], s[1]);
 }
 
 function addTokensToMap(region, i) {
@@ -258,13 +225,13 @@ function addTokensToMap(region, i) {
   return $.sprintf(
       '<div style="position: absolute; left: %dpx; top: %dpx;">' +
       '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onclick="$(\'#area%d\').click();">' +
-      '<img src="%s"/><a id="aTokensNum%d">%d</a>' +
+      '<img src="%s"/ class="token"><a id="aTokensNum%d" onclick="alert(%d);">%d</a>' +
       '</a>' +
       '</div>',
       maps[data.game.map.mapId].regions[i].raceCoords[0],
       maps[data.game.map.mapId].regions[i].raceCoords[1],
       i, i, i,
-      getRaceImage(race, 'token', region.currentRegionState.inDecline), i, region.currentRegionState.tokensNum);
+      getRaceImage(race, 'token', region.currentRegionState.inDecline), i, i, region.currentRegionState.tokensNum);
 }
 
 function addObjectsToMap(region, i) {
@@ -305,7 +272,7 @@ function makeCurrentGame(game) {
 
 function setGame(gameId) {
   data.gameId = gameId;
-  _setCookie(["gameId"], gameId);
+  _setCookie(["gameId"], [gameId]);
   makeCurrentGame(games[gameId]);
   cmdGetGameState();
 }

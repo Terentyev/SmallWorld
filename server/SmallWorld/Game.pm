@@ -819,7 +819,7 @@ sub finishTurn {
 
   $sp->finishTurn($self->{gameState});
   $race->finishTurn($self->{gameState});
-  @{ $self->{gameState}->{friendInfo} }{qw(friendId diplomatId)} = ()
+  @{ $self->{gameState}->{friendInfo} }{qw(friendId)} = ()
     if $player->isFriend($self->{gameState}->{friendInfo});
 
   @{$_}{qw (conquestIdx prevTokenBadgeId prevTokensNum)} = () for @{ $self->{gameState}->{regions} };

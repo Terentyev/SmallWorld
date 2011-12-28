@@ -1,10 +1,10 @@
 function Region(regionId) {
   this.r = data.game.map.regions[regionId];
-  this._regionId = regionId;
+  this.r._regionId = regionId;
 }
 
 Region.prototype.regionId = function() {
-  return this._regionId;
+  return this.r._regionId;
 }
 
 Region.prototype.isOwned = function(tokenBadgeId) {
@@ -92,13 +92,20 @@ Region.prototype.bonusTokens = function() {
     (this.isMountain() ? 1 : 0);
 }
 
-Region.prototype.conquerByPlayer = function(p) {
+Region.prototype.conquerByPlayer = function(p, dice) {
   var dt = this.tokens() + this.bonusTokens();
-  var ct = p.tokens() + p.bonusTokens(this);
+  var ct = p.tokens() + p.bonusTokens(this) + dice;
   with (this.r.currentRegionState) {
     ownerId = p.userId();
     tokenBadgeId = p.curTokenBadgeId();
     tokens = (dt > ct ? ct : dt);
-    p.addTokens(tokens);
+    p.addTokens(-tokens);
   }
+}
+
+Region.prototype.needDefend = function(){
+  if (this.r.currentRegionState == null || this.r.currentRegionState.ownerId == null) return false;
+  var tmp = new Player(this.r.currentRegionState.ownerId);
+  return this.tokens() > 0 || tmp.myRegions().length > 1 ||
+         tmp.curRace() == 'Elves' && tmp.curTokenBadgeId() == this.r.currentRegionState.tokenBadgeId;
 }
