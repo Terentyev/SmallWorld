@@ -244,6 +244,7 @@ function hdlLeaveGame(ans) {
   data.game = null;
   data.gameId = null;
   _setCookie(["gameId"], [null]);
+  $("#tdLobbyChat").append($("#divChat").detach());
   showLobby();
 }
 
