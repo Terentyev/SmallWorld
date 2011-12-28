@@ -1,0 +1,18 @@
+[
+  { "result": "ok" },
+  { "result": "ok", "id": 2, "sid": 2 },
+  { "result": "notInGame" },
+  { "result": "ok", "id": 3, "sid": 3 },
+  { "result": "badGameState" },
+
+  {
+    "result": "ok",
+    "gameState": {
+      "state": 0,
+      "players": [
+        { "userId": 2, "username": "_ai1.0" },
+        { "userId": 3, "username": "_ai1.1" }
+      ]
+    }
+  }
+]

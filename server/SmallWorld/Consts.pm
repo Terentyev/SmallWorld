@@ -977,8 +977,8 @@ use constant GS_SELECT_RACE        => 'selectRace'       ;
 use constant GS_BEFORE_CONQUEST    => 'beforeConquest'   ;
 use constant GS_CONQUEST           => 'conquest'         ;
 use constant GS_REDEPLOY           => 'redeploy'         ;
-use constant GS_BEFORE_FINISH_TURN => 'finishTurn'       ;
-use constant GS_FINISH_TURN        => 'beforeFinishTurn' ;
+use constant GS_BEFORE_FINISH_TURN => 'beforeFinishTurn' ;
+use constant GS_FINISH_TURN        => 'finishTurn'       ;
 use constant GS_IS_OVER            => 'gameOver'         ;
 
 # константы для работы алгоритма случайных чисел

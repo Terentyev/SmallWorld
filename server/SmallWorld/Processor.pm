@@ -8,6 +8,8 @@ use utf8;
 use JSON qw(encode_json decode_json);
 use File::Basename qw(basename);
 
+use SW::Util qw(swLog);
+
 use SmallWorld::Consts;
 use SmallWorld::Config;
 use SmallWorld::DB;
@@ -19,8 +21,11 @@ sub new {
   my $class = shift;
   my $self = { db => undef, _game => undef, loading => 0 };
 
-  $self->{db} = SmallWorld::DB->new();
-  $self->{db}->connect(DB_NAME, DB_LOGIN, DB_PASSWORD, DB_MAX_BLOB_SIZE);
+  $self->{db} = SmallWorld::DB->new(
+      db          => DB_NAME,
+      user        => DB_LOGIN,
+      passwd      => DB_PASSWORD,
+      maxBlobSize => DB_MAX_BLOB_SIZE);
 
   bless $self, $class;
   return $self;
@@ -61,11 +66,7 @@ sub checkAndDo {
 }
 
 sub debug {
-  return if !$ENV{DEBUG};
-  use Data::Dumper;
-  open FL, '>>' . LOG_FILE;
-  print FL Dumper(@_);
-  close FL;
+  swLog(LOG_FILE, @_);
 }
 
 sub getGame {
@@ -83,7 +84,7 @@ sub getGame {
       (grep { $_->{isReady} == 0 } @{ $self->{_game}->{gameState}->{players} }) ||
       $self->{_game}->{gameState}->{gameInfo}->{gameId} != $id ||
       $self->{_game}->{_version} != $version ) {
-    $self->{_game} = SmallWorld::Game->new($self->{db}, $id, $js->{action});
+    $self->{_game} = SmallWorld::Game->new(db => $self->{db}, id => $id);
   }
   return $self->{_game};
 }
@@ -104,9 +105,14 @@ sub saveCmd {
 
   my $cmd = { %$js };
   my $gameId = $cmd->{gameId};
+  if ( $cmd->{action} eq 'createGame' ) {
+    # если игра создается этой командой, то id этой игры лушче искать по имени
+    # игры, т. к. игрок, который создает эту игру необязательно играет в нее.
+    $gameId = $self->{db}->getGameIdByName($cmd->{gameName});
+  }
   if ( exists $cmd->{sid} ) {
     $cmd->{userId} = $self->{db}->getPlayerId($cmd->{sid});
-    $gameId = $self->{db}->getGameId($cmd->{sid});
+    $gameId = $gameId // $self->{db}->getGameId($cmd->{sid});
     delete $cmd->{sid};
   }
   if ( $cmd->{action} eq 'setReadinessStatus' ) {
@@ -207,6 +213,7 @@ sub cmd_uploadMap {
 
 sub cmd_createGame {
   my ($self, $js, $result) = @_;
+  $js->{ai} = $js->{ai} // 0;
   my @params = (@$js{qw/sid gameName mapId gameDescription ai/}, $self->getGameInitialGeneratedNum($js));
   $result->{gameId} = $self->{db}->gameWithNameExists($js->{gameName}, 1)
     ? $self->{db}->updateGame( @params )
@@ -305,12 +312,16 @@ sub cmd_setReadinessStatus {
 
 sub cmd_aiJoin {
   my ($self, $js, $result) = @_;
-  my $sid = $self->{db}->aiJoin($js->{gameId});
-  if ( !defined $sid ) {
+  my ($id, $sid) = $self->{db}->aiJoin($js->{gameId});
+  if ( !defined $id ) {
     $result->{result} = R_TOO_MANY_AI;
     return;
   }
+  $result->{id} = $id;
   $result->{sid} = $sid;
+  if ( $self->{db}->tryBeginGame($js->{gameId}) ) {
+    $self->getGame($js)->save();
+  }
 }
 
 sub cmd_saveGame {
@@ -385,6 +396,7 @@ sub cmd_finishTurn {
   my $game = $self->getGame($js);
   $game->finishTurn($result);
   $game->save();
+  $self->{db}->finishGame($game->id) if $game->stage eq GS_IS_OVER;
 }
 
 sub cmd_redeploy {

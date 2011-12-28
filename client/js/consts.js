@@ -52,23 +52,25 @@ var cmdErrors = {
   'usernameTaken': 'Username already taken'
 };
 
-var races = {
-  null: '/pics/raceNone.png',
-  '': '/pics/raceNone.png',
-  'Amazons': '/pics/raceAmazons.png',
-  'Dwarves': '/pics/raceDwarves.png',
-  'Elves': '/pics/raceElves.png',
-  'Giants': '/pics/raceGiants.png',
-  'Halflings': '/pics/raceHalflings.png',
-  'Humans': '/pics/raceHumans.png',
-  'Orcs': '/pics/raceOrcs.png',
-  'Ratmen': '/pics/raceRatmen.png',
-  'Skeletons': '/pics/raceSkeletons.png',
-  'Sorcerers': '/pics/raceSorcerers.png',
-  'Tritons': '/pics/raceTritons.png',
-  'Trolls': '/pics/raceTrolls.png',
-  'Wizards': '/pics/raceWizards.png'
-};
+var races = ['Amazons', 'Dwarves', 'Elves', 'Giants', 'Halflings', 'Humans', 'Orcs', 'Ratmen', 'Skeletons',
+             'Sorcerers', 'Tritons', 'Trolls', 'Wizards'];
+
+var raceDescription = {
+  'None': '',
+  'Amazons': 'Four of your Amazon tokens may only be used for conquest, not for defense. So you start each turn with +4 Amazon token. At the end of each Troop Redeployments four tokens removed from the map, and back to your hand at the start of next turn.',
+  'Dwarves': 'Each Mine Region your Dwarves occupy is worth 1 bonus Victory coin, at the end of your turn. This power is kept even when the Dwarves are In Decline',
+  'Elves': 'When the enemy conquers one of your Regions, keep all your Elf tokens in hand for redeployment, rather than discarding 1 Elf token back into the storage tray',
+  'Giants': 'Your Giants may conquer any Region adjacent to a Mountain Region they occupy at a cost of 1 less Giant token than normal. A minimum of 1 Giant token is still required',
+  'Halflings': 'Your Halfling tokens may enter the map through any Region, not just border ones. Place a Hole-in-the-Ground in each of the first 2 Regions you conquer, to make them immune to enemy conquests as well as racial and special powers. You lost your Holes-in-the-Ground when your Halflings go into Decline, or if you choose to abandon a Region containing a Hole-in-the-Ground',
+  'Humans': 'Each Farmland Region your Humans occupy is worth 1 bonus Victory coin, at the end of your turn',
+  'Orcs': 'Each not empty Region your Orcs conquered this turn is worth 1 bonus Victory coin, at the end of your turn',
+  'Ratmen': 'No Race benefit; their sheer number of tokens is enough!',
+  'Skeletons': 'During your Troop Redeployment, you receive 1 new Skeleton token from the storage tray for every 2 non-empty Regions you conquered this turn, and add it to the troops you redeploy at the end of your turn. If there are no more tokens in the storage tray, you do not receive any additional tokens',
+  'Sorcerers': 'Once per turn, your Sorcerers can conquer adjacent Region by substituting one of your opponent\'s Active tokens with one of your own taken from the storage tray. If there are no more tokens in the storage tray, then you cannot conquer a new Region in this way. The token your Sorcerers replaces must be the only race token in its Region',
+  'Tritons': 'Your Tritons may conquer all Coastal Regions (those bordering a Sea or Lake) at a cost of 1 less Triton token than normal. A minimum of 1 Triton token is still required',
+  'Trolls': 'Place a Troll\'s Lair in each Region your Trolls occupy. The Troll\'s Lair augments your region\'s defense by 1, and stays in the Region even after your Trolls go into Decline. Remove the Troll\'s Lair if you abandon the Region or when an enemy conquers it',
+  'Wizards': 'Each Magic Region your Wizards occupy is worth 1 bonus Victory coin, at the end of your turn'
+}
 
 var specialPowers = {
   null: '/pics/spNone.png',
@@ -94,24 +96,6 @@ var specialPowers = {
   'Wealthy': '/pics/spWealthy.png'
 };
 
-var tokens = {
-  null: '/pics/tokenNone.png',
-  '': '/pics/tokenNone.png',
-  'Amazons': '/pics/tokenAmazons.png',
-  'Dwarves': '/pics/tokenDwarves.png',
-  'Elves': '/pics/tokenElves.png',
-  'Giants': '/pics/tokenGiants.png',
-  'Halflings': '/pics/tokenHalflings.png',
-  'Humans': '/pics/tokenHumans.png',
-  'Orcs': '/pics/tokenOrcs.png',
-  'Ratmen': '/pics/tokenRatmen.png',
-  'Skeletons': '/pics/tokenSkeletons.png',
-  'Sorcerers': '/pics/tokenSorcerers.png',
-  'Tritons': '/pics/tokenTritons.png',
-  'Trolls': '/pics/tokenTrolls.png',
-  'Wizards': '/pics/tokenWizard.png'
-};
-
 var objects = {
   'holeInTheGround': '/pics/objHoleInTheGround.png',
   'lair': '/pics/objLair.png',
@@ -119,19 +103,6 @@ var objects = {
   'dragon': '/pics/objDragon.png',
   'fortified': '/pics/objFortified.png',
   'hero': '/pics/objHero.png'
-};
-
-var gameStages = {
-  null: ['', ''],
-  '': ['', ''],
-  'defend': ["Wait other players", "Let's defend, my friend!"],
-  'selectRace': ["Wait other players", "So... You should select your path... or race"],
-  'beforeConquest': ["Wait other players", "<table><tr><td>May be you want</td><td><div id='placeDecline'></div></td><td>your race?</td></tr></table>"],
-  'conquest': ["Wait other players", "Do you want some fun? Let's conquer some regions"],
-  'redeploy': ["Wait other players", "Place your warriors to the world"],
-  'beforeFinishTurn': ["Wait other players", "Last actions"],
-  'finishTurn': ["Wait other players", "Click finish-turn button, dude"],
-  'gameOver': ["Oops!.. Game over", "Oops!.. Game over"]
 };
 
 const GST_WAIT    = 1;
@@ -148,3 +119,5 @@ const GS_REDEPLOY           = 'redeploy';
 const GS_BEFORE_FINISH_TURN = 'beforeFinishTurn';
 const GS_FINISH_TURN        = 'finishTurn';
 const GS_IS_OVER            = 'gameOver';
+
+const actionDivs = ['#divDecline', '#divEnchant', '#divDragonAttack', '#divThrowDice', '#divRedeploy', '#divConquest', '#divSelectFriend'];

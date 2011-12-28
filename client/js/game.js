@@ -32,16 +32,10 @@ function selectFriend() {
 }
 
 function dragonAttack() {
-  // TODO
-  if (areaClickAction != areaDragonAttack) {
+  if (!$('#checkBoxDragon').is(':disabled') && $('#checkBoxDragon').is(':checked'))
     areaClickAction = areaDragonAttack;
-    $('#txtDragonAttack').css('color', '#FF0000');
-    alert('Now click on region for dragon attack');
-  }
-  else {
+  else
     areaClickAction = areaConquer;
-    $('#txtDragonAttack').css('color', '#FFFFFF');
-  }
 }
 
 function decline() {
@@ -73,6 +67,7 @@ function updatePlayerInfo(gs) {
 }
 
 function notEqual(gs, game, attr) {
+  if (game[attr] == null) return true;
   // если атрибут простого типа (скаляр как бы)
   if (typeof(gs[attr]) == 'string' || (keys(gs[attr])).length == 0) {
     return gs[attr] != game[attr];
@@ -107,6 +102,8 @@ function mergeMember(gs, attr, actions, acts) {
 function prepare(gs) {
   // для совместимости
   if (gs.stage != null) return;
+  // можно смотреть также в SmallWorld::Game->getStageForGameState (он работает
+  // однозначно правильно (т. к. тастировался)
   switch (gs.state) {
     case GST_WAIT:
       break;
@@ -114,34 +111,34 @@ function prepare(gs) {
       gs.stage = GS_SELECT_RACE;
       break;
     case GST_IN_GAME:
-      if (player.isDefender()) {
+      if (gs.defendingInfo != null && gs.defendingInfo != null) {
         gs.stage = GS_DEFEND;
         return;
       }
       switch (gs.lastEvent) {
-        case LE_FINISH_TURN:
-          gs.stage = player.haveActiveRace()
-            ? GS_BEFORE_CONQUEST
-            : GS_SELECT_RACE;
-          break;
-        case LE_SELECT_RACE:
-          gs.stage = GS_BEFORE_CONQUEST;
-          break;
+        case LE_THROW_DICE:
         case LE_CONQUER:
+        case LE_DEFEND:
+        case LE_SELECT_RACE:
           gs.stage = GS_CONQUEST;
-          break;
-        case LE_FAILED_CONQUER:
-          gs.stage = GS_REDEPLOY;
-          break;
-        case LE_REDEPLOY:
-          gs.stage = GS_BEFORE_FINISH_TURN;
           break;
         case LE_SELECT_FRIEND:
         case LE_DECLINE:
           gs.stage = GS_FINISH_TURN;
           break;
-        case LE_THROW_DICE:
-          gs.stage = GS_CONQUEST;
+        case LE_REDEPLOY:
+          gs.stage = GS_BEFORE_FINISH_TURN;
+          break;
+        case LE_FAILED_CONQUER:
+          gs.stage = player.myRegions().length > 0
+            ? GS_REDEPLOY
+            : GS_BEFORE_FINISH_TURN;
+          break;
+        //case LE_FINISH_TURN:
+        default:
+          gs.stage = player.haveActiveRace()
+            ? GS_BEFORE_CONQUEST
+            : GS_SELECT_RACE;
           break;
       }
       break;
@@ -160,11 +157,13 @@ function mergeGameState(gs) {
     showGame();
     return;
   }
-
   var acts = [];
   mergeMember(gs, 'activePlayerId',     [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'defendingInfo',      [showPlayers, changeGameStage], acts);
-  mergeMember(gs, 'stage',              [changeGameStage, showPlayers], acts);
+  mergeMember(gs, 'friendInfo',         [showPlayers],                  acts);
+  mergeMember(gs, 'dragonAttacked',     [showPlayers, changeGameStage], acts);
+  mergeMember(gs, 'enchanted',          [showPlayers, changeGameStage], acts);
+  mergeMember(gs, 'stage',              [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'visibleTokenBadges', [showBadges],                   acts);
   mergeMember(gs, 'map',                [showMapObjects],               acts);
   mergeMember(gs, 'players',            [showPlayers],                  acts);
@@ -184,11 +183,11 @@ function changeGameStage(stage) {
   if (stage != null) {
     data.game.stage = stage;
   }
+  showGameStage();
   if (data.game.stage == 'gameOver') {
     showScores();
     return;
   }
-  showGameStage();
   areaClickAction = areaWrong;
   tokenBadgeClickAction = tokenBadgeWrong;
   commitStageClickAction = commitStageGetGameState;
@@ -250,31 +249,38 @@ function tokenBadgeBuy(position) {
    *         Area actions                                                      *
    ****************************************************************************/
 function areaWrong() {
-  alert('Wrong action. Try: ' + gameStages[data.game.stage][player.isActive()]);
+  alert('Wrong action');
 }
 
 function areaConquer(regionId) {
-  setGameStage('conquest');
   if (!player.canAttack(regionId)) {
+    setGameStage(GS_CONQUEST);
     return;
   }
+  var r = new Region(regionId);
+  setGameStage(r.needDefend() ? GS_DEFEND: GS_CONQUEST);
   player.setRegionId(regionId);
   cmdConquer(regionId);
 }
 
 function areaDragonAttack(regionId) {
-  setGameStage('conquest');
   if (!player.canDragonAttack(regionId)) {
     return;
+    setGameStage(GS_CONQUEST);
   }
+  var r = new Region(regionId);
+  setGameStage(r.needDefend() ? GS_DEFEND: GS_CONQUEST);
   player.setRegionId(regionId);
+  //dragonAttack();
   cmdDragonAttack(regionId);
-  dragonAttack();
 }
 
 function areaPlaceTokens(regionId) {
   // TODO: do needed checks
   place = new Region(regionId);
+  /*alert(regionId);
+  alert(place.tokens());
+  alert(JSON.stringify(data.game.map.regions[regionId]));*/
   if (!place.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');
     return;
@@ -289,7 +295,6 @@ function deployRegion() {
   if (checkAskNumber()) return;
   var v = parseInt($("#inputAskNum").attr("value"));
   if (checkEnough(v - place.tokens() > player.tokens(), '#divAskNumError')) return;
-
   player.addTokens(place.tokens() - v);
   place.rmTokens(place.tokens() - v);
   $.modal.close();
@@ -337,7 +342,7 @@ function defendRegion() {
    *         Commit stage actions                                              *
    ****************************************************************************/
 function commitStageWrong() {
-  alert('Wrong action. Try: ' + gameStages[data.game.stage][player.isActive()]);
+  alert('Wrong action');
 }
 
 function commitStageDefend() {
@@ -349,12 +354,12 @@ function commitStageDefend() {
 }
 
 function commitStageBeforeConquest() {
-  setGameStage('conquest');
+  setGameStage(GS_CONQUEST);
 }
 
 function commitStageConquest() {
   player.beforeRedeploy();
-  setGameStage('redeploy');
+  setGameStage(GS_REDEPLOY);
 }
 
 function commitStageRedeploy() {
@@ -380,6 +385,7 @@ function commitStageGetGameState() {
    ****************************************************************************/
 function commitSelectFriend() {
   cmdSelectFriend($('#selectPlayers').attr('value'));
+  //setGameStage(GS_FINISH_TURN);
 }
 
 /*******************************************************************************
@@ -405,4 +411,17 @@ function checkDeploy(cmd, add) {
   else {
     alert('You should place you tokens in the world');
   }
+}
+
+function watchGame() {
+  var gameId = $("input:radio[name=listGameId]").filter(":checked").val();
+  setGame(gameId);
+  showLobby();
+}
+
+function leaveWatch() {
+  data.gameId = null;
+  data.game = null;
+  _setCookie(["gameId"], [null]);
+  showLobby();
 }

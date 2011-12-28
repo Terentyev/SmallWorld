@@ -34,21 +34,21 @@ sub errorCode {
 
 sub checkLoginAndPassword {
   my ($self, $js) = @_;
-  return !defined $self->{db}->query('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
+  return !defined $self->{db}->fetch1('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
                                      @{ $js }{qw/username password/} );
 }
 
 sub checkInGame {
   my ($self, $js) = @_;
-  my $gameId = $self->{db}->query('SELECT c.gameId FROM PLAYERS p INNER JOIN CONNECTIONS c 
+  my $gameId = $self->{db}->fetch1('SELECT c.gameId FROM PLAYERS p INNER JOIN CONNECTIONS c 
                                    ON p.id = c.playerId WHERE p.sid = ?', $js->{sid});
   return defined $gameId;
 }
 
 sub checkPlayersNum {
   my ($self, $js) = @_;
-  my $n = $self->{db}->getMaxPlayers($js->{gameId});
-  return $self->{db}->playersCount($js->{gameId}) >= $n;
+  my $n = $self->{db}->getMaxPlayers($js->{gameId}) - $self->{db}->getAINum($js->{gameId});
+  return $self->{db}->realPlayersCount($js->{gameId}) >= $n;
 }
 
 sub checkGameState {
@@ -57,7 +57,7 @@ sub checkGameState {
 
   my $gameId = exists($h->{gameId}) ? $h->{gameId} : $self->{db}->getGameId($h->{sid});
   my %gst = (
-    &GST_WAIT    => ['setReadinessStatus', 'joinGame', 'leaveGame', 'saveGame'],
+    &GST_WAIT    => ['setReadinessStatus', 'aiJoin', 'joinGame', 'leaveGame', 'saveGame'],
     &GST_BEGIN   => ['saveGame', 'leaveGame', @{ &GAME_COMMANDS }],
     &GST_IN_GAME => ['saveGame', 'leaveGame', @{ &GAME_COMMANDS }],
     &GST_FINISH  => ['saveGame', 'leaveGame'],
@@ -208,7 +208,7 @@ sub checkJsonCmd {
 
   $result->{result} = $self->checkErrorHandlers($js, {
     &R_ALREADY_IN_GAME              => sub { $self->checkInGame($js); },
-    &R_BAD_AI                       => sub { defined $js->{ai} && $js->{ai} > $self->{db}->getMapPlayersInMap($js->{mapId}); },
+    &R_BAD_AI                       => sub { defined $js->{ai} && $js->{ai} > $self->{db}->getMaxPlayersInMap($js->{mapId}); },
     &R_BAD_GAME_ID                  => sub { !$self->{db}->dbExists('GAMES', 'id', $js->{gameId}); },
     &R_BAD_GAME_STATE               => sub { $self->checkGameState($js); },
     &R_BAD_LOGIN                    => sub { $self->checkLoginAndPassword($js); },
@@ -239,7 +239,7 @@ sub getGameVariables {
   my $game = $self->getGame($js);
   my $player = $game->getPlayer();
   my $region = defined $js->{regionId}
-    ? $game->getRegion($js->{regionId})
+    ? $game->getRegion(id => $js->{regionId})
     : undef;
   my $race = $game->createRace($player->{currentTokenBadge});
   my $sp = $game->createSpecialPower('currentTokenBadge', $player);
@@ -360,7 +360,7 @@ sub checkRegion_enchant {
 #  my $finfo = $game->{gameState}->{friendInfo};
 #  return $player->activeConq($region) || !defined $region->{ownerId} ||
 #         (defined $finfo && $finfo->{diplomatId} == ($region->{ownerId} // -1) && ($finfo->{friendId} // -1) == $player->{playerId}) ||
-  return checkRegion_conquer(@_) ||
+  return checkRegion_conquer(@_) || !defined $region->{ownerId} ||
          $region->{inDecline} || $region->{encampment} || $region->{tokensNum} != 1;
 }
 
@@ -394,11 +394,6 @@ sub checkRegion_redeploy {
   }
 }
 
-sub checkRegionIsImmune {
-  my ($self, $js, $game, $player, $region, $race, $sp) = @_;
-  return $game->isImmuneRegion($region);
-}
-
 sub checkStage {
   my ($self, $js, $game, $player, $region, $race, $sp) = @_;
 
@@ -424,7 +419,7 @@ sub checkStage {
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    !$sp->canCmd($js, $state, $player) || !$race->canCmd($js, $game->{gameState});
+    !$sp->canCmd($js, $state, $player) || !$race->canCmd($js->{action}, $game->{gameState});
 }
 
 sub checkStage_throwDice {
@@ -514,7 +509,7 @@ sub checkTokensForRedeployment {
 sub checkFriend {
   my ($self, $js, $game, $player, $region, $race, $sp) = @_;
   # мы не можем подружиться с игроком, если мы нападали на его aктивную расу на этом ходу
-  my $tid = $game->getPlayer( {id => $js->{friendId}} )->{currentTokenBadge}->{tokenBadgeId};
+  my $tid = $game->getPlayer( id => $js->{friendId} )->{currentTokenBadge}->{tokenBadgeId};
   return $player->{playerId} == $js->{friendId} || grep {
     ($_->{prevTokenBadgeId} // -1 ) == ($tid // -2)
   } @{ $game->{gameState}->{regions} };
@@ -546,7 +541,7 @@ sub checkGameCommand {
     &R_NOT_ENOUGH_TOKENS            => sub { $self->checkEnoughTokens($js, @gameVariables); },
     &R_NOT_ENOUGH_TOKENS_FOR_R      => sub { $self->checkEnoughTokens_redeploy($js, @gameVariables); },
     &R_NOTHING_TO_ENCHANT           => sub { $region->{tokensNum} == 0; },
-    &R_REGION_IS_IMMUNE             => sub { $self->checkRegionIsImmune($js, @gameVariables); },
+    &R_REGION_IS_IMMUNE             => sub { $region->isImmune(); },
     &R_THERE_ARE_TOKENS_IN_THE_HAND => sub { $self->checkTokensInHand($js, @gameVariables); },
     &R_TOO_MANY_FORTS               => sub { $self->checkForts($js, @gameVariables); },
     &R_TOO_MANY_FORTS_IN_REGION     => sub { $self->checkFortsInRegion($js, @gameVariables); },

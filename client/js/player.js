@@ -7,12 +7,21 @@ function Player(playerId, gs) {
   }
   for (var i in this.gs.players) {
     this.p = this.gs.players[i];
-    if (this.p.userId == playerId) break;
+    if (this.p.userId == playerId) return;
   }
+  this.p = null;
 }
 
 Player.prototype.userId = function() {
-  return this.p.userId;
+  return this.p ? this.p.userId : -1;
+}
+
+Player.prototype.username = function() {
+  return this.p ? this.p.username : '';
+}
+
+Player.prototype.inGame = function() {
+  return this.p != null;
 }
 
 Player.prototype.isHe = function(playerId) {
@@ -20,28 +29,28 @@ Player.prototype.isHe = function(playerId) {
 }
 
 Player.prototype.isActive = function() {
-  return (this.isHe(this.gs.activePlayerId) || this.isDefender()) ? 1 : 0;
+  return (this.isHe(this.gs.activePlayerId) && (this.gs.stage != 'defend') || this.isDefender()) ? 1 : 0;
 }
 
 Player.prototype.isDefender = function() {
-  return
+  return (this.gs.stage == 'defend') &&
     ((this.gs.defendingInfo != null) && this.isHe(this.gs.defendingInfo.playerId)) ? 1 : 0;
 }
 
 Player.prototype.hasActiveRace = function() {
-  return this.p.currentTokenBadge != null && this.p.currentTokenBadge.tokenBadgeId != null;
+  return this.p != null && this.p.currentTokenBadge != null && this.p.currentTokenBadge.tokenBadgeId != null;
 }
 
 Player.prototype.curTokenBadgeId = function() {
-  return this.p.currentTokenBadge.tokenBadgeId;
+  return his.hasActiveRace() ? this.p.currentTokenBadge.tokenBadgeId : -1;
 }
 
 Player.prototype.curRace = function() {
-  return this.p.currentTokenBadge.raceName;
+  return this.hasActiveRace() ? this.p.currentTokenBadge.raceName : '';
 }
 
 Player.prototype.curPower = function() {
-  return this.p.currentTokenBadge.specialPowerName;
+  return this.hasActiveRace() ? this.p.currentTokenBadge.specialPowerName : '';
 }
 
 Player.prototype.coins = function() {
@@ -81,7 +90,7 @@ Player.prototype.addTokens = function(tokens) {
     // фигурками с регионов
     var regions = this.myRegions();
     for (var i in regions) {
-      var t = min(regions[i].tokens() - 1, -this.tokens());
+      var t = Math.min(regions[i].tokens() - 1, -this.tokens());
       this.p.tokensInHand += t;
       regions[i].rmTokens(t);
       if (this.tokens() == 0) {
@@ -99,9 +108,9 @@ Player.prototype.beforeRedeploy = function() {
 }
 
 Player.prototype.myRegions = function() {
-  var result = []
+  var result = [], r;
   for (var i in this.gs.map.regions) {
-    var r = new Region(i);
+    r = new Region(parseInt(i));
     if (r.isOwned(this.curTokenBadgeId())) {
       result.push(r);
     }

@@ -1,0 +1,13 @@
+{
+  "description": "zero players with two AI",
+  "include": [ "_prepare.inc" ],
+  "test": [
+    { "action": "createGame", "gameName": "game 1", "mapId": 1, "ai": 2, "sid": 1 },
+    { "action": "aiJoin", "gameId": 1 },
+    { "action": "setReadinessStatus", "sid": 1, "isReady": 1 },
+    { "action": "aiJoin", "gameId": 1 },
+    { "action": "aiJoin", "gameId": 1 },
+
+    { "action": "getGameState", "gameId": 1 }
+  ]
+}

@@ -1,4 +1,4 @@
-table {border: 0px solid black; border-collapse: collapse;}
+﻿table {border: 0px solid black; border-collapse: collapse;}
 td {border: 0px solid black; padding: 2px;   }
 th {text-align: center;}
 div {border: 0px solid black; }
@@ -6,7 +6,7 @@ button {padding: 3px;}
 body {font: 14px Verdana, Arial; text-align:left; padding: 30px 0 0 0;}
 
 #divCurrentServer {position: absolute; left: 0; top: 0;  color:#fff; font-weight:bold; height:30px;
-                   line-height:30px; background:url(images/header.gif) repeat-x; padding: 0px 8px 0px 8px; cursor: pointer;}
+                   line-height:30px; background:url(images/header.gif) repeat-x; padding: 0px 8px 0px 8px; cursor: pointer; white-space: nowrap}
 #divLogout, #divCurrentGame {display:none;}
 
 #divChat {padding: 2px;}
@@ -20,13 +20,13 @@ body {font: 14px Verdana, Arial; text-align:left; padding: 30px 0 0 0;}
 
 .body {line-height:30px; padding: 4px;}
 
-                   
 .corner-all { border:2px solid #336699; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; }
 .corner-top { border:2px solid #336699; -moz-border-radius: 10px 10px 0 0; -webkit-border-radius: 10px 10px 0 0; border-radius: 10px 10px 0 0; }
 .tedit {width: 100%;}
+select {width: 100%;}
 .error {font-weight:bold; color: #cd0a0a;}
 td.left {width: 100px;}
-
+td.smallLeft {width: 60px; white-space: nowrap}
 /* tables */
 table.tablesorter {
   font: 14px Verdana, Arial;
@@ -74,11 +74,9 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 
 .scrollBox { border: 1px solid #5588bb;}
 
-#divCurrentGame .header,
-#divCurrentPlayer .header,
-#modal-container .header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:bold;
-                          background:url(images/header.gif) repeat-x; -moz-border-radius: 6px 6px 0 0;
-                          -webkit-border-radius: 6px 6px 0 0; border-radius: 6px 6px 0 0; text-align:center;}
+div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:bold;
+            background:url(images/header.gif) repeat-x; -moz-border-radius: 6px 6px 0 0;
+            -webkit-border-radius: 6px 6px 0 0; border-radius: 6px 6px 0 0; text-align:center;}
 .header span {padding-left:8px;}
 .buttons {line-height:26px; width:180px; float:right; display: block; padding: 4px 0 0 0;}
 .buttons div { float:right; margin-left:4px; width:80px; height:26px; color:#666; font-weight:bold;
@@ -120,4 +118,16 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 .clickable:hover img { opacity: 1; }
 
 .badge { width: 120px; height: 80px; }
+.token { width: 50px; height: 50px; }
+.coin-container {position: relative;}
+.coin { width: 20px; height: 20px; position: absolute;}
+
+#tableTokenBadges {width: 200px;}
+#tableTokenBadges td {vertical-align: top; text-align: center;}
+#tablePlayers {width:100%; height: 100%;}
+#tableCurrentPlayer td{padding: 4px;}
 .inplaceButton { width: 80px; }
+
+#tableTurnScores td, #tableScores td{line-height:24px;}
+#tableInHand td {padding: 0 0 4px 0; width: 64px;}
+#divDecline, #divEnchant, #divDragonAttack, #divThrowDice, #divSelectFriend {display: none;}

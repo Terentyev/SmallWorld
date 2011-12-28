@@ -1,0 +1,9 @@
+CREATE DATABASE 'AI.FDB' USER 'sysdba' PASSWORD 'masterkey' DEFAULT CHARACTER SET UTF8;
+
+
+CREATE TABLE states (
+  playerId INTEGER NOT NULL PRIMARY KEY,
+  state    BLOB SUB_TYPE 1
+);
+
+CONNECT 'AI.FDB' USER 'sysdba' PASSWORD 'masterkey';
