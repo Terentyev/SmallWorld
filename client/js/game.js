@@ -27,21 +27,14 @@ function selectFriend() {
     if (player.isHe(cur.userId)) continue;
     pls += addOption(cur.userId, cur.username);
   }
-  $('#selectPlayers').html(pls).triggel('update');
-  showModal('#divSelectFriend');
+  $('#selectPlayers').html(pls).trigger('update');
 }
 
 function dragonAttack() {
-  // TODO
-  if (areaClickAction != areaDragonAttack) {
+  if (!$('#checkBoxDragon').is(':disabled') && $('#checkBoxDragon').is(':checked'))
     areaClickAction = areaDragonAttack;
-    $('#txtDragonAttack').css('color', '#FF0000');
-    alert('Now click on region for dragon attack');
-  }
-  else {
+  else
     areaClickAction = areaConquer;
-    $('#txtDragonAttack').css('color', '#FFFFFF');
-  }
 }
 
 function decline() {
@@ -73,6 +66,7 @@ function updatePlayerInfo(gs) {
 }
 
 function notEqual(gs, game, attr) {
+  if (game[attr] == null) return true;
   // если атрибут простого типа (скаляр как бы)
   if (typeof(gs[attr]) == 'string' || (keys(gs[attr])).length == 0) {
     return gs[attr] != game[attr];
@@ -160,11 +154,13 @@ function mergeGameState(gs) {
     showGame();
     return;
   }
-
   var acts = [];
   mergeMember(gs, 'activePlayerId',     [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'defendingInfo',      [showPlayers, changeGameStage], acts);
-  mergeMember(gs, 'stage',              [changeGameStage, showPlayers], acts);
+  mergeMember(gs, 'friendInfo',         [showPlayers],                  acts);
+  mergeMember(gs, 'dragonAttacked',     [showPlayers, changeGameStage], acts);
+  mergeMember(gs, 'enchanted',          [showPlayers, changeGameStage], acts);
+  mergeMember(gs, 'stage',              [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'visibleTokenBadges', [showBadges],                   acts);
   mergeMember(gs, 'map',                [showMapObjects],               acts);
   mergeMember(gs, 'players',            [showPlayers],                  acts);
@@ -184,11 +180,11 @@ function changeGameStage(stage) {
   if (stage != null) {
     data.game.stage = stage;
   }
+  showGameStage();
   if (data.game.stage == 'gameOver') {
     showScores();
     return;
   }
-  showGameStage();
   areaClickAction = areaWrong;
   tokenBadgeClickAction = tokenBadgeWrong;
   commitStageClickAction = commitStageGetGameState;
@@ -250,31 +246,38 @@ function tokenBadgeBuy(position) {
    *         Area actions                                                      *
    ****************************************************************************/
 function areaWrong() {
-  alert('Wrong action. Try: ' + gameStages[data.game.stage][player.isActive()]);
+  alert('Wrong action');
 }
 
 function areaConquer(regionId) {
-  setGameStage('conquest');
   if (!player.canAttack(regionId)) {
+    setGameStage(GS_CONQUEST);
     return;
   }
+  var r = new Region(regionId);
+  setGameStage(r.needDefend() ? GS_DEFEND: GS_CONQUEST);
   player.setRegionId(regionId);
   cmdConquer(regionId);
 }
 
 function areaDragonAttack(regionId) {
-  setGameStage('conquest');
   if (!player.canDragonAttack(regionId)) {
     return;
+    setGameStage(GS_CONQUEST);
   }
+  var r = new Region(regionId);
+  setGameStage(r.needDefend() ? GS_DEFEND: GS_CONQUEST);
   player.setRegionId(regionId);
+  //dragonAttack();
   cmdDragonAttack(regionId);
-  dragonAttack();
 }
 
 function areaPlaceTokens(regionId) {
   // TODO: do needed checks
   place = new Region(regionId);
+  /*alert(regionId);
+  alert(place.tokens());
+  alert(JSON.stringify(data.game.map.regions[regionId]));*/
   if (!place.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');
     return;
@@ -289,7 +292,6 @@ function deployRegion() {
   if (checkAskNumber()) return;
   var v = parseInt($("#inputAskNum").attr("value"));
   if (checkEnough(v - place.tokens() > player.tokens(), '#divAskNumError')) return;
-
   player.addTokens(place.tokens() - v);
   place.rmTokens(place.tokens() - v);
   $.modal.close();
@@ -337,7 +339,7 @@ function defendRegion() {
    *         Commit stage actions                                              *
    ****************************************************************************/
 function commitStageWrong() {
-  alert('Wrong action. Try: ' + gameStages[data.game.stage][player.isActive()]);
+  alert('Wrong action');
 }
 
 function commitStageDefend() {
@@ -349,12 +351,12 @@ function commitStageDefend() {
 }
 
 function commitStageBeforeConquest() {
-  setGameStage('conquest');
+  setGameStage(GS_CONQUEST);
 }
 
 function commitStageConquest() {
   player.beforeRedeploy();
-  setGameStage('redeploy');
+  setGameStage(GS_REDEPLOY);
 }
 
 function commitStageRedeploy() {
@@ -380,6 +382,7 @@ function commitStageGetGameState() {
    ****************************************************************************/
 function commitSelectFriend() {
   cmdSelectFriend($('#selectPlayers').attr('value'));
+  //setGameStage(GS_FINISH_TURN);
 }
 
 /*******************************************************************************
