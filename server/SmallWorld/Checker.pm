@@ -34,13 +34,13 @@ sub errorCode {
 
 sub checkLoginAndPassword {
   my ($self, $js) = @_;
-  return !defined $self->{db}->query('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
+  return !defined $self->{db}->fetch1('SELECT 1 FROM PLAYERS WHERE username = ? and pass = ?',
                                      @{ $js }{qw/username password/} );
 }
 
 sub checkInGame {
   my ($self, $js) = @_;
-  my $gameId = $self->{db}->query('SELECT c.gameId FROM PLAYERS p INNER JOIN CONNECTIONS c 
+  my $gameId = $self->{db}->fetch1('SELECT c.gameId FROM PLAYERS p INNER JOIN CONNECTIONS c 
                                    ON p.id = c.playerId WHERE p.sid = ?', $js->{sid});
   return defined $gameId;
 }
@@ -360,7 +360,7 @@ sub checkRegion_enchant {
 #  my $finfo = $game->{gameState}->{friendInfo};
 #  return $player->activeConq($region) || !defined $region->{ownerId} ||
 #         (defined $finfo && $finfo->{diplomatId} == ($region->{ownerId} // -1) && ($finfo->{friendId} // -1) == $player->{playerId}) ||
-  return checkRegion_conquer(@_) ||
+  return checkRegion_conquer(@_) || !defined $region->{ownerId} ||
          $region->{inDecline} || $region->{encampment} || $region->{tokensNum} != 1;
 }
 
@@ -419,7 +419,7 @@ sub checkStage {
   return $self->{db}->getPlayerId($js->{sid}) != $game->{gameState}->{activePlayerId} ||
     !(grep { $_ eq $js->{action} } @{ $states{ $state } }) ||
     ($js->{action} eq 'conquer') && (!defined $player->{tokensInHand} || $player->{tokensInHand} == 0) ||
-    !$sp->canCmd($js, $state, $player) || !$race->canCmd($js, $game->{gameState});
+    !$sp->canCmd($js, $state, $player) || !$race->canCmd($js->{action}, $game->{gameState});
 }
 
 sub checkStage_throwDice {

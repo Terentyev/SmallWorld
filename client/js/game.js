@@ -129,7 +129,9 @@ function prepare(gs) {
           gs.stage = GS_BEFORE_FINISH_TURN;
           break;
         case LE_FAILED_CONQUER:
-          gs.stage = GS_REDEPLOY;
+          gs.stage = player.myRegions().length > 0
+            ? GS_REDEPLOY
+            : GS_BEFORE_FINISH_TURN;
           break;
         //case LE_FINISH_TURN:
         default:

@@ -41,11 +41,11 @@ sub printGames {
       $gamesW->addstr($top, 50, $g->getPlayer()->name);
     }
     ++$top;
-    if ( scalar(@{ $games->{$_}->{ais} }) > 0 ) {
+    if ( scalar(@{ $g->players }) > 0 ) {
       _printPlayersHeader(\$top);
     }
-    foreach my $player ( @{ $games->{$_}->{ais} } ) {
-      my $p = $g->getPlayer(id => $player->{id});
+    foreach ( @{ $g->players } ) {
+      my $p = $g->getPlayer(id => $_->{playerId});
       $gamesW->addstr($top, 4, $p->name);
       $gamesW->addstr($top, 20, $p->coins);
       $gamesW->addstr($top, 30, $p->activeRaceName . ' ' . $p->activeSpName);

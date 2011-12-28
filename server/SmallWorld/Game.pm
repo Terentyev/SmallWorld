@@ -72,7 +72,6 @@ sub loadFromState {
     conquerorId    => $gs{defendingInfo}->{playerId}
                       ? $gs{activePlayerId}
                       : undef,
-    state          => $self->getStageFromGameState(\%gs),
     currentTurn    => $gs{currentTurn},
     tokenBadges    => $gs{visibleTokenBadges},
     defendingInfo  => $gs{defendingInfo},
@@ -84,16 +83,21 @@ sub loadFromState {
     holesPlaced    => $gs{holesPlaced},
     gotWealthy     => $gs{gotWealthy} ? 1 : 0
   };
+  my $state = $self->getStageFromGameState(\%gs);
+  die "Wrong calculate stage: $gs{stage} vs $state\n"
+    if defined $gs{stage} && $gs{stage} ne $state && ($gs{state} == GST_BEGIN || $gs{state} == GST_IN_GAME);
+  $self->{gameState}->{state} = $state;
   my $i = 0;
   foreach ( @{ $gs{map}->{regions} } ) {
     push @{ $self->{gameState}->{regions} }, {
       regionId          => ++$i,
-      constRegionsState => $_->{constRegionState},
+      constRegionState => $_->{constRegionState},
       adjacentRegions   => $_->{adjacentRegions},
       ownerId           => $_->{currentRegionState}->{ownerId},
       tokenBadgeId      => $_->{currentRegionState}->{tokenBadgeId},
       tokensNum         => $_->{currentRegionState}->{tokensNum},
       holeInTheGround   => $_->{currentRegionState}->{holeInTheGround} ? 1 : 0,
+      lair              => $self->getLairFromGameState(\%gs, $_->{currentRegionState}->{tokenBadgeId}),
       encampment        => $_->{currentRegionState}->{encampment},
       dragon            => $_->{currentRegionState}->{dragon} ? 1 : 0,
       fortified         => $_->{currentRegionState}->{fortified} ? 1 : 0,
@@ -116,19 +120,34 @@ sub loadFromState {
   }
 }
 
+sub getLairFromGameState {
+  my ($self, $gs, $tokenBadgeId) = @_;
+  return undef if !defined $tokenBadgeId;
+  return (grep {
+      defined $_->{currentTokenBadge} && ($_->{currentTokenBadge}->{tokenBadgeId} // -1) == $tokenBadgeId &&
+      $_->{currentTokenBadge}->{raceName} eq RACE_TROLLS ||
+      defined $_->{declinedTokenBadge} && ($_->{declinedTokenBadge}->{tokenBadgeId} // -1) == $tokenBadgeId &&
+      $_->{declinedTokenBadge}->{raceName} eq RACE_TROLLS
+    } @{ $gs->{players} })
+    ? 1 : undef;
+}
+
 sub getStageFromGameState {
   my ($self, $gs) = @_;
   my $st = $gs->{state};
   return undef if $st == GST_WAIT;
   return GS_SELECT_RACE if $st == GST_BEGIN;
-  return GS_IS_OVER     if $st == GST_FINISH;
+  return GS_IS_OVER     if $st == GST_FINISH || $st == GST_EMPTY;
 
   my $le = $gs->{lastEvent};
   return GS_DEFEND             if defined $gs->{defendingInfo} && defined $gs->{defendingInfo}->{playerId};
   return GS_CONQUEST           if $le == LE_THROW_DICE || $le == LE_CONQUER || $le == LE_DEFEND || $le == LE_SELECT_RACE;
   return GS_FINISH_TURN        if $le == LE_DECLINE || $le == LE_SELECT_FRIEND;
-  return GS_BEFORE_FINISH_TURN if $le == LE_REDEPLOY;
-  return GS_REDEPLOY           if $le == LE_FAILED_CONQUER;
+  return GS_REDEPLOY           if $le == LE_FAILED_CONQUER && (grep {
+      !$_->{currentRegionState}->{inDecline} &&
+      ($_->{currentRegionState}->{ownerId} // -1) == $gs->{activePlayerId}
+    } @{ $gs->{map}->{regions} });
+  return GS_BEFORE_FINISH_TURN if $le == LE_REDEPLOY || $le == LE_FAILED_CONQUER;
   return GS_SELECT_RACE        if (grep {
       (
        !defined $_->{currentTokenBadge} ||
@@ -275,15 +294,21 @@ sub initStorage {
 # сохраняет состояние игры в БД
 sub save {
   my $self = shift;
+  $self->dropObjects();
   my $gs = { %{ $self->{gameState} } };
   delete $gs->{gameInfo};
-  # вместо того, чтобы сохранять в json объекты-игроков, сохраняем только
-  # информацию о них
-  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{players} };
-  delete $_->{game} for @{ $gs->{players} };
-  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $gs->{regions} };
   $self->{db}->saveGameState(encode_json($gs), $gs->{activePlayerId}, $gs->{currentTurn}, $self->{gameState}->{gameInfo}->{gameId});
   $self->{_version}++;
+}
+
+# вместо созданных объектов игроков и регионов ставим обратно хэши
+sub dropObjects {
+  my $self = shift;
+  # вместо того, чтобы сохранять в json объекты-игроков, сохраняем только
+  # информацию о них
+  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $self->players };
+  delete $_->{game} for @{ $self->players };
+  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $self->regions };
 }
 
 # устанавливает определенные карточки рас и умений
@@ -543,7 +568,7 @@ sub nextConquestIdx {
 # три грани 1,2,3)
 sub random {
   my $self = shift;
-  return 0 if $ENV{DEBUG};
+  return (defined $_[0] ? ($_[0]->{dice} // 0) : 0) if $ENV{DEBUG};
   $self->{gameState}->{prevGenNum} = (RAND_A * $self->{gameState}->{prevGenNum}) % RAND_M;
   my $result = $self->{gameState}->{prevGenNum} % 6;
   return $result > 3;
@@ -588,16 +613,17 @@ sub canAttack {
 
   if ( !defined $self->{gameState}->{berserkDice} && ($self->{defendNum} - $player->{tokensInHand}) ~~ [1..3] ) {
     # не хватает не больше 3 фигурок у игрока, поэтому бросаем кости, если еще не кинули(berserk)
-    $player->{dice} = $self->random();
+    $player->{dice} = $self->random($result);
     $result->{dice} = $player->{dice};
   }
 
   # если игроку не хватает фигурок даже с подкреплением, это его последнее завоевание
   if ( $player->{tokensInHand} + $player->safe('dice') < $self->{defendNum} ) {
-    # если у игрока нет территорий то ждем команды конец хода
-    $player->{dice} = undef;
-    $self->gotoRedeploy();
-    $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN if !(grep { $player->activeConq($_) } @$regions);
+    if ( defined $player->{dice} ) {
+      $player->{dice} = undef;
+      $self->gotoRedeploy();
+      $self->{gameState}->{state} = GS_BEFORE_FINISH_TURN if !(grep { $player->activeConq($_) } @$regions);
+    }
     return 0;
   }
   return 1;
@@ -929,6 +955,12 @@ sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};   }
 sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};       }
 sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};        }
 sub regions        { return $_[0]->{gameState}->{regions};              }
+sub players        { return $_[0]->{gameState}->{players};              }
+sub berserkDice {
+  my $self = shift;
+  $self->{gameState}->{berserkDice} = $_[0] if scalar(@_) == 1;
+  return $self->{gameState}->{berserkDice};
+}
 
 1;
 

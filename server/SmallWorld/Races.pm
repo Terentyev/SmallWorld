@@ -90,9 +90,9 @@ sub abandonRegion {
 
 # может ли раса выполнить это действие
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $action, $state) = @_;
   # любая раса может выполнять любую команду кроме зачарования
-  return $js->{action} ne 'enchant';
+  return $action ne 'enchant';
 }
 
 sub getOwnedRegionsNum {
@@ -337,9 +337,9 @@ sub initialTokens {
 }
 
 sub canCmd {
-  my ($self, $js, $state) = @_;
+  my ($self, $action, $state) = @_;
   # чародеи могут ещё и зачаровывать
-  return $js->{action} eq 'enchant' && !$state->{enchanted} || $self->SUPER::canCmd($js, $state);
+  return $action eq 'enchant' && !$state->{enchanted} || $self->SUPER::canCmd($action, $state);
 }
 
 sub activate {

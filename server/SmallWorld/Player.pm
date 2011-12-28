@@ -38,6 +38,11 @@ sub activeSp       { return $_[0]->{game}->createSpecialPower('currentTokenBadge
 sub tokens         { return $_[0]->{tokensInHand};                                         }
 sub activeRaceName { return $_[0]->{currentTokenBadge}->{raceName} // 'none';              }
 sub activeSpName   { return $_[0]->{currentTokenBadge}->{specialPowerName} // 'none';      }
+sub dice {
+  my $self = shift;
+  $self->{dice} = $_[0] if scalar(@_) == 1;
+  return $self->{dice};
+}
 
 1;
 

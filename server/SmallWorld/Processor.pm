@@ -21,8 +21,11 @@ sub new {
   my $class = shift;
   my $self = { db => undef, _game => undef, loading => 0 };
 
-  $self->{db} = SmallWorld::DB->new();
-  $self->{db}->connect(DB_NAME, DB_LOGIN, DB_PASSWORD, DB_MAX_BLOB_SIZE);
+  $self->{db} = SmallWorld::DB->new(
+      db          => DB_NAME,
+      user        => DB_LOGIN,
+      passwd      => DB_PASSWORD,
+      maxBlobSize => DB_MAX_BLOB_SIZE);
 
   bless $self, $class;
   return $self;
