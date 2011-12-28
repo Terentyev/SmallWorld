@@ -214,7 +214,7 @@ function hdlGetGameList(ans) {
                 $.sprintf("%d/%d", cur.turn, cur.turnsNum),
                 $.sprintf("<div class='wrap' width='100'>%s</div>", cur.gameDescription)]);
   }
-
+  gameId = gameId || data.gameId;
   $("#tableGameList tbody").html(s);
   $("#tableGameList").trigger("update");
   $("input:radio[name=listGameId]").first().attr("checked", 1);
@@ -226,8 +226,10 @@ function hdlGetGameList(ans) {
      });
   if (gameId != null) {
     $("input:radio[name=listGameId]").attr("hidden", 1);
+    $('#btnJoin').hide();
     setGame(gameId);
-  }
+  } else
+    $('#btnJoin').show();
   if (needLoadMaps) cmdGetMapList();
 }
 
@@ -296,7 +298,6 @@ function hdlGetGameState(ans) {
   $('#divGameError').empty();
   var gs = ans.gameState;
   if (gs.state == GST_EMPTY) {
-    // TODO: что же делать, если произошла такая странная ситуация?
     data.game = null;
     data.gameId = null;
     ShowLobby();

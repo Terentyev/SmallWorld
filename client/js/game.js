@@ -409,3 +409,16 @@ function checkDeploy(cmd, add) {
     alert('You should place you tokens in the world');
   }
 }
+
+function watchGame() {
+  var gameId = $("input:radio[name=listGameId]").filter(":checked").val();
+  setGame(gameId);
+  showLobby();
+}
+
+function leaveWatch() {
+  data.gameId = null;
+  data.game = null;
+  _setCookie(["gameId"], [null]);
+  showLobby();
+}

@@ -7,16 +7,21 @@ function Player(playerId, gs) {
   }
   for (var i in this.gs.players) {
     this.p = this.gs.players[i];
-    if (this.p.userId == playerId) break;
+    if (this.p.userId == playerId) return;
   }
+  this.p = null;
 }
 
 Player.prototype.userId = function() {
-  return this.p.userId;
+  return this.p ? this.p.userId : -1;
 }
 
 Player.prototype.username = function() {
-  return this.p.username;
+  return this.p ? this.p.username : '';
+}
+
+Player.prototype.inGame = function() {
+  return this.p != null;
 }
 
 Player.prototype.isHe = function(playerId) {
@@ -33,11 +38,11 @@ Player.prototype.isDefender = function() {
 }
 
 Player.prototype.hasActiveRace = function() {
-  return this.p.currentTokenBadge != null && this.p.currentTokenBadge.tokenBadgeId != null;
+  return this.p != null && this.p.currentTokenBadge != null && this.p.currentTokenBadge.tokenBadgeId != null;
 }
 
 Player.prototype.curTokenBadgeId = function() {
-  return this.p.currentTokenBadge.tokenBadgeId;
+  return his.hasActiveRace() ? this.p.currentTokenBadge.tokenBadgeId : -1;
 }
 
 Player.prototype.curRace = function() {

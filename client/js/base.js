@@ -272,7 +272,7 @@ function makeCurrentGame(game) {
 
 function setGame(gameId) {
   data.gameId = gameId;
-  _setCookie(["gameId"], gameId);
+  _setCookie(["gameId"], [gameId]);
   makeCurrentGame(games[gameId]);
   cmdGetGameState();
 }

@@ -122,11 +122,21 @@ function showBadges() {
 }
 
 function showPlayers() {
-  var s = '';
+  var s = '', playerInGame = false;
   for (var i in data.game.players) {
     var cur = data.game.players[i];
-    if (cur.userId == data.playerId) $("#tableCurrentPlayer tbody").html(addOurPlayerInfo(cur));
+    if (cur.userId == data.playerId && cur.inGame) {
+      $("#tableCurrentPlayer tbody").html(addOurPlayerInfo(cur));
+      playerInGame = true;
+    }
     s += addPlayerInfo(cur);
+  }
+  if (playerInGame) {
+    $('#divGameCurrentPlayer').show();
+    $('#btnLeaveWatch').hide();
+  } else {
+    $('#divGameCurrentPlayer').hide();
+    $('#btnLeaveWatch').show();
   }
   $("#tablePlayers tbody").html(s);
   $("#tablePlayers").trigger("update");
@@ -167,7 +177,7 @@ function showGameStage() {
 
   if (!player.isActive()) {
     btn.html('Update').attr('title', 'Update game state');
-    $('#spanGameStage').html('Wait other players');
+    $('#spanGameStage').html(player.inGame() ? 'Wait other players': '');
     return;
   }
 

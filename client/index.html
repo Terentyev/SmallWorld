@@ -326,6 +326,7 @@
                 </td></tr>
                 <tr><td>
                   <div class="buttons" id="buttonActions">
+                    <div id="btnLeaveWatch" onclick="leaveWatch();">Leave</div>
                     <div id="btnCommitStage" onclick="commitStageClick();">Scores</div>
                   </div>
                 </td></tr>
@@ -333,7 +334,7 @@
               </table>
             </div>
           </div> <br>
-          <div class="corner-all">
+          <div class="corner-all" id="divGameCurrentPlayer">
             <div class="header"><span>Current player</span></div>
             <div class="message">
               <table id="tableCurrentPlayer" width="100%" height="100%" align="center">
@@ -386,6 +387,7 @@
             </table>
               <div class="buttons">
                 <div id="btnJoin" onclick="cmdJoinGame();">Join</div>
+                <div onclick="watchGame();">Watch</div>
               </div>
           </div>
           <div id="divCreateGame">
