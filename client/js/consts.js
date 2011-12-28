@@ -56,6 +56,7 @@ var races = ['Amazons', 'Dwarves', 'Elves', 'Giants', 'Halflings', 'Humans', 'Or
              'Sorcerers', 'Tritons', 'Trolls', 'Wizards'];
 
 var raceDescription = {
+  'None': '',
   'Amazons': 'Four of your Amazon tokens may only be used for conquest, not for defense. So you start each turn with +4 Amazon token. At the end of each Troop Redeployments four tokens removed from the map, and back to your hand at the start of next turn.',
   'Dwarves': 'Each Mine Region your Dwarves occupy is worth 1 bonus Victory coin, at the end of your turn. This power is kept even when the Dwarves are In Decline',
   'Elves': 'When the enemy conquers one of your Regions, keep all your Elf tokens in hand for redeployment, rather than discarding 1 Elf token back into the storage tray',
@@ -104,19 +105,6 @@ var objects = {
   'hero': '/pics/objHero.png'
 };
 
-var gameStages = {
-  null: ['', ''],
-  '': ['', ''],
-  'defend': ["Wait other players", "Let's defend, my friend!"],
-  'selectRace': ["Wait other players", "So... You should select your path... or race"],
-  'beforeConquest': ["Wait other players", "<table><tr><td>May be you want</td><td><div id='placeDecline'></div></td><td>your race?</td></tr></table>"],
-  'conquest': ["Wait other players", "Do you want some fun? Let's conquer some regions"],
-  'redeploy': ["Wait other players", "Place your warriors to the world"],
-  'beforeFinishTurn': ["Wait other players", "Last actions"],
-  'finishTurn': ["Wait other players", "Click finish-turn button, dude"],
-  'gameOver': ["Oops!.. Game over", "Oops!.. Game over"]
-};
-
 const GST_WAIT    = 1;
 const GST_BEGIN   = 0;
 const GST_IN_GAME = 2;
@@ -131,3 +119,5 @@ const GS_REDEPLOY           = 'redeploy';
 const GS_BEFORE_FINISH_TURN = 'beforeFinishTurn';
 const GS_FINISH_TURN        = 'finishTurn';
 const GS_IS_OVER            = 'gameOver';
+
+const actionDivs = ['#divDecline', '#divEnchant', '#divDragonAttack', '#divThrowDice', '#divRedeploy', '#divConquest', '#divSelectFriend'];
