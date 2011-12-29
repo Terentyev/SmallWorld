@@ -1,0 +1,22 @@
+[
+  { "result": "ok" },
+  { "result": "ok", "id": 2, "sid": 2 },
+  { "result": "ok" },
+  { "result": "ok" },
+  { "result": "ok" },
+  { "result": "ok", "id": 2, "sid": 3 },
+  { "result": "tooManyAI" },
+
+  { "result": "ok" },
+
+  {
+    "result": "ok",
+    "gameState": {
+      "state": 0,
+      "players": [
+        { "userId": 1, "username": "username1" },
+        { "userId": 2, "username": "_ai1.0" }
+      ]
+    }
+  }
+]
