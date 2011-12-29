@@ -28,7 +28,6 @@ function selectFriend() {
     pls += addOption(cur.userId, cur.username);
   }
   $('#selectPlayers').html(pls).trigger('update');
-  showModal('#divSelectFriend');
 }
 
 function dragonAttack() {
@@ -349,7 +348,7 @@ function commitStageDefend() {
   checkDeploy(
     cmdDefend,
     function(i, regions) {
-      if (defend.regions[i] != 0) regions.push({ regionId: parseInt(i), tokensNum: defend.regions[i] })
+      if (defend.regions[i]) regions.push({ regionId: parseInt(i), tokensNum: defend.regions[i] })
     });
 }
 

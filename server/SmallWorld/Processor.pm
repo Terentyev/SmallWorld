@@ -302,7 +302,7 @@ sub cmd_setReadinessStatus {
   my ($self, $js, $result) = @_;
   if ($self->{db}->setIsReady( @$js{qw/isReady sid/} ) ) {
     my $game = $self->getGame($js);
-    if ( $self->{loading} || $ENV{DEBUG} && exists $js->{visibleRaces} && exists $js->{visibleSpecialPowers} ) {
+    if ( ($self->{loading} || $ENV{DEBUG}) && exists $js->{visibleRaces} && exists $js->{visibleSpecialPowers} ) {
       $game->setTokenBadge('raceName', $js->{visibleRaces});
       $game->setTokenBadge('specialPowerName', $js->{visibleSpecialPowers});
     }

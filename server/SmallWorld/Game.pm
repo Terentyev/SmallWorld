@@ -575,7 +575,7 @@ sub random {
   return (defined $_[0] ? ($_[0]->{dice} // 0) : 0) if $ENV{DEBUG};
   $self->{gameState}->{prevGenNum} = (RAND_A * $self->{gameState}->{prevGenNum}) % RAND_M;
   my $result = $self->{gameState}->{prevGenNum} % 6;
-  return $result > 3;
+  return $result > 3 ? 0 : $result;
 }
 
 # возвращает количество фигурок в хранилище для определенной расы
@@ -824,13 +824,13 @@ sub finishTurn {
 
   @{$_}{qw (conquestIdx prevTokenBadgeId prevTokensNum)} = () for @{ $self->{gameState}->{regions} };
 
+  my $prevPriority = $player->{priority};
   do {
     $self->{gameState}->{activePlayerId} = $self->{gameState}->{players}->[
-      ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId}
-  } while !$self->getPlayer()->{inGame};
+      ($player->{priority} + 1) % scalar(@{ $self->{gameState}->{players} }) ]->{playerId};
+    $player = $self->getPlayer();
+  } while !$player->{inGame};
 
-  my $prevPriority = $player->{priority};
-  $player = $self->getPlayer();
   if ( $player->{priority} < $prevPriority ) {
     $self->{gameState}->{currentTurn}++;
   }
@@ -936,6 +936,7 @@ sub enchant {
 sub selectFriend {
   my ($self, $friendId) = @_;
   $self->{gameState}->{friendInfo}->{friendId} = $friendId;
+  $self->{gameState}->{state} = GS_FINISH_TURN;
 }
 
 sub dragonAttack {

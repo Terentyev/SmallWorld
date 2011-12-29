@@ -18,6 +18,7 @@ use Proxy::Config;
 sub new {
 	my $class = shift;
 	my $self = { ua => LWP::UserAgent->new(), request => undef };
+  $self->{ua}->timeout(15);
 
 	bless $self, $class;
 

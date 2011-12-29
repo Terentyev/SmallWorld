@@ -42,7 +42,7 @@ Player.prototype.hasActiveRace = function() {
 }
 
 Player.prototype.curTokenBadgeId = function() {
-  return his.hasActiveRace() ? this.p.currentTokenBadge.tokenBadgeId : -1;
+  return this.hasActiveRace() ? this.p.currentTokenBadge.tokenBadgeId : -1;
 }
 
 Player.prototype.curRace = function() {
