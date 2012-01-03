@@ -73,14 +73,10 @@ sub _constructConquestPlan {
     push @ways, $self->_constructConqWays($g, $p, $g->{gs}->getRegion(region => $_));
   }
 
-  swLog(LOG_FILE, \@ways);
-
   my @bonusSums = ();
   foreach ( @ways ) {
     my $i = 0;
     for ( ; $i <= $#$_ + 1; ++$i ) {
-#      # ищем номер региона в цепочке, на котором наше завоевание прервется
-#      last if $i > $#$_ || $_->[$i]->{cost} > $p->tokens + 3;
       # ищем номер региона в цепочке, на котором наше завоевание может прерваться
       last if $i > $#$_ || $_->[$i]->{cost} > $p->tokens;
     }
@@ -114,8 +110,6 @@ sub _constructConquestPlan {
     push @bonusSums, { way => $_, bonus => $bonus };
   }
   @bonusSums = sort { $b->{bonus} <=> $a->{bonus} } @bonusSums;
-  swLog(LOG_FILE, "Bonus sums", \@bonusSums);
-
   # формируем массив регионов по порядку их завоевания
   my @result = ();
   foreach my $bs( @bonusSums ) {
@@ -154,9 +148,7 @@ sub _constructConqWays {
       # те, с которыми мы не граничим согласно всем правилам
       next if $p->isOwned($region) || !$sp->canAttack($region, $g->{gs}->regions) || $region->isImmune;
 
-      swLog(LOG_FILE, (" " x $#way) . "Enter to $region->{regionId}");
       push @result, $self->_constructConqWays($g, $p, $region, @way);
-      swLog(LOG_FILE, (" " x $#way) . "leave from $region->{regionId}");
     }
   }
   $self->_tmpConquerRestore($r, @backups);
@@ -190,7 +182,6 @@ sub _getRegionsForConquest {
 sub _beginConquest {
   my ($self, $g) = @_;
   $g->{plan} = [$self->_constructConquestPlan($g)];
-  swLog(LOG_FILE, $g->{plan});
 }
 
 sub _endConquest {
