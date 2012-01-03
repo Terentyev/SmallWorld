@@ -213,7 +213,7 @@ sub _alienEncampNum {
   my ($self, $g) = @_;
   my $result = 0;
   foreach ( @{ $g->{gs}->regions } ) {
-    $result += ($_->{encampment} // 0) if $_->{ownerId} != $g->{gs}->activePlayerId;
+    $result += ($_->{encampment} // 0) if ($_->{ownerId} // -1) != $g->{gs}->activePlayerId;
   }
   return $result;
 }
@@ -525,6 +525,28 @@ sub _redeploy {
       fortified   => (%fortified ? \%fortified : undef));
 }
 
+sub _selectRace {
+  my ($self, $g) = @_;
+  return min(int(rand(6)), $g->{gs}->getPlayer()->coins);
+}
+
+sub _beforeFinishTurn {
+  my ($self, $g) = @_;
+  if ( $self->_canStoutDecline($g) && $self->_shouldStoutDecline($g) ) {
+    $self->_decline($g);
+  }
+  if ( $self->_canSelectFriend($g) ) {
+    foreach ( @{ $g->{gs}->players } ) {
+      if ( $self->_canSelectFriend($g, $_->{playerId}) ) {
+        die 'Fail select friend' if
+          $self->_sendGameCmd(game => $g, action => 'selectFriend', friendId => $_->{playerId})->{result} ne R_ALL_OK;
+        last;
+      }
+    }
+  }
+  $self->_finishTurn($g);
+}
+
 sub _cmd_defend {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -545,15 +567,15 @@ sub _cmd_defend {
 
 sub _cmd_selectRace {
   my ($self, $g) = @_;
-  my $p = min(int(rand(6)), $g->{gs}->getPlayer()->coins);
   die 'Fail select race' if
-    $self->_sendGameCmd(game => $g, action => 'selectRace', position => $p)->{result} ne R_ALL_OK;
+    $self->_sendGameCmd(game => $g, action => 'selectRace', position => $self->_selectRace($g))->{result} ne R_ALL_OK;
 }
 
 sub _cmd_beforeConquest {
   my ($self, $g) = @_;
   $self->_conquer($g);
-  return if $g->{gs}->stage eq GS_BEFORE_FINISH_TURN;
+  return if $g->{gs}->stage eq GS_DEFEND;
+  return $self->_beforeFinishTurn($g) if $g->{gs}->stage eq GS_BEFORE_FINISH_TURN;
   # размещаем войска
   return $self->_redeploy($g) if $g->{gs}->stage ne GS_BEFORE_CONQUEST;
   # у нас ничего не получилось завоевать и состояние игры не изменилось, значит
@@ -575,19 +597,7 @@ sub _cmd_redeploy {
 
 sub _cmd_beforeFinishTurn {
   my ($self, $g) = @_;
-  if ( $self->_canStoutDecline($g) && $self->_shouldStoutDecline($g) ) {
-    $self->_decline($g);
-  }
-  if ( $self->_canSelectFriend($g) ) {
-    foreach ( @{ $g->{gs}->players } ) {
-      if ( $self->_canSelectFriend($g, $_->{playerId}) ) {
-        die 'Fail select friend' if
-          $self->_sendGameCmd(game => $g, action => 'selectFriend', friendId => $_->{playerId})->{result} ne R_ALL_OK;
-        last;
-      }
-    }
-  }
-  $self->_finishTurn($g);
+  $self->_beforeFinishTurn($g);
 }
 
 sub _cmd_finishTurn {
