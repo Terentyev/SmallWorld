@@ -74,7 +74,6 @@ sub loadFromState {
                       : undef,
     currentTurn    => $gs{currentTurn},
     tokenBadges    => $gs{visibleTokenBadges},
-    defendingInfo  => $gs{defendingInfo},
     friendInfo     => $gs{friendInfo},
     stoutStatistcs => $gs{stoutStatistics},
     berserkDice    => $gs{berserkDice},
@@ -89,8 +88,9 @@ sub loadFromState {
   $self->{gameState}->{state} = $state;
   my $i = 0;
   foreach ( @{ $gs{map}->{regions} } ) {
+    ++$i;
     push @{ $self->{gameState}->{regions} }, {
-      regionId          => ++$i,
+      regionId          => $i,
       constRegionState => $_->{constRegionState},
       adjacentRegions   => $_->{adjacentRegions},
       ownerId           => $_->{currentRegionState}->{ownerId},
@@ -102,7 +102,9 @@ sub loadFromState {
       dragon            => $_->{currentRegionState}->{dragon} ? 1 : 0,
       fortified         => $_->{currentRegionState}->{fortified} ? 1 : 0,
       hero              => $_->{currentRegionState}->{hero} ? 1 : 0,
-      inDecline         => $_->{currentRegionState}->{inDecline} ? 1 : 0
+      inDecline         => $_->{currentRegionState}->{inDecline} ? 1 : 0,
+      conquestIdx       => ((defined $gs{defendingInfo} ? $gs{defendingInfo}->{regionId} : undef) // -1) == $i
+        ? 1 : undef
     };
   }
   foreach ( @{ $gs{players} } ) {

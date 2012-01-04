@@ -10,6 +10,7 @@ use List::Util qw( max min );
 
 use SmallWorld::Checker qw(
     checkRegion_conquer
+    checkRegion_defend
     checkRegion_enchant
     checkFriend
 );
@@ -307,6 +308,12 @@ sub _canPlaceFortified {
     scalar(grep $_->{fortified}, @{ $g->{gs}->regions }) < FORTRESS_MAX;
 }
 
+sub _canDefendToRegion {
+  my ($self, $g, $regionId, $p, $ar) = @_;
+  return checkRegion_defend({ regions => [{ regionId => $regionId }] },
+      $g->{gs}, $p, undef, $ar, undef, {});
+}
+
 sub _shouldStoutDecline {
   # TODO: наверное, это уже будет продвинутый ИИ, если он будет решать нужно ли
   # ему приводить расу в упадок способностью Stout
@@ -550,8 +557,10 @@ sub _beforeFinishTurn {
 sub _cmd_defend {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
-  foreach ( @{ $p->activeRace()->regions } ) {
-    return if $self->_sendGameCmd(
+  my $ar = $p->activeRace;
+  foreach ( @{ $ar->regions } ) {
+    next unless $self->_canDefendToRegion($g, $_->{regionId}, $p, $ar);
+    die "Fail defend to region id=$_->{regionId}" if $self->_sendGameCmd(
         game => $g,
         action => 'defend',
         regions => [
@@ -560,7 +569,7 @@ sub _cmd_defend {
             tokensNum => $p->tokens
           }
         ]
-    )->{result} eq R_ALL_OK;
+    )->{result} ne R_ALL_OK;
   }
   die 'Fail defend';
 }
