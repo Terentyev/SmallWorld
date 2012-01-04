@@ -7,11 +7,14 @@ use utf8;
 
 use base('AI::Player');
 
-use List::Util qw ( max );
+use List::Util qw ( max min );
 
 use SW::Util qw( swLog );
 
+use SmallWorld::Consts;
+
 use AI::Config;
+use AI::Consts;
 
 our @backupNames = qw( ownerId tokenBadgeId conquestIdx prevTokenBadgeId prevTokensNum tokensNum );
 
@@ -76,9 +79,9 @@ sub _constructConquestPlan {
   my @bonusSums = ();
   foreach ( @ways ) {
     my $i = 0;
-    for ( ; $i <= $#$_ + 1; ++$i ) {
+    for ( ; $i <= $#$_; ++$i ) {
       # ищем номер региона в цепочке, на котором наше завоевание может прерваться
-      last if $i > $#$_ || $_->[$i]->{cost} > $p->tokens;
+      last if $_->[$i]->{cost} > $p->tokens;
     }
     next if $i == 0 && !$self->_canDragonAttack($g); # по этой цепочке нам ничего, скорее всего, не удастся завоевать
 
@@ -96,16 +99,21 @@ sub _constructConquestPlan {
         }
       }
       $maxDiff -= 1; # одну фигурку мы будем обязаны оставить вместе с драконом
-      for ( $i += 1; $i <= $#$_ + 1; ++$i ) {
-        last if $i > $#$_ || $_->[$i]->{cost} - $maxDiff > $p->tokens + 3;
+      for ( ; $i <= $#$_; ++$i ) {
+        last if $_->[$i]->{cost} - $maxDiff > $p->tokens;
       }
     }
+    $i -= 1; # рассмотрим последний регион, который мы успешно завоюем
     $g->{dragonShouldAttackRegionId} = $_->[$idxMaxDiff]->{id};
     my $bonus = $_->[$i]->{coins};
-    my $delta = $_->[$i]->{cost} - $maxDiff - $p->tokens;
-    if ( $i <= $#$_ && $delta ~~ [1..3] ) {
-      # оценим сколько мы сможем получить бонусных монет, если рискнём завоевать
-      $bonus += 1 / 6 * (3 - $delta + 1) * ($_->[$i]->{coins} - $bonus);
+    if ( $i < $#$_ ) {
+      # если в цепочке остались регионы, которые мы не захватим однозначно,
+      # надо оценить сможем ли мы их захватить, бросив кубик подкрепления
+      my $delta = $_->[$i + 1]->{cost} - $maxDiff - $p->tokens;
+      if ( $delta ~~ [1..3] ) {
+        # оценим сколько мы сможем получить бонусных монет, если рискнём завоевать
+        $bonus += 1 / 6 * (3 - $delta + 1) * ($_->[$i + 1]->{coins} - $bonus);
+      }
     }
     push @bonusSums, { way => $_, bonus => $bonus };
   }
@@ -156,6 +164,32 @@ sub _constructConqWays {
   return @result;
 }
 
+sub _constructEstimates {
+  my ($self, $g) = @_;
+  my @result = ();
+  my $i = 0;
+  no strict 'refs';
+  foreach ( @{ $g->{gs}->tokenBadges } ) {
+    my $upRace = $self->_translateToConst($_->{raceName});
+    my $upSp = $self->_translateToConst($_->{specialPowerName});
+    push @result, {
+      est => (
+        &{"EST_$upRace"} + &{"EST_$upSp"} + &{"$upRace\_TOKENS_NUM"} + &{"$upSp\_TOKENS_NUM"} +
+        $_->{bonusMoney} - $i),
+      idx => $i
+    };
+    ++$i;
+  }
+  use strict 'refs';
+  return sort { $b->{est} <=> $a->{est} } @result;
+}
+
+sub _translateToConst {
+  my ($self, $name) = @_;
+  $name =~ s/^(.+)([A-Z])/$1_$2/g;
+  return uc $name;
+}
+
 sub _tmpConquer {
   my ($self, $g, $p, $r) = @_;
   return () if $p->isOwned($r);
@@ -188,6 +222,12 @@ sub _endConquest {
   my ($self, $g) = @_;
   @$_{qw(cost coins prevRegionId inThread inResult)} = () for @{ $g->{gs}->regions };
   $g->{dragonShouldAttackRegionId} = undef;
+}
+
+sub _selectRace {
+  my ($self, $g) = @_;
+  my @estimates = $self->_constructEstimates($g);
+  return $estimates[0]->{idx};
 }
 
 1;
