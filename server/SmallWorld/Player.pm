@@ -35,15 +35,17 @@ sub isFriend {
     defined $friendInfo && ($friendInfo->{friendId} // -1) == $self->{playerId};
 }
 
-sub id                 { return $_[0]->{playerId};                                             }
-sub name               { return $_[0]->{username};                                             }
-sub coins              { return $_[0]->{coins};                                                }
-sub activeTokenBadgeId { return $_[0]->{currentTokenBadge}->{tokenBadgeId};                    }
-sub activeRace         { return $_[0]->{game}->createRace($_[0]->{currentTokenBadge});         }
-sub activeSp           { return $_[0]->{game}->createSpecialPower('currentTokenBadge', $_[0]); }
-sub tokens             { return $_[0]->{tokensInHand};                                         }
-sub activeRaceName     { return $_[0]->{currentTokenBadge}->{raceName} // 'none';              }
-sub activeSpName       { return $_[0]->{currentTokenBadge}->{specialPowerName} // 'none';      }
+sub id                   { return $_[0]->{playerId};                                             }
+sub name                 { return $_[0]->{username};                                             }
+sub coins                { return $_[0]->{coins};                                                }
+sub activeTokenBadgeId   { return $_[0]->{currentTokenBadge}->{tokenBadgeId};                    }
+sub declinehTokenBadgeId { return $_[0]->{declinedTokenBadge}->{tokenBadgeId};                   }
+sub activeRace           { return $_[0]->{game}->createRace($_[0]->{currentTokenBadge});         }
+sub activeSp             { return $_[0]->{game}->createSpecialPower('currentTokenBadge', $_[0]); }
+sub declinedRace         { return $_[0]->{game}->createRace($_[0]->{decliendTokenBadge});        }
+sub tokens               { return $_[0]->{tokensInHand};                                         }
+sub activeRaceName       { return $_[0]->{currentTokenBadge}->{raceName} // 'none';              }
+sub activeSpName         { return $_[0]->{currentTokenBadge}->{specialPowerName} // 'none';      }
 sub dice {
   my $self = shift;
   $self->{dice} = $_[0] if scalar(@_) == 1;

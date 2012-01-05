@@ -56,17 +56,32 @@ sub _constructConquestPlan {
   my $asp = $p->activeSp;
   my @regions = ();
   if ( scalar(@{ $p->regions }) == 0 ) {
+    # если у игрока нет регионов, значит это первое завоевание,
+    # пробегаемся по всем регионам и составляем список регионов, на которые
+    # можем напасть при первом завоевании
     foreach ( @{ $g->{gs}->regions } ) {
       my $r = $g->{gs}->getRegion(region => $_);
       push @regions, $r if $self->_canBaseAttack($g, $r->id);
     }
   }
   else {
+    # у игрока есть территории, продолжаем завоевывать относительно их
     foreach ( @{ $p->regions } ) {
       my $mine = $g->{gs}->getRegion(region => $_);
       foreach ( @{ $mine->getAdjacentRegions($g->{gs}->regions, $asp) } ) {
         my $r = $g->{gs}->getRegion(region => $_);
         push @regions, $r if !$p->isOwned($r) && $self->_canBaseAttack($g, $r->id);
+      }
+    }
+    if ( $#regions < 0 && $#{ $ar->regions } < 0 && $p->declinedTokenBadgeId ) {
+      # если у игрока есть регионы, но он не может продолжать захватывать не
+      # свои регионы, а мы обязаны попытаться хотя бы захватить хоть что-то,
+      # нам следует захватить хотя бы регионы с расой в упадке
+      foreach ( @{ $p->declinedRace->regions } ) {
+        my $r = $g->{gs}->getRegion(region => $_);
+        next if !$self->_canBaseAttack($g, $r->id);
+        push @regions, $r;
+        last;
       }
     }
   }
@@ -77,47 +92,8 @@ sub _constructConquestPlan {
   }
 
   my @bonusSums = ();
-  foreach ( @ways ) {
-    my $i = 0;
-    for ( ; $i <= $#$_; ++$i ) {
-      # ищем номер региона в цепочке, на котором наше завоевание может прерваться
-      last if $_->[$i]->{cost} > $p->tokens;
-    }
-    next if $i == 0 && !$self->_canDragonAttack($g); # по этой цепочке нам ничего, скорее всего, не удастся завоевать
-
-    my $maxDiff = 0;
-    my $idxMaxDiff = $i != 0 ? -1 : 0; # будет хранить в себе индекс региона, на который должен напасть дракон
-    if ( $i <= $#$_ && $self->_canDragonAttack($g) ) {
-      # если судьба одарила нас возможностью атаковать драконом, то применим эту
-      # способность на самом дорогом (в плане количества затраченных фигурок)
-      # регионе
-      for ( my $j = 0; $j <= $i ; ++$j ) {
-        my $diff = $_->[$j]->{cost} - ($j == 0 ? 0 : $_->[$j - 1]->{cost});
-        if ( $maxDiff < $diff ) {
-          $maxDiff = $diff;
-          $idxMaxDiff = $j;
-        }
-      }
-      $maxDiff -= 1; # одну фигурку мы будем обязаны оставить вместе с драконом
-      for ( ; $i <= $#$_; ++$i ) {
-        last if $_->[$i]->{cost} - $maxDiff > $p->tokens;
-      }
-    }
-    $i -= 1; # рассмотрим последний регион, который мы успешно завоюем
-    $g->{dragonShouldAttackRegionId} = $_->[$idxMaxDiff]->{id};
-    my $bonus = $_->[$i]->{coins};
-    if ( $i < $#$_ ) {
-      # если в цепочке остались регионы, которые мы не захватим однозначно,
-      # надо оценить сможем ли мы их захватить, бросив кубик подкрепления
-      my $delta = $_->[$i + 1]->{cost} - $maxDiff - $p->tokens;
-      if ( $delta ~~ [1..3] ) {
-        # оценим сколько мы сможем получить бонусных монет, если рискнём завоевать
-        $bonus += 1 / 6 * (3 - $delta + 1) * ($_->[$i + 1]->{coins} - $bonus);
-      }
-    }
-    push @bonusSums, { way => $_, bonus => $bonus };
-  }
-  @bonusSums = sort { $b->{bonus} <=> $a->{bonus} } @bonusSums;
+  @bonusSums = $self->_calculateBonusSums($g, 0, @ways);
+  @bonusSums = $self->_calculateBonusSums($g, 1, @ways) unless @bonusSums;
   # формируем массив регионов по порядку их завоевания
   my @result = ();
   foreach my $bs( @bonusSums ) {
@@ -182,6 +158,55 @@ sub _constructEstimates {
   }
   use strict 'refs';
   return sort { $b->{est} <=> $a->{est} } @result;
+}
+
+sub _calculateBonusSums {
+  my ($self, $g, $force, @ways) = @_;
+  my @bonusSums = ();
+  my $error = $force ? 3 : 0;
+  my $p = $g->{gs}->getPlayer();
+
+  foreach ( @ways ) {
+    my $i = 0;
+    for ( ; $i <= $#$_; ++$i ) {
+      # ищем номер региона в цепочке, на котором наше завоевание может прерваться
+      last if $_->[$i]->{cost} > $p->tokens + $error;
+    }
+    next if $i == 0 && !$self->_canDragonAttack($g); # по этой цепочке нам ничего, скорее всего, не удастся завоевать
+
+    my $maxDiff = 0;
+    my $idxMaxDiff = $i != 0 ? -1 : 0; # будет хранить в себе индекс региона, на который должен напасть дракон
+    if ( $i <= $#$_ && $self->_canDragonAttack($g) ) {
+      # если судьба одарила нас возможностью атаковать драконом, то применим эту
+      # способность на самом дорогом (в плане количества затраченных фигурок)
+      # регионе
+      for ( my $j = 0; $j <= $i ; ++$j ) {
+        my $diff = $_->[$j]->{cost} - ($j == 0 ? 0 : $_->[$j - 1]->{cost});
+        if ( $maxDiff < $diff ) {
+          $maxDiff = $diff;
+          $idxMaxDiff = $j;
+        }
+      }
+      $maxDiff -= 1; # одну фигурку мы будем обязаны оставить вместе с драконом
+      for ( ; $i <= $#$_; ++$i ) {
+        last if $_->[$i]->{cost} - $maxDiff > $p->tokens + $error;
+      }
+    }
+    $i -= 1; # рассмотрим последний регион, который мы успешно завоюем
+    $g->{dragonShouldAttackRegionId} = $_->[$idxMaxDiff]->{id};
+    my $bonus = $_->[$i]->{coins};
+    if ( $i < $#$_ ) {
+      # если в цепочке остались регионы, которые мы не захватим однозначно,
+      # надо оценить сможем ли мы их захватить, бросив кубик подкрепления
+      my $delta = $_->[$i + 1]->{cost} - $maxDiff - $p->tokens;
+      if ( $delta ~~ [1..3] ) {
+        # оценим сколько мы сможем получить бонусных монет, если рискнём завоевать
+        $bonus += 1 / 6 * (3 - $delta + 1) * ($_->[$i + 1]->{coins} - $bonus);
+      }
+    }
+    push @bonusSums, { way => $_, bonus => $bonus };
+  }
+  return sort { $b->{bonus} <=> $a->{bonus} } @bonusSums;
 }
 
 sub _translateToConst {
