@@ -767,7 +767,179 @@ use constant LENA_DEFAULT_MAPS => [
     'mapName' => 'map1',
     'playersNum' => 2,
     'turnsNum' => 10,
-    'regions' => []
+    'regions' => [
+      {
+        'landDescription' => ['border', 'coast', 'magic', 'forest'],     #1
+        'coordinates' => [[0, 0], [0, 158], [46, 146], [126, 151], [104, 0]],
+        'adjacent' => [2, 6],
+        'raceCoords' => [15, 15],
+        'powerCoords' => [64, 97]
+      },
+
+      {
+        'landDescription' => ['border', 'coast', 'sea'],       #2
+        'coordinates' => [[104, 0], [126, 151], [154, 135], [202, 107], [258, 104], [277, 77], [264, 0]],
+        'adjacent' => [1, 3, 6, 7],
+        'raceCoords' => [130, 8],
+        'powerCoords' => [130, 64]
+      },
+
+      {
+        'landDescription' => ['border', 'coast', 'magic', 'farmland'],         #3
+        'coordinates' => [[264, 0], [277, 77], [258, 104], [273, 142], [297, 143], [392, 113], [409, 95], [393, 45], [404, 0]],
+        'adjacent' => [2, 4, 7, 8],
+        'raceCoords' => [285, 8],
+        'powerCoords' => [317, 65]
+      },
+
+      {
+        'population' => 1,
+        'landDescription' => ['border', 'coast', 'mine', 'forest'],      #4
+        'adjacent' => [3, 5, 8, 9, 10],
+        'coordinates' => [[404, 0], [393, 45], [409, 95], [392, 113], [422, 179], [508, 160], [536, 106], [503, 82], [551, 36], [552, 0]],
+        'raceCoords' => [412, 8],
+        'powerCoords' => [419, 65]
+      },
+
+      {
+        'landDescription' => ['border', 'swamp', 'cavern'],          #5
+        'coordinates' => [[552, 0],  [551, 36], [503, 82], [536, 106], [630, 123], [630, 0]],
+        'adjacent' => [4, 10],
+        'raceCoords' => [560, 4],
+        'powerCoords' => [570, 55],
+      },
+      {
+        'landDescription' => ['border', 'coast', 'hill'],          #6
+        'coordinates' => [[0, 158], [46, 146], [126, 151], [154, 135], [132, 256], [92, 233], [0, 282]],
+        'adjacent' => [1, 2, 7, 11],
+        'raceCoords' => [63, 165],
+        'powerCoords' => [6, 195]
+      },
+
+      {                                   #7
+        'landDescription' => ['mountain', 'border', 'coast', 'mine', 'mountain', 'cavern'],
+        'adjacent' => [2, 3, 6, 8, 11, 12],
+        'coordinates' => [[154, 135], [202, 107], [258, 104], [273, 142], [297, 143], [305, 172], [268, 222], [191, 247], [132, 256]],
+        'raceCoords' => [150, 190],
+        'powerCoords' => [167, 135],
+      },
+
+
+      {
+        'population' => 1,
+        'landDescription' => ['coast', 'hill'],              #8
+        'adjacent' => [3, 4, 7, 9, 12, 13],
+        'coordinates' => [[297, 143], [392, 113], [444, 235], [388, 277], [350, 247], [308, 254], [268, 222], [305, 172]],
+        'raceCoords' => [300, 191],
+        'powerCoords' => [333, 137],
+      },
+
+
+      {                                   #9
+        'landDescription' => ['sea'],
+        'coordinates' => [[422, 179], [508, 160], [548, 238], [565, 276], [508, 317], [388, 277], [444, 235]],
+        'adjacent' => [4, 8, 10, 13, 14],
+        'raceCoords' => [448, 240],
+        'powerCoords' => [453, 180]
+      },
+
+      {                                   #10
+        'landDescription' => ['border', 'coast', 'mountain'],
+        'population' => 1,
+        'adjacent' => [4, 5, 9, 14],
+        'coordinates' => [[508, 160],  [536, 106], [630, 123], [630, 242], [548, 238]],
+        'raceCoords' => [546, 180],
+        'powerCoords' => [536, 123]
+      },
+
+      {                                   #11
+        'landDescription' => ['border', 'sea'],
+        'adjacent' => [6, 7, 12, 15],
+        'coordinates' => [[0, 377], [114, 343], [155, 342], [160, 255], [132, 256], [92, 233], [0, 282]],
+        'raceCoords' => [7, 305],
+        'powerCoords' => [65, 253]
+      },
+
+      {                                   #12
+        'landDescription' => ['coast', 'farmland'],
+        'coordinates' => [[217, 339], [281, 331], [312, 290], [308, 254], [268, 222], [191, 247], [160, 255], [155, 342]],
+        'adjacent' => [7, 8, 11, 13, 15, 17],
+        'raceCoords' => [214, 253],
+        'powerCoords' => [163, 287]
+      },
+
+      {                                   #13
+        'landDescription' => ['coast', 'forest'],
+        'population' => 1,
+        'coordinates' => [[308, 254], [350, 247], [388, 277], [508, 317], [511, 374],  [404, 411], [281, 331], [312, 290]],
+        'adjacent' => [8, 9, 12, 14, 17, 18, 19],
+        'raceCoords' => [380, 313],
+        'powerCoords' => [318, 295]
+      },
+
+
+      {
+        'landDescription' => ['border', 'coast', 'magic', 'farmland'],   #14
+        'coordinates' => [[508, 317], [565, 276], [548, 238], [630, 242], [630, 418], [553, 416], [511, 374]],
+        'adjacent' => [9, 10, 13, 19, 20],
+        'raceCoords' => [546, 348],
+        'powerCoords' => [565, 287]
+
+      },
+
+      {                                   #15
+        'landDescription' => ['border', 'coast', 'magic', 'swamp'],
+        'population' => 1,
+        'adjacent' => [11, 12, 16, 17],
+        'coordinates' => [[0, 377], [114, 343], [155, 342],[217, 339], [247, 387], [185, 465], [0, 426]],
+        'raceCoords' => [87, 375],
+        'powerCoords' => [28, 376]
+      },
+
+      {
+        'landDescription' => ['border', 'hill', 'cavern'],         #16
+        'coordinates' => [[0, 426], [185, 465], [186, 515], [0, 515]],
+        'population' => 1,
+        'bonusCoords' => [129, 483],
+        'raceCoords' => [62, 458],
+        'powerCoords' => [6, 458],
+        'adjacent' => [15, 17]
+      },
+
+      {                                   #17
+        'landDescription' => ['border', 'mountain', 'mine'],
+        'adjacent' => [12, 13, 15, 16, 18],
+        'coordinates' => [[186, 515], [288, 515], [336, 369], [281, 331], [217, 339], [247, 387], [185, 465]],
+        'raceCoords' => [202, 460],
+        'powerCoords' => [244, 398]
+      },
+
+      {                                   #18
+        'landDescription' => ['border', 'cavern', 'hill'],
+        'coordinates' => [[288, 515], [336, 369], [404, 411], [408, 513]],
+        'adjacent' => [13, 17, 19],
+        'raceCoords' => [324, 411],
+        'powerCoords' => [308, 464]
+      },
+
+      {                                   #19
+        'landDescription' => ['border', 'mine', 'swamp'],
+        'population' => 1,
+        'coordinates' => [[404, 411], [511, 374], [553, 416], [519, 471], [520, 515], [408, 513]],
+        'adjacent' => [13, 14, 18, 20],
+        'bonusCoords' => [514, 418],
+        'raceCoords' => [419, 411],
+        'powerCoords' => [437, 466]
+      },
+
+      {                                   #20
+        'landDescription' => ['border', 'mountain'],
+        'coordinates' => [[520, 515], [630, 515], [630, 418], [553, 416], [519, 471]],
+        'adjacent' => [14, 19],
+        'raceCoords' => [529, 466],
+        'powerCoords' => [582, 422]
+      }
+    ]
   }
 
 ];

@@ -18,6 +18,7 @@ BEGIN {
 }
 
 $ENV{DEBUG} = 1;
+$ENV{DEBUG_DICE} = 1;
 my $monitor = AI::Monitor->new(parseArgs());
 $monitor->run();
 
@@ -31,11 +32,12 @@ sub renameKey {
 
 sub parseArgs {
   my %result = ();
-  getopts('s:g:t:u:', \%result) || HELP_MESSAGE();
+  getopts('s:g:t:u:b', \%result) || HELP_MESSAGE();
   renameKey('s', 'server',  \%result);
   renameKey('g', 'game',    \%result);
   renameKey('t', 'timeout', \%result);
   renameKey('u', 'ais',     \%result);
+  renameKey('b', 'simple',  \%result);
   return %result;
 }
 
@@ -44,11 +46,12 @@ sub HELP_MESSAGE {
   my $t = DEFAULT_TIMEOUT;
   print qq!
 AI for SmallWorld game.
-Usage: $0 [[-s server_address] [[-g game_id] [|[-u ais]] [-t timeout] | [--help]]
+Usage: $0 [[-s server_address] [-g game_id] [|[-u ais]] [-b] [-t timeout] | [--help]]
   -s server_address     specify server address (default server address $s)
   -g game_id            specify game id for play
   -t timeout            specify refresh timeout in seconds (default timeout $t)
   -u ais                specify AIs info (see more below)
+  -b                    specify use simple AI (default use advanced AI)
   --help                show this information
 AIs info:
   AIs info is a json with format:

@@ -239,7 +239,7 @@ sub getGameVariables {
   my $game = $self->getGame($js);
   my $player = $game->getPlayer();
   my $region = defined $js->{regionId}
-    ? $game->getRegion($js->{regionId})
+    ? $game->getRegion(id => $js->{regionId})
     : undef;
   my $race = $game->createRace($player->{currentTokenBadge});
   my $sp = $game->createSpecialPower('currentTokenBadge', $player);
