@@ -561,25 +561,24 @@ sub _beforeFinishTurn {
   $self->_finishTurn($g);
 }
 
-sub _cmd_defend {
+sub _defend {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
   my $ar = $p->activeRace;
   foreach ( @{ $ar->regions } ) {
     next unless $self->_canDefendToRegion($g, $_->{regionId}, $p, $ar);
-    die "Fail defend to region id=$_->{regionId}" if $self->_sendGameCmd(
-        game => $g,
-        action => 'defend',
-        regions => [
-          {
-            regionId => $_->{regionId},
-            tokensNum => $p->tokens
-          }
-        ]
-    )->{result} ne R_ALL_OK;
-    return;
+    return [ { regionId => $_->{regionId}, tokensNum => $p->tokens } ];
   }
-  die 'Fail defend';
+  die "Can't find region for defend";
+}
+
+sub _cmd_defend {
+  my ($self, $g) = @_;
+  die "Fail defend" if $self->_sendGameCmd(
+      game => $g,
+      action => 'defend',
+      regions => $self->_defend($g)
+  )->{result} ne R_ALL_OK;
 }
 
 sub _cmd_selectRace {
