@@ -131,3 +131,5 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
 #tableTurnScores td, #tableScores td{line-height:24px;}
 #tableInHand td {padding: 0 0 4px 0; width: 64px;}
 #divDecline, #divEnchant, #divDragonAttack, #divThrowDice, #divSelectFriend {display: none;}
+
+#selectEncampments {width: 50px;}

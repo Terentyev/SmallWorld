@@ -24,7 +24,6 @@
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/base.js"></script>
   <script type="text/javascript" src="js/show.js"></script>
-  <script type="text/javascript" src="js/checker.js"></script>
   <script type="text/javascript" src="js/cmd.js"></script>
   <script type="text/javascript" src="js/game.js"></script>
   <script type="text/javascript" src="js/player.js"></script>
@@ -94,8 +93,17 @@
           </td>
         </tr>
         <tr>
-          <td class="left">Number:</td>
+          <td class="left">Tokens:</td>
           <td><input class="tedit" type="text" id="inputAskNum" onkeyup="this.value = this.value.replace(/[^0-9]/g, '');" /></td>
+        </tr>
+        <tr>
+          <td class="left"><span>Encampments:</span></td>
+          <td>
+            <span>
+              <select id="selectEncampments"></select>
+
+            </span>
+          </td>
         </tr>
         <tr>
           <td colspan="2">
