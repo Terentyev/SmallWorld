@@ -42,7 +42,7 @@ Player.prototype.hasActiveRace = function() {
 }
 
 Player.prototype.curTokenBadgeId = function() {
-  return his.hasActiveRace() ? this.p.currentTokenBadge.tokenBadgeId : -1;
+  return this.hasActiveRace() ? this.p.currentTokenBadge.tokenBadgeId : -1;
 }
 
 Player.prototype.curRace = function() {
@@ -147,9 +147,7 @@ Player.prototype.bonusTokens = function(region) {
     }
   }
 
-  //if (this.curPower() == 'Berserk') {
-    result += this.berserkDice();
-  //}
+  result += this.berserkDice();
 
   if (this.curPower() == 'Commando') {
     result += 1;
