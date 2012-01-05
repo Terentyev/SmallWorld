@@ -96,7 +96,9 @@ sub _loadState {
   my ($self, $g, $state) = @_;
   foreach my $s ( @{ $state->{regions} // [] } ) {
     my $r = $g->{gs}->getRegion(id => $s->{regionId});
-    $r->{$_} = $s->{$_} for qw(conquestIdx prevTokensNum prevTokenBadgeId);
+    foreach ( qw(conquestIdx prevTokensNum prevTokenBadgeId) ) {
+      $r->{$_} = $s->{$_} if defined $s->{$_};
+    }
   }
 }
 
@@ -153,7 +155,7 @@ sub _ourTurn {
   my $g = $self->games->{$game->{gameId}};
   return 0 if !defined $g;
 
-  my $r = $self->_get('{ "action": "getGameState", "gameId": ' . $game->{gameId} . ' }');
+  my $r = $self->_get('{ "action": "getGameState", "gameId": ' . $game->{gameId} . ' }', 1);
   return 0 if $r->{result} ne R_ALL_OK;
 
   $g->{gs} = SmallWorld::Game->new(gameState => $r->{gameState});
@@ -310,7 +312,7 @@ sub _canPlaceFortified {
 
 sub _canDefendToRegion {
   my ($self, $g, $regionId, $p, $ar) = @_;
-  return checkRegion_defend({ regions => [{ regionId => $regionId }] },
+  return !$self->checkRegion_defend({ regions => [{ regionId => $regionId }] },
       $g->{gs}, $p, undef, $ar, undef, {});
 }
 
@@ -570,6 +572,7 @@ sub _cmd_defend {
           }
         ]
     )->{result} ne R_ALL_OK;
+    return;
   }
   die 'Fail defend';
 }
