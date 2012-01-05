@@ -975,6 +975,8 @@ sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};        }
 sub regions        { return $_[0]->{gameState}->{regions};              }
 sub players        { return $_[0]->{gameState}->{players};              }
 sub tokenBadges    { return $_[0]->{gameState}->{tokenBadges};          }
+sub currentTurn    { return $_[0]->{gameState}->{currentTurn};          }
+sub maxTurnNum     { return $_[0]->{gameState}->{map}->{turnsNum} - 1;  }
 sub berserkDice {
   my $self = shift;
   $self->{gameState}->{berserkDice} = $_[0] if scalar(@_) == 1;

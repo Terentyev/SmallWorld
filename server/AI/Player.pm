@@ -189,6 +189,11 @@ sub _sendGameCmd {
   $self->_get($cmd, 1);
 }
 
+sub _isLastTurn {
+  my ($self, $g) = @_;
+  return $g->{gs}->currentTurn == $g->{gs}->maxTurnNum;
+}
+
 sub _useSpConquer {
   my ($self, $g, $regionId, $ans) = @_;
   if ( $self->_canEnchant($g, $regionId) ) {

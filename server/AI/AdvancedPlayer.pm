@@ -224,6 +224,20 @@ sub _endConquest {
   $g->{dragonShouldAttackRegionId} = undef;
 }
 
+sub _shouldStoutDecline {
+  my ($self, $g) = @_;
+  # ни в коем случае не приводим расу в упадок, если сейчас последний ход
+  return 0 if $self->_isLastTurn($g);
+  my $p = $g->{gs}->getPlayer;
+  my $regions = $p->activeRace->regions;
+  my $tokens = -$#$regions;
+  $tokens += $g->{gs}->getRegion(region => $_)->tokens for @$regions;
+  # если число фигурок, которые будут у нас в руках меньше 3 (а почему бы и не
+  # 3?), то желательно привести расу в упадок, т. к. мы скорее всего ничего не
+  # сможем завоевать на следующем ходу
+  return $tokens <= 3;
+}
+
 sub _selectRace {
   my ($self, $g) = @_;
   my @estimates = $self->_constructEstimates($g);
