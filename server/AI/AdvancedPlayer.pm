@@ -19,31 +19,6 @@ use AI::Consts;
 our @backupNames = qw( ownerId tokenBadgeId conquestIdx prevTokenBadgeId prevTokensNum tokensNum );
 
 
-sub _saveState {
-  my ($self, $g, $state) = @_;
-  return $self->SUPER::_saveState($g, $state);
-  $state->{plan} = [];
-  foreach ( @{ $g->{plan} // [] } ) {
-    my $r = $g->{gs}->getRegion(region => $_);
-    my $p = {};
-    $p->{$_} = $r->{$_} for qw( regionId cost coins prevRegionId inThread inResult );
-    push @{ $state->{plan} }, $p;
-  }
-  $state->{$_} = $g->{$_} for qw( dragonShouldAttackRegionId );
-}
-
-sub _loadState {
-  my ($self, $g, $state) = @_;
-  return $self->SUPER::_loadState($g, $state);
-  $g->{plan} = [];
-  foreach my $p ( @{ $state->{plan} // [] } ) {
-    my $r = $g->{gs}->getRegion(id => $p->{regionId});
-    $r->{$_} = $p->{$_} for qw( cost coins prevRegionId inThread inResult );
-    push @{ $g->{plan} }, $r;
-  }
-  $g->{$_} = $state->{$_} for qw( dragonShouldAttackRegionId );
-}
-
 sub _shouldDragonAttack {
   my ($self, $g, $regionId) = @_;
   return !defined $g->{dragonShouldAttackRegionId} || $regionId == $g->{dragonShouldAttackRegionId};
