@@ -18,6 +18,7 @@ BEGIN {
 }
 
 $ENV{DEBUG} = 1;
+$ENV{DEBUG_DICE} = 1;
 my $monitor = AI::Monitor->new(parseArgs());
 $monitor->run();
 
