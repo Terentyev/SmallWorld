@@ -237,7 +237,7 @@ sub getGameState {
   my $self = shift;
   return $self->fetchrow('
       SELECT
-        id, name, description, mapId, state, aiNum, gstate, version, activePlayerId, currentTurn
+        id, name, description, mapId, state, aiNum, gstate, version, activePlayerId, currentTurn, genNum
       FROM GAMES
       WHERE id = ?',
       $_[0]);

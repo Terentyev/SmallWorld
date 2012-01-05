@@ -8,6 +8,9 @@ use utf8;
 use JSON qw( decode_json encode_json );
 use List::Util qw( min max );
 
+use SW::Util qw( swLog );
+
+use SmallWorld::Config;
 use SmallWorld::Consts;
 use SmallWorld::DB;
 use SmallWorld::Player;
@@ -574,8 +577,10 @@ sub nextConquestIdx {
 # три грани 1,2,3)
 sub random {
   my $self = shift;
-  return (defined $_[0] ? ($_[0]->{dice} // 0) : 0) if $ENV{DEBUG};
+  return (defined $_[0] ? ($_[0]->{dice} // 0) : 0) if $ENV{DEBUG_DICE};
+  swLog(LOG_FILE, $self->{gameState}->{prevGenNum});
   $self->{gameState}->{prevGenNum} = (RAND_A * $self->{gameState}->{prevGenNum}) % RAND_M;
+  swLog(LOG_FILE, $self->{gameState}->{prevGenNum});
   my $result = $self->{gameState}->{prevGenNum} % 6;
   return $result > 3 ? 0 : $result;
 }
