@@ -45,7 +45,7 @@ sub printGames {
       _printPlayersHeader(\$top);
     }
     foreach ( @{ $g->players } ) {
-      my $p = $g->getPlayer(id => $_->{playerId});
+      my $p = $g->getPlayer(player => $_);
       $gamesW->addstr($top, 4, $p->name);
       $gamesW->addstr($top, 20, $p->coins);
       $gamesW->addstr($top, 30, $p->activeRaceName . ' ' . $p->activeSpName);
