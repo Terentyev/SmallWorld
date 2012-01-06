@@ -211,9 +211,9 @@ sub _calculateDangerous {
   # промоделируем нападение каждого игрока
   # TODO: к сожалению, данная реализация не учитывает того, что враги будут
   # пользоваться способностями и мы будем пользоваться другом
-  foreach ( @{ $g->{gs}->players } ) {
+  foreach ( @{ $g->{gs}->players($g->{gs}->conqueror, $g->{gs}->getPlayer) } ) {
     my $p = $g->{gs}->getPlayer(player => $_);
-    next if $p->id == $I->id;
+    next if $p->id == $I->id || $p->isFriend($I);
 
     my @ways = $self->_constructConqWays($g, $p);
     # попытаемся найти в возможных путях нападения хоть один из интересующих нас

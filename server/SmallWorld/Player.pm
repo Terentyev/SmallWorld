@@ -30,9 +30,11 @@ sub activeConq {
 }
 
 sub isFriend {
-  my ($self, $friendInfo) = @_;
+  my ($self, $diplomat) = @_;
+  my $friendInfo = $self->{game}->{gameState}->{friendInfo};
   return
-    defined $friendInfo && ($friendInfo->{friendId} // -1) == $self->{playerId};
+    defined $friendInfo && ($friendInfo->{friendId} // -1) == $self->{playerId} && (
+    !defined $diplomat || $diplomat->id == ($friendInfo->{diplomatId} // -1));
 }
 
 sub id                   { return $_[0]->{playerId};                                             }

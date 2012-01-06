@@ -830,8 +830,7 @@ sub finishTurn {
 
   $sp->finishTurn($self->{gameState});
   $race->finishTurn($self->{gameState});
-  @{ $self->{gameState}->{friendInfo} }{qw(friendId)} = ()
-    if $player->isFriend($self->{gameState}->{friendInfo});
+  @{ $self->{gameState}->{friendInfo} }{qw(friendId)} = () if $player->isFriend();
 
   @{$_}{qw (conquestIdx prevTokenBadgeId prevTokensNum)} = () for @{ $self->{gameState}->{regions} };
 
@@ -976,12 +975,37 @@ sub stage          { return $_[0]->{gameState}->{state};                        
 sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};                  }
 sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};                      }
 sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};                       }
-sub regions        { return $_[0]->{gameState}->{regions};                             }
 sub players        { return $_[0]->{gameState}->{players};                             }
 sub tokenBadges    { return $_[0]->{gameState}->{tokenBadges};                         }
 sub currentTurn    { return $_[0]->{gameState}->{currentTurn};                         }
 sub maxTurnNum     { return $_[0]->{gameState}->{map}->{turnsNum} - 1;                 }
 sub conqueror      { return $_[0]->getPlayer(id => $_[0]->{gameState}->{conquerorId}); }
+sub regions {
+  my ($self, $b, $e) = @_;
+  my $regions = $self->{gameState}->{regions};
+  return $regions if !defined $b || !defined $e;
+  my $findB = 0;
+  my $findE = 0;
+  my $findFirstB = 0;
+  my %buf = ();
+  foreach ( @$regions ) {
+    $findB = $findB || $_->{regionId} == $b->{regionId};
+    $findFirstB = $findFirstB || $findB && !$findE;
+    $buf{ $_->{regionId} } = $findB ^ $findE;
+    $findE = $findE || $_->{regionId} == $e->{regionId};
+  }
+  my $result = {};
+  foreach my $k ( keys %buf ) {
+    if ( $buf{$k} == $findFirstB ) {
+      foreach ( @$regions ) {
+        next unless $_->{regionId} == $k;
+        push @$result, $_;
+        last;
+      }
+    }
+  }
+  return $result;
+}
 sub berserkDice {
   my $self = shift;
   $self->{gameState}->{berserkDice} = $_[0] if scalar(@_) == 1;
