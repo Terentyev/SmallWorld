@@ -41,7 +41,7 @@ sub _init {
   my %p = (@_);
   $self->{req} = $p{req};
   if ( defined $p{game} && defined $p{ais} ) {
-    $self->{games}->{$p{game}}->{ais} = eval { decode_json($p{ais}) } || [];
+    $self->games->{$p{game}}->{ais} = eval { decode_json($p{ais}) } || [];
   }
   $self->{db} = AI::DB->new(
       db          => DB_NAME,
@@ -76,6 +76,7 @@ sub _saveState {
   foreach ( @{ $g->{gs}->regions } ) {
     my $r = $g->{gs}->getRegion(region => $_);
     my $s = {};
+    # сохраняем в БД информацию, которая генерируется во время завоевания
     for ( qw(regionId conquestIdx prevTokensNum prevTokenBadgeId) ) {
       $s->{$_} = $r->{$_} if defined $r->{$_};
     }
@@ -98,6 +99,8 @@ sub _loadState {
   my ($self, $g, $state) = @_;
   foreach my $s ( @{ $state->{regions} // [] } ) {
     my $r = $g->{gs}->getRegion(id => $s->{regionId});
+    # загружаем из БД информацию, которая нужна, что корректно предсказывать
+    # результат хода
     foreach ( qw(conquestIdx prevTokensNum prevTokenBadgeId) ) {
       $r->{$_} = $s->{$_} if defined $s->{$_};
     }
@@ -107,26 +110,30 @@ sub _loadState {
 sub do {
   my ($self, $game) = @_;
   if ( $game->{state} == GST_WAIT ) {
+    # если игра в режиме ожидания игроков, то пытаемся к ней подключиться
     $self->_join2Game($game);
     return;
   }
 
   if ( $game->{state} == GST_FINISH ) {
-    my $ais = $self->games->{$game->{gameId}}->{ais};
-    $self->_allLeaveGame($game) if defined $ais && scalar(@$ais);
+    # если игра закончилась и мы в ней играли, то покидаем эту игру
+    $self->_allLeaveGame($game);
   }
 
   if ( $self->_ourTurn($game) ) {
+    # если сейчас наш ход, то играем
     $self->_play($game);
     return;
   }
 }
 
+# выводит информацию о играх в консоль
 sub printStatus {
   my $self = shift;
   printGames($self->games);
 }
 
+# присоединяемся к игре
 sub _join2Game {
   my ($self, $game) = @_;
   my $r = $self->_get('{ "action": "aiJoin", "gameId": ' . $game->{gameId} . ' }');
@@ -143,37 +150,40 @@ sub _join2Game {
   $self->games->{$game->{gameId}} = $g;
 }
 
+# все ИИ покидают игру
 sub _allLeaveGame {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
-  for ( 0..$#{ $g->{ais} } ) {
+  for ( 0..$#{ $g->{ais} // [] } ) {
     $self->_leaveGame($g, $g->{ais}->[$_]->{sid});
   }
-  $g->{ais} = [];
 }
 
+# проверяет наш сейчас ход или нет
 sub _ourTurn {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
-  return 0 if !defined $g;
+  return 0 if !defined $g; # мы даже не присоединялись к этой игре
 
   my $r = $self->_get('{ "action": "getGameState", "gameId": ' . $game->{gameId} . ' }', 1);
-  return 0 if $r->{result} ne R_ALL_OK;
+  return 0 if $r->{result} ne R_ALL_OK; # не получилось обновить состояние игры
 
   $g->{gs} = SmallWorld::Game->new(gameState => $r->{gameState});
   return (grep { $_->{id} == ($g->{gs}->activePlayerId // -1) } @{ $g->{ais} });
 }
 
+# играет ИИ
 sub _play {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
-  my $playerId = $g->{gs}->activePlayerId;
+  my $playerId = $g->{gs}->activePlayerId; # запомним id активного игрока, потому что он может поменяться
   $self->_load($g, $playerId);
   my $func = $self->can("_cmd_" . $g->{gs}->stage);
   &$func($self, $g) if defined $func;
   $self->_save($g, $playerId);
 }
 
+# посылает команду на сервер от имени активного игрока
 sub _sendGameCmd {
   my $self = shift;
   my $cmd = {@_};
@@ -191,11 +201,13 @@ sub _sendGameCmd {
   $self->_get($cmd, 1);
 }
 
+# текущий ход последний?
 sub _isLastTurn {
   my ($self, $g) = @_;
   return $g->{gs}->currentTurn == $g->{gs}->maxTurnNum;
 }
 
+# используем способность для завоевания региона
 sub _useSpConquer {
   my ($self, $g, $regionId, $ans) = @_;
   if ( $self->_canEnchant($g, $regionId) ) {
@@ -219,6 +231,7 @@ sub _useSpConquer {
   return 0;
 }
 
+# количество лагерей, которые стоят на чужих регионах
 sub _alienEncampNum {
   my ($self, $g) = @_;
   my $result = 0;
@@ -228,6 +241,7 @@ sub _alienEncampNum {
   return $result;
 }
 
+# можем ли мы произвести атаку по базовым правилам
 sub _canBaseAttack {
   my ($self, $g, $regionId) = @_;
   my $r = $g->{gs}->getRegion(id => $regionId);
@@ -238,6 +252,7 @@ sub _canBaseAttack {
     !$self->checkRegion_conquer(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
 }
 
+# стоит ли нам пытаться захватить регион фигурками
 sub _canAttack {
   my ($self, $g, $regionId) = @_;
   my $r = $g->{gs}->getRegion(id => $regionId);
@@ -251,6 +266,7 @@ sub _canAttack {
   return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, $dummy);
 }
 
+# можем ли мы зачаровать этот регион
 sub _canEnchant {
   my ($self, $g, $regionId) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -262,6 +278,7 @@ sub _canEnchant {
     $ar->canCmd('enchant', $g->{gs}->{gameState});
 }
 
+# можем ли мы атаковать драконом регион
 sub _canDragonAttack {
   my ($self, $g, $regionId) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -270,6 +287,7 @@ sub _canDragonAttack {
     $asp->canCmd({ action => 'dragonAttack' }, $g->{gs}->stage, $p);
 }
 
+# можем ли мы бросить кости берсерка
 sub _canThrowDice {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -277,6 +295,7 @@ sub _canThrowDice {
   return $asp->canCmd({ action => 'throwDice' }, $g->{gs}->stage, $p);
 }
 
+# можем ли мы привести расу в упадок способностью Stout
 sub _canStoutDecline {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -284,6 +303,8 @@ sub _canStoutDecline {
   return $asp->canCmd({ action => 'decline' }, $g->{gs}->stage, $p);
 }
 
+# можем ли мы выбрать игрока в качестве друга
+# если игрок не задан, то имеем ли мы чисто теоретически такую возможность
 sub _canSelectFriend {
   my ($self, $g, $playerId) = (@_, 0);
   my $p = $g->{gs}->getPlayer();
@@ -294,6 +315,7 @@ sub _canSelectFriend {
   return !$self->checkFriend($js, $g->{gs}, $p);
 }
 
+# можем ли мы размещать героев
 sub _canPlaceHero {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -301,6 +323,7 @@ sub _canPlaceHero {
   return $asp->canCmd({ action => 'redeploy', heroes => [] }, $g->{gs}->stage, $p);
 }
 
+# можем мы ли размещать лагеря
 sub _canPlaceEncampment {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -309,6 +332,7 @@ sub _canPlaceEncampment {
     $self->_alienEncampNum($g) < ENCAMPMENTS_MAX;
 }
 
+# можем ли мы размещать форты
 sub _canPlaceFortified {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -317,24 +341,28 @@ sub _canPlaceFortified {
     scalar(grep $_->{fortified}, @{ $g->{gs}->regions }) < FORTRESS_MAX;
 }
 
+# можем ли мы защититься "в этот регион"
 sub _canDefendToRegion {
   my ($self, $g, $regionId, $p, $ar) = @_;
   return !$self->checkRegion_defend({ regions => [{ regionId => $regionId }] },
       $g->{gs}, $p, undef, $ar, undef, {});
 }
 
+# следует ли нам применить способность Stout и привести расу в упадок
 sub _shouldStoutDecline {
   # TODO: наверное, это уже будет продвинутый ИИ, если он будет решать нужно ли
   # ему приводить расу в упадок способностью Stout
   return !int(rand(5));
 }
 
+# следует ли нам напасть на этот регион драконом
 sub _shouldDragonAttack {
   my ($self, $g, $regionId) = @_;
   # простой ИИ при первой же возможности пользуется атакой дракона
   return 1;
 }
 
+# возвращает список регионов, на которые мы должны напасть
 sub _getRegionsForConquest {
   my ($self, $g) = @_;
   return @{ $g->{gs}->regions };
@@ -344,11 +372,11 @@ sub _beginConquest { }
 
 sub _endConquest { }
 
+# пытаемся захватить конкретный регион
 sub _conquerRegion {
   my ($self, $g, $regionId) = @_;
   my $ans = {};
   return 1 if $self->_useSpConquer($g, $regionId, \$ans);
-  # TODO: сделать с учетом бросания кубика и подсчета вероятности
   return 0 if !$self->_canAttack($g, $regionId);
   $ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $regionId);
   if ( defined $ans->{dice} ) {
@@ -364,6 +392,7 @@ sub _conquerRegion {
   return 0;
 }
 
+# покидаем игру
 sub _leaveGame {
   my ($self, $g, $sid) = @_;
   $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $sid);
@@ -376,6 +405,7 @@ sub _leaveGame {
   $g->{ais} = [grep $_->{sid} != $sid, @{ $g->{ais} }];
 }
 
+# производим захват регионов
 sub _conquer {
   my ($self, $g) = @_;
   my $repeat = 0;
@@ -391,6 +421,7 @@ sub _conquer {
   } while ( $repeat );
 }
 
+# приводим расу в упадок
 sub _decline {
   my ($self, $g) = @_;
   die 'Fail decline' if
@@ -398,12 +429,14 @@ sub _decline {
   $g->{gs}->decline();
 }
 
+# заканчиваем ход
 sub _finishTurn {
   my ($self, $g) = @_;
   $self->_sendGameCmd(game => $g, action => 'finishTurn');
   $g->{gs}->finishTurn({});
 }
 
+# делаем перестановку войск
 sub _redeploy {
   my ($self, $g) = @_;
   $g->{gs}->gotoRedeploy();
@@ -541,11 +574,13 @@ sub _redeploy {
       fortified   => (%fortified ? \%fortified : undef));
 }
 
+# выбираем расу
 sub _selectRace {
   my ($self, $g) = @_;
   return min(int(rand(6)), $g->{gs}->getPlayer()->coins);
 }
 
+# действия перед тем как закончить ход
 sub _beforeFinishTurn {
   my ($self, $g) = @_;
   if ( $self->_canStoutDecline($g) && $self->_shouldStoutDecline($g) ) {
@@ -563,6 +598,7 @@ sub _beforeFinishTurn {
   $self->_finishTurn($g);
 }
 
+# защищаемся. Возвращает массив хешей (regionId, tokensNum)
 sub _defend {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
@@ -573,6 +609,10 @@ sub _defend {
   }
   die "Can't find region for defend";
 }
+
+################################################################################
+#           методы, которые срабатывают на различные состояния игры            #
+################################################################################
 
 sub _cmd_defend {
   my ($self, $g) = @_;
@@ -593,7 +633,10 @@ sub _cmd_selectRace {
 sub _cmd_beforeConquest {
   my ($self, $g) = @_;
   $self->_conquer($g);
+  # надо прервать все наши действия, что бы дать другому игроку защититься, если
+  # в этом есть необходимость
   return if $g->{gs}->stage eq GS_DEFEND;
+  # выполняем последние действия за ход, если соответствующее состояние игры
   return $self->_beforeFinishTurn($g) if $g->{gs}->stage eq GS_BEFORE_FINISH_TURN;
   # размещаем войска
   return $self->_redeploy($g) if $g->{gs}->stage ne GS_BEFORE_CONQUEST;

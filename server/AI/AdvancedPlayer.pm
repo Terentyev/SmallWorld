@@ -19,6 +19,7 @@ use AI::Consts;
 our @backupNames = qw( ownerId tokenBadgeId conquestIdx prevTokenBadgeId prevTokensNum tokensNum );
 
 
+# создает план по захвату территорий (какие регионы в каком порядке)
 sub _constructConquestPlan {
   my ($self, $g, $p) = @_;
   my @ways = $self->_constructConqWays($g, $p);
@@ -36,11 +37,15 @@ sub _constructConquestPlan {
   return @result;
 }
 
+# создает различные варианты путей захвата регионов, а также подсчитывает кол-во
+# бонусных монеток и кол-во затраченных фигурок
 sub _constructConqWays {
   my ($self, $g, $p) = @_;
   my $ar = $p->activeRace;
   my $asp = $p->activeSp;
   my @regions = ();
+  # сначал надо определиться с регионами, с которых мы можем начать цепочки
+  # завоеваний
   if ( scalar(@{ $p->regions }) == 0 ) {
     # если у игрока нет регионов, значит это первое завоевание,
     # пробегаемся по всем регионам и составляем список регионов, на которые
@@ -73,12 +78,12 @@ sub _constructConqWays {
   }
 
   my @ways = ();
-  foreach ( @regions ) {
-    push @ways, $self->_constructConqWaysForRegion($g, $p, $g->{gs}->getRegion(region => $_));
-  }
+  push @ways, $self->_constructConqWaysForRegion($g, $p, $g->{gs}->getRegion(region => $_)) for @regions;
   return @ways;
 }
 
+# создает цепочку завоеваний с оценкой фигурок, которые придется потратить, и
+# монет, которые получим, если пойдем таким путем
 sub _constructConqWaysForRegion {
   my ($self, $g, $p, $r, @wayPrefix) = @_;
   my $race = $p->activeRace;
@@ -90,6 +95,8 @@ sub _constructConqWaysForRegion {
 
   $wayInfo{cost} = $g->{gs}->getDefendNum($p, $r, $race, $sp);
   if ( $#wayPrefix >= 0 ) {
+    # если регион не первый в цепочке, то к стоимости его завоевания прибавляем
+    # стоимость завоевания предыдущих регионов
     $wayInfo{cost} += $wayPrefix[-1]->{cost};
   }
   my $dummy = [];
@@ -113,7 +120,9 @@ sub _constructConqWaysForRegion {
   return @result;
 }
 
-sub _constructEstimates {
+# создает оценки для каждой доступной пары раса/умение и сортирует их в порядке
+# уменьшения интересности
+sub _constructBadgesEstimates {
   my ($self, $g) = @_;
   my @result = ();
   my $i = 0;
@@ -133,6 +142,9 @@ sub _constructEstimates {
   return sort { $b->{est} <=> $a->{est} } @result;
 }
 
+# подсчитывает более детально количество монеток для цепочки завоевания
+# регионов, с учетом вероятности захвата опеределенных регионов, использования
+# атаки дракона
 sub _calculateBonusSums {
   my ($self, $g, $force, @ways) = @_;
   my @bonusSums = ();
@@ -182,6 +194,8 @@ sub _calculateBonusSums {
   return sort { $b->{bonus} <=> $a->{bonus} } @bonusSums;
 }
 
+# подсчитывает уровень опасности для регионов и сортирует в порядке уменьшения
+# уровня опасности
 sub _calculateDangerous {
   my ($self, $g, @regions) = @_;
   my @result = ();
@@ -194,16 +208,22 @@ sub _calculateDangerous {
   }
   @regions = grep !$_->isImmune, @regions;
 
+  # промоделируем нападение каждого игрока
+  # TODO: к сожалению, данная реализация не учитывает того, что враги будут
+  # пользоваться способностями и мы будем пользоваться другом
   foreach ( @{ $g->{gs}->players } ) {
     my $p = $g->{gs}->getPlayer(player => $_);
     next if $p->id == $I->id;
 
     my @ways = $self->_constructConqWays($g, $p);
+    # попытаемся найти в возможных путях нападения хоть один из интересующих нас
+    # регионов
     foreach my $way ( @ways ) {
       foreach my $r ( @regions ) {
         my $wayInfo = (grep $_->{id} == $r->id, @$way)[0];
         next if !$wayInfo;
         if ( exists $costs{$r->id} ) {
+          # выбираем минимальную стоимость для захвата региона
           $costs{$r->id} = min($wayInfo->{cost}, $costs{$r->id});
         }
         else {
@@ -226,12 +246,16 @@ sub _calculateDangerous {
   return sort { $b->{est} <=> $a->{est} } @result;
 }
 
+# вспомогательная функция, которая переводит название расы/умения в часть имени
+# внутренней константы
 sub _translateToConst {
   my ($self, $name) = @_;
   $name =~ s/^(.+)([A-Z])/$1_$2/g;
   return uc $name;
 }
 
+# временно завоёвывает регион игроком, возврщает массив предыдущий значений
+# полей, которые пришлось изменить
 sub _tmpConquer {
   my ($self, $g, $p, $r) = @_;
   return () if $p->isOwned($r);
@@ -245,6 +269,8 @@ sub _tmpConquer {
   return @result;
 }
 
+# восстанавливает поля региона в состояние до временного завоевания по массиву
+# данных
 sub _tmpConquerRestore {
   my ($self, $r, @backups) = @_;
   @$r{ @backupNames } = @backups if @backups;
@@ -264,11 +290,12 @@ sub _endConquest {
   my ($self, $g) = @_;
   @$_{qw(cost coins prevRegionId inThread inResult)} = () for @{ $g->{gs}->regions };
   $g->{dragonShouldAttackRegionId} = undef;
+  $g->{plan} = undef;
 }
 
 sub _shouldDragonAttack {
   my ($self, $g, $regionId) = @_;
-  return !defined $g->{dragonShouldAttackRegionId} || $regionId == $g->{dragonShouldAttackRegionId};
+  return $regionId == ($g->{dragonShouldAttackRegionId} // $regionId);
 }
 
 sub _shouldStoutDecline {
@@ -287,7 +314,7 @@ sub _shouldStoutDecline {
 
 sub _selectRace {
   my ($self, $g) = @_;
-  my @estimates = $self->_constructEstimates($g);
+  my @estimates = $self->_constructBadgesEstimates($g);
   return $estimates[0]->{idx};
 }
 
