@@ -19,14 +19,25 @@ use AI::Consts;
 our @backupNames = qw( ownerId tokenBadgeId conquestIdx prevTokenBadgeId prevTokensNum tokensNum );
 
 
-sub _shouldDragonAttack {
-  my ($self, $g, $regionId) = @_;
-  return !defined $g->{dragonShouldAttackRegionId} || $regionId == $g->{dragonShouldAttackRegionId};
+sub _constructConquestPlan {
+  my ($self, $g, $p) = @_;
+  my @ways = $self->_constructConqWays($g, $p);
+  my @bonusSums = $self->_calculateBonusSums($g, 0, @ways);
+  @bonusSums = $self->_calculateBonusSums($g, 1, @ways) unless @bonusSums;
+  # формируем массив регионов по порядку их завоевания
+  my @result = ();
+  foreach my $bs( @bonusSums ) {
+    foreach ( @{ $bs->{way} } ) {
+      my $r = $g->{gs}->getRegion(id => $_->{id});
+      push @result, $r if !$r->{inResult};
+      $r->{inResult} = 1;
+    }
+  }
+  return @result;
 }
 
-sub _constructConquestPlan {
-  my ($self, $g) = @_;
-  my $p = $g->{gs}->getPlayer;
+sub _constructConqWays {
+  my ($self, $g, $p) = @_;
   my $ar = $p->activeRace;
   my $asp = $p->activeSp;
   my @regions = ();
@@ -63,25 +74,12 @@ sub _constructConquestPlan {
 
   my @ways = ();
   foreach ( @regions ) {
-    push @ways, $self->_constructConqWays($g, $p, $g->{gs}->getRegion(region => $_));
+    push @ways, $self->_constructConqWaysForRegion($g, $p, $g->{gs}->getRegion(region => $_));
   }
-
-  my @bonusSums = ();
-  @bonusSums = $self->_calculateBonusSums($g, 0, @ways);
-  @bonusSums = $self->_calculateBonusSums($g, 1, @ways) unless @bonusSums;
-  # формируем массив регионов по порядку их завоевания
-  my @result = ();
-  foreach my $bs( @bonusSums ) {
-    foreach ( @{ $bs->{way} } ) {
-      my $r = $g->{gs}->getRegion(id => $_->{id});
-      push @result, $r if !$r->{inResult};
-      $r->{inResult} = 1;
-    }
-  }
-  return @result;
+  return @ways;
 }
 
-sub _constructConqWays {
+sub _constructConqWaysForRegion {
   my ($self, $g, $p, $r, @wayPrefix) = @_;
   my $race = $p->activeRace;
   my $sp = $p->activeSp;
@@ -107,7 +105,7 @@ sub _constructConqWays {
       # те, с которыми мы не граничим согласно всем правилам
       next if $p->isOwned($region) || !$sp->canAttack($region, $g->{gs}->regions) || $region->isImmune;
 
-      push @result, $self->_constructConqWays($g, $p, $region, @way);
+      push @result, $self->_constructConqWaysForRegion($g, $p, $region, @way);
     }
   }
   $self->_tmpConquerRestore($r, @backups);
@@ -184,6 +182,50 @@ sub _calculateBonusSums {
   return sort { $b->{bonus} <=> $a->{bonus} } @bonusSums;
 }
 
+sub _calculateDangerous {
+  my ($self, $g, @regions) = @_;
+  my @result = ();
+  my $I = $g->{gs}->getPlayer;
+
+  my %costs = ();
+
+  foreach ( @regions ) {
+    push @result, { id => $_->id, est => 0 } if $_->isImmune;
+  }
+  @regions = grep !$_->isImmune, @regions;
+
+  foreach ( @{ $g->{gs}->players } ) {
+    my $p = $g->{gs}->getPlayer(player => $_);
+    next if $p->id == $I->id;
+
+    my @ways = $self->_constructConqWays($g, $p);
+    foreach my $way ( @ways ) {
+      foreach my $r ( @regions ) {
+        my $wayInfo = (grep $_->{id} == $r->id, @$way)[0];
+        next if !$wayInfo;
+        if ( exists $costs{$r->id} ) {
+          $costs{$r->id} = min($wayInfo->{cost}, $costs{$r->id});
+        }
+        else {
+          $costs{$r->id} = $wayInfo->{cost};
+        }
+        last;
+      }
+    }
+  }
+
+  my $max = 0;
+  $max = max($max, $costs{$_}) for keys %costs;
+  $costs{$_} = $max - $costs{$_} for keys %costs;
+
+  foreach ( @regions ) {
+    push @result, { id => $_->id, est => 0 } if !exists $costs{$_->id};
+  }
+
+  push @result, { id => $_, est => $costs{$_} } for keys %costs;
+  return sort { $b->{est} <=> $a->{est} } @result;
+}
+
 sub _translateToConst {
   my ($self, $name) = @_;
   $name =~ s/^(.+)([A-Z])/$1_$2/g;
@@ -215,13 +257,18 @@ sub _getRegionsForConquest {
 
 sub _beginConquest {
   my ($self, $g) = @_;
-  $g->{plan} = [$self->_constructConquestPlan($g)];
+  $g->{plan} = [$self->_constructConquestPlan($g, $g->{gs}->getPlayer)];
 }
 
 sub _endConquest {
   my ($self, $g) = @_;
   @$_{qw(cost coins prevRegionId inThread inResult)} = () for @{ $g->{gs}->regions };
   $g->{dragonShouldAttackRegionId} = undef;
+}
+
+sub _shouldDragonAttack {
+  my ($self, $g, $regionId) = @_;
+  return !defined $g->{dragonShouldAttackRegionId} || $regionId == $g->{dragonShouldAttackRegionId};
 }
 
 sub _shouldStoutDecline {
@@ -242,6 +289,43 @@ sub _selectRace {
   my ($self, $g) = @_;
   my @estimates = $self->_constructEstimates($g);
   return $estimates[0]->{idx};
+}
+
+sub _defend {
+  my ($self, $g) = @_;
+  my @result = ();
+  my @regions = ();
+  my $p = $g->{gs}->getPlayer;
+  my $ar = $p->activeRace;
+
+  foreach ( @{ $ar->regions } ) {
+    my $r = $g->{gs}->getRegion(region => $_);
+    next unless $self->_canDefendToRegion($g, $r->id, $p, $ar);
+    push @regions, $r;
+  }
+
+  die 'Fail defend' unless @regions;
+
+  my @dangerous = $self->_calculateDangerous($g, @regions);
+  my $sumD = 0;
+  $sumD += $_->{est} for @dangerous;
+  if ( $sumD == 0 ) {
+    # если для всех регионов не представляется опасности завоевания, то
+    # распределяем равномерно
+    $_->{est} = 1 for @dangerous;
+    $sumD = $#dangerous + 1;
+  }
+  foreach ( @dangerous ) {
+    next if $_->{est} == 0; # пропускаем регионы, для которых нет опасности завоевания
+    my $t = max(1, int($p->tokens * $_->{est} / $sumD));
+    push @result, { regionId => $_->{id}, tokensNum => $t };
+    $p->tokens($p->tokens - $t);
+    last if $p->tokens == 0;
+  }
+  $result[-1]->{tokensNum} += $p->tokens;
+  $p->tokens(0);
+
+  return \@result;
 }
 
 1;
