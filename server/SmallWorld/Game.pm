@@ -464,25 +464,28 @@ sub regionsNum {
 
 # возвращает игрока из массива игроков по id или sid
 sub getPlayer {
-  my $self = shift;
-  my %param = (@_);
-  my $id = $param{id};
-  if ( defined $param{sid} ) {
-    $id = $self->{db}->getPlayerId($param{sid});
-  }
-  elsif ( !defined $id ) {
-    $id = $self->{gameState}->{activePlayerId};
-  }
+  my ($self, %p) = @_;
+  if ( !defined $p{player} ) {
+    if ( defined $p{sid} ) {
+      $p{id} = $self->{db}->getPlayerId($p{sid});
+    }
+    elsif ( !defined $p{id} ) {
+      $p{id} = $self->{gameState}->{activePlayerId};
+    }
 
-  # находим в массиве игроков текущего игрока
-  foreach ( @{ $self->{gameState}->{players} } ) {
-    if ( $_->{playerId} == $id ) {
-      # если объект-игрока уже создан, то возвращаем его
-      return $_ if UNIVERSAL::can($_, 'can');
-      # иначе создаем новый экземпляр
-      return SmallWorld::Player->new(self => $_, game => $self);
+    # находим в массиве игроков текущего игрока
+    foreach ( @{ $self->{gameState}->{players} } ) {
+      if ( $_->{playerId} == $p{id} ) {
+        $p{player} = $_;
+        last;
+      }
     }
   }
+  return if !$p{player};
+  # если объект-игрока уже создан, то возвращаем его
+  return $p{player} if UNIVERSAL::can($p{player}, 'can');
+  # иначе создаем новый экземпляр
+  return SmallWorld::Player->new(self => $p{player}, game => $self);
 }
 
 # возвращает регион из массива регионов по id
@@ -492,6 +495,7 @@ sub getRegion {
     foreach ( @{ $self->{gameState}->{regions} } ) {
       if ( $_->{regionId} == $p{id} ) {
         $p{region} = $_;
+        last;
       }
     }
   }
@@ -966,17 +970,18 @@ sub throwDice {
   return $self->{gameState}->{berserkDice};
 }
 
-sub id             { return $_[0]->{gameState}->{gameInfo}->{gameId};   }
-sub name           { return $_[0]->{gameState}->{gameInfo}->{gameName}; }
-sub stage          { return $_[0]->{gameState}->{state};                }
-sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};   }
-sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};       }
-sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};        }
-sub regions        { return $_[0]->{gameState}->{regions};              }
-sub players        { return $_[0]->{gameState}->{players};              }
-sub tokenBadges    { return $_[0]->{gameState}->{tokenBadges};          }
-sub currentTurn    { return $_[0]->{gameState}->{currentTurn};          }
-sub maxTurnNum     { return $_[0]->{gameState}->{map}->{turnsNum} - 1;  }
+sub id             { return $_[0]->{gameState}->{gameInfo}->{gameId};                  }
+sub name           { return $_[0]->{gameState}->{gameInfo}->{gameName};                }
+sub stage          { return $_[0]->{gameState}->{state};                               }
+sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};                  }
+sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};                      }
+sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};                       }
+sub regions        { return $_[0]->{gameState}->{regions};                             }
+sub players        { return $_[0]->{gameState}->{players};                             }
+sub tokenBadges    { return $_[0]->{gameState}->{tokenBadges};                         }
+sub currentTurn    { return $_[0]->{gameState}->{currentTurn};                         }
+sub maxTurnNum     { return $_[0]->{gameState}->{map}->{turnsNum} - 1;                 }
+sub conqueror      { return $_[0]->getPlayer(id => $_[0]->{gameState}->{conquerorId}); }
 sub berserkDice {
   my $self = shift;
   $self->{gameState}->{berserkDice} = $_[0] if scalar(@_) == 1;

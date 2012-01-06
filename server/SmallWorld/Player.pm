@@ -43,9 +43,13 @@ sub declinedTokenBadgeId { return $_[0]->{declinedTokenBadge}->{tokenBadgeId};  
 sub activeRace           { return $_[0]->{game}->createRace($_[0]->{currentTokenBadge});         }
 sub activeSp             { return $_[0]->{game}->createSpecialPower('currentTokenBadge', $_[0]); }
 sub declinedRace         { return $_[0]->{game}->createRace($_[0]->{decliendTokenBadge});        }
-sub tokens               { return $_[0]->{tokensInHand};                                         }
 sub activeRaceName       { return $_[0]->{currentTokenBadge}->{raceName} // 'none';              }
 sub activeSpName         { return $_[0]->{currentTokenBadge}->{specialPowerName} // 'none';      }
+sub tokens {
+  my $self = shift;
+  $self->{tokensInHand} = $_[0] if defined $_[0];
+  return $self->{tokensInHand};
+}
 sub dice {
   my $self = shift;
   $self->{dice} = $_[0] if scalar(@_) == 1;
