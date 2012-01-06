@@ -76,7 +76,9 @@ sub _saveState {
   foreach ( @{ $g->{gs}->regions } ) {
     my $r = $g->{gs}->getRegion(region => $_);
     my $s = {};
-    $s->{$_} = $r->{$_} for qw(regionId conquestIdx prevTokensNum prevTokenBadgeId);
+    for ( qw(regionId conquestIdx prevTokensNum prevTokenBadgeId) ) {
+      $s->{$_} = $r->{$_} if defined $r->{$_};
+    }
     push @{ $state->{regions} }, $s;
   };
 }
@@ -579,6 +581,7 @@ sub _cmd_defend {
       action => 'defend',
       regions => $self->_defend($g)
   )->{result} ne R_ALL_OK;
+  $_->{conquestIdx} = undef for @{ $g->{gs}->regions };
 }
 
 sub _cmd_selectRace {
