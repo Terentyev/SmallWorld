@@ -36,7 +36,7 @@ function sendRequest(query, callback, errorContainer, errorCallback) {
     beforeSend: function() {
       $.blockUI({ message: '<h3><img src="./pics/loading.gif" /> Loading...</h3>' });
     },
-    success: function(response)  {
+    success: function(response) {
       if (!response || !response.result)
         showError("Unknown server response: " + JSON.stringify(response));
       else if (response.result == 'ok') {

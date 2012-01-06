@@ -147,9 +147,7 @@ Player.prototype.bonusTokens = function(region) {
     }
   }
 
-  //if (this.curPower() == 'Berserk') {
-    result += this.berserkDice();
-  //}
+  result += this.berserkDice();
 
   if (this.curPower() == 'Commando') {
     result += 1;

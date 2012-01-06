@@ -277,12 +277,21 @@ function areaDragonAttack(regionId) {
 function areaPlaceTokens(regionId) {
   // TODO: do needed checks
   place = new Region(regionId);
-  /*alert(regionId);
-  alert(place.tokens());
-  alert(JSON.stringify(data.game.map.regions[regionId]));*/
   if (!place.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');
     return;
+  }
+
+  switch (player.curPower()) {
+    case 'Bivouacking':
+      var s = '', count = place.get('encampment');
+      var pattern = $.sprintf("#selectEncampments [value='%s']", count);;
+      for (var i = 0; i <= count + player.encampments(); ++i) {
+        s += addOption(i, i);
+      }
+      $('#selectEncampments').html(s);
+      $(pattern).attr("selected", "selected");
+      break;
   }
 
   askNumBox('How much tokens deploy on region?',
@@ -422,5 +431,6 @@ function leaveWatch() {
   data.gameId = null;
   data.game = null;
   _setCookie(["gameId"], [null]);
+  $("#tdLobbyChat").append($("#divChat").detach());
   showLobby();
 }
