@@ -157,28 +157,22 @@ sub _calculateBonusSums {
       # ищем номер региона в цепочке, на котором наше завоевание может прерваться
       last if $_->[$i]->{cost} > $p->tokens + $error;
     }
-    next if $i == 0 && !$self->_canDragonAttack($g); # по этой цепочке нам ничего, скорее всего, не удастся завоевать
+    # по этой цепочке нам ничего, скорее всего, не удастся завоевать
+    next if $i == 0 && (
+        !$self->_canDragonAttack($g) || !$self->_canEnchant($g, $_->[$i]->{id}));
 
     my $maxDiff = 0;
-    my $idxMaxDiff = $i != 0 ? -1 : 0; # будет хранить в себе индекс региона, на который должен напасть дракон
-    if ( $i <= $#$_ && $self->_canDragonAttack($g) ) {
-      # если судьба одарила нас возможностью атаковать драконом, то применим эту
-      # способность на самом дорогом (в плане количества затраченных фигурок)
-      # регионе
-      for ( my $j = 0; $j <= $i ; ++$j ) {
-        my $diff = $_->[$j]->{cost} - ($j == 0 ? 0 : $_->[$j - 1]->{cost});
-        if ( $maxDiff < $diff ) {
-          $maxDiff = $diff;
-          $idxMaxDiff = $j;
-        }
-      }
-      $maxDiff -= 1; # одну фигурку мы будем обязаны оставить вместе с драконом
-      for ( ; $i <= $#$_; ++$i ) {
-        last if $_->[$i]->{cost} - $maxDiff > $p->tokens + $error;
-      }
+    if ( $i <= $#$_) {
+      # одну фигурку мы будем обязаны оставить вместе с драконом
+      $maxDiff = $self->_tryUseSpConquer($g, \$i, $_, $p, $error, 'dragonShouldAttackRegionId',
+          sub { 1; }, sub { ${$_[0]} -= 1; })
+        if $self->_canDragonAttack($g);
+      $maxDiff = $self->_tryUseSpConquer($g, \$i, $_, $p, $error, 'enchantShouldAttackRegionId',
+          sub { $self->_canEnchantOnlyRules($g, $g->{gs}->getRegion(id => $_[0])); }, sub {})
+        if  $self->_canEnchant($g);
     }
+
     $i -= 1; # рассмотрим последний регион, который мы успешно завоюем
-    $g->{dragonShouldAttackRegionId} = $_->[$idxMaxDiff]->{id};
     my $bonus = $_->[$i]->{coins};
     if ( $i < $#$_ ) {
       # если в цепочке остались регионы, которые мы не захватим однозначно,
@@ -276,6 +270,31 @@ sub _tmpConquerRestore {
   @$r{ @backupNames } = @backups if @backups;
 }
 
+sub _tryUseSpConquer {
+  my ($self, $g, $i, $way, $p, $error, $saveTo, $filter, $after) = (@_);
+  my $maxDiff = 0;
+  # будет хранить в себе индекс региона, на который применили умение для завоевания
+  my $idxMaxDiff = $$i != 0 ? -1 : 0;
+
+  # если судьба одарила нас возможностью атаковать способностью, то применим эту
+  # способность на самом дорогом (в плане количества затраченных фигурок)
+  # регионе
+  for ( my $j = 0; $j <= $$i; ++$j ) {
+    next if !&$filter($way->[$$i]->{id});
+    my $diff = $way->[$j]->{cost} - ($j == 0 ? 0 : $way->[$j - 1]->{cost});
+    if ( $maxDiff < $diff ) {
+      $maxDiff = $diff;
+      $idxMaxDiff = $j;
+    }
+  }
+  for ( ; $$i <= $#$way; ++$$i ) {
+    last if $way->[$$i]->{cost} - $maxDiff > $p->tokens + $error;
+  }
+  $g->{$saveTo} = $way->[$idxMaxDiff]->{id} if $idxMaxDiff != -1;
+
+  return $maxDiff;
+}
+
 sub _getRegionsForConquest {
   my ($self, $g) = @_;
   return @{ $g->{plan} };
@@ -290,12 +309,18 @@ sub _endConquest {
   my ($self, $g) = @_;
   @$_{qw(cost coins prevRegionId inThread inResult)} = () for @{ $g->{gs}->regions };
   $g->{dragonShouldAttackRegionId} = undef;
+  $g->{enchantShouldAttackRegionId} = undef;
   $g->{plan} = undef;
 }
 
 sub _shouldDragonAttack {
   my ($self, $g, $regionId) = @_;
   return $regionId == ($g->{dragonShouldAttackRegionId} // $regionId);
+}
+
+sub _shouldEnchant {
+  my ($self, $g, $regionId) = @_;
+  return $regionId == ($g->{enchantShouldAttackRegionId} // $regionId);
 }
 
 sub _shouldStoutDecline {

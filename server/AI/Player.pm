@@ -269,13 +269,23 @@ sub _canAttack {
 # можем ли мы зачаровать этот регион
 sub _canEnchant {
   my ($self, $g, $regionId) = @_;
+  my $ar = $g->{gs}->getPlayer->activeRace;
+  my $canCmd = $ar->canCmd('enchant', $g->{gs}->{gameState});
+  return $canCmd if !defined $regionId || !$canCmd;
+
+  my $r = $g->{gs}->getRegion(id => $regionId);
+  return
+    $self->_canBaseAttack($g, $regionId) &&
+    $self->_canEnchantOnlyRules($g, $r);
+}
+
+# можем ли мы зачаровать этот регион (проверяются только правила зачарования)
+sub _canEnchantOnlyRules {
+  my ($self, $g, $r) = @_;
   my $p = $g->{gs}->getPlayer();
   my $ar = $p->activeRace;
   my $asp = $p->activeSp;
-  my $r = $g->{gs}->getRegion(id => $regionId);
-  return $self->_canBaseAttack($g, $regionId) &&
-    !$self->checkRegion_enchant(undef, $g->{gs}, $p, $r, $ar, $asp, undef) &&
-    $ar->canCmd('enchant', $g->{gs}->{gameState});
+  return !$self->checkRegion_enchant(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
 }
 
 # можем ли мы атаковать драконом регион
@@ -359,6 +369,13 @@ sub _shouldStoutDecline {
 sub _shouldDragonAttack {
   my ($self, $g, $regionId) = @_;
   # простой ИИ при первой же возможности пользуется атакой дракона
+  return 1;
+}
+
+# следует ли нам зачаровать этот регион
+sub _shouldEnchant {
+  my ($self, $g, $regionId) = @_;
+  # простой ИИ при первой же возможности пользуется зачарованием
   return 1;
 }
 
