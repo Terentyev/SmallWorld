@@ -197,6 +197,7 @@ sub _sendGameCmd {
     }
   }
   die "Can't define sid of player\n" if !defined $cmd->{sid};
+  (!defined $cmd->{$_} and delete $cmd->{$_}) for keys %$cmd;
   $cmd = eval { encode_json($cmd) } || die "Can't encode json :(\n";
   $self->_get($cmd, 1);
 }
@@ -385,78 +386,9 @@ sub _getRegionsForConquest {
   return @{ $g->{gs}->regions };
 }
 
-sub _beginConquest { }
-
-sub _endConquest { }
-
-# пытаемся захватить конкретный регион
-sub _conquerRegion {
-  my ($self, $g, $regionId) = @_;
-  my $ans = {};
-  return 1 if $self->_useSpConquer($g, $regionId, \$ans);
-  return 0 if !$self->_canAttack($g, $regionId);
-  $ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $regionId);
-  if ( defined $ans->{dice} ) {
-    my $p = $g->{gs}->getPlayer();
-    # изменяем все состояние согласно правилам
-    $g->{gs}->canAttack($p, $g->{gs}->getRegion(id => $regionId), $p->activeRace, $p->activeSp, $ans);
-  }
-  if ( $ans->{result} eq R_ALL_OK ) {
-    # изменяем все состояние согласно правилам
-    $g->{gs}->conquer($regionId, {});
-    return 1;
-  }
-  return 0;
-}
-
-# покидаем игру
-sub _leaveGame {
-  my ($self, $g, $sid) = @_;
-  $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $sid);
-  return if !defined $g->{gs}->activePlayerId;
-  return if defined $sid;
-  for ( @{ $g->{ais} } ) {
-    $sid = $_->{sid};
-    last if $_->{id} == $g->{gs}->activePlayerId;
-  }
-  $g->{ais} = [grep $_->{sid} != $sid, @{ $g->{ais} }];
-}
-
-# производим захват регионов
-sub _conquer {
+# возвращает размещение войск по регионам для команды redeploy
+sub _getRedeployment {
   my ($self, $g) = @_;
-  my $repeat = 0;
-  do {
-    $self->_beginConquest($g);
-    $repeat = 0;
-    foreach ( $self->_getRegionsForConquest($g) ) {
-      my $conq = $self->_conquerRegion($g, $_->{regionId});
-      $repeat = $repeat || $conq; # надо повторить, вдруг сможем ещё что-то захватить
-      return if $g->{gs}->stage ne GS_CONQUEST && $g->{gs}->stage ne GS_BEFORE_CONQUEST;
-    }
-    $self->_endConquest($g);
-  } while ( $repeat );
-}
-
-# приводим расу в упадок
-sub _decline {
-  my ($self, $g) = @_;
-  die 'Fail decline' if
-    $self->_sendGameCmd(game => $g, action => 'decline')->{result} ne R_ALL_OK;
-  $g->{gs}->decline();
-}
-
-# заканчиваем ход
-sub _finishTurn {
-  my ($self, $g) = @_;
-  $self->_sendGameCmd(game => $g, action => 'finishTurn');
-  $g->{gs}->finishTurn({});
-}
-
-# делаем перестановку войск
-sub _redeploy {
-  my ($self, $g) = @_;
-  $g->{gs}->gotoRedeploy();
   my $p = $g->{gs}->getPlayer();
   my $tokens = $p->tokens;
   my $regs = $p->activeRace()->regions;
@@ -582,13 +514,90 @@ sub _redeploy {
     $r->tokens($r->tokens + $tokens);
   }
   $p->tokens(0);
-  $self->_sendGameCmd(
-      game        => $g,
-      action      => 'redeploy',
+
+  return (
       regions     => \@regions,
       encampments => (@encampments ? \@encampments : undef),
       heroes      => (@heroes ? \@heroes : undef),
       fortified   => (%fortified ? \%fortified : undef));
+}
+
+sub _beginConquest { }
+
+sub _endConquest { }
+
+# пытаемся захватить конкретный регион
+sub _conquerRegion {
+  my ($self, $g, $regionId) = @_;
+  my $ans = {};
+  return 1 if $self->_useSpConquer($g, $regionId, \$ans);
+  return 0 if !$self->_canAttack($g, $regionId);
+  $ans = $self->_sendGameCmd(game => $g, action => 'conquer', regionId => $regionId);
+  if ( defined $ans->{dice} ) {
+    my $p = $g->{gs}->getPlayer();
+    # изменяем все состояние согласно правилам
+    $g->{gs}->canAttack($p, $g->{gs}->getRegion(id => $regionId), $p->activeRace, $p->activeSp, $ans);
+  }
+  if ( $ans->{result} eq R_ALL_OK ) {
+    # изменяем все состояние согласно правилам
+    $g->{gs}->conquer($regionId, {});
+    return 1;
+  }
+  return 0;
+}
+
+# покидаем игру
+sub _leaveGame {
+  my ($self, $g, $sid) = @_;
+  $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $sid);
+  return if !defined $g->{gs}->activePlayerId;
+  return if defined $sid;
+  for ( @{ $g->{ais} } ) {
+    $sid = $_->{sid};
+    last if $_->{id} == $g->{gs}->activePlayerId;
+  }
+  $g->{ais} = [grep $_->{sid} != $sid, @{ $g->{ais} }];
+}
+
+# производим захват регионов
+sub _conquer {
+  my ($self, $g) = @_;
+  my $repeat = 0;
+  do {
+    $self->_beginConquest($g);
+    $repeat = 0;
+    foreach ( $self->_getRegionsForConquest($g) ) {
+      my $conq = $self->_conquerRegion($g, $_->{regionId});
+      $repeat = $repeat || $conq; # надо повторить, вдруг сможем ещё что-то захватить
+      return if $g->{gs}->stage ne GS_CONQUEST && $g->{gs}->stage ne GS_BEFORE_CONQUEST;
+    }
+    $self->_endConquest($g);
+  } while ( $repeat );
+}
+
+# приводим расу в упадок
+sub _decline {
+  my ($self, $g) = @_;
+  die 'Fail decline' if
+    $self->_sendGameCmd(game => $g, action => 'decline')->{result} ne R_ALL_OK;
+  $g->{gs}->decline();
+}
+
+# заканчиваем ход
+sub _finishTurn {
+  my ($self, $g) = @_;
+  $self->_sendGameCmd(game => $g, action => 'finishTurn');
+  $g->{gs}->finishTurn({});
+}
+
+# делаем перестановку войск
+sub _redeploy {
+  my ($self, $g) = @_;
+  $g->{gs}->gotoRedeploy();
+  $self->_sendGameCmd(
+      game        => $g,
+      action      => 'redeploy',
+      $self->_getRedeployment($g));
 }
 
 # выбираем расу
