@@ -24,7 +24,8 @@ sub _constructConquestPlan {
   my ($self, $g, $p) = @_;
   my @ways = $self->_constructConqWays($g, $p);
   my @bonusSums = $self->_calculateBonusSums($g, 0, @ways);
-  @bonusSums = $self->_calculateBonusSums($g, 1, @ways) unless @bonusSums;
+  @bonusSums = $self->_calculateBonusSums($g, 1, @ways)
+    if !@bonusSums && ($g->{gs}->stage ne GS_BEFORE_CONQUEST || $self->_isLastTurn($g));
   # формируем массив регионов по порядку их завоевания
   my @result = ();
   foreach my $bs( @bonusSums ) {
