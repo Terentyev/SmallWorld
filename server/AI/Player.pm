@@ -16,12 +16,15 @@ use SmallWorld::Checker qw(
 );
 use SmallWorld::Consts;
 use SmallWorld::Game;
-use SW::Util qw( swLog );
+use SW::Util qw( swLog timeStart timeEnd );
 
 use AI::Config;
 use AI::Consts;
 use AI::DB;
 use AI::Output qw( printGames printDebug );
+
+
+our @savedRegionFields = qw( conquestIdx prevTokensNum prevTokenBadgeId _cavernAdj _type );
 
 
 sub new {
@@ -73,11 +76,10 @@ sub _save {
 sub _saveState {
   my ($self, $g, $state) = @_;
   $state->{regions} = [];
-  foreach ( @{ $g->{gs}->regions } ) {
-    my $r = $g->{gs}->getRegion(region => $_);
+  foreach my $r ( @{ $g->{gs}->regions } ) {
     my $s = {};
     # сохраняем в БД информацию, которая генерируется во время завоевания
-    for ( qw(regionId conquestIdx prevTokensNum prevTokenBadgeId) ) {
+    for ( ('regionId', @savedRegionFields) ) {
       $s->{$_} = $r->{$_} if defined $r->{$_};
     }
     push @{ $state->{regions} }, $s;
@@ -92,7 +94,9 @@ sub _load {
       where  => { playerId => $playerId });
   return if !defined $state;
   $state = decode_json($state);
+  timeStart();
   $self->_loadState($g, $state);
+  timeEnd(LOG_FILE, '_loadState ');
 }
 
 sub _loadState {
@@ -101,9 +105,10 @@ sub _loadState {
     my $r = $g->{gs}->getRegion(id => $s->{regionId});
     # загружаем из БД информацию, которая нужна, что корректно предсказывать
     # результат хода
-    foreach ( qw(conquestIdx prevTokensNum prevTokenBadgeId) ) {
+    foreach ( @savedRegionFields ) {
       $r->{$_} = $s->{$_} if defined $s->{$_};
     }
+    $r->buildAdjacents();
   }
 }
 
@@ -168,7 +173,9 @@ sub _ourTurn {
   my $r = $self->_get('{ "action": "getGameState", "gameId": ' . $game->{gameId} . ' }', 1);
   return 0 if $r->{result} ne R_ALL_OK; # не получилось обновить состояние игры
 
+  timeStart();
   $g->{gs} = SmallWorld::Game->new(gameState => $r->{gameState});
+  timeEnd(LOG_FILE, 'SmallWorld::Game->new ');
   return (grep { $_->{id} == ($g->{gs}->activePlayerId // -1) } @{ $g->{ais} });
 }
 
@@ -413,13 +420,12 @@ sub _getRedeployment {
   # за регионом, который мы захватили драконом, а также подсчитать общее
   # количество фигурок
   foreach ( @$regs ) {
-    my $r = $g->{gs}->getRegion(region => $_);
-    if ( $r->dragon ) {
-      push @regions, { regionId => $r->id, tokensNum => 1 };
+    if ( $_->dragon ) {
+      push @regions, { regionId => $_->id, tokensNum => 1 };
       $n -= 1;
     }
     else {
-      $tokens += $r->tokens;
+      $tokens += $_->tokens;
     }
   }
 
@@ -428,14 +434,13 @@ sub _getRedeployment {
     $_->{hero} = 0 for @$regs;
     my $i = 0; # счетчик героев
     foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion(region => $_);
-      $r->hero(1);
-      $r->tokens(1);
+      $_->hero(1);
+      $_->tokens(1);
       $tokens -= 1;
       $n -= 1;
-      push @heroes, { regionId => $r->id };
+      push @heroes, { regionId => $_->id };
       # вместе с героем мы обязаны поставить хотя бы одну фигурку
-      push @regions, { regionId => $r->id, tokensNum => 1 };
+      push @regions, { regionId => $_->id, tokensNum => 1 };
       last if ++$i >= HEROES_MAX;
     }
   }
@@ -456,30 +461,28 @@ sub _getRedeployment {
     my $delta = max(1, int($encampNum / $n));
     my $r = undef;
     foreach ( @$regs ) {
-      $r = $g->{gs}->getRegion(region => $_);
       my $num = $delta;
       $encampNum -= $num;
       if ( $encampNum < 0 ) {
         $num += $encampNum;
         $encampNum = 0;
       }
-      $r->encampment($num);
-      push @encampments, { regionId => $r->id, encampmentsNum => $num };
+      $_->encampment($num);
+      push @encampments, { regionId => $_->id, encampmentsNum => $num };
       last if $encampNum == 0;
     }
     if ( $encampNum != 0 ) {
       $encampments[-1]->{encampmentsNum} += $encampNum;
-      $r->encampment($r->encampment + $encampNum);
+      $_->encampment($_->encampment + $encampNum);
     }
   }
 
   if ( $self->_canPlaceFortified($g) ) {
     foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion(region => $_);
       $tokens += 1;
-      if ( !$r->fortified ) {
-        $r->fortified(1);
-        $fortified{regionId} = $_->{regionId};
+      if ( !$_->fortified ) {
+        $_->fortified(1);
+        $fortified{regionId} = $_->id;
         last; # за один ход можно ставить только одно укрепление
       }
     }
@@ -491,20 +494,19 @@ sub _getRedeployment {
     # в этих оставшихся регионах
     my $delta = max(1, int($tokens / $n));
     foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion(region => $_);
-      next if $r->hero || $r->dragon;
+      next if $_->hero || $_->dragon;
 
       my $num = $delta;
       $tokens -= $num;
-      $num -= $r->encampment;
-      $num -= $r->fortified;
+      $num -= $_->encampment;
+      $num -= $_->fortified;
 
       if ( $tokens < 0  ) {
         $num += $tokens;
         $tokens = 0;
       }
-      $r->tokens($num);
-      push @regions, { regionId => $_->{regionId}, tokensNum => $num };
+      $_->tokens($num);
+      push @regions, { regionId => $_->id, tokensNum => $num };
       last if $tokens == 0;
     }
   }

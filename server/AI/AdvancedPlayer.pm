@@ -9,7 +9,7 @@ use base('AI::Player');
 
 use List::Util qw ( max min );
 
-use SW::Util qw( swLog );
+use SW::Util qw( swLog timeStart timeEnd );
 
 use SmallWorld::Consts;
 
@@ -23,9 +23,13 @@ our @backupNames = qw( ownerId tokenBadgeId conquestIdx prevTokenBadgeId prevTok
 sub _constructConquestPlan {
   my ($self, $g, $p) = @_;
   my @ways = $self->_constructConqWays($g, $p);
+  timeStart();
   my @bonusSums = $self->_calculateBonusSums($g, 0, @ways);
+  timeEnd(LOG_FILE, 'first _calculateBonusSums ');
+  timeStart();
   @bonusSums = $self->_calculateBonusSums($g, 1, @ways)
     if !@bonusSums && ($g->{gs}->stage ne GS_BEFORE_CONQUEST || $self->_isLastTurn($g));
+  timeEnd(LOG_FILE, 'second _calculateBonusSums ');
   # формируем массив регионов по порядку их завоевания
   my @result = ();
   foreach my $bs( @bonusSums ) {
@@ -52,17 +56,14 @@ sub _constructConqWays {
     # пробегаемся по всем регионам и составляем список регионов, на которые
     # можем напасть при первом завоевании
     foreach ( @{ $g->{gs}->regions } ) {
-      my $r = $g->{gs}->getRegion(region => $_);
-      push @regions, $r if $self->_canBaseAttack($g, $r->id);
+      push @regions, $_ if $self->_canBaseAttack($g, $_->id);
     }
   }
   else {
     # у игрока есть территории, продолжаем завоевывать относительно их
-    foreach ( @{ $p->regions } ) {
-      my $mine = $g->{gs}->getRegion(region => $_);
-      foreach ( @{ $mine->getAdjacentRegions($g->{gs}->regions, $asp) } ) {
-        my $r = $g->{gs}->getRegion(region => $_);
-        push @regions, $r if !$p->isOwned($r) && $self->_canBaseAttack($g, $r->id);
+    foreach my $mine ( @{ $p->regions } ) {
+      foreach ( @{ $asp->getRegionsForAttack($mine) } ) {
+        push @regions, $_ if !$_->isImmune && !$p->isOwned($_) && $asp->canAttack($_); # TODO: если завоевание усиленное, то можно захватывать свои регионы!!!!!
       }
     }
     if ( $#regions < 0 && $#{ $ar->regions } < 0 && $p->declinedTokenBadgeId ) {
@@ -70,16 +71,21 @@ sub _constructConqWays {
       # свои регионы, а мы обязаны попытаться хотя бы захватить хоть что-то,
       # нам следует захватить хотя бы регионы с расой в упадке
       foreach ( @{ $p->declinedRace->regions } ) {
-        my $r = $g->{gs}->getRegion(region => $_);
-        next if !$self->_canBaseAttack($g, $r->id);
-        push @regions, $r;
+        next if !$self->_canBaseAttack($g, $_->id);
+        push @regions, $_;
         last;
       }
     }
   }
 
+  # уберем повторения
+  my %filter = ();
+  @regions = grep { !$filter{$_->id}++ } @regions;
+
   my @ways = ();
-  push @ways, $self->_constructConqWaysForRegion($g, $p, $g->{gs}->getRegion(region => $_)) for @regions;
+  timeStart();
+  push @ways, $self->_constructConqWaysForRegion($g, $p, $_) for @regions;
+  timeEnd(LOG_FILE, '_constructConqWaysForRegions ');
   return @ways;
 }
 
@@ -103,18 +109,18 @@ sub _constructConqWaysForRegion {
   my $dummy = [];
   @backups = $self->_tmpConquer($g, $p, $r);
   $wayInfo{coins} = $g->{gs}->getPlayerBonus($p, $dummy);
-  $race = $p->activeRace;
-  $sp = $p->activeSp;
 
-  if ( $wayInfo{cost} <= $p->tokens + 3 ) {
-    foreach ( @{ $r->getAdjacentRegions($g->{gs}->regions, $sp) } ) {
-      my $region = $g->{gs}->getRegion(region => $_);
+  if ( $self->_shouldTryConqWay($wayInfo{coins}, $#way) && $wayInfo{cost} <= $p->tokens + 3 ) {
+    $sp = $p->activeSp;
+#    timeStart();
+    foreach ( @{ $sp->getRegionsForAttack($r) } ) {
       # пробегаем по всем регионам и пропускаем те, на которых мы уже отметились, и
       # те, с которыми мы не граничим согласно всем правилам
-      next if $p->isOwned($region) || !$sp->canAttack($region, $g->{gs}->regions) || $region->isImmune;
+      next if $_->isImmune || $p->isOwned($_) || !$sp->canAttack($_);
 
-      push @result, $self->_constructConqWaysForRegion($g, $p, $region, @way);
+      push @result, $self->_constructConqWaysForRegion($g, $p, $_, @way);
     }
+#    timeEnd(LOG_FILE, (' ' x $#way) . "adjacent regions for $r->{regionId} ($wayInfo{cost})                      ");
   }
   $self->_tmpConquerRestore($r, @backups);
   return \@way if $#result < 0;
@@ -303,6 +309,7 @@ sub _getRegionsForConquest {
 
 sub _beginConquest {
   my ($self, $g) = @_;
+  $self->{maxCoinsForDepth} = [];
   $g->{plan} = [$self->_constructConquestPlan($g, $g->{gs}->getPlayer)];
 }
 
@@ -312,6 +319,15 @@ sub _endConquest {
   $g->{dragonShouldAttackRegionId} = undef;
   $g->{enchantShouldAttackRegionId} = undef;
   $g->{plan} = undef;
+}
+
+sub _shouldTryConqWay {
+  my ($self, $coins, $depth) = @_;
+  if ( !defined $self->{maxCoinsForDepth}->[$depth] || $self->{maxCoinsForDepth}->[$depth] <= $coins ) {
+    $self->{maxCoinsForDepth}->[$depth] = $coins;
+    return 1;
+  }
+  return 0;
 }
 
 sub _shouldDragonAttack {
@@ -331,7 +347,7 @@ sub _shouldStoutDecline {
   my $p = $g->{gs}->getPlayer;
   my $regions = $p->activeRace->regions;
   my $tokens = -$#$regions;
-  $tokens += $g->{gs}->getRegion(region => $_)->tokens for @$regions;
+  $tokens += $_->tokens for @$regions;
   # если число фигурок, которые будут у нас в руках меньше 3 (а почему бы и не
   # 3?), то желательно привести расу в упадок, т. к. мы скорее всего ничего не
   # сможем завоевать на следующем ходу
@@ -340,6 +356,10 @@ sub _shouldStoutDecline {
 
 sub _selectRace {
   my ($self, $g) = @_;
+  my $tritonsIdx = -1;
+  my $i = 0;
+  ($_->{raceName} eq RACE_TRITONS and $tritonsIdx = $i and last or $i++) for @{ $g->{gs}->tokenBadges };
+  return $tritonsIdx if $tritonsIdx != -1;
   my @estimates = $self->_constructBadgesEstimates($g);
   return $estimates[0]->{idx};
 }
@@ -352,9 +372,7 @@ sub _defend {
   my $ar = $p->activeRace;
 
   foreach ( @{ $ar->regions } ) {
-    my $r = $g->{gs}->getRegion(region => $_);
-    next unless $self->_canDefendToRegion($g, $r->id, $p, $ar);
-    push @regions, $r;
+    push @regions, $_ if $self->_canDefendToRegion($g, $_->id, $p, $ar);
   }
 
   die 'Fail defend' unless @regions;
