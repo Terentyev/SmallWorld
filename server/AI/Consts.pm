@@ -12,8 +12,9 @@ sub BEGIN {
   our @export_list;
 
   my $filename = __FILE__;
-  open ME, "<$filename" or die "Can't open $filename for input: $!";
+  open(ME, '<', $filename) or die "Can't open $filename for input: $!";
   my @lines = <ME>;
+  close(ME);
   foreach ( @lines ) {
     if ( m/^\s*use\s+constant\s+([A-Z_]+)\s+/x ) {
       push @export_list, $1;

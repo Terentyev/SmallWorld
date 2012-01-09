@@ -394,10 +394,10 @@ sub initialTokens {
 sub canPlaceObj2Region {
   my ($self, $player, $state, $region) = @_;
   return $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-         !defined $region->{lair};
+         !$region->{lair};
 }
 
-sub placeObject() {
+sub placeObject {
   my ($self, $state, $region) = @_;
   $region->{lair} = 1;
 }

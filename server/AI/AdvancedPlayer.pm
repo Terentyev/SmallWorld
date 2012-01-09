@@ -133,20 +133,21 @@ sub _constructBadgesEstimates {
   my ($self, $g) = @_;
   my @result = ();
   my $i = 0;
-  no strict 'refs';
   foreach ( @{ $g->{gs}->tokenBadges } ) {
     my $upRace = $self->_translateToConst($_->{raceName});
     my $upSp = $self->_translateToConst($_->{specialPowerName});
     push @result, {
       est => (
-        &{"EST_$upRace"} + &{"EST_$upSp"} + &{"$upRace\_TOKENS_NUM"} + &{"$upSp\_TOKENS_NUM"} +
+        $self->_safeGetConst("EST_$upRace") +
+        $self->_safeGetConst("EST_$upSp") + 
+        $self->_safeGetConst("$upRace\_TOKENS_NUM") + 
+        $self->_safeGetConst("$upSp\_TOKENS_NUM") +
         $_->{bonusMoney} - $i),
       idx => $i
     };
     ++$i;
   }
-  use strict 'refs';
-  return sort { $b->{est} <=> $a->{est} } @result;
+  return (sort { $b->{est} <=> $a->{est} } @result);
 }
 
 # подсчитывает более детально количество монеток для цепочки завоевания
@@ -192,7 +193,7 @@ sub _calculateBonusSums {
     }
     push @bonusSums, { way => $_, bonus => $bonus };
   }
-  return sort { $b->{bonus} <=> $a->{bonus} } @bonusSums;
+  return (sort { $b->{bonus} <=> $a->{bonus} } @bonusSums);
 }
 
 # подсчитывает уровень опасности для регионов и сортирует в порядке уменьшения
@@ -244,7 +245,14 @@ sub _calculateDangerous {
   }
 
   push @result, { id => $_, est => $costs{$_} } for keys %costs;
-  return sort { $b->{est} <=> $a->{est} } @result;
+  return (sort { $b->{est} <=> $a->{est} } @result);
+}
+
+# не нарушая никаких PBP получаем значение константы по ее имени
+sub _safeGetConst {
+  my ($self, $name, $default) = (@_, 0);
+  my $func = UNIVERSAL::can($self, $name);
+  return $func ? &$func : $default;
 }
 
 # вспомогательная функция, которая переводит название расы/умения в часть имени
@@ -356,10 +364,10 @@ sub _shouldStoutDecline {
 
 sub _selectRace {
   my ($self, $g) = @_;
-  my $tritonsIdx = -1;
-  my $i = 0;
-  ($_->{raceName} eq RACE_TRITONS and $tritonsIdx = $i and last or $i++) for @{ $g->{gs}->tokenBadges };
-  return $tritonsIdx if $tritonsIdx != -1;
+#  my $tritonsIdx = -1;
+#  my $i = 0;
+#  ($_->{raceName} eq RACE_TRITONS and $tritonsIdx = $i and last or $i++) for @{ $g->{gs}->tokenBadges };
+#  return $tritonsIdx if $tritonsIdx != -1;
   my @estimates = $self->_constructBadgesEstimates($g);
   return $estimates[0]->{idx};
 }

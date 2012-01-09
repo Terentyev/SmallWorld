@@ -38,7 +38,7 @@ sub map_upload {
   my $filen = $body->upload_fh();
 
   if ( $filen ) {
-    open FL, '>' . MAP_IMGS_DIR . MAP_IMG_PREFIX . $r->param('mapId') . $ext;
+    open(FL, '>', MAP_IMGS_DIR . MAP_IMG_PREFIX . $r->param('mapId') . $ext);
     binmode FL;
     binmode $filen;
     while( <$filen> ){

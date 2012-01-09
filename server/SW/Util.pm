@@ -20,7 +20,7 @@ sub swLog {
   return if !$ENV{DEBUG};
   my $file = shift;
   use Data::Dumper;
-  open FL, ">> $file";
+  open(FL, '>>', $file);
   print FL Dumper(@_);
   close FL;
 }

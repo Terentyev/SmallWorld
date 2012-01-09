@@ -86,7 +86,7 @@ sub check {
 sub readFile {
   my ($self, $file) = @_;
   local $/ = undef;
-  open(FILE, $file);
+  open(FILE, '<', $file);
   my $result = <FILE>;
   close(FILE);
   return $result;

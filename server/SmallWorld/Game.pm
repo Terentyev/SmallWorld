@@ -134,7 +134,7 @@ sub loadFromState {
 
 sub getLairFromGameState {
   my ($self, $gs, $tokenBadgeId) = @_;
-  return undef if !defined $tokenBadgeId;
+  return 0 if !defined $tokenBadgeId;
   return (grep {
       defined $_->{currentTokenBadge} && ($_->{currentTokenBadge}->{tokenBadgeId} // -1) == $tokenBadgeId &&
       $_->{currentTokenBadge}->{raceName} eq RACE_TROLLS ||
@@ -147,7 +147,7 @@ sub getLairFromGameState {
 sub getStageFromGameState {
   my ($self, $gs) = @_;
   my $st = $gs->{state};
-  return undef if $st == GST_WAIT;
+  return if $st == GST_WAIT;
   return GS_SELECT_RACE if $st == GST_BEGIN;
   return GS_IS_OVER     if $st == GST_FINISH || $st == GST_EMPTY;
 
