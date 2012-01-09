@@ -17,6 +17,12 @@ sub new {
   return $self;
 }
 
+sub DESTROY {
+  my $self = shift;
+  delete $self->{regions};
+  delete $self->{allRegions};
+}
+
 sub _init {
   my ($self, $regions, $badge) = @_;
   $self->{allRegions} = $regions;
@@ -97,9 +103,7 @@ sub canCmd {
 
 sub getOwnedRegionsNum {
   my ($self, $regType) = @_;
-  return 1 * (grep {
-    grep { $_ eq $regType } @{ $_->{constRegionState} }
-  } @{ $self->{regions} });
+  return 1 * (grep { $_->_is($regType) } @{ $self->regions });
 }
 
 sub activate {
@@ -189,14 +193,14 @@ sub initialTokens {
 }
 
 sub conquestRegionTokensBonus {
-  my ($self, $player, $region, $regions, $sp) = @_;
+  my ($self, $player, $region, $sp) = @_;
   # для гигантов бонус в 1 фигурку, если они нападают на регион, который
   # граничит с регионом, на котором находятся горы и который принадлежит
   # гигантам
   return (grep {
       ($_->{tokenBadgeId} // -1) == $player->{currentTokenBadge}->{tokenBadgeId} &&
-      (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} })
-    } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
+      $_->isMountain
+    } @{ $sp->getAdjacentRegions($region) }) ? 1 : 0;
 }
 
 
@@ -228,7 +232,7 @@ sub placeObject {
 sub canFirstConquer {
   my ($self, $region) = @_;
   # полурослики на первом завоевании могут пытаться захватить любую сушу
-  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} });
+  return !$region->isSea;
 }
 
 # у полуросликов после упадка или отказа исчезают норы
@@ -367,12 +371,10 @@ sub initialTokens {
 }
 
 sub conquestRegionTokensBonus {
-  my ($self, $player, $region, $regions, $sp) = @_;
+  my ($self, $player, $region, $sp) = @_;
 
-  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState}}) &&
-         (grep {
-           grep {$_ eq REGION_TYPE_SEA } @{ $_->{constRegionState} }
-        } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
+  return !$region->isSea && 
+    (grep { $_->isSea } @{ $sp->getAdjacentRegions($region)}) ? 1 : 0;
 }
 
 

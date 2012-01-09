@@ -11,9 +11,23 @@ sub new {
   my $self = {@_}->{self};
 
   bless $self, $class;
+  $self->_init(@_);
 
   return $self;
 }
+
+sub DropObj {
+  my $o = shift;
+  return unless UNIVERSAL::can($$o, 'can');
+  $$o->_dropObj();
+  $$o = { %$$o };
+}
+
+# различная инициализация объекта
+sub _init { }
+
+# удаляет из объекта ссылки на другие объекты
+sub _dropObj { }
 
 # возвращает 0, если свойство неопределенно, иначе само значение свойства
 sub safe {

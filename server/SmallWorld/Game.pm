@@ -49,6 +49,13 @@ sub load {
   else {
     $self->loadFromState(%params);
   }
+  $self->afterLoad();
+}
+
+sub afterLoad {
+  my $self = shift;
+  $self->getRegion(region => $_) for @{ $self->regions };
+  $_->buildAdjacents for @{ $self->regions };
 }
 
 sub loadFromState {
@@ -304,6 +311,7 @@ sub save {
   delete $gs->{gameInfo};
   $self->{db}->saveGameState(encode_json($gs), $gs->{activePlayerId}, $gs->{currentTurn}, $self->{gameState}->{gameInfo}->{gameId});
   $self->{_version}++;
+  $self->afterLoad();
 }
 
 # вместо созданных объектов игроков и регионов ставим обратно хэши
@@ -311,9 +319,7 @@ sub dropObjects {
   my $self = shift;
   # вместо того, чтобы сохранять в json объекты-игроков, сохраняем только
   # информацию о них
-  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $self->players };
-  delete $_->{game} for @{ $self->players };
-  grep { $_ = { %$_ } if UNIVERSAL::can($_, 'can') } @{ $self->regions };
+  SmallWorld::SafeObj::DropObj(\$_) for (@{ $self->players }, @{ $self->regions });
 }
 
 # устанавливает определенные карточки рас и умений
@@ -492,18 +498,13 @@ sub getPlayer {
 sub getRegion {
   my ($self, %p) = @_;
   if ( !defined $p{region} && defined $p{id} ) {
-    foreach ( @{ $self->{gameState}->{regions} } ) {
-      if ( $_->{regionId} == $p{id} ) {
-        $p{region} = $_;
-        last;
-      }
-    }
+    $p{region} = $self->regions->[$p{id} - 1];
   }
   return if !$p{region};
   # если объект-регион уже создан, то возвращаем его
   return $p{region} if UNIVERSAL::can($p{region}, 'can');
   # иначе создаем новый экземпляр
-  return SmallWorld::Region->new(self => $p{region});
+  return SmallWorld::Region->new(self => $p{region}, game => $self);
 }
 
 # возвращает объект класса, который соответсвует расе
@@ -582,9 +583,7 @@ sub nextConquestIdx {
 sub random {
   my $self = shift;
   return (defined $_[0] ? ($_[0]->{dice} // 0) : 0) if $ENV{DEBUG_DICE};
-  swLog(LOG_FILE, $self->{gameState}->{prevGenNum});
   $self->{gameState}->{prevGenNum} = (RAND_A * $self->{gameState}->{prevGenNum}) % RAND_M;
-  swLog(LOG_FILE, $self->{gameState}->{prevGenNum});
   my $result = $self->{gameState}->{prevGenNum} % 6;
   return $result > 3 ? 0 : $result;
 }
@@ -597,31 +596,27 @@ sub tokensInStorage {
 # возвращает может ли игрок атаковать регион при первом завоевании
 sub canFirstConquer {
   my ($self, $region, $race, $sp) = @_;
-  my $regions = $self->{gameState}->{regions};
 
   #можно захватить любой регион соседствующий с морем, которое является гранцией
   #можно захватить любой приграничный не морской регион
   #нельзя захватывать моря и озера,
   my $ adj = 0;
-  foreach my $i ( @{$region->{adjacentRegions}} ) {
+  foreach my $r ( @{ $region->_hardAdj } ) {
     my ($isSea, $isBorder) = (0, 0);
-    foreach ( @{$regions->[$i-1]->{constRegionState}} ){
-      $isBorder = 1 if $_ eq REGION_TYPE_BORDER;
-      $isSea = 1 if $_ eq REGION_TYPE_SEA;
-    }
-    $adj = 1 if $isSea && $isBorder;
+    next if !$r->isSea || !$r->isBorder;
+    $adj = 1;
+    last;
   }
 
   return
-    !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} }) &&
-    ((grep { $_ eq REGION_TYPE_BORDER } @{ $region->{constRegionState} }) || $adj) ||
+    !$region->isSea && ($region->isBorder || $adj) ||
     $race->canFirstConquer($region) || $sp->canFirstConquer($region);
 }
 
 sub getDefendNum {
   my ($self, $player, $region, $race, $sp) = @_;
   return max(1, $region->getDefendTokensNum() -
-      $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $self->regions, $sp));
+      $sp->conquestRegionTokensBonus($region) - $race->conquestRegionTokensBonus($player, $region, $sp));
 }
 
 # возвращает хватает ли игроку фигурок для атаки региона (бросает кубик, если надо)
@@ -789,21 +784,20 @@ sub selectRace {
 
 sub getPlayerBonus {
   my ($self, $player, $result) = @_;
-  my $regions = $self->regions;
   my $race = $self->createRace($player->{currentTokenBadge});
   my $drace = $self->createRace($player->{declinedTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
 
-  my $regionBonus = 1 * (grep { defined $_->{ownerId} && $_->{ownerId} == $player->{playerId}} @{ $regions });
+  my $regionBonus = 1 * (grep { $_->ownerId == $player->id } @{ $self->regions });
   my $bonus = $regionBonus + $sp->coinsBonus($self->{gameState}) + $race->coinsBonus() + $drace->declineCoinsBonus();
-  push @{$result}, ['Regions', $regionBonus];
+  push @$result, ['Regions', $regionBonus];
   if (defined $player->{currentTokenBadge}->{raceName} ){
-    push @{ $result }, [$player->{currentTokenBadge}->{raceName}, $race->coinsBonus()];
-    push @{ $result }, [$player->{currentTokenBadge}->{specialPowerName}, $sp->coinsBonus($self->{gameState})];
+    push @$result, [$player->activeRaceName, $race->coinsBonus()];
+    push @$result, [$player->activeSpName, $sp->coinsBonus($self->{gameState})];
   }
   if (defined $player->{declinedTokenBadge}->{raceName} ){
-    push @{ $result }, [$player->{declinedTokenBadge}->{raceName}, $drace->declineCoinsBonus()];
-    push @{ $result }, [$player->{declinedTokenBadge}->{specialPowerName}, 0];
+    push @$result, [$player->{declinedTokenBadge}->{raceName}, $drace->declineCoinsBonus()];
+    push @$result, [$player->{declinedTokenBadge}->{specialPowerName}, 0];
   }
   return $bonus;
 }
@@ -811,7 +805,6 @@ sub getPlayerBonus {
 sub finishTurn {
   my ($self, $result) = @_;
   my $player = $self->getPlayer();
-  my $regions = $self->{gameState}->{regions};
   my $race = $self->createRace($player->{currentTokenBadge});
   my $drace = $self->createRace($player->{declinedTokenBadge});
   my $sp = $self->createSpecialPower('currentTokenBadge', $player);
@@ -832,7 +825,7 @@ sub finishTurn {
   $race->finishTurn($self->{gameState});
   @{ $self->{gameState}->{friendInfo} }{qw(friendId)} = () if $player->isFriend();
 
-  @{$_}{qw (conquestIdx prevTokenBadgeId prevTokensNum)} = () for @{ $self->{gameState}->{regions} };
+  @{$_}{qw (conquestIdx prevTokenBadgeId prevTokensNum)} = () for @{ $self->regions };
 
   my $prevPriority = $player->{priority};
   do {
@@ -853,7 +846,7 @@ sub finishTurn {
     #оставляем на территориях по одной фигурке рас, остальные даем игроку в руки
     $race = $self->createRace($player->{currentTokenBadge});
     $player->{tokensInHand} += $race->conquestTokensBonus();
-    foreach ( @{$race->{regions}} ) {
+    foreach ( @{ $race->regions } ) {
       $player->{tokensInHand} += $_->{tokensNum} - 1;
       $_->{tokensNum} = 1;
     }

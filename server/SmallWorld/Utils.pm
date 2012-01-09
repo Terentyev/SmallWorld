@@ -27,3 +27,9 @@ sub BEGIN {
 sub bool {
   return $_[1] ? JSON::true : JSON::false;
 }
+
+sub mergeArrays {
+  my ($arr1, $arr2) = @_;
+  my %filter = ();
+  return [grep { !$filter{$_}++ } (@$arr1, @$arr2)];
+}

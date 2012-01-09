@@ -341,7 +341,10 @@ sub checkRegion_conquer {
   my $finfo = $game->{gameState}->{friendInfo};
   return $player->activeConq($region) ||
          $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
-         !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
+         !$game->isFirstConquer() && (
+             !$sp->canAttack($region) ||
+             !(grep $player->id == $_->ownerId, @{ $sp->getRegionsForAttack($region) })
+         ) ||
          (defined $finfo && ($finfo->{diplomatId} // -2) == ($region->{ownerId} // -1) &&
          ($finfo->{friendId} // -1) == $player->{playerId} && !$region->{inDecline});
 }

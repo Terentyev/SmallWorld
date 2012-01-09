@@ -7,14 +7,15 @@ use utf8;
 
 use base ('SmallWorld::SafeObj');
 
-sub new {
-  my $class = shift;
-  my $self = $class->SUPER::new(@_);
+
+sub _init {
+  my $self = shift;
   $self->{game} = {@_}->{game};
+}
 
-  bless $self, $class;
-
-  return $self;
+sub _dropObj {
+  my $self = shift;
+  delete $self->{game};
 }
 
 sub isOwned {
