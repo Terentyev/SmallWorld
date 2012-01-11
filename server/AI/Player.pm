@@ -458,10 +458,11 @@ sub _getRedeployment {
     # обнуляем все наши предыдущие расстановки лагерей
     $_->{encampment} = 0 for @$regs;
     # стараемся равномерно разместить лагеря по всем нашим регионам
-    my $delta = max(1, int($encampNum / $n));
+    my $m = $n;
     my $r = undef;
     foreach ( @$regs ) {
-      my $num = $delta;
+      my $num = max(1, int($encampNum / $m));
+      $m -= 1;
       $encampNum -= $num;
       if ( $encampNum < 0 ) {
         $num += $encampNum;
@@ -492,11 +493,11 @@ sub _getRedeployment {
     # если у нас остались регионы, на которых не расположились герои и дракон
     # (т. е. есть регионы без иммунитета), то распологаем фигурки равномерно
     # в этих оставшихся регионах
-    my $delta = max(1, int($tokens / $n));
     foreach ( @$regs ) {
       next if $_->hero || $_->dragon;
 
-      my $num = $delta;
+      my $num = max(1, int($tokens / $n));
+      $n -= 1;
       $tokens -= $num;
       $num -= $_->encampment;
       $num -= $_->fortified;
