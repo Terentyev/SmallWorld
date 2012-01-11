@@ -27,7 +27,7 @@ sub buildAdjacents {
     }
   }
   else {
-    $self->{_hardAdj} = $self->{adjacentRegions};
+    $self->{_hardAdj} = [@{ $self->{adjacentRegions} }];
     $self->_fillAdj('hardAdj');
   }
   if ( !defined $self->_cavernAdj ) {
@@ -91,14 +91,15 @@ sub _isTypeOf {
   return (grep $_ eq $type, @{ $region->{constRegionState} }) ? 1 : 0;
 }
 
-sub _game      { return $_[0]->{_game};           }
-sub _type      { return $_[0]->{_type} // {};     }
-sub _hardAdj   { return $_[0]->{_hardAdj};        }
-sub _cavernAdj { return $_[0]->{_cavernAdj};      }
-sub id         { return $_[0]->{regionId};        }
-sub ownerId    { return $_[0]->{ownerId} // -1;   }
-sub inDecline  { return $_[0]->safe('inDecline'); }
-sub dragon     { return $_[0]->safe('dragon');    }
+sub _game        { return $_[0]->{_game};              }
+sub _type        { return $_[0]->{_type} // {};        }
+sub _hardAdj     { return $_[0]->{_hardAdj};           }
+sub _cavernAdj   { return $_[0]->{_cavernAdj};         }
+sub id           { return $_[0]->{regionId};           }
+sub ownerId      { return $_[0]->{ownerId} // -1;      }
+sub tokenBadgeId { return $_[0]->{tokenBadgeId} // -1; }
+sub inDecline    { return $_[0]->safe('inDecline');    }
+sub dragon       { return $_[0]->safe('dragon');       }
 sub tokens {
   my $self = shift;
   $self->{tokensNum} = $_[0] if defined $_[0];
