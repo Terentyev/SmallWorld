@@ -28,9 +28,9 @@ sub DESTROY {
 sub _init {
   my ($self, $player, $state) = @_;
   $self->{player} = $player;
-  $self->{allRegions} = $state->{regions};
+  $self->{allRegions} = $state->regions;
   # извлекаем только свои регионы (остальные скорее всего не понадобятся)
-  $self->{regions} = [grep { $player->activeConq($_) } @{ $state->{regions} }] || [];
+  $self->{regions} = [grep { $player->activeConq($_) } $state->regions] || [];
 }
 
 # бонус монетками для способности
@@ -106,7 +106,8 @@ sub finishTurn {
   return 0;
 }
 
-sub player { return $_[0]->{player}; }
+sub player  { return $_[0]->{player};                                      }
+sub regions { return wantarray ? @{ $_[0]->{regions} } : $_[0]->{regions}; }
 
 package SmallWorld::SpAlchemist;
 use strict;
@@ -138,7 +139,7 @@ use SmallWorld::Consts;
 sub _init {
   my ($self, $player, $state, $badge) = @_;
   $self->SUPER::_init($player, $state, $badge);
-  $self->{dice} = $state->{berserkDice};
+  $self->{dice} = $state->berserkDice;
 }
 
 sub conquestRegionTokensBonus {
@@ -261,7 +262,7 @@ use SmallWorld::Consts;
 sub _init {
   my ($self, $player, $state, $badge) = @_;
   $self->SUPER::_init($player, $state, $badge);
-  $self->{dragonAttacked} = ($state->{dragonAttacked} // 0);
+  $self->{dragonAttacked} = $state->dragonAttacked;
 }
 
 sub declineRegion {
@@ -330,7 +331,7 @@ sub coinsBonus {
     $_->{tokensNum} > 0 &&
       # на которой расположен лес получаем по монетке
       $_->isForest
-  } @{ $_[0]->{regions} });
+  } $_[0]->regions);
 }
 
 sub initialTokens {
@@ -349,7 +350,7 @@ use SmallWorld::Consts;
 
 sub coinsBonus {
   # за каждый форт мы получаем по дополнительной монетке если раса активна
-  return 1 * (grep { $_->{fortified} } @{ $_[0]->{regions} });
+  return 1 * (grep { $_->{fortified} } $_[0]->regions);
 }
 
 sub abandonRegion {
@@ -417,7 +418,7 @@ sub coinsBonus {
     $_->{tokensNum} > 0 &&
       # на которой расположен холм получаем по монетке
       $_->isHill
-  } @{ $_[0]->{regions} });
+  } $_[0]->regions);
 }
 
 sub initialTokens {
@@ -438,7 +439,7 @@ sub coinsBonus {
   return 1 * (grep {
     # за каждый оккупированный регион получаем по монетке
     $_->{tokensNum} > 0
-  } @{ $_[0]->{regions} });
+  } $_[0]->regions);
 }
 
 sub initialTokens {
@@ -477,7 +478,7 @@ use base ('SmallWorld::BaseSp');
 use SmallWorld::Consts;
 
 sub coinsBonus {
-  return 1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} @{ $_[0]->{regions} });
+  return 1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} $_[0]->regions);
 }
 
 sub initialTokens {
@@ -551,7 +552,7 @@ sub coinsBonus {
     $_->{tokensNum} > 0 &&
       # на котором есть болота (?)
       $_->isSwamp
-  } @{ $_[0]->{regions} });
+  } $_[0]->regions);
 }
 
 sub initialTokens {

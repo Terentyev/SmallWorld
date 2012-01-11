@@ -61,10 +61,10 @@ sub dice {
 sub regions {
   my $self = shift;
   my @result = ();
-  foreach ( @{ $self->{game}->regions } ) {
+  foreach ( $self->{game}->regions ) {
     push @result, $_ if ($_->{ownerId} // -1) == $self->id;
   }
-  return \@result;
+  return wantarray ? @result : \@result;
 }
 
 1;

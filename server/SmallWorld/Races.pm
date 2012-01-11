@@ -24,12 +24,12 @@ sub DESTROY {
 }
 
 sub _init {
-  my ($self, $regions, $badge) = @_;
-  $self->{allRegions} = $regions;
+  my ($self, $badge, @regions) = @_;
+  $self->{allRegions} = \@regions;
   $self->{regions} = [grep {
     defined $_->{tokenBadgeId} && defined $badge->{tokenBadgeId} &&
     $_->{tokenBadgeId} == $badge->{tokenBadgeId}
-  } @{ $regions }] || [];
+  } @regions] || [];
 }
 
 # возвращает количество первоначальных фигурок для каждой расы
@@ -103,7 +103,7 @@ sub canCmd {
 
 sub getOwnedRegionsNum {
   my ($self, $regType) = @_;
-  return 1 * (grep { $_->_is($regType) } @{ $self->regions });
+  return 1 * (grep { $_->_is($regType) } $self->regions);
 }
 
 sub activate {
@@ -114,7 +114,7 @@ sub finishTurn {
   my ($self, $state) = @_;
 }
 
-sub regions { return $_[0]->{regions}; }
+sub regions { return wantarray ? @{ $_[0]->{regions} } : $_[0]->{regions}; }
 
 
 package SmallWorld::RaceAmazons;
@@ -286,7 +286,7 @@ sub initialTokens {
 sub coinsBonus {
   # получение дополнительных монет за захваченные территории
   return $_[0]->SUPER::coinsBonus() +
-    1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} @{ $_[0]->{regions} });
+    1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} $_[0]->regions);
 }
 
 
@@ -321,8 +321,8 @@ sub initialTokens {
 sub redeployTokensBonus {
   my ($self, $player) = @_;
   my $inGame = $player->{tokensInHand};
-  map { $inGame += $_->{tokensNum} } @{ $self->{regions} };
-  my $bonus = int ((grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} @{ $self->{regions} }) / 2);
+  map { $inGame += $_->{tokensNum} } $self->regions;
+  my $bonus = int ((grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} $self->regions) / 2);
   return min($bonus, SKELETONS_TOKENS_MAX -  $inGame);
 }
 

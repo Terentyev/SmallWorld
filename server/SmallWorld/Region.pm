@@ -20,7 +20,7 @@ sub buildAdjacents {
   my $self = shift;
   if ( !defined $self->_hardAdj ) {
     $self->{_hardAdj} = [];
-    foreach my $r ( @{ $self->_game->regions } ) {
+    foreach my $r ( $self->_game->regions ) {
       next if $r->{regionId} == $self->id;
       push @{ $self->_hardAdj }, $r
         if (grep $_ == $r->{regionId}, @{ $self->{adjacentRegions} });
@@ -33,7 +33,7 @@ sub buildAdjacents {
   if ( !defined $self->_cavernAdj ) {
     $self->{_cavernAdj} = [];
     if ( $self->isCavern ) {
-      foreach my $r ( @{ $self->_game->regions } ) {
+      foreach my $r ( $self->_game->regions ) {
         next if $r->{regionId} == $self->id;
         push @{ $self->_cavernAdj }, $r if _isTypeOf($r, REGION_TYPE_CAVERN);
       }
