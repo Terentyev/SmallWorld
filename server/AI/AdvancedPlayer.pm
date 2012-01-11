@@ -7,7 +7,7 @@ use utf8;
 
 use base('AI::Player');
 
-use List::Util qw ( max min );
+use List::Util qw( max min );
 
 use SW::Util qw( swLog timeStart timeEnd );
 
@@ -319,6 +319,7 @@ sub _beginConquest {
   my ($self, $g) = @_;
   $self->{maxCoinsForDepth} = [];
   $g->{plan} = [$self->_constructConquestPlan($g, $g->{gs}->getPlayer)];
+#  die 'OK';
 }
 
 sub _endConquest {
@@ -331,11 +332,11 @@ sub _endConquest {
 
 sub _shouldTryConqWay {
   my ($self, $coins, $depth) = @_;
-  if ( !defined $self->{maxCoinsForDepth}->[$depth] || $self->{maxCoinsForDepth}->[$depth] <= $coins ) {
-    $self->{maxCoinsForDepth}->[$depth] = $coins;
-    return 1;
-  }
-  return 0;
+  return 0 if $depth >= CONQ_WAY_DEPTH ||
+    ($self->{maxCoinsForDepth}->[$depth] // -1) > $coins;
+
+  $self->{maxCoinsForDepth}->[$depth] = $coins;
+  return 1;
 }
 
 sub _shouldDragonAttack {

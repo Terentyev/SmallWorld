@@ -67,6 +67,9 @@ use constant EST_SWAMP         => 0.5;
 use constant EST_UNDERWORLD    => 0.5;
 use constant EST_WEALTHY       => 1.0;
 
+# глубина поиска атак при одном прохождении
+use constant CONQ_WAY_DEPTH => 6;
+
 1;
 
 __END__
