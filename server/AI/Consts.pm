@@ -12,8 +12,9 @@ sub BEGIN {
   our @export_list;
 
   my $filename = __FILE__;
-  open ME, "<$filename" or die "Can't open $filename for input: $!";
+  open(ME, '<', $filename) or die "Can't open $filename for input: $!";
   my @lines = <ME>;
+  close(ME);
   foreach ( @lines ) {
     if ( m/^\s*use\s+constant\s+([A-Z_]+)\s+/x ) {
       push @export_list, $1;
@@ -65,6 +66,9 @@ use constant EST_STOUT         => 1.0;
 use constant EST_SWAMP         => 0.5;
 use constant EST_UNDERWORLD    => 0.5;
 use constant EST_WEALTHY       => 1.0;
+
+# глубина поиска атак при одном прохождении
+use constant CONQ_WAY_DEPTH => 6;
 
 1;
 

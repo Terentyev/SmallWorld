@@ -1,9 +1,12 @@
 #!/usr/bin/perl
-BEGIN { $| = 1 }
 
 use strict;
 use warnings;
 use utf8;
+
+BEGIN { $| = 1 }
+
+use Module::Load;
 
 my $tests = Tests->new();
 
@@ -32,7 +35,7 @@ sub new {
 
 sub load {
   my ($self) = @_;
-  foreach ( <Tests/*> ) {
+  foreach ( glob 'Tests/*'  ) {
     next if ! -d $_;
 
     my $class = $_;
@@ -44,7 +47,8 @@ sub load {
 sub run {
   my ($self) = @_;
   foreach ( @{ $self->{tests} } ) {
-    $_->{obj} = eval "use $_->{class}; return $_->{class}\->new();";
+    Module::Load::load $_->{class};
+    $_->{obj} = $_->{class}->new();
     $_->{obj}->run($_->{dir});
   }
 

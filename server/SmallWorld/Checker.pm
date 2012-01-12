@@ -16,8 +16,9 @@ sub BEGIN {
   our @export_list;
 
   my $filename = __FILE__;
-  open ME, "<$filename" or die "Can't open $filename for input: $!";
+  open(ME, '<', $filename) or die "Can't open $filename for input: $!";
   my @lines = <ME>;
+  close(ME);
   foreach ( @lines ) {
     if ( m/^sub\s+([a-z][A-Za-z_]+)\s+/x ) {
       push @export_list, $1;
@@ -260,32 +261,31 @@ sub existsDuplicates {
 
 sub checkRegionId {
   my ($self, $js, $game, $player, $region, $race, $sp) = @_;
-  my $regionsInCmd = $js->{regions};
-  my $regions = $game->{gameState}->{regions};
+  my $regions = $js->{regions};
 
   if ( defined $js->{regionId} ) {
-    return !(grep { $_->{regionId} == $js->{regionId} } @{ $regions });
+    return !(grep { $_->{regionId} == $js->{regionId} } $game->regions);
   }
 
-  if ( defined $js->{regions} ) {
-    foreach my $reg ( @{ $js->{regions} } ) {
-      return 1 if !(grep { defined $reg->{regionId} && $reg->{regionId} == $_->{regionId} } @{ $regions });
+  if ( defined $regions ) {
+    foreach my $reg ( @$regions ) {
+      return 1 if !(grep { defined $reg->{regionId} && $reg->{regionId} == $_->{regionId} } $game->regions);
     }
   }
 
   if ( defined $js->{encampments} ) {
     foreach my $reg ( @{ $js->{encampments} } ) {
-      return 1 if !(grep { ($reg->{regionId} // -1) == $_->{regionId} } @{ $regions });
+      return 1 if !(grep { ($reg->{regionId} // -1) == $_->{regionId} } $game->regions);
     }
   }
 
   if ( defined $js->{fortified} ) {
-      return 1 if !(grep { $_->{regionId} == ($js->{fortified}->{regionId} // -1) } @{ $regions });
+      return 1 if !(grep { $_->{regionId} == ($js->{fortified}->{regionId} // -1) } $game->regions);
   }
 
   if ( defined $js->{heroes} ) {
     foreach my $reg ( @{ $js->{heroes} } ) {
-      return 1 if !(grep { ($reg->{regionId} // -1) == $_->{regionId} } @{ $regions });
+      return 1 if !(grep { ($reg->{regionId} // -1) == $_->{regionId} } $game->regions);
     }
   }
 
@@ -302,10 +302,9 @@ sub checkRegion {
 
 sub checkRegion_defend {
   my ($self, $js, $game, $player, $region, $race, $sp, $result) = @_;
-  my $regions = $game->{gameState}->{regions};
   my $lostRegion = undef;
   my $lastIdx = -1;
-  foreach ( @{$regions} ) {
+  foreach ( $game->regions ) {
     if ( defined $_->{conquestIdx} && $lastIdx < $_->{conquestIdx} ) {
       $lastIdx = $_->{conquestIdx};
       $lostRegion = $_;
@@ -314,18 +313,21 @@ sub checkRegion_defend {
 
   my $adj = 0;
   # 1. ставить можно только на регионы своей активной расы
-  foreach my $r ( @{$js->{regions}} ) {
-    return 1 if !(grep { $r->{regionId} == $_->{regionId} } @{ $race->{regions} });
-    $adj = $adj || (grep { $r->{regionId} == $_ } @{ $lostRegion->{adjacentRegions} });
+  foreach ( @{$js->{regions}} ) {
+    my $r = $game->getRegion(id => $_->{regionId});
+    return 1 if $r->tokenBadgeId != $player->activeTokenBadgeId;
+    if ( grep { $r->id == $_ } @{ $lostRegion->{adjacentRegions} } ) {
+      $adj = 1;
+      last;
+    }
   }
 
   # если мы перемещаем войска на смежный с потерянным регионом
   if ( $adj ) {
     # надо убедиться, что несмежных нет, иначе ошибка
-    foreach ( @{ $regions } ) {
-      my $regionId = $_->{regionId};
-      return 1 if $player->activeConq($_) &&
-        !(grep { $_ == $regionId  } @{ $lostRegion->{adjacentRegions} });
+    foreach my $r ( $game->regions ) {
+      return 1 if $player->activeConq($r) &&
+        !(grep { $_ == $r->id  } @{ $lostRegion->{adjacentRegions} });
     }
   }
   return 0;
@@ -341,7 +343,10 @@ sub checkRegion_conquer {
   my $finfo = $game->{gameState}->{friendInfo};
   return $player->activeConq($region) ||
          $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
-         !$game->isFirstConquer() && !$sp->canAttack($region, $game->{gameState}->{regions}) ||
+         !$game->isFirstConquer() && (
+             !$sp->canAttack($region) ||
+             !(grep $player->id == $_->ownerId, @{ $sp->getRegionsForAttack($region) })
+         ) ||
          (defined $finfo && ($finfo->{diplomatId} // -2) == ($region->{ownerId} // -1) &&
          ($finfo->{friendId} // -1) == $player->{playerId} && !$region->{inDecline});
 }
@@ -373,12 +378,12 @@ sub checkRegion_redeploy {
     $self->existsDuplicates($js->{heroes});
 
   # у нас должны быть регионы, чтобы расставлять фигурки
-  return 1 if !(grep { $player->activeConq($_) } @{ $game->{gameState}->{regions} });
+  return 1 if !(grep { $player->activeConq($_) } $game->regions);
 
   # войска можно ставить только на свои территории
   foreach my $reg ( @{ $js->{regions} } ) {
      return 1 if (grep
-       $_->{regionId} == $reg->{regionId} && !$player->activeConq($_), @{ $game->{gameState}->{regions} });
+       $_->{regionId} == $reg->{regionId} && !$player->activeConq($_), $game->regions);
   }
 
   # ставить лагеря/форты/героев можно только на регионы,
@@ -440,7 +445,7 @@ sub checkEnoughTokens_redeploy {
   if ( $game->{gameState}->{state} ne GS_REDEPLOY ) {
     $tokensNum += $race->redeployTokensBonus($player);
   }
-  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
+  $tokensNum += $_->{tokensNum} for $race->regions;
   $tokensNum -= $_->{tokensNum} // 0 for @{ $js->{regions} };
   return $tokensNum < 0;
 }
@@ -478,7 +483,7 @@ sub checkTokensNum_conquer {
 sub checkForts {
   my ($self, $js, $game, $player, $region, $race, $sp) = @_;
   return defined $js->{fortified} && defined $js->{fortified}->{regionId} &&
-    FORTRESS_MAX <= 1 * (grep { defined $_->{fortified} } @{ $game->{gameState}->{regions} });
+    FORTRESS_MAX <= 1 * (grep { defined $_->{fortified} } $game->regions);
 }
 
 sub checkFortsInRegion {
@@ -487,7 +492,7 @@ sub checkFortsInRegion {
   return $js->{fortified} &&
     (grep {
       $_->{regionId} == $js->{fortified}->{regionId} && defined $_->{fortified}
-    } @{ $game->{gameState}->{regions} });
+    } $game->regions);
 }
 
 sub checkEnoughEncamps {
@@ -501,7 +506,7 @@ sub checkTokensForRedeployment {
   my ($self, $js, $game, $player, $region, $race, $sp) = @_;
   return 0;
 #  my $tokensNum = $player->{tokensInHand};
-#  $tokensNum += $_->{tokensNum} for @{ $race->{regions} };
+#  $tokensNum += $_->{tokensNum} for $race->regions;
 #  $tokensNum -= $_->{tokensNum} // 0 for @{ $js->{regions} };
 #  return $tokensNum < 0;
 }
@@ -512,7 +517,7 @@ sub checkFriend {
   my $tid = $game->getPlayer( id => $js->{friendId} )->{currentTokenBadge}->{tokenBadgeId};
   return $player->{playerId} == $js->{friendId} || grep {
     ($_->{prevTokenBadgeId} // -1 ) == ($tid // -2)
-  } @{ $game->{gameState}->{regions} };
+  } $game->regions;
 }
 
 sub checkGameCommand {
@@ -520,7 +525,6 @@ sub checkGameCommand {
   my $cmd = $js->{action};
   my @gameVariables = $self->getGameVariables($js);
   my ($game, $player, $region, $race, $sp) = @gameVariables;
-  my $regions = $game->{gameState}->{regions};
 
   $result->{result} = $self->checkErrorHandlers($js, {
     &R_BAD_ATTACKED_RACE            => sub { $player->{playerId} == ($region->{ownerId} // 0); },
@@ -545,7 +549,7 @@ sub checkGameCommand {
     &R_THERE_ARE_TOKENS_IN_THE_HAND => sub { $self->checkTokensInHand($js, @gameVariables); },
     &R_TOO_MANY_FORTS               => sub { $self->checkForts($js, @gameVariables); },
     &R_TOO_MANY_FORTS_IN_REGION     => sub { $self->checkFortsInRegion($js, @gameVariables); },
-    &R_USER_HAS_NOT_REGIONS         => sub { !(grep { $player->activeConq($_) } @{ $regions }); },
+    &R_USER_HAS_NOT_REGIONS         => sub { !(grep { $player->activeConq($_) } $game->regions); },
   });
   $game->save();
 }

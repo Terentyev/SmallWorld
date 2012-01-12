@@ -17,13 +17,19 @@ sub new {
   return $self;
 }
 
+sub DESTROY {
+  my $self = shift;
+  delete $self->{regions};
+  delete $self->{allRegions};
+}
+
 sub _init {
-  my ($self, $regions, $badge) = @_;
-  $self->{allRegions} = $regions;
+  my ($self, $badge, @regions) = @_;
+  $self->{allRegions} = \@regions;
   $self->{regions} = [grep {
     defined $_->{tokenBadgeId} && defined $badge->{tokenBadgeId} &&
     $_->{tokenBadgeId} == $badge->{tokenBadgeId}
-  } @{ $regions }] || [];
+  } @regions] || [];
 }
 
 # возвращает количество первоначальных фигурок для каждой расы
@@ -97,9 +103,7 @@ sub canCmd {
 
 sub getOwnedRegionsNum {
   my ($self, $regType) = @_;
-  return 1 * (grep {
-    grep { $_ eq $regType } @{ $_->{constRegionState} }
-  } @{ $self->{regions} });
+  return 1 * (grep { $_->_is($regType) } $self->regions);
 }
 
 sub activate {
@@ -110,7 +114,7 @@ sub finishTurn {
   my ($self, $state) = @_;
 }
 
-sub regions { return $_[0]->{regions}; }
+sub regions { return wantarray ? @{ $_[0]->{regions} } : $_[0]->{regions}; }
 
 
 package SmallWorld::RaceAmazons;
@@ -189,14 +193,14 @@ sub initialTokens {
 }
 
 sub conquestRegionTokensBonus {
-  my ($self, $player, $region, $regions, $sp) = @_;
+  my ($self, $player, $region, $sp) = @_;
   # для гигантов бонус в 1 фигурку, если они нападают на регион, который
   # граничит с регионом, на котором находятся горы и который принадлежит
   # гигантам
   return (grep {
       ($_->{tokenBadgeId} // -1) == $player->{currentTokenBadge}->{tokenBadgeId} &&
-      (grep { $_ eq REGION_TYPE_MOUNTAIN } @{ $_->{constRegionState} })
-    } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
+      $_->isMountain
+    } @{ $sp->getAdjacentRegions($region) }) ? 1 : 0;
 }
 
 
@@ -228,7 +232,7 @@ sub placeObject {
 sub canFirstConquer {
   my ($self, $region) = @_;
   # полурослики на первом завоевании могут пытаться захватить любую сушу
-  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState} });
+  return !$region->isSea;
 }
 
 # у полуросликов после упадка или отказа исчезают норы
@@ -282,7 +286,7 @@ sub initialTokens {
 sub coinsBonus {
   # получение дополнительных монет за захваченные территории
   return $_[0]->SUPER::coinsBonus() +
-    1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} @{ $_[0]->{regions} });
+    1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} $_[0]->regions);
 }
 
 
@@ -317,8 +321,8 @@ sub initialTokens {
 sub redeployTokensBonus {
   my ($self, $player) = @_;
   my $inGame = $player->{tokensInHand};
-  map { $inGame += $_->{tokensNum} } @{ $self->{regions} };
-  my $bonus = int ((grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} @{ $self->{regions} }) / 2);
+  map { $inGame += $_->{tokensNum} } $self->regions;
+  my $bonus = int ((grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} $self->regions) / 2);
   return min($bonus, SKELETONS_TOKENS_MAX -  $inGame);
 }
 
@@ -367,12 +371,10 @@ sub initialTokens {
 }
 
 sub conquestRegionTokensBonus {
-  my ($self, $player, $region, $regions, $sp) = @_;
+  my ($self, $player, $region, $sp) = @_;
 
-  return !(grep { $_ eq REGION_TYPE_SEA } @{ $region->{constRegionState}}) &&
-         (grep {
-           grep {$_ eq REGION_TYPE_SEA } @{ $_->{constRegionState} }
-        } @{ $region->getAdjacentRegions($regions, $sp) }) ? 1 : 0;
+  return !$region->isSea && 
+    (grep { $_->isSea } @{ $sp->getAdjacentRegions($region)}) ? 1 : 0;
 }
 
 
@@ -392,10 +394,10 @@ sub initialTokens {
 sub canPlaceObj2Region {
   my ($self, $player, $state, $region) = @_;
   return $region->{tokenBadgeId} == $player->{currentTokenBadge}->{tokenBadgeId} &&
-         !defined $region->{lair};
+         !$region->{lair};
 }
 
-sub placeObject() {
+sub placeObject {
   my ($self, $state, $region) = @_;
   $region->{lair} = 1;
 }

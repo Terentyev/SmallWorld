@@ -57,8 +57,8 @@ sub checkAndDo {
 
   $self->saveCmd($js, $result) if ($js->{action} // '') eq 'leaveGame';
   if ( $result->{result} eq R_ALL_OK ) {
-    no strict 'refs';
-    &{"cmd_$js->{action}"}($self, $js, $result);
+    my $func = $self->can("cmd_$js->{action}");
+    &$func($self, $js, $result) if defined $func;
   }
   $self->saveCmd($js, $result) if ($js->{action} // 'leaveGame') ne 'leaveGame';
   
@@ -146,7 +146,7 @@ sub getMapUrl {
       return MAP_IMG_URL_PREFIX . basename($file);
     }
   }
-  return undef;
+  return '';
 }
 
 sub getGameInitialGeneratedNum {

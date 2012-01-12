@@ -7,14 +7,15 @@ use utf8;
 
 use base ('SmallWorld::SafeObj');
 
-sub new {
-  my $class = shift;
-  my $self = $class->SUPER::new(@_);
+
+sub _init {
+  my $self = shift;
   $self->{game} = {@_}->{game};
+}
 
-  bless $self, $class;
-
-  return $self;
+sub _dropObj {
+  my $self = shift;
+  delete $self->{game};
 }
 
 sub isOwned {
@@ -60,10 +61,10 @@ sub dice {
 sub regions {
   my $self = shift;
   my @result = ();
-  foreach ( @{ $self->{game}->regions } ) {
+  foreach ( $self->{game}->regions ) {
     push @result, $_ if ($_->{ownerId} // -1) == $self->id;
   }
-  return \@result;
+  return wantarray ? @result : \@result;
 }
 
 1;

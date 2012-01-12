@@ -13,8 +13,9 @@ sub BEGIN {
   our @export_list;
 
   my $filename = __FILE__;
-  open ME, "<$filename" or die "Can't open $filename for input: $!";
+  open(ME, '<', $filename) or die "Can't open $filename for input: $!";
   my @lines = <ME>;
+  close(ME);
   foreach ( @lines ) {
     if ( m/^sub\s+([a-z][A-Za-z_]+)\s+/x ) {
       push @export_list, $1;
@@ -26,4 +27,10 @@ sub BEGIN {
 
 sub bool {
   return $_[1] ? JSON::true : JSON::false;
+}
+
+sub mergeArrays {
+  my ($arr1, $arr2) = @_;
+  my %filter = ();
+  return [grep { !$filter{$_}++ } (@$arr1, @$arr2)];
 }

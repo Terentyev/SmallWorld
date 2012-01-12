@@ -16,12 +16,15 @@ use SmallWorld::Checker qw(
 );
 use SmallWorld::Consts;
 use SmallWorld::Game;
-use SW::Util qw( swLog );
+use SW::Util qw( swLog timeStart timeEnd );
 
 use AI::Config;
 use AI::Consts;
 use AI::DB;
 use AI::Output qw( printGames printDebug );
+
+
+our @savedRegionFields = qw( conquestIdx prevTokensNum prevTokenBadgeId _cavernAdj _type );
 
 
 sub new {
@@ -73,11 +76,10 @@ sub _save {
 sub _saveState {
   my ($self, $g, $state) = @_;
   $state->{regions} = [];
-  foreach ( @{ $g->{gs}->regions } ) {
-    my $r = $g->{gs}->getRegion(region => $_);
+  foreach my $r ( @{ $g->{gs}->regions } ) {
     my $s = {};
     # сохраняем в БД информацию, которая генерируется во время завоевания
-    for ( qw(regionId conquestIdx prevTokensNum prevTokenBadgeId) ) {
+    for ( ('regionId', @savedRegionFields) ) {
       $s->{$_} = $r->{$_} if defined $r->{$_};
     }
     push @{ $state->{regions} }, $s;
@@ -92,7 +94,9 @@ sub _load {
       where  => { playerId => $playerId });
   return if !defined $state;
   $state = decode_json($state);
+  timeStart();
   $self->_loadState($g, $state);
+  timeEnd(LOG_FILE, '_loadState ');
 }
 
 sub _loadState {
@@ -101,9 +105,10 @@ sub _loadState {
     my $r = $g->{gs}->getRegion(id => $s->{regionId});
     # загружаем из БД информацию, которая нужна, что корректно предсказывать
     # результат хода
-    foreach ( qw(conquestIdx prevTokensNum prevTokenBadgeId) ) {
+    foreach ( @savedRegionFields ) {
       $r->{$_} = $s->{$_} if defined $s->{$_};
     }
+    $r->buildAdjacents();
   }
 }
 
@@ -168,7 +173,9 @@ sub _ourTurn {
   my $r = $self->_get('{ "action": "getGameState", "gameId": ' . $game->{gameId} . ' }', 1);
   return 0 if $r->{result} ne R_ALL_OK; # не получилось обновить состояние игры
 
+  timeStart();
   $g->{gs} = SmallWorld::Game->new(gameState => $r->{gameState});
+  timeEnd(LOG_FILE, 'SmallWorld::Game->new ');
   return (grep { $_->{id} == ($g->{gs}->activePlayerId // -1) } @{ $g->{ais} });
 }
 
@@ -197,6 +204,7 @@ sub _sendGameCmd {
     }
   }
   die "Can't define sid of player\n" if !defined $cmd->{sid};
+  (!defined $cmd->{$_} and delete $cmd->{$_}) for keys %$cmd;
   $cmd = eval { encode_json($cmd) } || die "Can't encode json :(\n";
   $self->_get($cmd, 1);
 }
@@ -269,13 +277,23 @@ sub _canAttack {
 # можем ли мы зачаровать этот регион
 sub _canEnchant {
   my ($self, $g, $regionId) = @_;
+  my $ar = $g->{gs}->getPlayer->activeRace;
+  my $canCmd = $ar->canCmd('enchant', $g->{gs}->{gameState});
+  return $canCmd if !defined $regionId || !$canCmd;
+
+  my $r = $g->{gs}->getRegion(id => $regionId);
+  return
+    $self->_canBaseAttack($g, $regionId) &&
+    $self->_canEnchantOnlyRules($g, $r);
+}
+
+# можем ли мы зачаровать этот регион (проверяются только правила зачарования)
+sub _canEnchantOnlyRules {
+  my ($self, $g, $r) = @_;
   my $p = $g->{gs}->getPlayer();
   my $ar = $p->activeRace;
   my $asp = $p->activeSp;
-  my $r = $g->{gs}->getRegion(id => $regionId);
-  return $self->_canBaseAttack($g, $regionId) &&
-    !$self->checkRegion_enchant(undef, $g->{gs}, $p, $r, $ar, $asp, undef) &&
-    $ar->canCmd('enchant', $g->{gs}->{gameState});
+  return !$self->checkRegion_enchant(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
 }
 
 # можем ли мы атаковать драконом регион
@@ -362,10 +380,148 @@ sub _shouldDragonAttack {
   return 1;
 }
 
+# следует ли нам зачаровать этот регион
+sub _shouldEnchant {
+  my ($self, $g, $regionId) = @_;
+  # простой ИИ при первой же возможности пользуется зачарованием
+  return 1;
+}
+
 # возвращает список регионов, на которые мы должны напасть
 sub _getRegionsForConquest {
   my ($self, $g) = @_;
   return @{ $g->{gs}->regions };
+}
+
+# возвращает размещение войск по регионам для команды redeploy
+sub _getRedeployment {
+  my ($self, $g) = @_;
+  my $p = $g->{gs}->getPlayer();
+  my $tokens = $p->tokens;
+  my $regs = $p->activeRace()->regions;
+  my $n = scalar(@$regs);
+  my @regions = ();
+  my @heroes = ();
+  my @encampments = ();
+  my %fortified = ();
+
+  if ( $n == 0 ) {
+    # если мы попали в redeploy и у нас нет регионов, то значит на сервере
+    # воссоздалась ошибочная ситуация (когда нет регионов, которые мы могли бы
+    # захватить (т. е. все возможные под иммунитетом) и нас заставляют захватывать.
+    # Единственное, что мы можем сделать, так это redeploy. Но и его мы не можем
+    # сделать, т. к. нельзя делать redeploy, когда нет регионов.
+    # Значит признаём возможное поражение и покидаем игру.
+    $self->_leaveGame($g);
+    return;
+  }
+
+  # прежде, чем мы начнем расставлять фигурки, надо зарезервировать одну фигурку
+  # за регионом, который мы захватили драконом, а также подсчитать общее
+  # количество фигурок
+  foreach ( @$regs ) {
+    if ( $_->dragon ) {
+      push @regions, { regionId => $_->id, tokensNum => 1 };
+      $n -= 1;
+    }
+    else {
+      $tokens += $_->tokens;
+    }
+  }
+
+  if ( $self->_canPlaceHero($g) ) {
+    # обнуляем всех ранее расставленных героев
+    $_->{hero} = 0 for @$regs;
+    my $i = 0; # счетчик героев
+    foreach ( @$regs ) {
+      $_->hero(1);
+      $_->tokens(1);
+      $tokens -= 1;
+      $n -= 1;
+      push @heroes, { regionId => $_->id };
+      # вместе с героем мы обязаны поставить хотя бы одну фигурку
+      push @regions, { regionId => $_->id, tokensNum => 1 };
+      last if ++$i >= HEROES_MAX;
+    }
+  }
+
+  if ( $self->_canPlaceEncampment($g) ) {
+    # прежде, чем мы начнем ставить лагеря, надо посчитать сколько максмимум мы
+    # можем поставить
+    my $encampNum = ENCAMPMENTS_MAX;
+    # надо пробежаться по всем НЕ нашим регионам и вычесть количество уже
+    # расставленных лагерей, которые мы не можем двигать
+    $encampNum -= $self->_alienEncampNum($g);
+    # каждый лагерь, который мы сейчас будем расставлять приравнивается одной
+    # фигурке
+    $tokens += $encampNum;
+    # обнуляем все наши предыдущие расстановки лагерей
+    $_->{encampment} = 0 for @$regs;
+    # стараемся равномерно разместить лагеря по всем нашим регионам
+    my $delta = max(1, int($encampNum / $n));
+    my $r = undef;
+    foreach ( @$regs ) {
+      my $num = $delta;
+      $encampNum -= $num;
+      if ( $encampNum < 0 ) {
+        $num += $encampNum;
+        $encampNum = 0;
+      }
+      $_->encampment($num);
+      push @encampments, { regionId => $_->id, encampmentsNum => $num };
+      last if $encampNum == 0;
+    }
+    if ( $encampNum != 0 ) {
+      $encampments[-1]->{encampmentsNum} += $encampNum;
+      $_->encampment($_->encampment + $encampNum);
+    }
+  }
+
+  if ( $self->_canPlaceFortified($g) ) {
+    foreach ( @$regs ) {
+      $tokens += 1;
+      if ( !$_->fortified ) {
+        $_->fortified(1);
+        $fortified{regionId} = $_->id;
+        last; # за один ход можно ставить только одно укрепление
+      }
+    }
+  }
+
+  if ( $n != 0 ) {
+    # если у нас остались регионы, на которых не расположились герои и дракон
+    # (т. е. есть регионы без иммунитета), то распологаем фигурки равномерно
+    # в этих оставшихся регионах
+    my $delta = max(1, int($tokens / $n));
+    foreach ( @$regs ) {
+      next if $_->hero || $_->dragon;
+
+      my $num = $delta;
+      $tokens -= $num;
+      $num -= $_->encampment;
+      $num -= $_->fortified;
+
+      if ( $tokens < 0  ) {
+        $num += $tokens;
+        $tokens = 0;
+      }
+      $_->tokens($num);
+      push @regions, { regionId => $_->id, tokensNum => $num };
+      last if $tokens == 0;
+    }
+  }
+  if ( $tokens != 0 ) {
+    $regions[-1]->{tokensNum} += $tokens;
+    my $r = $g->{gs}->getRegion(id => $regions[-1]->{regionId});
+    $r->tokens($r->tokens + $tokens);
+  }
+  $p->tokens(0);
+
+  return (
+      regions     => \@regions,
+      encampments => (@encampments ? \@encampments : undef),
+      heroes      => (@heroes ? \@heroes : undef),
+      fortified   => (%fortified ? \%fortified : undef));
 }
 
 sub _beginConquest { }
@@ -440,138 +596,10 @@ sub _finishTurn {
 sub _redeploy {
   my ($self, $g) = @_;
   $g->{gs}->gotoRedeploy();
-  my $p = $g->{gs}->getPlayer();
-  my $tokens = $p->tokens;
-  my $regs = $p->activeRace()->regions;
-  my $n = scalar(@$regs);
-  my @regions = ();
-  my @heroes = ();
-  my @encampments = ();
-  my %fortified = ();
-
-  if ( $n == 0 ) {
-    # если мы попали в redeploy и у нас нет регионов, то значит на сервере
-    # воссоздалась ошибочная ситуация (когда нет регионов, которые мы могли бы
-    # захватить (т. е. все возможные под иммунитетом) и нас заставляют захватывать.
-    # Единственное, что мы можем сделать, так это redeploy. Но и его мы не можем
-    # сделать, т. к. нельзя делать redeploy, когда нет регионов.
-    # Значит признаём возможное поражение и покидаем игру.
-    $self->_leaveGame($g);
-    return;
-  }
-
-  # прежде, чем мы начнем расставлять фигурки, надо зарезервировать одну фигурку
-  # за регионом, который мы захватили драконом, а также подсчитать общее
-  # количество фигурок
-  foreach ( @$regs ) {
-    my $r = $g->{gs}->getRegion(region => $_);
-    if ( $r->dragon ) {
-      push @regions, { regionId => $r->id, tokensNum => 1 };
-      $n -= 1;
-    }
-    else {
-      $tokens += $r->tokens;
-    }
-  }
-
-  if ( $self->_canPlaceHero($g) ) {
-    # обнуляем всех ранее расставленных героев
-    $_->{hero} = 0 for @$regs;
-    my $i = 0; # счетчик героев
-    foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion(region => $_);
-      $r->hero(1);
-      $r->tokens(1);
-      $tokens -= 1;
-      $n -= 1;
-      push @heroes, { regionId => $r->id };
-      # вместе с героем мы обязаны поставить хотя бы одну фигурку
-      push @regions, { regionId => $r->id, tokensNum => 1 };
-      last if ++$i >= HEROES_MAX;
-    }
-  }
-
-  if ( $self->_canPlaceEncampment($g) ) {
-    # прежде, чем мы начнем ставить лагеря, надо посчитать сколько максмимум мы
-    # можем поставить
-    my $encampNum = ENCAMPMENTS_MAX;
-    # надо пробежаться по всем НЕ нашим регионам и вычесть количество уже
-    # расставленных лагерей, которые мы не можем двигать
-    $encampNum -= $self->_alienEncampNum($g);
-    # каждый лагерь, который мы сейчас будем расставлять приравнивается одной
-    # фигурке
-    $tokens += $encampNum;
-    # обнуляем все наши предыдущие расстановки лагерей
-    $_->{encampment} = 0 for @$regs;
-    # стараемся равномерно разместить лагеря по всем нашим регионам
-    my $delta = max(1, int($encampNum / $n));
-    my $r = undef;
-    foreach ( @$regs ) {
-      $r = $g->{gs}->getRegion(region => $_);
-      my $num = $delta;
-      $encampNum -= $num;
-      if ( $encampNum < 0 ) {
-        $num += $encampNum;
-        $encampNum = 0;
-      }
-      $r->encampment($num);
-      push @encampments, { regionId => $r->id, encampmentsNum => $num };
-      last if $encampNum == 0;
-    }
-    if ( $encampNum != 0 ) {
-      $encampments[-1]->{encampmentsNum} += $encampNum;
-      $r->encampment($r->encampment + $encampNum);
-    }
-  }
-
-  if ( $self->_canPlaceFortified($g) ) {
-    foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion(region => $_);
-      $tokens += 1;
-      if ( !$r->fortified ) {
-        $r->fortified(1);
-        $fortified{regionId} = $_->{regionId};
-        last; # за один ход можно ставить только одно укрепление
-      }
-    }
-  }
-
-  if ( $n != 0 ) {
-    # если у нас остались регионы, на которых не расположились герои и дракон
-    # (т. е. есть регионы без иммунитета), то распологаем фигурки равномерно
-    # в этих оставшихся регионах
-    my $delta = max(1, int($tokens / $n));
-    foreach ( @$regs ) {
-      my $r = $g->{gs}->getRegion(region => $_);
-      next if $r->hero || $r->dragon;
-
-      my $num = $delta;
-      $tokens -= $num;
-      $num -= $r->encampment;
-      $num -= $r->fortified;
-
-      if ( $tokens < 0  ) {
-        $num += $tokens;
-        $tokens = 0;
-      }
-      $r->tokens($num);
-      push @regions, { regionId => $_->{regionId}, tokensNum => $num };
-      last if $tokens == 0;
-    }
-  }
-  if ( $tokens != 0 ) {
-    $regions[-1]->{tokensNum} += $tokens;
-    my $r = $g->{gs}->getRegion(id => $regions[-1]->{regionId});
-    $r->tokens($r->tokens + $tokens);
-  }
-  $p->tokens(0);
   $self->_sendGameCmd(
       game        => $g,
       action      => 'redeploy',
-      regions     => \@regions,
-      encampments => (@encampments ? \@encampments : undef),
-      heroes      => (@heroes ? \@heroes : undef),
-      fortified   => (%fortified ? \%fortified : undef));
+      $self->_getRedeployment($g));
 }
 
 # выбираем расу
