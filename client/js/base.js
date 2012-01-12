@@ -3,6 +3,7 @@ var serverUrl = null;
 messages = new Array();
 maps = new Array();
 games = new Array();
+
 maxMessagesCount = 5, sentedGameId = null;
 var data = {
       playerId: null,
@@ -11,6 +12,7 @@ var data = {
       mapId: null,
       sid: 0
     };
+var canvas = null;
 var needMakeCurrent = false;
 
 function getErrorText(errorCode) {
@@ -98,17 +100,6 @@ function addRow(list) {
     s += $.sprintf('<td>%s</td>', list[i]);
   s += '</tr>'
   return s;
-}
-
-function addAreaPoly(coords, regionId) {
-  var s = '';
-  for (var i in coords) {
-    if ( s != '') s = ',' + s;
-    s = $.sprintf('%d,%d', coords[i][0], coords[i][1]) + s;
-  }
-  return $.sprintf(
-      '<area id="area%d" shape="poly" coords="%s" href="#" onclick="areaClick(%d);" />',
-      regionId, s, regionId);
 }
 
 function addOption(value, string) {
@@ -209,50 +200,15 @@ function currentPlayerCursor(playerId) {
     : '';
 }
 
-function addTokensToMap(region, i) {
-  var race = '';
-  if (region.currentRegionState.tokenBadgeId != null) {
-    for (var j in data.game.players) {
-      var cur = data.game.players[j];
-      if (cur.currentTokenBadge.tokenBadgeId == region.currentRegionState.tokenBadgeId) {
-        race = cur.currentTokenBadge.raceName;
-      }
-      if (cur.declinedTokenBadge && cur.declinedTokenBadge.tokenBadgeId == region.currentRegionState.tokenBadgeId) {
-        race = cur.declinedTokenBadge.raceName;
-      }
-    }
+function getRaceNameById(badgeId) {
+  if (badgeId == null) return '';
+  for (var j in data.game.players) {
+    var cur = data.game.players[j];
+    if (cur.currentTokenBadge && cur.currentTokenBadge.tokenBadgeId == badgeId)
+      return cur.currentTokenBadge.raceName;
+    if (cur.declinedTokenBadge && cur.declinedTokenBadge.tokenBadgeId == badgeId)
+      return cur.declinedTokenBadge.raceName;
   }
-  return $.sprintf(
-      '<div style="position: absolute; left: %dpx; top: %dpx;">' +
-      '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onclick="$(\'#area%d\').click();">' +
-      '<img src="%s"/ class="token"><a id="aTokensNum%d" onclick="alert(%d);">%d</a>' +
-      '</a>' +
-      '</div>',
-      maps[data.game.map.mapId].regions[i].raceCoords[0],
-      maps[data.game.map.mapId].regions[i].raceCoords[1],
-      i, i, i,
-      getRaceImage(race, 'token', region.currentRegionState.inDecline), i, i, region.currentRegionState.tokensNum);
-}
-
-function addObjectsToMap(region, i) {
-  var result = '';
-  for (var j in objects) {
-    var num = region.currentRegionState[j];
-    if (!num) continue;
-    if (result === '') {
-      result = $.sprintf(
-          '<div style="position: absolute; left: %dpx; top: %dpx;">',
-          maps[data.game.map.mapId].regions[i].powerCoords[0],
-          maps[data.game.map.mapId].regions[i].powerCoords[1]),
-          i;
-    }
-    num = (num == 1) ? '' : ('' + num);
-    result += $.sprintf(
-        '<a onmouseover="$(\'#area%d\').mouseover();" onmouseout="$(\'#area%d\').mouseout();" onclick="$(\'#area%d\').click();"><img src="%s" />%s</a>',
-        i, i, i, objects[j], num);
-  }
-  if (result !== '') result += '</div>';
-  return result;
 }
 
 function getMapName(mapId) {
@@ -275,4 +231,24 @@ function setGame(gameId) {
   _setCookie(["gameId"], [gameId]);
   makeCurrentGame(games[gameId]);
   cmdGetGameState();
+}
+
+function clearGame() {
+  data.gameId = null;
+  data.game = null;
+  _setCookie(["gameId"], [null]);
+  regions = [];
+  if (canvas) {
+    canvas.remove();
+    canvas = null;
+  }
+}
+
+function getSVGPath(region) {
+  var s = '';
+  for (var j in region.coordinates) {
+    s += (j == 0 ? "M" : "L") + region.coordinates[j][0] + " " + region.coordinates[j][1];
+  }
+  s += "Z";
+  return s;
 }

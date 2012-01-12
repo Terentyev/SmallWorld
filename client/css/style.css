@@ -111,9 +111,6 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
 .scroll-pane {height: 105px;  overflow: auto;}
 .scroll-pane-arrows {width: 100%;  height: 200px; overflow: auto;}
 
-#divMapObjs { position: absolute; }
-#divMap { overflow: auto; position: relative; min-width: 400px; min-height: 300px;}
-
 .clickable img { opacity: 0.25; }
 .clickable:hover img { opacity: 1; }
 

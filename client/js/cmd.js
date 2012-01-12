@@ -243,9 +243,7 @@ function cmdLeaveGame() {
 }
 
 function hdlLeaveGame(ans) {
-  data.game = null;
-  data.gameId = null;
-  _setCookie(["gameId"], [null]);
+  clearGame();
   $("#tdLobbyChat").append($("#divChat").detach());
   showLobby();
 }
@@ -298,8 +296,7 @@ function hdlGetGameState(ans) {
   $('#divGameError').empty();
   var gs = ans.gameState;
   if (gs.state == GST_EMPTY) {
-    data.game = null;
-    data.gameId = null;
+    clearGame();
     ShowLobby();
     return;
   }
@@ -354,7 +351,7 @@ function hdlConquer(ans) {
           'Conquest is over.',
           ans.dice));
   }
-  player.getRegion().conquerByPlayer(player, ans.dice);
+  regions[player.getRegionId()].conquerByPlayer(player, ans.dice);
   cmdGetGameState();
 }
 

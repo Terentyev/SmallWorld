@@ -1,3 +1,4 @@
+var regions = [];
 var place = null;
 var defend = null;
 
@@ -164,7 +165,7 @@ function mergeGameState(gs) {
   mergeMember(gs, 'enchanted',          [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'stage',              [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'visibleTokenBadges', [showBadges],                   acts);
-  mergeMember(gs, 'map',                [showMapObjects],               acts);
+  mergeMember(gs, 'map',                [showGameMap],                  acts);
   mergeMember(gs, 'players',            [showPlayers],                  acts);
   for (var i in acts) {
     acts[i]();
@@ -256,7 +257,7 @@ function areaConquer(regionId) {
     setGameStage(GS_CONQUEST);
     return;
   }
-  var r = new Region(regionId);
+  var r = regions[regionId];
   setGameStage(r.needDefend() ? GS_DEFEND: GS_CONQUEST);
   player.setRegionId(regionId);
   cmdConquer(regionId);
@@ -267,7 +268,7 @@ function areaDragonAttack(regionId) {
     return;
     setGameStage(GS_CONQUEST);
   }
-  var r = new Region(regionId);
+  var r = regions[regionId];
   setGameStage(r.needDefend() ? GS_DEFEND: GS_CONQUEST);
   player.setRegionId(regionId);
   //dragonAttack();
@@ -276,7 +277,7 @@ function areaDragonAttack(regionId) {
 
 function areaPlaceTokens(regionId) {
   // TODO: do needed checks
-  place = new Region(regionId);
+  place = regions[regionId];
   if (!place.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');
     return;
@@ -285,6 +286,7 @@ function areaPlaceTokens(regionId) {
   switch (player.curPower()) {
     case 'Bivouacking':
       var s = '', count = place.get('encampment');
+      $('#spanRedeployObjectName').html('Encampments:')
       var pattern = $.sprintf("#selectEncampments [value='%s']", count);;
       for (var i = 0; i <= count + player.encampments(); ++i) {
         s += addOption(i, i);
@@ -292,6 +294,11 @@ function areaPlaceTokens(regionId) {
       $('#selectEncampments').html(s);
       $(pattern).attr("selected", "selected");
       break;
+    case 'Fortified':
+      $('#spanRedeployObjectName').html('Fortified:');
+      break;
+    default:
+      $('#spanRedeployObjectName').html('');
   }
 
   askNumBox('How much tokens deploy on region?',
@@ -310,18 +317,18 @@ function deployRegion() {
 
 function areaDefend(regionId) {
   // TODO: do needed checks
-  var region = new Region(regionId);
+  var region = regions[regionId];
   if (!region.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');
     return;
   }
 
   // TODO: check adjacent regions
-  var loose = new Region(data.game.defendingInfo.regionId);
+  var loose = regions[data.game.defendingInfo.regionId];
   if (loose.isAdjacent(regionId)) {
-    for (var i in data.game.map.regions) {
-      var cur = new Region(i);
-      if (loose.isAdjacent(i) || !cur.isOwned(player.curTokenBadgeId())) continue;
+    for (var i in regions) {
+      //var cur = regions[i];
+      if (loose.isAdjacent(i) || !regions[i].isOwned(player.curTokenBadgeId())) continue;
       alert("You can't place tokens to this region. You should place tokens on not adjacent regions");
       return;
     }
@@ -428,9 +435,7 @@ function watchGame() {
 }
 
 function leaveWatch() {
-  data.gameId = null;
-  data.game = null;
-  _setCookie(["gameId"], [null]);
+  clearGame();
   $("#tdLobbyChat").append($("#divChat").detach());
   showLobby();
 }

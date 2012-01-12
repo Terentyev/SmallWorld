@@ -59,25 +59,43 @@ function showGameTurn(){
   $("#spanGameTurn").html(s);
 }
 
+function createMap() {
+  if (data.game == null || data.game.state == GST_WAIT || maps[data.game.map.mapId] == null) return;
+
+  var map = maps[data.game.map.mapId], x = {min: 10E4, max: 0}, y = {min: 10E4, max: 0}, reg;
+  for (var i in map.regions) {
+    for (var j in map.regions[i].coordinates) {
+      x.min = Math.min(x.min, map.regions[i].coordinates[j][0]);
+      x.max = Math.max(x.max, map.regions[i].coordinates[j][0]);
+      y.min = Math.min(y.min, map.regions[i].coordinates[j][1]);
+      y.max = Math.max(y.max, map.regions[i].coordinates[j][1]);
+    }
+  }
+
+  canvas = Raphael("divMapCanvas", x.max+x.min, y.max+y.min);
+
+  for (var i in map.regions) {
+    reg = canvas.path(getSVGPath(map.regions[i])).attr(regionAttr).attr("fill", "white");
+    reg.click( makeFuncRef(areaClick, i) );
+    reg.hover(hoverRegion(reg, true), hoverRegion(reg, false));
+    regions[i] = new Region(i, reg);
+  }
+}
+
+function makeFuncRef(func, param) {
+  return function() {
+    func(param);
+  }
+}
+
 function showGameMap() {
   if (data.game == null || data.game.state == GST_WAIT || maps[data.game.map.mapId] == null) {
     return;
   }
-
-  if ($("#imgMap").attr("src") === maps[data.game.map.mapId].url) return;
-
-  var img = new Image();
-  img.onload = loadGameMapImg;
-  img.src = serverUrl + maps[data.game.map.mapId].url;
-  showRegions();
-  showMapObjects();
-}
-
-function loadGameMapImg() {
-  $('#imgMap').attr('src', this.src);
-  $("#divMapObjects").css("width", this.width);
-  $("#divMapObjects").css("top", - this.height);
-  $("#divMapObjects").show();
+  if (!canvas) createMap();
+  for (var i in regions) {
+    regions[i].update(data.game.map.regions[i]);
+  }
 }
 
 function showCoin(type, num, dx, dy, off){
@@ -140,27 +158,6 @@ function showPlayers() {
   }
   $("#tablePlayers tbody").html(s);
   $("#tablePlayers").trigger("update");
-}
-
-function showMapObjects() {
-  var s = '';
-  for (var i in data.game.map.regions) {
-    var cur = data.game.map.regions[i];
-    s += addTokensToMap(cur, i) + addObjectsToMap(cur, i);
-  }
-  $("#divMapObjects").html(s);
-  $("#divMapObjects").trigger("update");
-}
-
-function showRegions() {
-  var s = '';
-  for (var i in data.game.map.regions) {
-    var cur = data.game.map.regions[i];
-    s += addAreaPoly(maps[data.game.map.mapId].regions[i].coordinates, i);
-  }
-  $("#mapLayer").html(s);
-  $("#mapLayer").trigger("update");
-  $("#imgMap").maphilight();
 }
 
 function showGameStage() {

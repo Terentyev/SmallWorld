@@ -77,10 +77,8 @@ Player.prototype.setRegionId = function(regionId) {
   this.p.regionId = regionId;
 }
 
-Player.prototype.getRegion = function() {
-  var r = new Region(this.p.regionId);
-  this.p.regionId = null;
-  return r;
+Player.prototype.getRegionId = function() {
+  return this.p.regionId;
 }
 
 Player.prototype.addTokens = function(tokens) {
@@ -88,11 +86,11 @@ Player.prototype.addTokens = function(tokens) {
   if (this.tokens() < 0) {
     // если на руках получилось отрицательное число, то надо "дополнить" руки
     // фигурками с регионов
-    var regions = this.myRegions();
-    for (var i in regions) {
-      var t = Math.min(regions[i].tokens() - 1, -this.tokens());
+    var regs = this.myRegions();
+    for (var i in regs) {
+      var t = Math.min(regions[regs[i]].tokens() - 1, -this.tokens());
       this.p.tokensInHand += t;
-      regions[i].rmTokens(t);
+      regions[regs[i]].rmTokens(t);
       if (this.tokens() == 0) {
         break;
       }
@@ -109,10 +107,9 @@ Player.prototype.beforeRedeploy = function() {
 
 Player.prototype.myRegions = function() {
   var result = [], r;
-  for (var i in this.gs.map.regions) {
-    r = new Region(parseInt(i));
-    if (r.isOwned(this.curTokenBadgeId())) {
-      result.push(r);
+  for (var i in regions) {
+    if (regions[i].isOwned(this.curTokenBadgeId())) {
+      result.push(i);
     }
   }
   return result;
@@ -126,12 +123,12 @@ Player.prototype.canBerserkThrowDice = function() {
   return this.p.berserkDice == null;
 }
 
-Player.prototype.bonusTokens = function(region) {
+Player.prototype.conquestBonusTokens = function(region) {
   var result = 0;
   var adjs = region.adjacents();
-  if (this.curRace() == 'Giants' && region.isMountain()) {
+  if (this.curRace() == 'Giants') {
     for (var i in adjs) {
-      if (adjs[i].isOwned(this.curTokenBadgeId()) && adjs[i].isMountain()) {
+      if (regions[adjs[i]].isOwned(this.curTokenBadgeId()) && regions[adjs[i]].isMountain()) {
         result += 1;
         break;
       }
@@ -140,7 +137,7 @@ Player.prototype.bonusTokens = function(region) {
 
   if (this.curRace() == 'Tritons') {
     for (var i in adjs) {
-      if (!adjs[i].isLand()) {
+      if (!regions[adjs[i]].isLand()) {
         result += 1;
         break;
       }
@@ -169,7 +166,7 @@ Player.prototype.canThrowDice = function() {
 }
 
 Player.prototype.canBaseAttack = function(regionId) {
-  var region = new Region(regionId);
+  var region = regions[regionId];
   if (region.isOwned(this.curTokenBadgeId())) {
     alert("You can't conquer your owned region");
     return false;
@@ -197,7 +194,7 @@ Player.prototype.canBaseAttack = function(regionId) {
       return true;
     }
     for (var i in adjs) {
-      if (adjs[i].isBorder() && adjs[i].isSea()) {
+      if (regions[adjs[i]].isBorder() && regions[adjs[i]].isSea()) {
         // все могут захватывать на первом ходу регионы, которые граничат с
         // морскими границами
         return true;
@@ -213,7 +210,7 @@ Player.prototype.canBaseAttack = function(regionId) {
   }
 
   if (this.curPower() == 'Underworld' && region.isCavern() &&
-      $.grep(myRegions, function(o) { return o.isCavern(); }).length != 0) {
+      $.grep(myRegions, function(o) { return regions[o].isCavern(); }).length != 0) {//TODO test
     // обладатели умения Underworld могут захватывать регион с пещерой, если у
     // них есть уже регион с пещерой
     return true;
@@ -221,7 +218,7 @@ Player.prototype.canBaseAttack = function(regionId) {
 
   var adjacent = false;
   for (var i in adjs) {
-    if (adjs[i].isOwned(this.curTokenBadgeId())) {
+    if (regions[adjs[i]].isOwned(this.curTokenBadgeId())) {
       // нашли среди наших регионов тот, который граничит с регионом-жертвой
       adjacent = true;
       break;
@@ -246,8 +243,8 @@ Player.prototype.canAttack = function(regionId) {
     return false;
   }
 
-  var region = new Region(regionId);
-  var tokensDiff = region.tokens() + region.bonusTokens() - this.tokens() - this.bonusTokens(region);
+  var region = regions[regionId];
+  var tokensDiff = region.tokens() + region.bonusTokens() - this.tokens() - this.conquestBonusTokens(region);
   if (this.tokens() < 1 || !this.canThrowDice() || tokensDiff > 3) {
     alert('Not enough tokens for conquest this region');
     return false;

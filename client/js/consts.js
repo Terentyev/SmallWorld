@@ -98,11 +98,11 @@ var specialPowers = {
 
 var objects = {
   'holeInTheGround': '/pics/objHoleInTheGround.png',
-  'lair': '/pics/objLair.png',
-  'encampment': '/pics/objEncampment.png',
+  //'lair': '/pics/objLair.png',
   'dragon': '/pics/objDragon.png',
   'fortified': '/pics/objFortified.png',
-  'hero': '/pics/objHero.png'
+  'hero': '/pics/objHero.png',
+  'encampment': '/pics/objEncampment.png'
 };
 
 const GST_WAIT    = 1;
@@ -121,3 +121,16 @@ const GS_FINISH_TURN        = 'finishTurn';
 const GS_IS_OVER            = 'gameOver';
 
 const actionDivs = ['#divDecline', '#divEnchant', '#divDragonAttack', '#divThrowDice', '#divRedeploy', '#divConquest', '#divSelectFriend'];
+
+const tokenWidth = 40;
+const tokenHeight = 40;
+var regionAttr = {
+  'stroke': 'gray',
+  'stroke-width': 2,
+  'stroke-linejoin': 'round'
+};
+
+var textAttr = {
+  'text-anchor': 'start',
+  'font-size': 14
+};
