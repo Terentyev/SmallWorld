@@ -1,10 +1,32 @@
-function Region(regionId) {
+function hoverRegion(region, isOver) {
+  return function() {
+    region.animate({'stroke-width': 2 + isOver * 2}, 100);
+  }
+}
+
+function Region(regionId, obj) {
   this.r = data.game.map.regions[regionId];
-  this.r._regionId = regionId;
+  this._regionId = regionId;
+  this.model = {
+    'region': obj,
+    'race': {
+      'image': null,
+      'num': null
+    },
+    'sp': {
+      'count': 0
+    }
+  }
+  this.r.currentRegionState.raceName = getRaceNameById(this.r.currentRegionState.tokenBadgeId);
+  this.createToken(this.r, this.r.currentRegionState.raceName);
+  for (var i in objects) {
+    if (this.r.currentRegionState[i]) this.createObject(i);
+  }
+  //alert('cr'+this.r.currentRegionState.raceName);
 }
 
 Region.prototype.regionId = function() {
-  return this.r._regionId;
+  return this._regionId;
 }
 
 Region.prototype.isOwned = function(tokenBadgeId) {
@@ -63,7 +85,7 @@ Region.prototype.adjacents = function() {
   var result = [];
   for (var i in this.r.adjacentRegions) {
     var cur = this.r.adjacentRegions[i];
-    result[cur] = new Region(cur);
+    result.push(cur);
   }
   return result;
 }
@@ -83,8 +105,7 @@ Region.prototype.tokens = function() {
 
 Region.prototype.rmTokens = function(tokens) {
   this.r.currentRegionState.tokensNum -= tokens;
-  $('#aTokensNum' + this.regionId()).html(this.tokens());
-  $('#aTokensNum' + this.regionId()).trigger('update');
+  this.setTokenNum(this.tokens(), this.model.race.num, this.model.race.image);
 }
 
 Region.prototype.bonusTokens = function() {
@@ -93,13 +114,13 @@ Region.prototype.bonusTokens = function() {
 }
 
 Region.prototype.conquerByPlayer = function(p, dice) {
-  var dt = this.tokens() + this.bonusTokens();
-  var ct = p.tokens() + p.bonusTokens(this) + dice;
+  var newTokens = Math.max(1, this.tokens() + this.bonusTokens() - dice - p.conquestBonusTokens(this));
   with (this.r.currentRegionState) {
     ownerId = p.userId();
     tokenBadgeId = p.curTokenBadgeId();
-    tokens = (dt > ct ? ct : dt);
-    p.addTokens(-tokens);
+    tokens = newTokens;
+    p.addTokens(-newTokens);
+    this.setToken(getRaceNameById(tokenBadgeId), tokens);
   }
 }
 
@@ -108,4 +129,82 @@ Region.prototype.needDefend = function(){
   var tmp = new Player(this.r.currentRegionState.ownerId);
   return this.tokens() > 0 || tmp.myRegions().length > 1 ||
          tmp.curRace() == 'Elves' && tmp.curTokenBadgeId() == this.r.currentRegionState.tokenBadgeId;
+}
+
+Region.prototype.setTokenNum = function(num, numStore, imgStore) {
+  if (!imgStore) return;
+  var txt = num > 1 ? num: '';
+  numStore.attr('text', txt);
+  if (num) imgStore.show()
+  else imgStore.hide()
+}
+
+Region.prototype.createObject = function(object) {
+  var x = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[0] + this.model.sp.count * tokenWidth,
+      y = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[1] + this.model.sp.count * tokenHeight;
+  this.model.sp[object] = canvas.image(objects[object], x, y, tokenWidth, tokenHeight).attr('title', object);
+  this.model.sp[object].mouseover(hoverRegion(this.model.region, true));
+  this.model.sp[object].click( makeFuncRef(areaClick, this.regionId()) );
+  if (object == 'encampment') {
+    this.model.sp.num = canvas.text(x + tokenWidth, y + tokenHeight/2, '').attr(textAttr);
+    this.setTokenNum(this.r.currentRegionState[object], this.model.sp.num, this.model.sp[object]);
+  }
+  ++this.model.sp.count;
+}
+
+Region.prototype.deleteObject = function(object) {
+  this.model.sp[object].remove();
+  if (object == 'encampment') this.model.sp.num.remove();
+  --this.model.sp.count;
+}
+
+Region.prototype.createToken = function(region, raceName) {
+  var x = maps[data.game.map.mapId].regions[this.regionId()].raceCoords[0],
+      y = maps[data.game.map.mapId].regions[this.regionId()].raceCoords[1],
+      img = getRaceImage(raceName, 'token', region.currentRegionState.inDecline);
+  this.model.race.image = canvas.image(img, x, y, tokenWidth, tokenHeight).attr('title', raceName);
+  this.model.race.num = canvas.text(x + tokenWidth, y + tokenHeight/2, '').attr(textAttr);
+  this.model.race.image.mouseover(hoverRegion(this.model.region, true));
+  this.model.race.num.mouseover(hoverRegion(this.model.region, true));
+
+  this.model.race.image.click( makeFuncRef(areaClick, this.regionId()) );
+  this.setTokenNum(region.currentRegionState.tokensNum, this.model.race.num, this.model.race.image)
+}
+
+Region.prototype.setToken = function(raceName, num, inDecline) {
+  this.model.race.image.attr({'src': getRaceImage(raceName, 'token', inDecline), 'title': raceName});
+  this.setTokenNum(num, this.model.race.num, this.model.race.image);
+}
+
+Region.prototype.update = function(region) {
+  for (var i in objects) {
+    if (this.r.currentRegionState[i] != region.currentRegionState[i]) {
+      if (this.r.currentRegionState[i] == null) this.createObject(i);
+      else if (region.currentRegionState[i] == null) this.deleteObject(i);
+      else {
+        //encampments only;
+        this.setTokenNum(region.currentRegionState[i], this.model.sp.num, this.model.sp[i]);
+      }
+    }
+  }
+  var tokenBadgeId = this.r.currentRegionState.tokenBadgeId;
+
+  if (tokenBadgeId != region.currentRegionState.tokenBadgeId) {
+    //alert('reg changed:' + this.regionId());
+    this.r.currentRegionState.raceName = getRaceNameById(region.currentRegionState.tokenBadgeId);
+    if (tokenBadgeId == null) {
+      //create new
+      this.createToken(region, this.r.currentRegionState.raceName);
+    } else if (region.currentRegionState.tokenBadgeId == null) {
+      //remove old
+      this.model.race.image.remove();
+      this.model.race.num.remove();
+    } else {
+      //replace old
+      this.setToken(this.r.currentRegionState.raceName, region.currentRegionState.tokensNum, region.currentRegionState.inDecline);      
+    }
+  } else if (this.tokens() != region.currentRegionState.tokensNum) {
+    this.setTokenNum(region.currentRegionState.tokensNum, this.model.race.num, this.model.race.image);
+  }
+  this.r = region;
 }

@@ -16,11 +16,11 @@
   <script type="text/javascript" src="js/jquery/jquery.blockUI.js"></script>
   <script type="text/javascript" src="js/jquery/jquery.cookie.js"></script>
   <script type="text/javascript" src="js/jquery/jquery.jscrollpane.min.js"></script>
-  <script type="text/javascript" src="js/jquery/jquery.maphilight.min.js"></script>
   <script type="text/javascript" src="js/jquery/jquery.mousewheel.js"></script>
   <script type="text/javascript" src="js/jquery/jquery.sprintf.js"></script>
   <script type="text/javascript" src="js/jquery/ajaxfileupload.js"></script>
   <script type="text/javascript" src="js/jquery/json2.js"></script>
+  <script type="text/javascript" src="js/jquery/raphael-min.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
   <script type="text/javascript" src="js/base.js"></script>
   <script type="text/javascript" src="js/show.js"></script>
@@ -97,12 +97,9 @@
           <td><input class="tedit" type="text" id="inputAskNum" onkeyup="this.value = this.value.replace(/[^0-9]/g, '');" /></td>
         </tr>
         <tr>
-          <td class="left"><span>Encampments:</span></td>
+          <td class="left"><span id="spanRedeployObjectName"></span></td>
           <td>
-            <span>
-              <select id="selectEncampments"></select>
-
-            </span>
+            <span id="spanRedeployObject"> <select id="selectEncampments"></select> </span>
           </td>
         </tr>
         <tr>
@@ -244,16 +241,8 @@
               <td colspan="2" align="center"><div id="divGameError" class="error"><div></td>
             </tr>
             <tr>
-              <td colspan="2">
-                <div id="divMap" align="center">
-
-                  <div id="divMapImg" style="position: relative;">
-                    <img id="imgMap" class="corner-all" usemap="#mapLayer" />
-                    <map id="mapLayer" name="mapLayer"></map>
-                  </div>
-                  <div id="divMapObjects" style="position: relative; display: none;"></div>
-
-                </div>
+              <td colspan="2" align="center">
+                <div id="divMapCanvas" class="corner-all"></div>
               </td>
             </tr>
             <tr>
@@ -586,5 +575,6 @@
      </td></tr>
    </table>
    </div>
+
 </body>
 </html>
