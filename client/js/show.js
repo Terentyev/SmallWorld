@@ -53,9 +53,9 @@ function showGame() {
   showGameStage();
 }
 
-function showGameTurn(){
+function showGameTurn() {
   var s = (data.game.state == GST_FINISH) ?
-          'game is over': $.sprintf("%d from %d", data.game.currentTurn + 1, data.game.map.turnsNum);
+          'Game over': $.sprintf("%d from %d", data.game.currentTurn + 1, data.game.map.turnsNum);
   $("#spanGameTurn").html(s);
 }
 
