@@ -23,13 +23,9 @@ our @backupNames = qw( ownerId tokenBadgeId conquestIdx prevTokenBadgeId prevTok
 sub _constructConquestPlan {
   my ($self, $g, $p) = @_;
   my @ways = $self->_constructConqWays($g, $p);
-  timeStart();
   my @bonusSums = $self->_calculateBonusSums($g, 0, @ways);
-  timeEnd(LOG_FILE, 'first _calculateBonusSums ');
-  timeStart();
   @bonusSums = $self->_calculateBonusSums($g, 1, @ways)
     if !@bonusSums && ($g->{gs}->stage ne GS_BEFORE_CONQUEST || $self->_isLastTurn($g));
-  timeEnd(LOG_FILE, 'second _calculateBonusSums ');
   # формируем массив регионов по порядку их завоевания
   my @result = ();
   foreach my $bs( @bonusSums ) {
@@ -82,9 +78,17 @@ sub _constructConqWays {
   my %filter = ();
   @regions = grep { !$filter{$_->id}++ } @regions;
 
+  my $compl = $asp->conqPlanComplexity;
+  swLog(LOG_FILE, scalar (grep { $asp->canAttack($_) && !$_->isImmune } $g->{gs}->regions), $compl);
+  my $maxDepth = grep { $asp->canAttack($_) && !$_->isImmune } $g->{gs}->regions;
+  if ( $maxDepth > 0 && $compl > 1 ) {
+    $maxDepth = log(CONQ_WAY_MAX_REGIONS_NUM / $maxDepth ) / log($compl);
+  }
+  swLog(LOG_FILE, "maxDepth = $maxDepth");
+
   my @ways = ();
   timeStart();
-  push @ways, $self->_constructConqWaysForRegion($g, $p, $_) for @regions;
+  push @ways, $self->_constructConqWaysForRegion($g, $p, $_, $maxDepth) for @regions;
   timeEnd(LOG_FILE, '_constructConqWaysForRegions ');
   return @ways;
 }
@@ -92,7 +96,7 @@ sub _constructConqWays {
 # создает цепочку завоеваний с оценкой фигурок, которые придется потратить, и
 # монет, которые получим, если пойдем таким путем
 sub _constructConqWaysForRegion {
-  my ($self, $g, $p, $r, @wayPrefix) = @_;
+  my ($self, $g, $p, $r, $maxDepth, @wayPrefix) = @_;
   my $race = $p->activeRace;
   my $sp = $p->activeSp;
   my @backups = ();
@@ -110,7 +114,7 @@ sub _constructConqWaysForRegion {
   @backups = $self->_tmpConquer($g, $p, $r);
   $wayInfo{coins} = $g->{gs}->getPlayerBonus($p, $dummy);
 
-  if ( $self->_shouldTryConqWay($wayInfo{coins}, $#way) && $wayInfo{cost} <= $p->tokens + 3 ) {
+  if ( $self->_shouldTryConqWay($wayInfo{coins}, $#way, $maxDepth) && $wayInfo{cost} <= $p->tokens + 3 ) {
     $sp = $p->activeSp;
 #    timeStart();
     foreach ( @{ $sp->getRegionsForAttack($r) } ) {
@@ -315,6 +319,13 @@ sub _getRegionsForConquest {
   return @{ $g->{plan} };
 }
 
+sub _getRedeployment {
+  my ($self, $g) = @_;
+  return $self->SUPER::_getRedeployment($g);
+  my %result = ();
+  return \%result;
+}
+
 sub _beginConquest {
   my ($self, $g) = @_;
   $self->{maxCoinsForDepth} = [];
@@ -331,8 +342,8 @@ sub _endConquest {
 }
 
 sub _shouldTryConqWay {
-  my ($self, $coins, $depth) = @_;
-  return 0 if $depth >= CONQ_WAY_DEPTH ||
+  my ($self, $coins, $depth, $maxDepth) = @_;
+  return 0 if $depth >= $maxDepth ||
     ($self->{maxCoinsForDepth}->[$depth] // -1) > $coins;
 
   $self->{maxCoinsForDepth}->[$depth] = $coins;

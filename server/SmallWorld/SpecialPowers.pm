@@ -106,8 +106,21 @@ sub finishTurn {
   return 0;
 }
 
-sub player  { return $_[0]->{player};                                      }
-sub regions { return wantarray ? @{ $_[0]->{regions} } : $_[0]->{regions}; }
+sub conqPlanComplexity {
+  my $self = shift;
+  my $result = 0;
+  my $n = 0;
+  foreach ( $self->allRegions ) {
+    next if $self->player->isOwned($_) || !$self->canAttack($_) || $_->isImmune;
+    $result += scalar (grep { $self->canAttack($_) && !$self->player->isOwned($_) && !$_->isImmune } @{ $self->getAdjacentRegions($_) });
+    ++$n;
+  }
+  return $result / $n;
+}
+
+sub player     { return $_[0]->{player};                                            }
+sub regions    { return wantarray ? @{ $_[0]->{regions} } : $_[0]->{regions};       }
+sub allRegions { return wantarray ? @{ $_[0]->{allRegions} } : $_[0]->{allRegions}; }
 
 package SmallWorld::SpAlchemist;
 use strict;
