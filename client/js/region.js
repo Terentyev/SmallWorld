@@ -141,7 +141,7 @@ Region.prototype.setTokenNum = function(num, numStore, imgStore) {
 
 Region.prototype.createObject = function(object) {
   var x = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[0] + this.model.sp.count * tokenWidth,
-      y = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[1] + this.model.sp.count * tokenHeight;
+      y = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[1];
   this.model.sp[object] = canvas.image(objects[object], x, y, tokenWidth, tokenHeight).attr('title', object);
   this.model.sp[object].mouseover(hoverRegion(this.model.region, true));
   this.model.sp[object].click( makeFuncRef(areaClick, this.regionId()) );
@@ -179,12 +179,12 @@ Region.prototype.setToken = function(raceName, num, inDecline) {
 Region.prototype.update = function(region) {
   for (var i in objects) {
     if (this.r.currentRegionState[i] != region.currentRegionState[i]) {
-      if (this.r.currentRegionState[i] == null) this.createObject(i);
-      else if (region.currentRegionState[i] == null) this.deleteObject(i);
-      else {
-        //encampments only;
-        this.setTokenNum(region.currentRegionState[i], this.model.sp.num, this.model.sp[i]);
-      }
+      if (this.r.currentRegionState[i]) {
+        if (region.currentRegionState[i])
+          this.setTokenNum(region.currentRegionState[i], this.model.sp.num, this.model.sp[i]); //encampments only;
+        else
+          this.deleteObject(i);
+      } else this.createObject(i);
     }
   }
   var tokenBadgeId = this.r.currentRegionState.tokenBadgeId;
