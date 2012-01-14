@@ -160,8 +160,8 @@ sub _join2Game {
 sub _allLeaveGame {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
-  for ( 0..$#{ $g->{ais} // [] } ) {
-    $self->_leaveGame($g, $g->{ais}->[$_]->{sid});
+  foreach ( @{ $g->{ais} // [] } ) {
+    $self->_leaveGame($g, $_->{sid});
   }
 }
 
@@ -204,7 +204,7 @@ sub _sendGameCmd {
       }
     }
   }
-  die "Can't define sid of player\n" if !defined $cmd->{sid};
+  die "Can't define sid of player for command $cmd->{action}\n" if !defined $cmd->{sid};
   (!defined $cmd->{$_} and delete $cmd->{$_}) for keys %$cmd;
   $cmd = eval { encode_json($cmd) } || die "Can't encode json :(\n";
   $self->_get($cmd, 1);
@@ -542,14 +542,16 @@ sub _conquerRegion {
 # покидаем игру
 sub _leaveGame {
   my ($self, $g, $sid) = @_;
+  swLog(LOG_FILE, "try leaveGame sid=$sid");
   $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $sid);
-  return if !defined $g->{gs}->activePlayerId;
-  return if defined $sid;
-  for ( @{ $g->{ais} } ) {
-    $sid = $_->{sid};
-    last if $_->{id} == $g->{gs}->activePlayerId;
+  if ( !defined $sid ) {
+    for ( @{ $g->{ais} } ) {
+      $sid = $_->{sid};
+      last if $_->{id} == $g->{gs}->activePlayerId;
+    }
   }
   $g->{ais} = [grep $_->{sid} != $sid, @{ $g->{ais} }];
+  swLog(LOG_FILE, 'leaveGame', $g->{ais}, $sid);
 }
 
 # производим захват регионов
