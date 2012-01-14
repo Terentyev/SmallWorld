@@ -115,6 +115,7 @@ sub conqPlanComplexity {
     $result += scalar (grep { $self->canAttack($_) && !$self->player->isOwned($_) && !$_->isImmune } @{ $self->getAdjacentRegions($_) });
     ++$n;
   }
+  return 1 if $n == 0;
   return $result / $n;
 }
 

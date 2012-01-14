@@ -59,7 +59,8 @@ sub _constructConqWays {
     # у игрока есть территории, продолжаем завоевывать относительно их
     foreach my $mine ( @{ $p->regions } ) {
       foreach ( @{ $asp->getRegionsForAttack($mine) } ) {
-        push @regions, $_ if !$_->isImmune && !$p->isOwned($_) && $asp->canAttack($_); # TODO: если завоевание усиленное, то можно захватывать свои регионы!!!!!
+        push @regions, $_
+          if !$_->isImmune && !$p->isOwned($_) && $asp->canAttack($_) && !$g->{gs}->playerFriendWithRegionOwner($p, $_);
       }
     }
     if ( $#regions < 0 && $#{ $ar->regions } < 0 && $p->declinedTokenBadgeId ) {
@@ -120,7 +121,7 @@ sub _constructConqWaysForRegion {
     foreach ( @{ $sp->getRegionsForAttack($r) } ) {
       # пробегаем по всем регионам и пропускаем те, на которых мы уже отметились, и
       # те, с которыми мы не граничим согласно всем правилам
-      next if $_->isImmune || $p->isOwned($_) || !$sp->canAttack($_);
+      next if $_->isImmune || $p->isOwned($_) || !$sp->canAttack($_) || $g->{gs}->playerFriendWithRegionOwner($p, $_);
 
       push @result, $self->_constructConqWaysForRegion($g, $p, $_, @way);
     }

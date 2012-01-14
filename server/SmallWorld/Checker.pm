@@ -340,15 +340,12 @@ sub checkRegion_conquer {
   # 2. на первом завоевании можно захватывать только при отдельных условиях
   # 3. у рас и умений есть особые правила нападения на регионы
 
-  my $finfo = $game->{gameState}->{friendInfo};
   return $player->activeConq($region) ||
          $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
          !$game->isFirstConquer() && (
              !$sp->canAttack($region) ||
              !(grep $player->id == $_->ownerId, @{ $sp->getRegionsForAttack($region) })
-         ) ||
-         (defined $finfo && ($finfo->{diplomatId} // -2) == ($region->{ownerId} // -1) &&
-         ($finfo->{friendId} // -1) == $player->{playerId} && !$region->{inDecline});
+         ) || $game->playerFriendWithRegionOwner($player, $region);
 }
 
 sub checkRegion_dragonAttack {

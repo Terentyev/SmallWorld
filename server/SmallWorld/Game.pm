@@ -961,6 +961,12 @@ sub throwDice {
   return $self->{gameState}->{berserkDice};
 }
 
+sub playerFriendWithRegionOwner {
+  my ($self, $player, $region) = @_;
+  return 0 if $region->ownerId != -1 || $region->inDecline;
+  return $player->isFriend($self->getPlayer(id => $region->ownerId));
+}
+
 sub id             { return $_[0]->{gameState}->{gameInfo}->{gameId};                                       }
 sub name           { return $_[0]->{gameState}->{gameInfo}->{gameName};                                     }
 sub stage          { return $_[0]->{gameState}->{state};                                                    }
