@@ -377,10 +377,6 @@ sub _shouldStoutDecline {
 
 sub _selectRace {
   my ($self, $g) = @_;
-#  my $tritonsIdx = -1;
-#  my $i = 0;
-#  ($_->{raceName} eq RACE_TRITONS and $tritonsIdx = $i and last or $i++) for @{ $g->{gs}->tokenBadges };
-#  return $tritonsIdx if $tritonsIdx != -1;
   my @estimates = $self->_constructBadgesEstimates($g);
   return $estimates[0]->{idx};
 }
