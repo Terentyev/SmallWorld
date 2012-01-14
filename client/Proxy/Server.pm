@@ -36,7 +36,11 @@ sub process {
     $result = $self->proxyCommand($r);
   }
 
-  my $content = $self->{ua}->request($self->{request})->content if defined $self->{request};
+  my $content = '';
+  if ( defined $self->{request} ) {
+    my $req = $self->{ua}->request($self->{request});
+    $content = $req->decoded_content;
+  }
   if ($ENV{DEBUG} && $r->param('request')) {
     open FL, '>>' . LOG_FILE;
     print FL $r->param('request') . "\n" . $content . "\n\n";
@@ -65,7 +69,7 @@ sub proxyCommand {
   }
 
   $self->{request} = HTTP::Request->new(POST => $address);
-  $self->{request}->add_content_utf8($request);
+  $self->{request}->add_content($request);
 #  $self->{request}->content_type('application/x-www-form-urlencoded');
 #  $self->{request}->content("request=" . uri_escape($request)); # вот это надо раскоментировать, чтобы работало у Паши
   return Apache2::Const::OK;

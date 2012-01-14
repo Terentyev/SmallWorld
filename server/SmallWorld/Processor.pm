@@ -5,8 +5,8 @@ use strict;
 use warnings;
 use utf8;
 
-use JSON qw(encode_json decode_json);
-use File::Basename qw(basename);
+use JSON qw( encode_json decode_json );
+use File::Basename qw( basename );
 
 use SW::Util qw(swLog);
 
