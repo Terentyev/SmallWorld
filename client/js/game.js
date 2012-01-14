@@ -164,6 +164,7 @@ function mergeGameState(gs) {
   mergeMember(gs, 'dragonAttacked',     [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'enchanted',          [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'stage',              [showPlayers, changeGameStage], acts);
+  mergeMember(gs, 'currentTurn',        [showGameTurn],                 acts);
   mergeMember(gs, 'visibleTokenBadges', [showBadges],                   acts);
   mergeMember(gs, 'map',                [showGameMap],                  acts);
   mergeMember(gs, 'players',            [showPlayers],                  acts);
