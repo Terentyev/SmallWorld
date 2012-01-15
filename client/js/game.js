@@ -116,9 +116,13 @@ function prepare(gs) {
         return;
       }
       switch (gs.lastEvent) {
+        case LE_DEFEND:
+          gs.stage = player.tokens() == 0
+            ? GS_REDEPLOY
+            : GS_CONQUEST;
+          break;
         case LE_THROW_DICE:
         case LE_CONQUER:
-        case LE_DEFEND:
         case LE_SELECT_RACE:
           gs.stage = GS_CONQUEST;
           break;

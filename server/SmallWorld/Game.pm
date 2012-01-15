@@ -153,12 +153,14 @@ sub getStageFromGameState {
 
   my $le = $gs->{lastEvent};
   return GS_DEFEND             if defined $gs->{defendingInfo} && defined $gs->{defendingInfo}->{playerId};
-  return GS_CONQUEST           if $le == LE_THROW_DICE || $le == LE_CONQUER || $le == LE_DEFEND || $le == LE_SELECT_RACE;
-  return GS_FINISH_TURN        if $le == LE_DECLINE || $le == LE_SELECT_FRIEND;
   return GS_REDEPLOY           if $le == LE_FAILED_CONQUER && (grep {
       !$_->{currentRegionState}->{inDecline} &&
       ($_->{currentRegionState}->{ownerId} // -1) == $gs->{activePlayerId}
-    } @{ $gs->{map}->{regions} });
+    } @{ $gs->{map}->{regions} }) || $le == LE_DEFEND && (grep {
+      $_->{userId} == $gs->{activePlayerId} && $_->{tokensInHand} == 0
+    } @{ $gs->{players} });
+  return GS_CONQUEST           if $le == LE_THROW_DICE || $le == LE_CONQUER || $le == LE_DEFEND || $le == LE_SELECT_RACE;
+  return GS_FINISH_TURN        if $le == LE_DECLINE || $le == LE_SELECT_FRIEND;
   return GS_BEFORE_FINISH_TURN if $le == LE_REDEPLOY || $le == LE_FAILED_CONQUER;
   return GS_SELECT_RACE        if (grep {
       (
