@@ -601,10 +601,10 @@ sub _redeploy {
   }
 
   $g->{gs}->gotoRedeploy();
-  $self->_sendGameCmd(
+  die 'Fail redeploy' if $self->_sendGameCmd(
       game        => $g,
       action      => 'redeploy',
-      $self->_getRedeployment($g));
+      $self->_getRedeployment($g))->{result} ne R_ALL_OK;
 }
 
 # выбираем расу
