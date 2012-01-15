@@ -706,6 +706,7 @@ sub conquer {
   if ( defined $player->{dice} ) {
     $result->{dice} = $player->{dice};
     $player->{dice} = undef;
+    $self->gotoRedeploy() if $self->stage ne GS_DEFEND;
   }
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
@@ -921,7 +922,9 @@ sub endDefend {
   my $self = shift;
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{conquerorId};
   @{ $self->{gameState} }{qw(defendingInfo conquerorId)} = ();
-  $self->{gameState}->{state} = GS_CONQUEST;
+  $self->{gameState}->{state} = $self->getPlayer->tokens > 0
+    ? GS_CONQUEST
+    : GS_REDEPLOY;
 }
 
 sub enchant {
@@ -963,7 +966,7 @@ sub throwDice {
 
 sub playerFriendWithRegionOwner {
   my ($self, $player, $region) = @_;
-  return 0 if $region->ownerId != -1 || $region->inDecline;
+  return 0 if $region->ownerId == -1 || $region->inDecline;
   return $player->isFriend($self->getPlayer(id => $region->ownerId));
 }
 
