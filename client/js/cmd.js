@@ -297,7 +297,7 @@ function hdlGetGameState(ans) {
   var gs = ans.gameState;
   if (gs.state == GST_EMPTY) {
     clearGame();
-    ShowLobby();
+    showLobby();
     return;
   }
 
