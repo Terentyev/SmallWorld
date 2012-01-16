@@ -244,7 +244,6 @@ function cmdLeaveGame() {
 
 function hdlLeaveGame(ans) {
   clearGame();
-  $("#tdLobbyChat").append($("#divChat").detach());
   showLobby();
 }
 

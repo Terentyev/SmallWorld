@@ -124,6 +124,8 @@ const actionDivs = ['#divDecline', '#divEnchant', '#divDragonAttack', '#divThrow
 
 const tokenWidth = 40;
 const tokenHeight = 40;
+const coinWidth = 16;
+const coinHeight = 16;
 var regionAttr = {
   'stroke': 'gray',
   'stroke-width': 2,
@@ -134,3 +136,10 @@ var textAttr = {
   'text-anchor': 'start',
   'font-size': 14
 };
+
+const modalSize = {
+  'defaultWidth': 420,
+  'defaultHeight': 160,
+  'minHeight': 110,
+  'lineHeight': 28
+}

@@ -130,3 +130,9 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
 #divDecline, #divEnchant, #divDragonAttack, #divThrowDice, #divSelectFriend {display: none;}
 
 #selectEncampments {width: 50px;}
+
+#tdLobbyChat {width: 680px;}
+
+#divMapContainer {padding: 10px; overflow:auto; max-height:520px;}
+#tableCenter td {text-align:center;}
+#tdGameChat td {text-align:justify;}

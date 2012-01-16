@@ -441,6 +441,5 @@ function watchGame() {
 
 function leaveWatch() {
   clearGame();
-  $("#tdLobbyChat").append($("#divChat").detach());
   showLobby();
 }
