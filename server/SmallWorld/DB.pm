@@ -282,7 +282,8 @@ sub getGames {
         g.id, g.name, g.description, g.mapId, g.gstate, m.playersNum, m.turnsNum, g.activePlayerId,
         g.currentTurn, g.aiNum
       FROM GAMES g INNER JOIN MAPS m ON g.mapId = m.id
-      WHERE g.gstate <> ?',
+      WHERE g.gstate <> ?
+      ORDER BY g.id ASC',
       GST_EMPTY);
 }
 
