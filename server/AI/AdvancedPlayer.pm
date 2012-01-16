@@ -123,7 +123,7 @@ sub _constructConqWaysForRegion {
       # те, с которыми мы не граничим согласно всем правилам
       next if $_->isImmune || $p->isOwned($_) || !$sp->canAttack($_) || $g->{gs}->playerFriendWithRegionOwner($p, $_);
 
-      push @result, $self->_constructConqWaysForRegion($g, $p, $_, @way);
+      push @result, $self->_constructConqWaysForRegion($g, $p, $_, $maxDepth, @way);
     }
 #    timeEnd(LOG_FILE, (' ' x $#way) . "adjacent regions for $r->{regionId} ($wayInfo{cost})                      ");
   }
