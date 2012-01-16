@@ -388,6 +388,12 @@ sub _shouldEnchant {
   return 1;
 }
 
+# следует ли нам выбрать данного игрока в друзья
+sub _shouldSelectFriend {
+  my ($self, $g, $playerId) = @_;
+  return $self->_canSelectFriend($g, $playerId);
+}
+
 # возвращает список регионов, на которые мы должны напасть
 sub _getRegionsForConquest {
   my ($self, $g) = @_;
@@ -621,7 +627,7 @@ sub _beforeFinishTurn {
   }
   if ( $self->_canSelectFriend($g) ) {
     foreach ( @{ $g->{gs}->players } ) {
-      if ( $self->_canSelectFriend($g, $_->{playerId}) ) {
+      if ( $self->_shouldSelectFriend($g, $_->{playerId}) ) {
         die 'Fail select friend' if
           $self->_sendGameCmd(game => $g, action => 'selectFriend', friendId => $_->{playerId})->{result} ne R_ALL_OK;
         last;
