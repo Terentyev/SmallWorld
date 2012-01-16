@@ -217,6 +217,7 @@ function getMapName(mapId) {
 }
 
 function makeCurrentGame(game) {
+  if ( game == null ) return;
   with (game) {
     $("#cgameName").html(name);
     $("#cgameDescription").html(description);

@@ -20,7 +20,7 @@ sub new {
 sub _init {
   my $self = shift;
   my %p = (@_);
-  $self->{dbh} = DBI->connect("DBI:InterBase:hostname=localhost;db=$p{db}", $p{user}, $p{passwd}) ||
+  $self->{dbh} = DBI->connect("DBI:InterBase:hostname=localhost;db=$p{db};ib_charset=UTF-8", $p{user}, $p{passwd}) ||
     $self->dbError;
   $self->{dbh}->{LongReadLen} = $p{maxBlobSize} if $p{maxBlobSize};
   $self->{dbh}->{AutoCommit} = 1;

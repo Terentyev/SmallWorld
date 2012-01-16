@@ -25,7 +25,7 @@ sub handler {
   my $rr = shift;
   my $r = Apache2::Request->new($rr);
 
-  $rr->content_type('text/plain');
+  $rr->content_type('text/plain; charset="utf-8"');
   return getServer()->process($r);
 }
 

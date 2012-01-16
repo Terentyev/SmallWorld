@@ -153,12 +153,14 @@ sub getStageFromGameState {
 
   my $le = $gs->{lastEvent};
   return GS_DEFEND             if defined $gs->{defendingInfo} && defined $gs->{defendingInfo}->{playerId};
-  return GS_CONQUEST           if $le == LE_THROW_DICE || $le == LE_CONQUER || $le == LE_DEFEND || $le == LE_SELECT_RACE;
-  return GS_FINISH_TURN        if $le == LE_DECLINE || $le == LE_SELECT_FRIEND;
   return GS_REDEPLOY           if $le == LE_FAILED_CONQUER && (grep {
       !$_->{currentRegionState}->{inDecline} &&
       ($_->{currentRegionState}->{ownerId} // -1) == $gs->{activePlayerId}
-    } @{ $gs->{map}->{regions} });
+    } @{ $gs->{map}->{regions} }) || $le == LE_DEFEND && (grep {
+      $_->{userId} == $gs->{activePlayerId} && $_->{tokensInHand} == 0
+    } @{ $gs->{players} });
+  return GS_CONQUEST           if $le == LE_THROW_DICE || $le == LE_CONQUER || $le == LE_DEFEND || $le == LE_SELECT_RACE;
+  return GS_FINISH_TURN        if $le == LE_DECLINE || $le == LE_SELECT_FRIEND;
   return GS_BEFORE_FINISH_TURN if $le == LE_REDEPLOY || $le == LE_FAILED_CONQUER;
   return GS_SELECT_RACE        if (grep {
       (
@@ -706,6 +708,7 @@ sub conquer {
   if ( defined $player->{dice} ) {
     $result->{dice} = $player->{dice};
     $player->{dice} = undef;
+    $self->gotoRedeploy() if $self->stage ne GS_DEFEND;
   }
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
 }
@@ -921,7 +924,9 @@ sub endDefend {
   my $self = shift;
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{conquerorId};
   @{ $self->{gameState} }{qw(defendingInfo conquerorId)} = ();
-  $self->{gameState}->{state} = GS_CONQUEST;
+  $self->{gameState}->{state} = $self->getPlayer->tokens > 0
+    ? GS_CONQUEST
+    : GS_REDEPLOY;
 }
 
 sub enchant {
@@ -959,6 +964,12 @@ sub throwDice {
   $self->{gameState}->{berserkDice} = $ENV{DEBUG} && defined $dice ? $dice : $self->random();
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
   return $self->{gameState}->{berserkDice};
+}
+
+sub playerFriendWithRegionOwner {
+  my ($self, $player, $region) = @_;
+  return 0 if $region->ownerId == -1 || $region->inDecline;
+  return $player->isFriend($self->getPlayer(id => $region->ownerId));
 }
 
 sub id             { return $_[0]->{gameState}->{gameInfo}->{gameId};                                       }

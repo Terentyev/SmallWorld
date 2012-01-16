@@ -153,14 +153,15 @@ sub _join2Game {
   }
   push @{ $g->{ais} }, { id => $r->{id}, sid => $r->{sid} };
   $self->games->{$game->{gameId}} = $g;
+  swLog(LOG_FILE, $g, $r);
 }
 
 # все ИИ покидают игру
 sub _allLeaveGame {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
-  for ( 0..$#{ $g->{ais} // [] } ) {
-    $self->_leaveGame($g, $g->{ais}->[$_]->{sid});
+  foreach ( @{ $g->{ais} // [] } ) {
+    $self->_leaveGame($g, $_->{sid});
   }
 }
 
@@ -203,7 +204,7 @@ sub _sendGameCmd {
       }
     }
   }
-  die "Can't define sid of player\n" if !defined $cmd->{sid};
+  die "Can't define sid of player for command $cmd->{action}\n" if !defined $cmd->{sid};
   (!defined $cmd->{$_} and delete $cmd->{$_}) for keys %$cmd;
   $cmd = eval { encode_json($cmd) } || die "Can't encode json :(\n";
   $self->_get($cmd, 1);
@@ -405,17 +406,6 @@ sub _getRedeployment {
   my @encampments = ();
   my %fortified = ();
 
-  if ( $n == 0 ) {
-    # если мы попали в redeploy и у нас нет регионов, то значит на сервере
-    # воссоздалась ошибочная ситуация (когда нет регионов, которые мы могли бы
-    # захватить (т. е. все возможные под иммунитетом) и нас заставляют захватывать.
-    # Единственное, что мы можем сделать, так это redeploy. Но и его мы не можем
-    # сделать, т. к. нельзя делать redeploy, когда нет регионов.
-    # Значит признаём возможное поражение и покидаем игру.
-    $self->_leaveGame($g);
-    return;
-  }
-
   # прежде, чем мы начнем расставлять фигурки, надо зарезервировать одну фигурку
   # за регионом, который мы захватили драконом, а также подсчитать общее
   # количество фигурок
@@ -552,14 +542,16 @@ sub _conquerRegion {
 # покидаем игру
 sub _leaveGame {
   my ($self, $g, $sid) = @_;
+  swLog(LOG_FILE, "try leaveGame sid=$sid");
   $self->_sendGameCmd(game => $g, action => 'leaveGame', sid => $sid);
-  return if !defined $g->{gs}->activePlayerId;
-  return if defined $sid;
-  for ( @{ $g->{ais} } ) {
-    $sid = $_->{sid};
-    last if $_->{id} == $g->{gs}->activePlayerId;
+  if ( !defined $sid ) {
+    for ( @{ $g->{ais} } ) {
+      $sid = $_->{sid};
+      last if $_->{id} == $g->{gs}->activePlayerId;
+    }
   }
   $g->{ais} = [grep $_->{sid} != $sid, @{ $g->{ais} }];
+  swLog(LOG_FILE, 'leaveGame', $g->{ais}, $sid);
 }
 
 # производим захват регионов
@@ -596,11 +588,23 @@ sub _finishTurn {
 # делаем перестановку войск
 sub _redeploy {
   my ($self, $g) = @_;
+
+  if ( scalar(@{ $g->{gs}->getPlayer->activeRace->regions }) == 0 ) {
+    # если мы попали в redeploy и у нас нет регионов, то значит на сервере
+    # воссоздалась ошибочная ситуация (когда нет регионов, которые мы могли бы
+    # захватить (т. е. все возможные под иммунитетом) и нас заставляют захватывать.
+    # Единственное, что мы можем сделать, так это redeploy. Но и его мы не можем
+    # сделать, т. к. нельзя делать redeploy, когда нет регионов.
+    # Значит признаём возможное поражение и покидаем игру.
+    $self->_leaveGame($g);
+    return;
+  }
+
   $g->{gs}->gotoRedeploy();
-  $self->_sendGameCmd(
+  die 'Fail redeploy' if $self->_sendGameCmd(
       game        => $g,
       action      => 'redeploy',
-      $self->_getRedeployment($g));
+      $self->_getRedeployment($g))->{result} ne R_ALL_OK;
 }
 
 # выбираем расу
