@@ -1,6 +1,6 @@
 function showModal(divName, h, w) {
-  h = h || 160;
-  w = w || 420;
+  h = h || modalSize.defaultHeight;
+  w = w || modalSize.defaultWidth;
   $(divName).modal({
     closeHTML: "<a href='#' title='Close' class='modal-close'>x</a>",
     position: ["10%"],
@@ -22,7 +22,7 @@ function saveServerUrl() {
 function showSelectServer() {
   var s = (serverUrl != null ? serverUrl : "http://server.smallworld");
   $("#inputServerUrl").val(s);
-  showModal("#divSelectServer", 110);
+  showModal("#divSelectServer", modalSize.minHeight);
 }
 
 function showLogin() {
@@ -45,7 +45,7 @@ function showGame() {
 
   $("#divGame").css("display", "block");
   $("#divLobby").css("display", "none");
-  $("#tdGameChat").append($("#divChat").detach());
+  $("#tdGameChat").append($("#divChat"));
   showGameTurn();
   showGameMap();
   showBadges();
@@ -55,7 +55,7 @@ function showGame() {
 
 function showGameTurn() {
   var s = (data.game.state == GST_FINISH) ?
-          'Game over': $.sprintf("%d from %d", data.game.currentTurn + 1, data.game.map.turnsNum);
+          'Game over': $.sprintf("%d/%d", data.game.currentTurn + 1, data.game.map.turnsNum);
   $("#spanGameTurn").html(s);
 }
 
@@ -72,8 +72,7 @@ function createMap() {
     }
   }
 
-  canvas = Raphael("divMapCanvas", x.max+x.min, y.max+y.min);
-
+  canvas = Raphael("divMapCanvas", x.max, y.max);
   for (var i in map.regions) {
     reg = canvas.path(getSVGPath(map.regions[i])).attr(regionAttr).attr("fill", "white");
     reg.click( makeFuncRef(areaClick, i) );
@@ -113,12 +112,11 @@ function showCoins(num, dx, dy) {
   dx = dx == null ? 1 : dx;
   dy = dy == null ? 0 : dy;
   if (num <= 0) return '';
-  var w = 16+(num-1)*4*dx, h = 16+(num-1)*4*dy;
-  var s = $.sprintf('<div class="coin-container" style="width:%d; height:%d" title="%s">', w, h, num);
   var a = Math.floor(num / 25), b = Math.floor((num - a*25)/5);
-  num = num - a*25 - b*5;
-  var off = { x: 4*(num + a + b -1)*dx, y : 4*(num + a + b -1)*dy };
-  s += showCoin(1, num, dx, dy, off);
+  c = num - a*25 - b*5;
+  var off = { x: 4*(c + a + b -1)*dx, y : 4*(c + a + b -1)*dy };
+  var s = $.sprintf('<div class="coin-container" style="width:%d; height:%d" title="%s">', coinWidth + off.x, coinHeight + off.y, num);
+  s += showCoin(1, c, dx, dy, off);
   s += showCoin(5, b, dx, dy, off);
   s += showCoin(25, a, dx, dy, off);
   s += '</div>';
@@ -290,8 +288,7 @@ function showScores() {
   for (var i in p)
     s += addRow([(parseInt(i)+1)+'.', p[i].username, showCoins(p[i].coins, 1, 0)]);
   $('#tableScores tbody').html(s);
-  $('#tableScores tbody').trigger('update');
-  showModal('#divScores', 110+p.length*28, 300);
+  showModal('#divScores', modalSize.minHeight + p.length*modalSize.lineHeight, 300);
 }
 
 function showTurnScores(stats) {
@@ -307,7 +304,7 @@ function showTurnScores(stats) {
     ++c;
   }
   $('#tableTurnScores tbody').html(s);
-  showModal('#divTurnScores', 110+c*28, 250);
+  showModal('#divTurnScores', modalSize.minHeight + c*modalSize.lineHeight, 250);
 }
 
 function changeMap(mapId) {

@@ -166,7 +166,7 @@ function addOurPlayerInfo(player) {
     data.username,
     getObjectsInHand(player),
     showCoins(player.coins, 1, 0)
-    );
+  );
 
   if (data.game.friendInfo != null && data.game.friendInfo.friendId != null && data.game.friendInfo.friendId == player.userId) {
     var tmp = new Player(data.game.friendInfo.diplomatId);
@@ -242,13 +242,12 @@ function clearGame() {
     canvas.remove();
     canvas = null;
   }
+  $("#tdLobbyChat").append($("#divChat"));
 }
 
 function getSVGPath(region) {
   var s = '';
-  for (var j in region.coordinates) {
+  for (var j in region.coordinates)
     s += (j == 0 ? "M" : "L") + region.coordinates[j][0] + " " + region.coordinates[j][1];
-  }
-  s += "Z";
-  return s;
+  return s + "Z";
 }

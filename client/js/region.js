@@ -188,10 +188,10 @@ Region.prototype.update = function(region) {
     }
   }
   var tokenBadgeId = this.r.currentRegionState.tokenBadgeId;
-
+  this.r.currentRegionState.raceName = getRaceNameById(region.currentRegionState.tokenBadgeId);
   if (tokenBadgeId != region.currentRegionState.tokenBadgeId) {
     //alert('reg changed:' + this.regionId());
-    this.r.currentRegionState.raceName = getRaceNameById(region.currentRegionState.tokenBadgeId);
+
     if (tokenBadgeId == null) {
       //create new
       this.createToken(region, this.r.currentRegionState.raceName);
@@ -201,10 +201,11 @@ Region.prototype.update = function(region) {
       this.model.race.num.remove();
     } else {
       //replace old
-      this.setToken(this.r.currentRegionState.raceName, region.currentRegionState.tokensNum, region.currentRegionState.inDecline);      
+      this.setToken(this.r.currentRegionState.raceName, region.currentRegionState.tokensNum, region.currentRegionState.inDecline);
     }
-  } else if (this.tokens() != region.currentRegionState.tokensNum) {
-    this.setTokenNum(region.currentRegionState.tokensNum, this.model.race.num, this.model.race.image);
+  } else if (this.tokens() != region.currentRegionState.tokensNum ||
+             this.get['inDecline'] != region.currentRegionState.inDecline) {
+    this.setToken(this.r.currentRegionState.raceName, region.currentRegionState.tokensNum, region.currentRegionState.inDecline);
   }
   this.r = region;
 }
