@@ -1,9 +1,12 @@
 I. INSTALL
 
-install libapreq2, mod_perl
-perl require File::Basename, JSON, HTTP::Request, LWP::UserAgent, URI::Escape
+* install libapreq2 (>=2.13), firebird (>=2.0.3.12981.0-r6),
+    mod_perl (>=2.0.4-r1), perl (>=5.12.4), apache (>=2.2.21-r1)
 
-Perl must be compiled with 'ithreads' support
+* perl require File::Basename (>=2.78), JSON (>=2.27), DBI (>=1.615),
+    LWP::UserAgent (>=6.03), URI::Escape (>=3.30)
+
+* perl must be compiled with 'ithreads' support
 
 
 II. CONFIGURE
