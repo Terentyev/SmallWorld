@@ -18,6 +18,7 @@ our @EXPORT = qw(
     DEFAULT_TIMEOUT
 
     LOG_FILE
+    MSG_FILE
 );
 
 
@@ -30,6 +31,7 @@ use constant DEFAULT_SERVER_ADDRESS => 'server.smallworld';
 use constant DEFAULT_TIMEOUT        => 2;
 
 use constant LOG_FILE               => 'ai.log';
+use constant MSG_FILE               => 'msgs';
 
 1;
 

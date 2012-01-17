@@ -216,8 +216,6 @@ sub _calculateDangerous {
   @regions = grep !$_->isImmune, @regions;
 
   # промоделируем нападение каждого игрока
-  # TODO: к сожалению, данная реализация не учитывает того, что враги будут
-  # пользоваться способностями и мы будем пользоваться другом
   foreach ( @{ $g->{gs}->players($g->{gs}->conqueror, $g->{gs}->getPlayer) } ) {
     my $p = $g->{gs}->getPlayer(player => $_);
     next if $p->id == $I->id || $p->isFriend($I);
@@ -231,10 +229,13 @@ sub _calculateDangerous {
         next if !$wayInfo;
         if ( exists $costs{$r->id} ) {
           # выбираем минимальную стоимость для захвата региона
-          $costs{$r->id} = min($wayInfo->{cost}, $costs{$r->id});
+          if ( $wayInfo->{cost} < $costs{$r->id}->{cost} ) {
+            $costs{$r->id}->{cost} = $wayInfo->{cost};
+            $costs{$r->id}->{playerId} = $p->id;
+          }
         }
         else {
-          $costs{$r->id} = $wayInfo->{cost};
+          $costs{$r->id} = { cost => $wayInfo->{cost}, playerId => $p->id };
         }
         last;
       }
@@ -242,14 +243,14 @@ sub _calculateDangerous {
   }
 
   my $max = 0;
-  $max = max($max, $costs{$_}) for keys %costs;
-  $costs{$_} = $max - $costs{$_} + 1 for keys %costs;
+  $max = max($max, $costs{$_}->{cost}) for keys %costs;
+  $costs{$_}->{cost} = $max - $costs{$_}->{cost} + 1 for keys %costs;
 
   foreach ( @regions ) {
     push @result, { id => $_->id, est => 0 } if !exists $costs{$_->id};
   }
 
-  push @result, { id => $_, est => $costs{$_} } for keys %costs;
+  push @result, { id => $_, est => $costs{$_}->{cost}, playerId => $costs{$_}->{playerId} } for keys %costs;
   my $sumD = 0;
   $sumD += $_->{est} for @result;
   if ( $sumD == 0 ) {
@@ -330,47 +331,63 @@ sub _getRegionsForConquest {
 sub _getRedeployment {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer;
-  my @regions = $p->activeRace->regions;
+  my @myRegions = $p->activeRace->regions;
+  my @dangerous = $self->_calculateDangerous($g, @myRegions);
+  my @regions = ();
+  my @heroes = ();
+  my @encampments = ();
+  my %fortified = ();
+  my $sumD = 0;
+  my $encampments = $self->_canPlaceEncampment($g) ? (ENCAMPMENTS_MAX - $self->_alienEncampNum($g)) : 0;
+  my $fortifieds = $self->_canPlaceFortified($g)  ? 1 : 0;
 
-  # собираем все токены с регионов (оставляем один только там, где дракон),
+  # собираем все токены с регионов (оставляем один только там, где иммунитет),
   # а также собираем все лагеря и героев
-  foreach ( @regions ) {
+  foreach ( @myRegions ) {
     $p->tokens($p->tokens + $_->tokens);
     @$_{qw( hero encampment tokensNum )} = (0, 0, 0);
-    if ( $_->dragon ) {
+    if ( $_->isImmune ) {
       $p->tokens($p->tokens - 1);
       $_->tokens(1);
     }
   }
-  swLog(LOG_FILE, '$p->tokens = ' . $p->tokens, [map {{id => $_->id, tokens => $_->tokens}} @regions]);
 
-  # TODO: если игрок -- дипломат, надо выбрать самого опасного противника и
+  # если игрок -- дипломат, надо выбрать самого опасного противника и
   # подружиться с ним.
-  # TODO: если игрок может ставить героев, то после расстановки героев надо ещё
-  # раз подсчитать уровень опасности для регионов
-  my @dangerous = $self->_calculateDangerous($g, @regions);
-  swLog(LOG_FILE, \@dangerous);
-  my $sumD = 0;
+  if ( $self->_canSelectFriend($g) ) {
+    foreach ( @dangerous ) {
+      if ( defined $_->{playerId} && $self->_canSelectFriend($g, $_->{playerId}) ) {
+        $g->{shouldSelectFriendId} = $_->{playerId};
+        $g->{gs}->{friendInfo} = { friendId => $_->{playerId}, diplomatId => $p->id };
+        @dangerous = $self->_calculateDangerous($g, @myRegions);
+        $g->{gs}->{friendInfo} = { };
+        last;
+      }
+    }
+  }
 
+  # если игрок может ставить героев, то после расстановки героев надо ещё
+  # раз подсчитать уровень опасности для регионов
+  if ( $self->_canPlaceHero($g) ) {
+    my $heroes = HEROES_MAX;
+    foreach ( @dangerous ) {
+      push @heroes, { regionId => $_->{id} };
+      last if --$heroes == 0;
+    }
+    @dangerous = $self->_calculateDangerous($g, @myRegions);
+  }
+
+  swLog(LOG_FILE, '@dangerous', \@dangerous);
   $sumD += $_->{est} for @dangerous;
-  @regions = ();
-  my @encampments = ();
-  my @heroes = ();
-  my %fortified = ();
-  my $heroes = $self->_canPlaceHero($g) ? HEROES_MAX : 0;
-  my $encampments = $self->_canPlaceEncampment($g) ? (ENCAMPMENTS_MAX - $self->_alienEncampNum($g)) : 0;
-  my $fortifieds = $self->_canPlaceFortified($g)  ? 1 : 0;
-  my $n = @dangerous + 1;
-  my $m = grep $_->{est} == 0, @dangerous;
+  my $n = @dangerous + 1; # количество всего наших регионов
+  my $m = grep {
+    $_->{est} == 0 &&
+    $g->{gs}->getRegion(id => $_->{id})->tokens == 0
+  } @dangerous; # количество регионов, которым не грозит опасность и на которых ещё нет фигурок
   foreach my $d ( @dangerous ) {
     $n -= 1;
     my $t = $sumD != 0 ? max(1, int(($p->tokens - $m) * $d->{est} / $sumD)) : 0;
     $sumD -= $d->{est};
-    if ( $heroes > 0 ) {
-      $t = 1;
-      push @heroes, { regionId => $d->{id} };
-      $heroes -= 1;
-    }
     if ( $fortifieds > 0 ) {
       # можно ставить только один форт за ход
       $t = max(1, $t - 1);
@@ -393,19 +410,33 @@ sub _getRedeployment {
       }
     }
     push @regions, { regionId => $d->{id}, tokensNum => $t };
-    swLog(LOG_FILE, '$p->tokens(...) = ' .  $p->tokens($p->tokens - $t) . " (\$t = $t) (regionId = $d->{id})");
-    last if $p->tokens == 0;
+    $p->tokens($p->tokens - $t);
   }
-  # все остатки, которые могли возникнуть пихаем в самый первый регион, потому
-  # что у него уровень опасности самый большой, а значит укрепляем его
+  # все остатки, которые могли возникнуть, пихаем в самый первый регион без
+  # иммунитета, потому что у него уровень опасности самый большой, а значит
+  # укрепляем его
+  my $r = $regions[0];
   foreach ( @regions ) {
     if ( !$g->{gs}->getRegion(id => $_->{regionId})->isImmune ) {
-      $regions[0]->{tokensNum} += $p->tokens;
+      $r = $_;
       last;
     }
   }
+  $r->{tokensNum} += $p->tokens;
   $p->tokens(0);
-  $encampments[0]->{encampmentsNum} += $encampments if $encampments > 0;
+  # остатки по лагерям пихаем в тот же регион
+  if ( $encampments != 0 ) {
+    foreach ( @encampments ) {
+      next if $_->{regionId} != $r->{regionId};
+      $_->{encampmentsNum} += $encampments;
+      $encampments = 0;
+      last;
+    }
+    if ( $encampments != 0 ) {
+      push @encampments, { regionId => $r->{regionId}, encampmentsNum => $encampments };
+      $encampments = 0;
+    }
+  }
 
   return (
       regions     => \@regions,
@@ -419,6 +450,16 @@ sub _beginConquest {
   $self->{maxCoinsForDepth} = [];
   $g->{plan} = [$self->_constructConquestPlan($g, $g->{gs}->getPlayer)];
 #  die 'OK';
+}
+
+sub _beginTurn {
+  my ($self, $g) = @_;
+  my $message;
+  srand;
+  open FILE, '<', MSG_FILE or return;
+  rand($.) < 1 and ($message = $_) while <FILE>;
+  close FILE;
+  $self->_sendGameCmd(game => $g, action => 'sendMessage', text => $message) if ($message // '') ne '';
 }
 
 sub _endConquest {
@@ -460,6 +501,11 @@ sub _shouldStoutDecline {
   # 3?), то желательно привести расу в упадок, т. к. мы скорее всего ничего не
   # сможем завоевать на следующем ходу
   return $tokens <= 3;
+}
+
+sub _shouldSelectFriend {
+  my ($self, $g, $playerId) = @_;
+  return $playerId == $g->{shouldSelectFriendId};
 }
 
 sub _selectRace {

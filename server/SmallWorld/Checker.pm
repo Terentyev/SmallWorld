@@ -548,7 +548,9 @@ sub checkGameCommand {
     &R_TOO_MANY_FORTS_IN_REGION     => sub { $self->checkFortsInRegion($js, @gameVariables); },
     &R_USER_HAS_NOT_REGIONS         => sub { !(grep { $player->activeConq($_) } $game->regions); },
   });
-  $game->save();
+  if ( $result->{result} eq R_ALL_OK || $result->{result} eq R_BAD_TOKENS_NUM ) {
+    $game->save();
+  }
 }
 
 1;
