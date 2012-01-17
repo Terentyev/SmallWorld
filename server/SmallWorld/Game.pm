@@ -187,6 +187,7 @@ sub loadFromDB {
       gameDescription   => $game->{DESCRIPTION},
       currentPlayersNum => $self->{db}->playersCount($gameId),
       gstate            => $game->{GSTATE},
+      lastEvent         => $self->getLastEvent($game->{GSTATE}, $gameId),
     },
     map            => {
       mapId      => $game->{MAPID},
@@ -347,9 +348,9 @@ sub getNotEmptyBadge {
 }
 
 sub getLastEvent {
-  my ($self, $st) = @_;
+  my ($self, $st, $gameId) = @_;
   return $st if $st == GST_WAIT || $st == GST_BEGIN || $st == GST_EMPTY;
-  my $cmd = decode_json($self->{db}->getLastCmd($self->{gameState}->{gameInfo}->{gameId}));
+  my $cmd = decode_json($self->{db}->getLastCmd($gameId));
   return LE_FAILED_CONQUER if $cmd->{action} eq 'conquer' && defined $cmd->{dice};
   return {
     decline       => LE_DECLINE,
@@ -388,9 +389,9 @@ sub getGameStateForPlayer {
     dragonAttacked     => $self->bool($gs->{dragonAttacked}),
     enchanted          => $self->bool($gs->{enchanted}),
     holesPlaced        => $gs->{holesPlaced},
-    gotWealthy         => $self->bool($gs->{gotWealthy})
+    gotWealthy         => $self->bool($gs->{gotWealthy}),
+    lastEvent          => $gs->{gameInfo}->{lastEvent}
   };
-  $result->{lastEvent} = $self->getLastEvent($result->{state});
   $result->{map}->{regions} = [];
   grep {
     push @{ $result->{map}->{regions} }, {
