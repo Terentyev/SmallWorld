@@ -11,14 +11,6 @@ function showModal(divName, h, w) {
   });
 }
 
-function saveServerUrl() {
-  serverUrl = $("#inputServerUrl").val();
-  $("#serverUrl").html(serverUrl);
-  _setCookie(["serverUrl"], [serverUrl]);
-  data.game = null;
-  showLobby();
-};
-
 function showSelectServer() {
   var s = (serverUrl != null ? serverUrl : "http://server.smallworld");
   $("#inputServerUrl").val(s);

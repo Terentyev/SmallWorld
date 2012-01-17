@@ -47,7 +47,7 @@ function cmdLogout() {
     username = null;
     gameId = null;
   }
-  _setCookie(["playerId", "sid", "username", "gameId"], [null, null, null, null]);
+  _setCookie(["playerId", "sid", "username", "gameId", "inGame"], [null, null, null, null, null]);
   showLobby();
   sendRequest(cmd, null);
 }
@@ -123,7 +123,7 @@ function cmdCreateGame() {
     action: "createGame",
     gameName: $("#inputGameName").val(),
     mapId: $("#mapList").val(),
-    gameDescr: $("#inputGameDescr").val(),
+    gameDescription: $("#inputGameDescr").val(),
     ai: $('#selectAINum').val(),
     sid: data.sid
   };
@@ -159,7 +159,7 @@ function cmdJoinGame() {
 }
 
 function hdlJoinGame(ans) {
-  setGame(sentedGameId);
+  setGame(sentedGameId, true);
   showLobby();
 }
 
@@ -172,49 +172,57 @@ function cmdGetGameList() {
 
 function updatePlayersInGame() {
   with (data.game) {
-    var s = $.sprintf("%d/%d", currentPlayersNum, map.playersNum);
-    s +="<br>";
-    //alert(JSON.stringify(players));
+    var s = $.sprintf('%d/%d', currentPlayersNum, map.playersNum);
+    s += '<br>';
+    $('#checkBoxReady').attr('disabled', !data.inGame ? 'disabled': null).attr('checked', null);
     for (var i in players) {
       with (players[i]) {
-        s += $.sprintf("%s %s<br>", username, isReady ? "ready" : "");
-        if (userId == data.playerId) {
-          $('#checkBoxReady').attr('checked', isReady ? "checked": null)
-        }
+        s += $.sprintf('%s %s<br>', username, isReady ? 'ready' : '');
+        if (userId == data.playerId && isReady)
+          $('#checkBoxReady').attr('checked', 'checked');
       }
     }
-    $("#cgamePlayers").html(s);
+    $('#cgamePlayers').html(s);
   }
 }
 
 function hdlGetGameList(ans) {
-  var cur, s = '', needLoadMaps = false, gameStarted = false, gameId = null;
+  var cur, s = '', needLoadMaps = false, gameStarted = false, cursor = '', inGameCount = 0, inGame = false;
   needLoadMaps = needLoadMaps || !ans.length;
   for (var i in ans.games) {
     cur = ans.games[i];
+    needLoadMaps = needLoadMaps || !maps[cur.mapId];
+
     var players = new Array();
+    inGameCount = 0;
     for (var j in cur.players) {
       players[cur.players[j].userId] = cur.players[j];
+      if (cur.players[j].inGame) {
+        ++inGameCount;
+        if (cur.players[j].userId == data.playerId) {
+          //мы в игре но браузер не в курсе
+          if (data.gameId == null) data.gameId = cur.gameId;
+          inGame = true;
+        }
+      }
     }
     games[cur.gameId] = {"name": cur.gameName, "description": cur.gameDescription, "mapId": cur.mapId,
                          "turnsNum": cur.turnsNum, "players": players, "playersNum": cur.maxPlayersNum,
                          "inGame": cur.state != GST_WAIT};
-    needLoadMaps = needLoadMaps || !maps[cur.mapId];
-    if (gameId == null)
-      for (var j in cur.players)
-        if (cur.players[j].userId == data.playerId && cur.players[j].inGame) {
-          gameId = cur.gameId;
-          break;
-        }
+
     gameStarted = gameStarted || (games[cur.gameId].inGame && data.gameId == cur.gameId);
-    s += addRow([$.sprintf("<input type='radio' name='listGameId' value='%s'/>", cur.gameId),
+
+    cursor = data.gameId != cur.gameId ?
+             $.sprintf("<input type='radio' name='listGameId' value='%s'/>", cur.gameId) :
+             '<img src="/pics/currentPlayerCursor.png" />';
+    s += addRow([cursor,
                 cur.gameName,
-                $.sprintf("%d/%d", cur.players.length, cur.maxPlayersNum),
+                $.sprintf("%d/%d", inGameCount, cur.maxPlayersNum),
                 getMapName(cur.mapId),
-                $.sprintf("%d/%d", cur.turn, cur.turnsNum),
-                $.sprintf("<div class='wrap' width='100'>%s</div>", cur.gameDescription)]);
+                cur.state == GST_WAIT ? 'Not started' :$.sprintf("%d/%d", cur.turn, cur.turnsNum),
+                $.sprintf("<div class='wrap'>%s</div>", cur.gameDescription)]);
   }
-  gameId = gameId || data.gameId;
+
   $("#tableGameList tbody").html(s);
   $("#tableGameList").trigger("update");
   $("input:radio[name=listGameId]").first().attr("checked", 1);
@@ -224,17 +232,19 @@ function hdlGetGameList(ans) {
      .click(function (){
        $("input:radio[name=listGameId]").eq(tmp.index(this)).attr("checked", 1);
      });
-  if (gameId != null) {
+  if (data.gameId != null) {
     $("input:radio[name=listGameId]").attr("hidden", 1);
     $('#btnJoin').hide();
-    setGame(gameId);
-  } else
+    $('#btnWatch').hide();
+    setGame(data.gameId, inGame);
+  } else {
     $('#btnJoin').show();
+    $('#btnWatch').show();
+  }
   if (needLoadMaps) cmdGetMapList();
 }
 
 function cmdLeaveGame() {
-  if (!confirm('Do you really want to leave game')) return;
   var cmd = {
     action: "leaveGame",
     sid: data.sid
@@ -276,11 +286,16 @@ function cmdSetReady() {
     sid: data.sid,
     isReady: $('#checkBoxReady').is(':checked') ? 1 : 0
   };
-  sendRequest(cmd, hdlSetReady);
+  sendRequest(cmd, hdlSetReady, '', errSetReady);
 }
 
 function hdlSetReady(ans) {
   cmdGetGameState();
+}
+
+function errSetReady(ans) {
+  $('#checkBoxReady').attr('checked', null);
+  showError(getErrorText(ans.result), null);
 }
 
 function cmdGetGameState() {

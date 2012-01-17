@@ -53,7 +53,7 @@ table.tablesorter thead tr .header {
 table.tablesorter tbody tr {
   color: #3D3D3D;
   background-color: #FFF;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 table.tablesorter tbody tr td { border:1px solid #336699; padding: 4px;}
@@ -72,13 +72,11 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
   background-color: #8dbdd8;
 }
 
-.scrollBox { border: 1px solid #5588bb;}
-
 div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:bold;
             background:url(images/header.gif) repeat-x; -moz-border-radius: 6px 6px 0 0;
             -webkit-border-radius: 6px 6px 0 0; border-radius: 6px 6px 0 0; text-align:center;}
 .header span {padding-left:8px;}
-.buttons {line-height:26px; width:180px; float:right; display: block; padding: 4px 0 0 0;}
+.buttons {line-height:26px; float:right; display: block; padding: 4px 0 0 0;}
 .buttons div { float:right; margin-left:4px; width:80px; height:26px; color:#666; font-weight:bold;
               text-align:center; background:url(images/button.gif) repeat-x; border:1px solid #336699;
               cursor:pointer;}
@@ -88,7 +86,7 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
 
 #myTable tr {border: 1px solid #336699;}
 
-#tabs {height: 600px;}
+#tabs {min-height: 600px;}
 
 .modal {display:none;}
 .message table {width: 100%;}
@@ -131,8 +129,9 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
 
 #selectEncampments {width: 50px;}
 
-#tdLobbyChat {width: 680px;}
-
 #divMapContainer {padding: 10px; overflow:auto; max-height:520px;}
 #tableCenter td {text-align:center;}
 #tdGameChat td {text-align:justify;}
+
+#tdLobbyLeft {width: 740px;}
+#tdLobbyRight {width: 300px;}
