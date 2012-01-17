@@ -410,7 +410,7 @@ sub _getRedeployment {
       }
     }
     push @regions, { regionId => $d->{id}, tokensNum => $t };
-    last if $p->tokens($p->tokens - $t) == 0;
+    $p->tokens($p->tokens - $t);
   }
   # все остатки, которые могли возникнуть, пихаем в самый первый регион без
   # иммунитета, потому что у него уровень опасности самый большой, а значит
