@@ -523,6 +523,8 @@ sub _getRedeployment {
 
 sub _beginConquest { }
 
+sub _beginTurn { }
+
 sub _endConquest { }
 
 # пытаемся захватить конкретный регион
@@ -665,12 +667,14 @@ sub _cmd_defend {
 
 sub _cmd_selectRace {
   my ($self, $g) = @_;
+  $self->_beginTurn($g);
   die 'Fail select race' if
     $self->_sendGameCmd(game => $g, action => 'selectRace', position => $self->_selectRace($g))->{result} ne R_ALL_OK;
 }
 
 sub _cmd_beforeConquest {
   my ($self, $g) = @_;
+  $self->_beginTurn($g);
   $self->_conquer($g);
   # надо прервать все наши действия, что бы дать другому игроку защититься, если
   # в этом есть необходимость

@@ -452,6 +452,16 @@ sub _beginConquest {
 #  die 'OK';
 }
 
+sub _beginTurn {
+  my ($self, $g) = @_;
+  my $message;
+  srand;
+  open FILE, '<', MSG_FILE or return;
+  rand($.) < 1 and ($message = $_) while <FILE>;
+  close FILE;
+  $self->_sendGameCmd(game => $g, action => 'sendMessage', text => $message) if ($message // '') ne '';
+}
+
 sub _endConquest {
   my ($self, $g) = @_;
   @$_{qw(cost coins prevRegionId inThread inResult)} = () for @{ $g->{gs}->regions };
