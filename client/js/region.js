@@ -190,10 +190,9 @@ Region.prototype.update = function(region) {
   var tokenBadgeId = this.r.currentRegionState.tokenBadgeId,
       newTokensNum = region.currentRegionState.tokensNum == null ? 0 : region.currentRegionState.tokensNum,
       newInDecline = region.currentRegionState.inDecline == null ? false : region.currentRegionState.inDecline;
-
+  this.raceName = getRaceNameById(region.currentRegionState.tokenBadgeId);
   if (tokenBadgeId != region.currentRegionState.tokenBadgeId) {
     //alert('reg changed:' + this.regionId());
-    this.raceName = getRaceNameById(region.currentRegionState.tokenBadgeId);
     if (tokenBadgeId == null) {
       //create new
       this.createToken(region, this.raceName);
@@ -206,10 +205,6 @@ Region.prototype.update = function(region) {
       this.setToken(this.raceName, newTokensNum, newInDecline);
     }
   } else if (this.tokens() != newTokensNum || this.get('inDecline') != newInDecline) {
-    if (this.model.race.image.removed) {
-      alert(this.regionId() + 'tokens:'+this.tokens()+' - ' + newTokensNum + ' ' + (this.tokens() != newTokensNum));
-      alert('decline' + this.get('inDecline') + ' - ' + newInDecline + ' ' + (this.get('inDecline') != newInDecline) );
-    }
     this.setToken(this.raceName, newTokensNum, newInDecline);
   }
   this.r.currentRegionState = region.currentRegionState;
