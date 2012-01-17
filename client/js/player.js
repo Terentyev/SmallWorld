@@ -245,7 +245,7 @@ Player.prototype.canAttack = function(regionId) {
 
   var region = regions[regionId];
   var tokensDiff = region.tokens() + region.bonusTokens() - this.tokens() - this.conquestBonusTokens(region);
-  if (this.tokens() < 1 || !this.canThrowDice() && tokensDiff > 3) {
+  if (this.tokens() < 1 || tokensDiff > 0 && (!this.canThrowDice() || tokensDiff > 3)) {
     alert('Not enough tokens for conquest this region');
     return false;
   }
