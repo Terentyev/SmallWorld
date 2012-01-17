@@ -37,7 +37,7 @@ function showGame() {
 
   $("#divGame").css("display", "block");
   $("#divLobby").css("display", "none");
-  $("#tdGameChat").append($("#divChat"));
+  $("#tdGameChat").append($("#divChat").detach());
   showGameTurn();
   showGameMap();
   showBadges();
@@ -64,7 +64,7 @@ function createMap() {
     }
   }
 
-  canvas = Raphael("divMapCanvas", x.max, y.max);
+  canvas.setSize(x.max, y.max);
   for (var i in map.regions) {
     reg = canvas.path(getSVGPath(map.regions[i])).attr(regionAttr).attr("fill", "white");
     reg.click( makeFuncRef(areaClick, i) );
@@ -83,7 +83,7 @@ function showGameMap() {
   if (data.game == null || data.game.state == GST_WAIT || maps[data.game.map.mapId] == null) {
     return;
   }
-  if (!canvas) createMap();
+  if (regions == null || !regions.length) createMap();
   for (var i in regions) {
     regions[i].update(data.game.map.regions[i]);
   }

@@ -89,6 +89,7 @@ function init() {
   $('#mapList').change(function () {
     changeMap($(this).val());
   });
+  canvas = Raphael("divMapCanvas");
 }
 
 function _setCookie(key, value) {
@@ -255,11 +256,9 @@ function clearGame() {
   data.inGame = false;
   _setCookie(["gameId", "inGame"], [null, false]);
   regions = [];
-  if (canvas) {
-    canvas.remove();
-    canvas = null;
-  }
-  $("#tdLobbyChat").append($("#divChat"));
+  if (canvas)
+    canvas.clear();
+  $("#tdLobbyChat").append($("#divChat").detach());
   $("#divChat").trigger("update");
 }
 
