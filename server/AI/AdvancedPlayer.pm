@@ -348,7 +348,7 @@ sub _getRedeployment {
     @$_{qw( hero encampment tokensNum )} = (0, 0, 0);
     if ( $_->isImmune ) {
       $p->tokens($p->tokens - 1);
-      $_->tokens(1);
+      push @regions, { regionId => $_->id, tokensNum => 1 };
     }
   }
 
@@ -371,7 +371,12 @@ sub _getRedeployment {
   if ( $self->_canPlaceHero($g) ) {
     my $heroes = HEROES_MAX;
     foreach ( @dangerous ) {
-      push @heroes, { regionId => $_->{id} };
+      my $r = $g->{gs}->getRegion(id => $_->{id});
+      push @heroes, { regionId => $r->id };
+      push @regions, { regionId => $r->id, tokensNum => 1 };
+      $p->tokens($p->tokens - 1);
+      $r->tokens(1);
+      $r->hero(1);
       last if --$heroes == 0;
     }
     @dangerous = $self->_calculateDangerous($g, @myRegions);
@@ -386,9 +391,13 @@ sub _getRedeployment {
   } @dangerous; # количество регионов, которым не грозит опасность и на которых ещё нет фигурок
   foreach my $d ( @dangerous ) {
     $n -= 1;
-    my $t = $sumD != 0 ? max(1, int(($p->tokens - $m) * $d->{est} / $sumD)) : 0;
+    my $r = $g->{gs}->getRegion(id => $d->{id});
+    next if $r->isImmune;
+
+    my $t = $sumD != 0 ? max(1, int(($p->tokens - $m) * $d->{est} / $sumD)) : 1;
     $sumD -= $d->{est};
-    if ( $fortifieds > 0 ) {
+    $m -= 1 if $d->{est} == 0 && $r->tokens == 0;
+    if ( $fortifieds > 0 && !$r->fortified ) {
       # можно ставить только один форт за ход
       $t = max(1, $t - 1);
       $fortified{regionId} = $d->{id};
@@ -398,42 +407,43 @@ sub _getRedeployment {
       my $enc = max(1, int($encampments / $n));
       $t = max(1, $t - $enc);
       push @encampments, { regionId => $d->{id}, encampmentsNum => $enc };
+      $r->encampment($enc);
       $encampments -= $enc;
     }
-    if ( $t == 0 ) {
-      $t = $g->{gs}->getRegion(id => $d->{id})->tokens;
-      if ( $t != 0 ) {
-        $p->tokens($p->tokens + $t);
-      }
-      else {
-        $t = 1;
-      }
-    }
     push @regions, { regionId => $d->{id}, tokensNum => $t };
-    $p->tokens($p->tokens - $t);
+    $r->tokens($t);
+    last if $p->tokens($p->tokens - $t) == 0;
   }
   # все остатки, которые могли возникнуть, пихаем в самый первый регион без
   # иммунитета, потому что у него уровень опасности самый большой, а значит
   # укрепляем его
   my $r = $regions[0];
+  my $region;
   foreach ( @regions ) {
-    if ( !$g->{gs}->getRegion(id => $_->{regionId})->isImmune ) {
+    swLog(LOG_FILE, $_);
+    $region = $g->{gs}->getRegion(id => $_->{regionId});
+    if ( !$region->isImmune ) {
       $r = $_;
       last;
     }
   }
   $r->{tokensNum} += $p->tokens;
+  $region = $g->{gs}->getRegion(id => $r->{regionId});
+  $region->tokens($region->tokens + $p->tokens);
   $p->tokens(0);
   # остатки по лагерям пихаем в тот же регион
   if ( $encampments != 0 ) {
     foreach ( @encampments ) {
       next if $_->{regionId} != $r->{regionId};
       $_->{encampmentsNum} += $encampments;
+      $region->encampment($region->encampment + $encampments);
       $encampments = 0;
       last;
     }
     if ( $encampments != 0 ) {
       push @encampments, { regionId => $r->{regionId}, encampmentsNum => $encampments };
+      $region = $g->{gs}->getRegion(id => $r->{regionId});
+      $region->encampment($region->encampment + $encampments);
       $encampments = 0;
     }
   }
