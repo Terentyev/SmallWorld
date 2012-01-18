@@ -255,7 +255,7 @@ sub cmd_getGameList {
     push @{$result->{games}}, { 'gameId' => $_->{ID}, 'gameName' => $_->{NAME}, 'gameDescription' => $_->{DESCRIPTION},
                                 'mapId' => $_->{MAPID}, 'maxPlayersNum' => $_->{PLAYERSNUM}, 'turnsNum' => $_->{TURNSNUM},
                                 'state' => $_->{GSTATE}, 'activePlayerId' => $activePlayerId, 'turn' => $turn,
-                                'players' => $players, 'url' => $self->getMapUrl($_->{MAPID}),
+                                'players' => $players, 'picture' => $self->getMapUrl($_->{MAPID}),
                                 'aiRequiredNum' => $_->{AINUM} };
   }
 }
@@ -268,7 +268,7 @@ sub cmd_getMapList {
       'mapName'     => $_->{NAME},
       'playersNum'  => $_->{PLAYERSNUM},
       'turnsNum'    => $_->{TURNSNUM},
-      'url'         => $self->getMapUrl($_->{ID}),
+      'picture'     => $self->getMapUrl($_->{ID}),
       'regions'     => [
         map { {
           coordinates => $_->{coordinates},

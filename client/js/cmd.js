@@ -102,7 +102,7 @@ function hdlGetMapList(ans) {
         "name": mapName,
         "turns": turnsNum,
         "players": playersNum,
-        "url": url,
+        "url": picture,
         "regions": regs
       };
       s += addOption(mapId, mapName);
