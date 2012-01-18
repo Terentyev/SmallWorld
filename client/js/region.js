@@ -145,6 +145,11 @@ Region.prototype.setTokenNum = function(num, numStore, imgStore) {
   else imgStore.hide()
 }
 
+Region.prototype.setDefendTokenNum = function(num) {
+  if (!num) return;
+  this.model.race.num.attr('text', this.tokens()+'+'+num);
+}
+
 Region.prototype.createObject = function(object, num) {
   var x = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[0] + this.model.sp.count * (tokenWidth + 2),
       y = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[1];

@@ -394,8 +394,7 @@ function defendRegion() {
 
   player.addTokens(defend.regions[defend.regionId] - v);
   defend.regions[defend.regionId] = v;
-  $('#aTokensNum' + defend.regionId).html($.sprintf(
-        '%d <a color="#FF0000">+%d</a>', regState.tokensNum, defend.regions[defend.regionId])).trigger('update');
+  regions[defend.regionId].setDefendTokenNum(v);
   $.modal.close();
 }
 
