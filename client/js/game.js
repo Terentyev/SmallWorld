@@ -313,7 +313,7 @@ function areaPlaceTokens(regionId) {
   switch (player.curPower()) {
     case 'Bivouacking':
       var count = parseInt(place.get('encampment'));
-      $('#spanRedeployObjectName').html('Encampments:')
+      $('#spanRedeployObjectName').html('Encampments:');
       s = '<select id="selectEncampments">';
       for (var i = 0; i <= ENCAMPMENTS_MAX - player.getObjectCount('encampment') + count; ++i) {
         s += addOption(i, i, i == count);
