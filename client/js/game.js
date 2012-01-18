@@ -32,8 +32,11 @@ function selectFriend() {
 }
 
 function dragonAttack() {
-  if (!$('#checkBoxDragon').is(':disabled') && $('#checkBoxDragon').is(':checked'))
+  if (!$('#checkBoxDragon').is(':disabled') && $('#checkBoxDragon').is(':checked')) {
     areaClickAction = areaDragonAttack;
+    if (!$('#checkBoxEnchant').is(':disabled'))
+      $('#checkBoxEncant').attr('checked', false);
+  }
   else
     areaClickAction = areaConquer;
 }
@@ -45,7 +48,13 @@ function decline() {
 }
 
 function enchant() {
-  // TODO
+  if (!$('#checkBoxEnchant').is(':disabled') && $('#checkBoxEnchant').is(':checked')) {
+    areaClickAction = areaEnchant;
+    if (!$('#checkBoxDragon').is(':disabled'))
+      $('#checkBoxDragon').attr('checked', false);
+  }
+  else
+    areaClickAction = areaConquer;
 }
 
 /*******************************************************************************
@@ -278,6 +287,17 @@ function areaDragonAttack(regionId) {
   player.setRegionId(regionId);
   //dragonAttack();
   cmdDragonAttack(regionId);
+}
+
+function areaEnchant(regionId) {
+  if (!player.canEnchant(regionId)) {
+    return;
+    setGameStage(GS_CONQUEST);
+  }
+  var r = regions[regionId];
+  setGameStage(r.needDefend() ? GS_DEFEND : GS_CONQUEST);
+  player.setRegionId(regionId);
+  cmdEnchant(regionId);
 }
 
 function areaPlaceTokens(regionId) {

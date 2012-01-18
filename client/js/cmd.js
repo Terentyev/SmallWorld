@@ -481,3 +481,19 @@ function hdlDragonAttack(ans) {
   // TODO: надо бы запомнить регион и обновлять вручную
   cmdGetGameState();
 }
+
+function cmdEnchant(regionId) {
+  var cmd = {
+    action: "enchant",
+    sid: data.sid,
+    regionId: regionId
+  };
+  sendRequest(cmd, hdlEnchant, '#divGameError');
+}
+
+function hdlEnchant(ans) {
+  player.setEnchant();
+  showPlayers();
+  // TODO: надо бы запомнить регион и обновлять вручную
+  cmdGetGameState();
+}
