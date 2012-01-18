@@ -352,7 +352,7 @@ function deployRegion() {
       player.placeObject(place.regionId(), 'hero', $('#checkHero').is(':checked'));
     }
     if ($('#selectEncampments').length) {
-      player.placeObject(place.regionId(), 'encampment', $('#selectEncampments').val());
+      player.placeObject(place.regionId(), 'encampment', parseInt($('#selectEncampments').val()));
     }
   } else
     player.removeObjects(place.regionId());
