@@ -42,9 +42,7 @@ sub process {
     $content = $req->decoded_content;
   }
   if ($ENV{DEBUG} && $r->param('request')) {
-    open FL, '>>' . LOG_FILE;
-    print FL $r->param('request') . "\n" . $content . "\n\n";
-    close FL;
+    debug($r->param('request'), $content);
   }
   print $content;
 
@@ -96,6 +94,13 @@ sub proxyUpload {
   $f->add_content($_) while <$filen>;
   $self->{request}->add_part($f);
   return Apache2::Const::OK;
+}
+
+sub debug {
+  open FL, '>>' . LOG_FILE;
+  print FL "$_\n" for @_;
+  print "\n";
+  close FL;
 }
 
 1;
