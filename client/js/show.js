@@ -157,6 +157,7 @@ function showGameStage() {
   hideAllActions();
   if (data.game.stage == null || data.game.stage == '') return;
   btn.show();
+  $('#btnThrowDice').hide();
   if (data.game.state == GST_FINISH) {
     $('#spanGameStage').html('Oops!.. Game over. You can see final scores');
     btn.html('Scores').attr('title', 'See final scores');
@@ -191,9 +192,10 @@ function showGameStage() {
       switch (player.curPower()) {
         case 'Berserk':
           $('#divThrowDice').show();
-          if (player.canBerserkThrowDice())
-            $('#spanDiceValue').html('<div class="tbutton" onclick="cmdThrowDice();">Throw</div>');
-          else
+          if (player.canBerserkThrowDice()) {
+            $('#spanDiceValue').html('');
+            $('#btnThrowDice').show();
+          } else
             $('#spanDiceValue').html(player.berserkDice());
           break;
         case 'DragonMaster':

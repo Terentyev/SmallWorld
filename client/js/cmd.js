@@ -466,7 +466,7 @@ function cmdThrowDice() {
 
 function hdlThrowDice(ans) {
   player.setBerserkDice(ans.dice);
-  showPlayers();
+  showGameStage();
 }
 
 function cmdSelectFriend(fid) {

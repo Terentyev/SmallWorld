@@ -57,6 +57,14 @@ function enchant() {
     areaClickAction = areaConquer;
 }
 
+function throwDice() {
+  if (!player.tokens() || !player.canThrowDice()) {
+    alert('You can\'t trow dice');
+    return;
+  }
+  cmdThrowDice();
+}
+
 /*******************************************************************************
    *         Utils                                                             *
    ****************************************************************************/
@@ -176,6 +184,7 @@ function mergeGameState(gs) {
   mergeMember(gs, 'friendInfo',         [showPlayers],                  acts);
   mergeMember(gs, 'dragonAttacked',     [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'enchanted',          [showPlayers, changeGameStage], acts);
+  mergeMember(gs, 'berserkDice',        [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'stage',              [showPlayers, changeGameStage], acts);
   mergeMember(gs, 'currentTurn',        [showGameTurn],                 acts);
   mergeMember(gs, 'visibleTokenBadges', [showBadges],                   acts);
@@ -467,7 +476,10 @@ function checkDeploy(cmd, add) {
     cmdGetGameState();
   }
   else if (regs.length != 0) {
-    cmd(regs, camps, heroes, player.getLastFortifiedRegion());
+    if (player.curPower() == 'Heroic' && !heroes.length || (heroes.length == 1) && (regs.length != 1))
+      alert('Place each of your two Heroes in regions you occupy');
+    else
+      cmd(regs, camps, heroes, player.getLastFortifiedRegion());
   }
   else {
     alert('You should place you tokens in the world');

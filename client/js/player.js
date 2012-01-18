@@ -30,6 +30,7 @@ function Player(playerId, gs) {
         this.objectCount[j] += cur[j] || 0;
     }
   }
+  this.p.berserkDice = this.gs.berserkDice;
 }
 
 Player.prototype.userId = function() {
