@@ -20,7 +20,7 @@ function Region(regionId, obj) {
   this.raceName = getRaceNameById(this.r.currentRegionState.tokenBadgeId);
   this.createToken(this.r, this.raceName);
   for (var i in objects) {
-    if (this.r.currentRegionState[i]) this.createObject(i);
+    if (this.r.currentRegionState[i]) this.createObject(i, this.r.currentRegionState[i]);
   }
 }
 
