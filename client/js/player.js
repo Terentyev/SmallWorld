@@ -131,6 +131,10 @@ Player.prototype.setDragonAttack = function() {
   // TODO
 }
 
+Player.prototype.setEnchant = function() {
+  // TODO
+}
+
 Player.prototype.setRegionId = function(regionId) {
   this.p.regionId = regionId;
 }
@@ -294,6 +298,29 @@ Player.prototype.canBaseAttack = function(regionId) {
 Player.prototype.canDragonAttack = function(regionId) {
   // TODO: дополнительные проверки
   return this.canBaseAttack(regionId);
+}
+
+Player.prototype.canEnchant = function(regionId) {
+  if (!this.canBaseAttack(regionId))
+    return false;
+
+  var r = regions[regionId];
+  if (r.tokens() != 1) {
+    alert("You shold enchant on region with 1 token");
+    return false;
+  }
+
+  if (r.get('inDecline')) {
+    alert("You can't enchant on declined race");
+    return false;
+  }
+
+  if (r.get('encampment') > 0) {
+    alert("You can't enchant on region with encampments");
+    return false;
+  }
+
+  return true;
 }
 
 Player.prototype.canAttack = function(regionId) {
