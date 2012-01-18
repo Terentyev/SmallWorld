@@ -66,7 +66,9 @@ function createMap() {
 
   canvas.setSize(x.max, y.max);
   for (var i in map.regions) {
-    reg = canvas.path(getSVGPath(map.regions[i])).attr(regionAttr).attr("fill", "white");
+    reg = canvas.path(getSVGPath(map.regions[i])).attr(regionAttr)
+          .attr("fill", getLandDescriptionUrl(data.game.map.regions[i].constRegionState));
+    //alert(getLandDescriptionUrl(data.game.map.regions[i].constRegionState));
     reg.click( makeFuncRef(areaClick, i) );
     reg.hover(hoverRegion(reg, true), hoverRegion(reg, false));
     regions[i] = new Region(i, reg);
@@ -155,6 +157,7 @@ function showGameStage() {
   hideAllActions();
   if (data.game.stage == null || data.game.stage == '') return;
   btn.show();
+  $('#btnThrowDice').hide();
   if (data.game.state == GST_FINISH) {
     $('#spanGameStage').html('Oops!.. Game over. You can see final scores');
     btn.html('Scores').attr('title', 'See final scores');
@@ -189,9 +192,10 @@ function showGameStage() {
       switch (player.curPower()) {
         case 'Berserk':
           $('#divThrowDice').show();
-          if (player.canBerserkThrowDice())
-            $('#spanDiceValue').html('<div class="tbutton" onclick="cmdThrowDice();">Throw</div>');
-          else
+          if (player.canBerserkThrowDice()) {
+            $('#spanDiceValue').html('');
+            $('#btnThrowDice').show();
+          } else
             $('#spanDiceValue').html(player.berserkDice());
           break;
         case 'DragonMaster':

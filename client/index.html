@@ -29,7 +29,6 @@
   <script type="text/javascript" src="js/player.js"></script>
   <script type="text/javascript" src="js/region.js"></script>
   <script type="text/javascript" src="js/consts.js"></script>
-
   <script type="text/javascript">
 
   $(document).ready(function() {
@@ -243,7 +242,7 @@
             </tr>
             <tr>
               <td>
-                <div id="divMapContainer" class="corner-all">
+                <div id="divMapContainer">
                   <div id="divMapCanvas"></div>
                 </div>
               </td>
@@ -328,6 +327,7 @@
                   <div class="buttons" id="buttonActions">
                     <div id="btnLeaveWatch" onclick="leaveGame();">Leave</div>
                     <div id="btnCommitStage" onclick="commitStageClick();">Scores</div>
+                    <div id="btnThrowDice" onclick="throwDice();">Throw</div>
                   </div>
                 </td></tr>
                 <tr><td></td></tr>
