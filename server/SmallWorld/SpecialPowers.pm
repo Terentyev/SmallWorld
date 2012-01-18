@@ -293,7 +293,8 @@ sub abandonRegion {
 sub canCmd {
   my ($self, $js, $state, $player) = @_;
   # базовый класс + атаковать драконом
-  return $self->SUPER::canCmd($js, $state, $player) || ($js->{action} eq 'dragonAttack') && !$self->{dragonAttacked};
+  return $self->SUPER::canCmd($js, $state, $player) ||
+    ($js->{action} eq 'dragonAttack') && !$self->{dragonAttacked} && $player->tokens > 0;
 }
 
 sub initialTokens {
