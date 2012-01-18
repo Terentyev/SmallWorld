@@ -157,7 +157,7 @@ Region.prototype.createObject = function(object, num) {
   this.model.sp[object].mouseover(hoverRegion(this.model.region, true));
   this.model.sp[object].click( makeFuncRef(areaClick, this.regionId()) );
   if (object == 'encampment') {
-    this.model.sp.num = canvas.text(x + tokenWidth, y + tokenHeight/2, '').attr(textAttr);
+    this.model.sp.num = canvas.text(x + tokenWidth/2, y + tokenHeight/2, '').attr(textAttr);
     this.setTokenNum(num, this.model.sp.num, this.model.sp[object]);
   }
   ++this.model.sp.count;
@@ -174,7 +174,7 @@ Region.prototype.createToken = function(region, raceName) {
       y = maps[data.game.map.mapId].regions[this.regionId()].raceCoords[1],
       img = getRaceImage(raceName, 'token', region.currentRegionState.inDecline);
   this.model.race.image = canvas.image(img, x, y, tokenWidth, tokenHeight).attr('title', raceName);
-  this.model.race.num = canvas.text(x + tokenWidth, y + tokenHeight/2, '').attr(textAttr);
+  this.model.race.num = canvas.text(x + tokenWidth/2, y + tokenHeight/2, '').attr(textAttr);
   this.model.race.image.mouseover(hoverRegion(this.model.region, true));
   this.model.race.num.mouseover(hoverRegion(this.model.region, true));
 

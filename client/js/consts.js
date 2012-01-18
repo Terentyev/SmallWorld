@@ -105,6 +105,15 @@ var objects = {
   'encampment': '/pics/objEncampment.png'
 };
 
+var land = {
+  'sea': "url('./pics/sea.png')",
+  'mountain': "url('./pics/mountain.png')",
+  'forest': "url('./pics/forest.png')",
+  'swamp': "url('./pics/swamp.png')",
+  'hill': "url('./pics/hill.png')",
+  'farmland': "url('./pics/farmland.png')"
+}
+
 const GST_WAIT    = 1;
 const GST_BEGIN   = 0;
 const GST_IN_GAME = 2;
@@ -138,7 +147,8 @@ var regionAttr = {
 
 var textAttr = {
   'text-anchor': 'start',
-  'font-size': 14
+  'font-size': 14,
+  'stroke': "white"
 };
 
 const modalSize = {

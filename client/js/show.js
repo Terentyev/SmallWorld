@@ -66,7 +66,9 @@ function createMap() {
 
   canvas.setSize(x.max, y.max);
   for (var i in map.regions) {
-    reg = canvas.path(getSVGPath(map.regions[i])).attr(regionAttr).attr("fill", "white");
+    reg = canvas.path(getSVGPath(map.regions[i])).attr(regionAttr)
+          .attr("fill", getLandDescriptionUrl(data.game.map.regions[i].constRegionState));
+    //alert(getLandDescriptionUrl(data.game.map.regions[i].constRegionState));
     reg.click( makeFuncRef(areaClick, i) );
     reg.hover(hoverRegion(reg, true), hoverRegion(reg, false));
     regions[i] = new Region(i, reg);

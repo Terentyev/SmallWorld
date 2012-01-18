@@ -273,3 +273,12 @@ function getSVGPath(region) {
     s += (j == 0 ? "M" : "L") + region.coordinates[j][0] + " " + region.coordinates[j][1];
   return s + "Z";
 }
+
+function getLandDescriptionUrl(a) {
+  for (var i in a) {
+    for (var j in land) {
+      if (a[i] == j) return land[j];
+    }
+  }
+  return "white";
+}
