@@ -17,12 +17,11 @@ function Region(regionId, obj) {
       'count': 0
     }
   }
-  this.r.currentRegionState.raceName = getRaceNameById(this.r.currentRegionState.tokenBadgeId);
-  this.createToken(this.r, this.r.currentRegionState.raceName);
+  this.raceName = getRaceNameById(this.r.currentRegionState.tokenBadgeId);
+  this.createToken(this.r, this.raceName);
   for (var i in objects) {
     if (this.r.currentRegionState[i]) this.createObject(i);
   }
-  //alert('cr'+this.r.currentRegionState.raceName);
 }
 
 Region.prototype.regionId = function() {
@@ -100,7 +99,7 @@ Region.prototype.isAdjacent = function(regionId) {
 }
 
 Region.prototype.tokens = function() {
-  return this.r.currentRegionState.tokensNum;
+  return this.r.currentRegionState.tokensNum || 0;
 }
 
 Region.prototype.rmTokens = function(tokens) {
@@ -114,6 +113,7 @@ Region.prototype.bonusTokens = function() {
 }
 
 Region.prototype.conquerByPlayer = function(p, dice) {
+  dice = dice || 0;
   var newTokens = Math.max(1, this.tokens() + this.bonusTokens() - dice - p.conquestBonusTokens(this));
   with (this.r.currentRegionState) {
     ownerId = p.userId();
@@ -187,25 +187,25 @@ Region.prototype.update = function(region) {
       } else this.createObject(i);
     }
   }
-  var tokenBadgeId = this.r.currentRegionState.tokenBadgeId;
-  this.r.currentRegionState.raceName = getRaceNameById(region.currentRegionState.tokenBadgeId);
+  var tokenBadgeId = this.r.currentRegionState.tokenBadgeId,
+      newTokensNum = region.currentRegionState.tokensNum == null ? 0 : region.currentRegionState.tokensNum,
+      newInDecline = region.currentRegionState.inDecline == null ? false : region.currentRegionState.inDecline;
+  this.raceName = getRaceNameById(region.currentRegionState.tokenBadgeId);
   if (tokenBadgeId != region.currentRegionState.tokenBadgeId) {
     //alert('reg changed:' + this.regionId());
-
     if (tokenBadgeId == null) {
       //create new
-      this.createToken(region, this.r.currentRegionState.raceName);
+      this.createToken(region, this.raceName);
     } else if (region.currentRegionState.tokenBadgeId == null) {
       //remove old
       this.model.race.image.remove();
       this.model.race.num.remove();
     } else {
       //replace old
-      this.setToken(this.r.currentRegionState.raceName, region.currentRegionState.tokensNum, region.currentRegionState.inDecline);
+      this.setToken(this.raceName, newTokensNum, newInDecline);
     }
-  } else if (this.tokens() != region.currentRegionState.tokensNum ||
-             this.get['inDecline'] != region.currentRegionState.inDecline) {
-    this.setToken(this.r.currentRegionState.raceName, region.currentRegionState.tokensNum, region.currentRegionState.inDecline);
+  } else if (this.tokens() != newTokensNum || this.get('inDecline') != newInDecline) {
+    this.setToken(this.raceName, newTokensNum, newInDecline);
   }
-  this.r = region;
+  this.r.currentRegionState = region.currentRegionState;
 }

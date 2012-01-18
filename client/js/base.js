@@ -9,6 +9,7 @@ var data = {
       playerId: null,
       username: null,
       gameId: null,
+      inGame: false,
       mapId: null,
       sid: 0
     };
@@ -88,11 +89,25 @@ function init() {
   $('#mapList').change(function () {
     changeMap($(this).val());
   });
+  canvas = Raphael("divMapCanvas");
 }
 
 function _setCookie(key, value) {
   for (var i in key) $.cookie(key[i], value[i]);
 }
+
+function saveServerUrl() {
+  serverUrl = $("#inputServerUrl").val();
+  $("#serverUrl").html(serverUrl);
+  _setCookie(["serverUrl", "playerId", "username"], [serverUrl, null, null]);
+  clearGame();
+  data.playerId = null;
+  data.username = null;
+  $("#tableGameList tbody").empty();
+  $('#divMessages').data('jsp').getContentPane().html('');
+  $('#divMessages').data('jsp').reinitialise();
+  showLobby();
+};
 
 function addRow(list) {
   var s = '<tr>';
@@ -188,7 +203,7 @@ function addOurPlayerInfo(player) {
       getRaceImage(player.declinedTokenBadge.raceName, 'race', 1), player.declinedTokenBadge.raceName,
       specialPowers[player.declinedTokenBadge.specialPowerName], player.declinedTokenBadge.specialPowerName);
   }
-  s += '<tr><td colspan="2"> <div class="buttons"> <div onclick="cmdLeaveGame();">Leave</div>'+
+  s += '<tr><td colspan="2"> <div class="buttons"> <div onclick="leaveGame();">Leave</div>'+
        '<div onclick="cmdSaveGame();">Save</div></div></td></tr>';
   return s;
 }
@@ -227,9 +242,10 @@ function makeCurrentGame(game) {
   showCurrentGame();
 }
 
-function setGame(gameId) {
+function setGame(gameId, inGame) {
   data.gameId = gameId;
-  _setCookie(["gameId"], [gameId]);
+  data.inGame = inGame;
+  _setCookie(["gameId", "inGame"], [gameId, inGame]);
   makeCurrentGame(games[gameId]);
   cmdGetGameState();
 }
@@ -237,13 +253,13 @@ function setGame(gameId) {
 function clearGame() {
   data.gameId = null;
   data.game = null;
-  _setCookie(["gameId"], [null]);
+  data.inGame = false;
+  _setCookie(["gameId", "inGame"], [null, false]);
   regions = [];
-  if (canvas) {
-    canvas.remove();
-    canvas = null;
-  }
-  $("#tdLobbyChat").append($("#divChat"));
+  if (canvas)
+    canvas.clear();
+  $("#tdLobbyChat").append($("#divChat").detach());
+  $("#divChat").trigger("update");
 }
 
 function getSVGPath(region) {

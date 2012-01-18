@@ -454,12 +454,17 @@ function checkDeploy(cmd, add) {
 }
 
 function watchGame() {
+  if (data.gameId != null) return;
   var gameId = $("input:radio[name=listGameId]").filter(":checked").val();
-  setGame(gameId);
+  setGame(gameId, false);
   showLobby();
 }
 
-function leaveWatch() {
-  clearGame();
-  showLobby();
+function leaveGame() {
+  if (!confirm('Do you really want to leave game')) return;
+  if (data.inGame) cmdLeaveGame();
+  else {
+    clearGame();
+    showLobby();
+  }
 }
