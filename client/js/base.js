@@ -117,23 +117,28 @@ function addRow(list) {
   return s;
 }
 
-function addOption(value, string) {
-  return $.sprintf('<option value="%s">%s</option>', value, string);
+function addOption(value, string, selected) {
+  selected = selected || false;
+  return $.sprintf('<option %svalue="%s">%s</option>', selected ? 'selected ': '', value, string);
 }
 
 function getRaceImage(raceName, type, decline) {
   var name = 'None', prefix = './pics/', ext = '.png', postfix = decline ? '_decline': '';
   for (var i in races)
-    if (raceName == races[i]) name = raceName;
+    if (raceName == races[i]) {
+      name = raceName;
+      break;
+    }
   return prefix + type + name + postfix + ext;
 }
 
 function addPlayerInfo(player) {
   var s = $.sprintf(
-    '<tr><td width="16">%s</td><td>%s</td>',
+    '<tr><td width="16">%s</td><td %s>%s</td>',
     currentPlayerCursor(player.userId),
-    player.username + (player.inGame ? '' : '(not in game)'));
-  s += '<td>';
+    (player.inGame ? '' : 'class="notInGame" title="not in game"'),
+    player.username);
+  s += '<td width="110" height="50">';
   if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
     s += $.sprintf(
       '<img src="%s" title="%s" class="token"/>',
@@ -149,25 +154,25 @@ function addPlayerInfo(player) {
   return s;
 }
 
-function getObjectsInHand(player) {
+function getObjectsInHand() {
+  if (!player.hasActiveRace()) return '';
   var s = '<table id="tableInHand"><tbody>';
-  if (player.currentTokenBadge && player.currentTokenBadge.raceName != null) {
-    s += addRow([$.sprintf('<img src="%s"" class="token"/>', getRaceImage(player.currentTokenBadge.raceName, 'token')),
-         $.sprintf('<a id="aTokensInHand">%d</a>', player.tokensInHand)]);
-    switch (player.currentTokenBadge.specialPowerName) {
-      case 'DragonMaster':
-        s += addRow([$.sprintf('<img src="%s""/>', objects['dragon']), 1 - data.game.dragonAttacked]);
-        break;
-      case 'Heroic':
-        s += addRow([$.sprintf('<img src="%s""/>', objects['hero']), 2]);
-        break;
-      case 'Fortified':
-        s += addRow([$.sprintf('<img src="%s""/>', objects['fortified']), 1]);
-        break;
-      case 'Bivouacking':
-        s += addRow([$.sprintf('<img src="%s""/>', objects['encampment']), 5]);
-        break;
-    }
+
+  s += addRow([$.sprintf('<img src="%s"" class="token"/>', getRaceImage(player.curRace(), 'token')),
+       $.sprintf('<a id="aTokensInHand">%d</a>', player.tokens())]);
+  switch (player.curPower()) {
+    case 'DragonMaster':
+      s += addRow([$.sprintf('<img src="%s""/ class="token">', objects['dragon']), 1 - data.game.dragonAttacked]);
+      break;
+    case 'Heroic':
+      s += addRow([$.sprintf('<img src="%s""/ class="token">', objects['hero']), HEROES_MAX - player.getObjectCount('hero')]);
+      break;
+    case 'Fortified':
+      s += addRow([$.sprintf('<img src="%s""/ class="token">', objects['fortified']), 1 - player.getObjectCount('fortified')]);
+      break;
+    case 'Bivouacking':
+      s += addRow([$.sprintf('<img src="%s""/ class="token">', objects['encampment']), ENCAMPMENTS_MAX - player.getObjectCount('encampment')]);
+      break;
   }
   s += '</tbody></table>';
   return s;

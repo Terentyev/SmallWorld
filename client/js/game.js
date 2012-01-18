@@ -68,7 +68,7 @@ function askNumBox(text, onOk, value) {
   $("#divAskNumQuestion").html(text).trigger("update");
   $("#inputAskNum").attr("value", value);
   askNumOkClick = onOk;
-  showModal('#divAskNum');
+  showModal('#divAskNum', modalSize.minHeight + 2*modalSize.lineHeight, 350);
 }
 
 function updatePlayerInfo(gs) {
@@ -307,23 +307,31 @@ function areaPlaceTokens(regionId) {
     alert('Wrong region');
     return;
   }
-
+  var s = '';
+  $('#spanRedeployObjectName').empty();
+  $('#spanRedeployObject').empty();
   switch (player.curPower()) {
     case 'Bivouacking':
-      var s = '', count = place.get('encampment');
+      var count = parseInt(place.get('encampment'));
       $('#spanRedeployObjectName').html('Encampments:')
-      var pattern = $.sprintf("#selectEncampments [value='%s']", count);;
-      for (var i = 0; i <= count + player.encampments(); ++i) {
-        s += addOption(i, i);
+      s = '<select id="selectEncampments">';
+      for (var i = 0; i <= ENCAMPMENTS_MAX - player.getObjectCount('encampment') + count; ++i) {
+        s += addOption(i, i, i == count);
       }
-      $('#selectEncampments').html(s);
-      $(pattern).attr("selected", "selected");
+      s += '</select>';
+      $(s).appendTo('#spanRedeployObject');
       break;
     case 'Fortified':
       $('#spanRedeployObjectName').html('Fortified:');
+      $($.sprintf('<input type="checkbox" id="checkFortified" %s %s>',
+        regions[regionId].get('fortified') ? 'checked="checked"': '',
+        player.canPlaceObject(regionId, 'fortified') ? '': 'disabled="disabled"')).appendTo('#spanRedeployObject');
       break;
-    default:
-      $('#spanRedeployObjectName').html('');
+    case 'Heroic':
+      $('#spanRedeployObjectName').html('Hero:');
+      $($.sprintf('<input type="checkbox" id="checkHero" %s %s>',
+        regions[regionId].get('hero') ? 'checked="checked"': '',
+        player.canPlaceObject(regionId, 'fortified') ? '': 'disabled="disabled"')).appendTo('#spanRedeployObject');
   }
 
   askNumBox('How much tokens deploy on region?',
@@ -335,6 +343,19 @@ function deployRegion() {
   if (checkAskNumber()) return;
   var v = parseInt($("#inputAskNum").attr("value"));
   if (checkEnough(v - place.tokens() > player.tokens(), '#divAskNumError')) return;
+
+  if (v > 0) {
+    if ($('#checkFortified').length && !$('#checkFortified').is(':disabled')) {
+      player.placeObject(place.regionId(), 'fortified', $('#checkFortified').is(':checked'));
+    }
+    if ($('#checkHero').length && !$('#checkHero').is(':disabled')) {
+      player.placeObject(place.regionId(), 'hero', $('#checkHero').is(':checked'));
+    }
+    if ($('#selectEncampments').length) {
+      player.placeObject(place.regionId(), 'encampment', $('#selectEncampments').val());
+    }
+  } else
+    player.removeObjects(place.regionId());
   player.addTokens(place.tokens() - v);
   place.rmTokens(place.tokens() - v);
   $.modal.close();
@@ -405,9 +426,11 @@ function commitStageConquest() {
 function commitStageRedeploy() {
   checkDeploy(
     cmdRedeploy,
-    function(i, regions) {
-      var cur = data.game.map.regions[i].currentRegionState;
-      if (cur.tokensNum != 0) regions.push({ regionId: parseInt(i), tokensNum: cur.tokensNum })
+    function(i, regs, camps, heroes) {
+      var cur = regions[i];
+      if (cur.tokens() != 0) regs.push({ regionId: parseInt(i), tokensNum: cur.tokens() });
+      if (cur.get('hero')) heroes.push({ regionId: parseInt(i)});
+      if (cur.get('encampment')) camps.push({ regionId: parseInt(i), encampmentsNum: parseInt(cur.get('encampment'))});
     });
 }
 
@@ -432,21 +455,20 @@ function commitSelectFriend() {
    *         Some checks                                                       *
    ****************************************************************************/
 function checkDeploy(cmd, add) {
-  var regions = null;
-  for (var i in data.game.map.regions) {
-    var cur = data.game.map.regions[i].currentRegionState;
-    if (cur.tokenBadgeId != player.curTokenBadgeId()) continue;
-    if (regions == null) {
-      regions = [];
+  var regs = null, camps = [], heroes = [];
+  for (var i in regions) {
+    if (!regions[i].isOwned(player.curTokenBadgeId())) continue;
+    if (regs == null) {
+      regs = [];
     }
-    add(i, regions);
+    add(i, regs, camps, heroes);
   }
 
-  if (regions == null) {
+  if (regs == null) {
     cmdGetGameState();
   }
-  else if (regions.length != 0) {
-    cmd(regions);
+  else if (regs.length != 0) {
+    cmd(regs, camps, heroes, player.getLastFortifiedRegion());
   }
   else {
     alert('You should place you tokens in the world');

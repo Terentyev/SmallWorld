@@ -46,6 +46,10 @@ Region.prototype.get = function(attr) {
   return result == null ? 0 : result;
 }
 
+Region.prototype.set = function(attr, value) {
+  this.r.currentRegionState[attr] = value;
+}
+
 Region.prototype.isLand = function() {
   return !(this.isSea() || this.is('lake'));
 }
@@ -108,8 +112,8 @@ Region.prototype.rmTokens = function(tokens) {
 }
 
 Region.prototype.bonusTokens = function() {
-  return 2 + this.get('fortified') + this.get('encampment') + this.get('lair') +
-    (this.isMountain() ? 1 : 0);
+  return 2 + this.get('fortified') + this.get('encampment') +
+        (this.raceName == 'Trolls') + (this.isMountain() ? 1 : 0);
 }
 
 Region.prototype.conquerByPlayer = function(p, dice) {
@@ -118,10 +122,12 @@ Region.prototype.conquerByPlayer = function(p, dice) {
   with (this.r.currentRegionState) {
     ownerId = p.userId();
     tokenBadgeId = p.curTokenBadgeId();
-    tokens = newTokens;
+    tokensNum = newTokens;
     p.addTokens(-newTokens);
-    this.setToken(getRaceNameById(tokenBadgeId), tokens);
+    inDecline = false;
+    this.raceName = getRaceNameById(p.curTokenBadgeId());
   }
+  this.setToken(this.raceName, newTokens, false);
 }
 
 Region.prototype.needDefend = function(){
@@ -139,15 +145,15 @@ Region.prototype.setTokenNum = function(num, numStore, imgStore) {
   else imgStore.hide()
 }
 
-Region.prototype.createObject = function(object) {
-  var x = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[0] + this.model.sp.count * tokenWidth,
+Region.prototype.createObject = function(object, num) {
+  var x = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[0] + this.model.sp.count * (tokenWidth + 2),
       y = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[1];
   this.model.sp[object] = canvas.image(objects[object], x, y, tokenWidth, tokenHeight).attr('title', object);
   this.model.sp[object].mouseover(hoverRegion(this.model.region, true));
   this.model.sp[object].click( makeFuncRef(areaClick, this.regionId()) );
   if (object == 'encampment') {
     this.model.sp.num = canvas.text(x + tokenWidth, y + tokenHeight/2, '').attr(textAttr);
-    this.setTokenNum(this.r.currentRegionState[object], this.model.sp.num, this.model.sp[object]);
+    this.setTokenNum(num, this.model.sp.num, this.model.sp[object]);
   }
   ++this.model.sp.count;
 }
@@ -184,7 +190,7 @@ Region.prototype.update = function(region) {
           this.setTokenNum(region.currentRegionState[i], this.model.sp.num, this.model.sp[i]); //encampments only;
         else
           this.deleteObject(i);
-      } else this.createObject(i);
+      } else this.createObject(i, region.currentRegionState[i]);
     }
   }
   var tokenBadgeId = this.r.currentRegionState.tokenBadgeId,
@@ -208,4 +214,6 @@ Region.prototype.update = function(region) {
     this.setToken(this.raceName, newTokensNum, newInDecline);
   }
   this.r.currentRegionState = region.currentRegionState;
+  this.r.currentRegionState.tokensNum = newTokensNum;
+  this.r.currentRegionState.inDecline = newInDecline;
 }

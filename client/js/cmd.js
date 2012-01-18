@@ -1,8 +1,8 @@
 ﻿function cmdRegister() {
-  var name = $("#inputRegisterUsername").val(), pass = $("#inputRegisterPassword").val();
-  if (!checkUsernameAndPassowrd(name, pass, "#divRegisterError")) return;
+  var name = $('#inputRegisterUsername').val(), pass = $('#inputRegisterPassword').val();
+  if (!checkUsernameAndPassowrd(name, pass, '#divRegisterError')) return;
   var cmd = {
-    action: "register",
+    action: 'register',
     username: name,
     password: pass
   };
@@ -10,35 +10,35 @@
 }
 
 function hdlRegister(ans) {
-  $("#inputLoginUsername").val($("#inputRegisterUsername").val());
-  $("#inputLoginPassword").val($("#inputRegisterPassword").val());
+  $('#inputLoginUsername').val($('#inputRegisterUsername').val());
+  $('#inputLoginPassword').val($('#inputRegisterPassword').val());
   $.modal.close();
-  $("#divRegisterError").empty();
+  $('#divRegisterError').empty();
   cmdLogin();
 }
 
 function cmdLogin() {
-  data.username = $("#inputLoginUsername").val();
+  data.username = $('#inputLoginUsername').val();
   var cmd = {
-    action: "login",
+    action: 'login',
     username: data.username,
-    password: $("#inputLoginPassword").val()
+    password: $('#inputLoginPassword').val()
   };
   sendRequest(cmd, hdlLogin, '#divLoginError');
 }
 
 function hdlLogin(ans) {
-  //"Login accepted. Welcome back, "+ data.username
+  //'Login accepted. Welcome back, '+ data.username
   data.playerId = ans.userId;
   data.sid = ans.sid;
-  _setCookie(["playerId", "sid", "username"], [data.playerId, data.sid, data.username]);
-  $("#divLoginError").empty();
+  _setCookie(['playerId', 'sid', 'username'], [data.playerId, data.sid, data.username]);
+  $('#divLoginError').empty();
   showLobby();
 }
 
 function cmdLogout() {
   var cmd = {
-    action: "logout",
+    action: 'logout',
     sid: data.sid
   };
   with (data) {
@@ -47,28 +47,28 @@ function cmdLogout() {
     username = null;
     gameId = null;
   }
-  _setCookie(["playerId", "sid", "username", "gameId", "inGame"], [null, null, null, null, null]);
+  _setCookie(['playerId', 'sid', 'username', 'gameId', 'inGame'], [null, null, null, null, null]);
   showLobby();
   sendRequest(cmd, null);
 }
 
 function cmdSendMessage() {
   var cmd = {
-    action: "sendMessage",
+    action: 'sendMessage',
     sid: data.sid,
-    text: $("#inputMessageText").val()
+    text: $('#inputMessageText').val()
   };
   sendRequest(cmd, hdlSendMessage);
 }
 
 function hdlSendMessage(ans) {
-  $("#inputMessageText").val('');
+  $('#inputMessageText').val('');
   cmdGetMessages();
 }
 
 function cmdGetMessages() {
   var cmd = {
-    action: "getMessages",
+    action: 'getMessages',
     since: messages.length? messages[messages.length - 1].id : 0
   };
   sendRequest(cmd, hdlGetMessages);
@@ -85,7 +85,7 @@ function hdlGetMessages(ans) {
 
 function cmdGetMapList() {
   var cmd = {
-    action: "getMapList"
+    action: 'getMapList'
   };
   sendRequest(cmd, hdlGetMapList);
 }
@@ -99,31 +99,31 @@ function hdlGetMapList(ans) {
     }
     with(ans.maps[i]) {
       maps[mapId] = {
-        "name": mapName,
-        "turns": turnsNum,
-        "players": playersNum,
-        "url": picture,
-        "regions": regs
+        'name': mapName,
+        'turns': turnsNum,
+        'players': playersNum,
+        'url': picture,
+        'regions': regs
       };
       s += addOption(mapId, mapName);
-      sel = $("span._tmpMap_"+mapId);
+      sel = $('span._tmpMap_'+mapId);
       parent = sel.parent();
       sel.remove();
       parent.html(mapName);
     }
   }
-  $("#mapList").html(s);
-  $("#mapList").change();
-  $("span.tmpmapcontent").remove();
+  $('#mapList').html(s);
+  $('#mapList').change();
+  $('span.tmpmapcontent').remove();
   showGameMap();
 }
 
 function cmdCreateGame() {
   var cmd = {
-    action: "createGame",
-    gameName: $("#inputGameName").val(),
-    mapId: $("#mapList").val() * 1,
-    gameDescription: $("#inputGameDescr").val(),
+    action: 'createGame',
+    gameName: $('#inputGameName').val(),
+    mapId: $('#mapList').val() * 1,
+    gameDescription: $('#inputGameDescr').val(),
     ai: $('#selectAINum').val() * 1,
     sid: data.sid
   };
@@ -133,25 +133,25 @@ function cmdCreateGame() {
 function hdlCreateGame(ans) {
   if ( $('#selectAINum').val() < maps[$('#mapList').val()].players ) {
     data.gameId = ans.gameId;
-    _setCookie(["gameId"], [data.gameId]);
+    _setCookie(['gameId'], [data.gameId]);
     makeCurrentGame({
-      name: $("#inputGameName").val(),
-      description: $("#inputGameDescr").val(),
-      mapId: $("#mapList").val() * 1,
-      turnsNum: maps[$("#mapList").val()].turnsNum
+      name: $('#inputGameName').val(),
+      description: $('#inputGameDescr').val(),
+      mapId: $('#mapList').val() * 1,
+      turnsNum: maps[$('#mapList').val()].turnsNum
     });
   }
   showLobby();
 }
 
 function cmdJoinGame() {
-  sentedGameId = $("input:radio[name=listGameId]").filter(":checked").val();
+  sentedGameId = $('input:radio[name=listGameId]').filter(':checked').val();
   if (sentedGameId == null) {
     showError('Game not selected');
     return;
   }
   var cmd = {
-    action: "joinGame",
+    action: 'joinGame',
     gameId: sentedGameId * 1,
     sid: data.sid
   };
@@ -165,7 +165,7 @@ function hdlJoinGame(ans) {
 
 function cmdGetGameList() {
   var cmd = {
-    action: "getGameList"
+    action: 'getGameList'
   };
   sendRequest(cmd, hdlGetGameList);
 }
@@ -223,17 +223,16 @@ function hdlGetGameList(ans) {
                 $.sprintf("<div class='wrap'>%s</div>", cur.gameDescription)]);
   }
 
-  $("#tableGameList tbody").html(s);
-  $("#tableGameList").trigger("update");
-  $("input:radio[name=listGameId]").first().attr("checked", 1);
-  var tmp = $("#tableGameList tbody tr");
-  tmp.mouseover(function() {$(this).addClass("hover"); })
-     .mouseout(function() {$(this).removeClass("hover"); })
+  $('#tableGameList tbody').html(s);
+  $('input:radio[name=listGameId]').first().attr('checked', 1);
+  var tmp = $('#tableGameList tbody tr');
+  tmp.mouseover(function() {$(this).addClass('hover'); })
+     .mouseout(function() {$(this).removeClass('hover'); })
      .click(function (){
-       $("input:radio[name=listGameId]").eq(tmp.index(this)).attr("checked", 1);
+       $('input:radio[name=listGameId]').eq(tmp.index(this)).attr('checked', 1);
      });
   if (data.gameId != null) {
-    $("input:radio[name=listGameId]").attr("hidden", 1);
+    $('input:radio[name=listGameId]').attr('hidden', 1);
     $('#btnJoin').hide();
     $('#btnWatch').hide();
     setGame(data.gameId, inGame);
@@ -246,7 +245,7 @@ function hdlGetGameList(ans) {
 
 function cmdLeaveGame() {
   var cmd = {
-    action: "leaveGame",
+    action: 'leaveGame',
     sid: data.sid
   };
   sendRequest(cmd, hdlLeaveGame);
@@ -260,16 +259,16 @@ function hdlLeaveGame(ans) {
 function cmdUploadMap() {
   var tmp;
   try {
-    tmp = JSON.parse($("#inputMapRegions").val());
+    tmp = JSON.parse($('#inputMapRegions').val());
   } catch(err) {
     showError('Bad regions description');
     return;
   }
   var cmd = {
-    action: "uploadMap",
-    mapName: $("#inputMapName").val(),
-    playersNum: $("#mapPlayersNum").val(),
-    turnsNum: $("#mapTurnsNum").val(),
+    action: 'uploadMap',
+    mapName: $('#inputMapName').val(),
+    playersNum: $('#mapPlayersNum').val(),
+    turnsNum: $('#mapTurnsNum').val(),
     regions: tmp
   };
   sendRequest(cmd, hdlUploadMap);
@@ -300,7 +299,7 @@ function errSetReady(ans) {
 
 function cmdGetGameState() {
   var cmd = {
-    action: "getGameState",
+    action: 'getGameState',
     gameId: data.gameId * 1
   };
   sendRequest(cmd, hdlGetGameState, '#divGameError');
@@ -325,7 +324,7 @@ function hdlGetGameState(ans) {
   if (data.game.state == GST_WAIT) {
     updatePlayersInGame();
   }
-  if (gameStarted) alert('In game');
+  //if (gameStarted) alert('In game');
 }
 
 /*******************************************************************************
@@ -333,7 +332,7 @@ function hdlGetGameState(ans) {
    ****************************************************************************/
 function cmdSelectRace(position) {
   var cmd = {
-    action: "selectRace",
+    action: 'selectRace',
     sid: data.sid,
     position: position
   };
@@ -349,7 +348,7 @@ function hdlSelectRace(ans) {
    ****************************************************************************/
 function cmdConquer(regionId) {
   var cmd = {
-    action: "conquer",
+    action: 'conquer',
     regionId: regionId * 1,
     sid: data.sid
   };
@@ -365,7 +364,7 @@ function hdlConquer(ans) {
           'Conquest is over.',
           ans.dice));
   }
-  regions[player.getRegionId()].conquerByPlayer(player, ans.dice);
+  //regions[player.getRegionId()].conquerByPlayer(player, ans.dice);
   cmdGetGameState();
 }
 
@@ -387,7 +386,7 @@ function errConquer(ans, cnt) {
 
 function cmdDefend(regions) {
   var cmd = {
-    action: "defend",
+    action: 'defend',
     regions: regions,
     sid: data.sid
   };
@@ -400,12 +399,16 @@ function hdlDefend(ans) {
   cmdGetGameState();
 }
 
-function cmdRedeploy(regions) {
+function cmdRedeploy(regions, camps, heroes, fortressId) {
   var cmd = {
-    action: "redeploy",
+    action: 'redeploy',
     regions: regions,
     sid: data.sid
   };
+  if (camps && camps.length) cmd.encampments = camps;
+  if (heroes && heroes.length) cmd.heroes = heroes;
+  if (fortressId) cmd.fortified = {'regionId': fortressId};
+
   sendRequest(cmd, hdlRedeploy, '#divGameError');
 }
 
@@ -420,7 +423,7 @@ function hdlRedeploy(ans) {
    ****************************************************************************/
 function cmdFinishTurn() {
   var cmd = {
-    action: "finishTurn",
+    action: 'finishTurn',
     sid: data.sid
   };
   sendRequest(cmd, hdlFinishTurn, '#divGameError');
@@ -438,7 +441,7 @@ function hdlFinishTurn(ans) {
    ****************************************************************************/
 function cmdDecline() {
   var cmd = {
-    action: "decline",
+    action: 'decline',
     sid: data.sid
   };
   sendRequest(cmd, hdlDecline, '#divGameError');
@@ -455,7 +458,7 @@ function hdlDecline(ans) {
    ****************************************************************************/
 function cmdThrowDice() {
   var cmd = {
-    action: "throwDice",
+    action: 'throwDice',
     sid: data.sid
   };
   sendRequest(cmd, hdlThrowDice, '#divGameError');
@@ -468,7 +471,7 @@ function hdlThrowDice(ans) {
 
 function cmdSelectFriend(fid) {
   var cmd = {
-    action: "selectFriend",
+    action: 'selectFriend',
     sid: data.sid,
     friendId: fid * 1
   };
@@ -483,7 +486,7 @@ function hdlSelectFriend(ans) {
 
 function cmdDragonAttack(regionId) {
   var cmd = {
-    action: "dragonAttack",
+    action: 'dragonAttack',
     sid: data.sid,
     regionId: regionId * 1
   };
