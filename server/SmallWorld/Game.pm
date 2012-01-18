@@ -322,7 +322,7 @@ sub dropObjects {
   my $self = shift;
   # вместо того, чтобы сохранять в json объекты-игроков, сохраняем только
   # информацию о них
-  SmallWorld::SafeObj::DropObj(\$_) for (@{ $self->players }, @{ $self->regions });
+  SmallWorld::SafeObj::DropObj(\$_) for ( @{ $self->{gameState}->{players} }, @{ $self->{gameState}->{regions} } );
 }
 
 # устанавливает определенные карточки рас и умений
@@ -979,39 +979,34 @@ sub stage          { return $_[0]->{gameState}->{state};                        
 sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};                                       }
 sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};                                           }
 sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};                                            }
-sub players        { return wantarray ? @{ $_[0]->{gameState}->{players} } : $_[0]->{gameState}->{players}; }
+sub regions        { return wantarray ? @{ $_[0]->{gameState}->{regions} } : $_[0]->{gameState}->{regions}; }
 sub tokenBadges    { return $_[0]->{gameState}->{tokenBadges};                                              }
 sub currentTurn    { return $_[0]->{gameState}->{currentTurn};                                              }
 sub maxTurnNum     { return $_[0]->{gameState}->{map}->{turnsNum} - 1;                                      }
 sub conqueror      { return $_[0]->getPlayer(id => $_[0]->{gameState}->{conquerorId});                      }
 sub dragonAttacked { return $_[0]->{gameState}->{dragonAttacked} // 0;                                      }
-sub regions {
+sub players {
   my ($self, $b, $e) = @_;
-  my $regions = $self->{gameState}->{regions};
+  my $players = $self->{gameState}->{players};
   if ( defined $b && defined $e ) {
     my $findB = 0;
     my $findE = 0;
     my $findFirstB = 0;
     my %buf = ();
-    foreach ( @$regions ) {
-      $findB = $findB || $_->{regionId} == $b->{regionId};
+    foreach ( @$players ) {
+      $findB = $findB || $_->{playerId} == $b->{playerId};
       $findFirstB = $findFirstB || $findB && !$findE;
-      $buf{ $_->{regionId} } = $findB ^ $findE;
-      $findE = $findE || $_->{regionId} == $e->{regionId};
+      $buf{ $_->{playerId} } = $findB ^ $findE;
+      $findE = $findE || $_->{playerId} == $e->{playerId};
     }
     my @result = ();
     foreach my $k ( keys %buf ) {
-      if ( $buf{$k} == $findFirstB ) {
-        foreach ( @$regions ) {
-          next unless $_->{regionId} == $k;
-          push @result, $_;
-          last;
-        }
-      }
+      push @result, $self->getPlayer(id => $k) if $buf{$k} == $findFirstB;
     }
-    $regions = \@result;
+    $players = \@result;
   }
-  return wantarray ? @$regions : $regions;
+  $players = [grep $_->{inGame}, @$players];
+  return wantarray ? @$players : $players;
 }
 sub berserkDice {
   my $self = shift;
