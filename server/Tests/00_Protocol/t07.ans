@@ -30,8 +30,9 @@
     {
         "result": "ok",
         "maps":[
-          {"turnsNum": 5, "playersNum": 2, "mapName": "Are you lucky?", "mapId": 1, "url": "/public/imgs/map_1.png"},
-          {"turnsNum": 5, "playersNum": 3, "mapName": "Cheburashka",    "mapId": 2, "url": "/public/imgs/map_2.png"}
+          {"turnsNum": 5, "playersNum": 2, "mapName": "Are you lucky?", "mapId": 1, "picture": "/public/imgs/map_1.png"},
+          {"turnsNum": 5, "playersNum": 3, "mapName": "Cheburashka",    "mapId": 2, "picture": "/public/imgs/map_2.png"},
+          {"turnsNum":10, "playersNum": 2, "mapName": "map1",           "mapId": 3, "picture": ""}
         ]
     }
 

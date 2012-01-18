@@ -280,7 +280,12 @@ sub getGames {
   return $self->fetchall('
       SELECT
         g.id, g.name, g.description, g.mapId, g.gstate, m.playersNum, m.turnsNum, g.activePlayerId,
-        g.currentTurn, g.aiNum
+        g.currentTurn,
+        g.aiNum - (
+          SELECT COUNT(*)
+          FROM PLAYERS p
+          INNER JOIN CONNECTIONS c ON c.playerId = p.id
+          WHERE p.isAI = 1 AND c.gameId = g.id) AS aiNum
       FROM GAMES g INNER JOIN MAPS m ON g.mapId = m.id
       WHERE g.gstate <> ?
       ORDER BY g.id ASC',

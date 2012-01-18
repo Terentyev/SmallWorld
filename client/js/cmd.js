@@ -102,7 +102,7 @@ function hdlGetMapList(ans) {
         'name': mapName,
         'turns': turnsNum,
         'players': playersNum,
-        'url': url,
+        'url': picture,
         'regions': regs
       };
       s += addOption(mapId, mapName);
@@ -122,9 +122,9 @@ function cmdCreateGame() {
   var cmd = {
     action: 'createGame',
     gameName: $('#inputGameName').val(),
-    mapId: $('#mapList').val(),
+    mapId: $('#mapList').val() * 1,
     gameDescription: $('#inputGameDescr').val(),
-    ai: $('#selectAINum').val(),
+    ai: $('#selectAINum').val() * 1,
     sid: data.sid
   };
   sendRequest(cmd, hdlCreateGame);
@@ -137,7 +137,7 @@ function hdlCreateGame(ans) {
     makeCurrentGame({
       name: $('#inputGameName').val(),
       description: $('#inputGameDescr').val(),
-      mapId: $('#mapList').val(),
+      mapId: $('#mapList').val() * 1,
       turnsNum: maps[$('#mapList').val()].turnsNum
     });
   }
@@ -152,7 +152,7 @@ function cmdJoinGame() {
   }
   var cmd = {
     action: 'joinGame',
-    gameId: sentedGameId,
+    gameId: sentedGameId * 1,
     sid: data.sid
   };
   sendRequest(cmd, hdlJoinGame);
@@ -300,7 +300,7 @@ function errSetReady(ans) {
 function cmdGetGameState() {
   var cmd = {
     action: 'getGameState',
-    gameId: data.gameId
+    gameId: data.gameId * 1
   };
   sendRequest(cmd, hdlGetGameState, '#divGameError');
 }
@@ -349,7 +349,7 @@ function hdlSelectRace(ans) {
 function cmdConquer(regionId) {
   var cmd = {
     action: 'conquer',
-    regionId: regionId,
+    regionId: regionId * 1,
     sid: data.sid
   };
   sendRequest(cmd, hdlConquer, '#divGameError', errConquer);
@@ -473,7 +473,7 @@ function cmdSelectFriend(fid) {
   var cmd = {
     action: 'selectFriend',
     sid: data.sid,
-    friendId: fid
+    friendId: fid * 1
   };
   sendRequest(cmd, hdlSelectFriend);
 }
@@ -488,7 +488,7 @@ function cmdDragonAttack(regionId) {
   var cmd = {
     action: 'dragonAttack',
     sid: data.sid,
-    regionId: regionId
+    regionId: regionId * 1
   };
   sendRequest(cmd, hdlDragonAttack, '#divGameError');
 }
@@ -504,7 +504,7 @@ function cmdEnchant(regionId) {
   var cmd = {
     action: "enchant",
     sid: data.sid,
-    regionId: regionId
+    regionId: regionId * 1
   };
   sendRequest(cmd, hdlEnchant, '#divGameError');
 }
