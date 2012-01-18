@@ -114,7 +114,7 @@ sub _loadState {
 
 sub do {
   my ($self, $game) = @_;
-  if ( $game->{state} == GST_WAIT ) {
+  if ( $game->{state} == GST_WAIT && $game->{aiRequiredNum} > 0 ) {
     # если игра в режиме ожидания игроков, то пытаемся к ней подключиться
     $self->_join2Game($game);
     return;
