@@ -120,6 +120,10 @@ const GS_BEFORE_FINISH_TURN = 'beforeFinishTurn';
 const GS_FINISH_TURN        = 'finishTurn';
 const GS_IS_OVER            = 'gameOver';
 
+const HEROES_MAX = 2;
+const ENCAMPMENTS_MAX = 5;
+const FORTRESSES_MAX = 6;
+
 const actionDivs = ['#divDecline', '#divEnchant', '#divDragonAttack', '#divThrowDice', '#divRedeploy', '#divConquest', '#divSelectFriend'];
 
 const tokenWidth = 40;

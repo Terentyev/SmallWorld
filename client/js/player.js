@@ -5,11 +5,31 @@ function Player(playerId, gs) {
   if (this.gs == null) {
     this.gs = data.game;
   }
-  for (var i in this.gs.players) {
-    this.p = this.gs.players[i];
-    if (this.p.userId == playerId) return;
-  }
+  var inGame = false;
   this.p = null;
+  for (var i in this.gs.players) {
+    if (this.gs.players[i].userId == playerId) {
+      inGame = true;
+      this.p = this.gs.players[i];
+      break;
+    }
+  }
+  if (!inGame) return;
+
+  //количество объектов на регионах с активной расой
+  this.objectCount = {
+    'hero': 0,
+    'fortified': 0,
+    'encampment': 0
+  };
+
+  for (var i in this.gs.map.regions) {
+    var cur = this.gs.map.regions[i].currentRegionState;
+    if (cur.tokenBadgeId && this.p.currentTokenBadge && cur.tokenBadgeId == this.p.currentTokenBadge.tokenBadgeId) {
+      for (var j in this.objectCount)
+        this.objectCount[j] += cur[j] || 0;
+    }
+  }
 }
 
 Player.prototype.userId = function() {
@@ -59,6 +79,44 @@ Player.prototype.coins = function() {
 
 Player.prototype.tokens = function() {
   return this.p.tokensInHand;
+}
+
+Player.prototype.getObjectCount = function(object) {
+  return this.objectCount[object] || 0;
+}
+
+Player.prototype.getLastFortifiedRegion = function(object) {
+  return this.lastFortified || 0;
+}
+
+Player.prototype.canPlaceObject = function(regionId, object) {
+  switch (this.curPower()) {
+    case 'Encampment':
+      if (this.objectCount.encampment >= ENCAMPMENTS_MAX) return false
+      break;
+    case 'Fortified':
+      if (this.objectCount.fortified >= FORTRESSES_MAX ||
+          (!this.getLastFortifiedRegion() && regions[regionId].get('fortified')) ||
+          (this.getLastFortifiedRegion() && this.getLastFortifiedRegion() != regionId)) return false;
+      break;
+    case 'Heroic':
+      if (this.objectCount.hero >= HEROES_MAX && !regions[regionId].get('hero')) return false;
+  }
+
+  return true;
+}
+
+Player.prototype.placeObject = function(regionId, object, num) {
+  var old = regions[regionId].get(object);
+  if (old) regions[regionId].deleteObject(object);
+  if (num) regions[regionId].createObject(object, num);
+  regions[regionId].set(object, num);
+  this.objectCount[object] += num - old;
+  if (object == 'fortified') this.lastFortified = num ? regionId: 0;
+}
+
+Player.prototype.removeObjects = function(regionId) {
+
 }
 
 Player.prototype.setBerserkDice = function(dice) {
@@ -176,7 +234,7 @@ Player.prototype.canBaseAttack = function(regionId) {
     alert('Region is immune');
     return false;
   }
-
+  //TODO проверить друг ли
   if (!(this.curPower() == 'Seafaring' || region.isLand())) {
     alert("You can't conquer not land")
     return false;
@@ -244,7 +302,7 @@ Player.prototype.canAttack = function(regionId) {
   }
 
   var region = regions[regionId];
-  var tokensDiff = region.tokens() + region.bonusTokens() - this.tokens() + this.conquestBonusTokens(region);
+  var tokensDiff = region.tokens() + region.bonusTokens() - this.tokens() - this.conquestBonusTokens(region);
   if (this.tokens() < 1 || tokensDiff > 0 && (!this.canThrowDice() || tokensDiff > 3)) {
     alert('Not enough tokens for conquest this region');
     return false;

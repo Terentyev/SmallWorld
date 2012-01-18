@@ -27,6 +27,7 @@ select {width: 100%;}
 .error {font-weight:bold; color: #cd0a0a;}
 td.left {width: 100px;}
 td.smallLeft {width: 60px; white-space: nowrap}
+#divGameList {padding: 2px;}
 /* tables */
 table.tablesorter {
   font: 14px Verdana, Arial;
@@ -131,7 +132,10 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
 
 #divMapContainer {padding: 10px; overflow:auto; max-height:520px;}
 #tableCenter td {text-align:center;}
-#tdGameChat td {text-align:justify;}
+#tdGameChat td {text-align:left;}
 
-#tdLobbyLeft {width: 740px;}
+#tdLobbyLeft, #tdGameCenter {width: 710px;}
 #tdLobbyRight {width: 300px;}
+
+.notInGame { font-style: italic;}
+#checkFortified, #checkHero {margin-left: 0px}
