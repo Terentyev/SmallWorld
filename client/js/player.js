@@ -85,13 +85,21 @@ Player.prototype.getObjectCount = function(object) {
   return this.objectCount[object] || 0;
 }
 
+Player.prototype.getObjectsInHand = function(object) {
+  switch (object) {
+    case 'encampment': return ENCAMPMENTS_MAX - this.objectCount.encampment;
+    case 'hero': return HEROES_MAX - this.objectCount.hero;
+    case 'fortified': return this.getLastFortifiedRegion() ? 0 : 1;
+  }
+}
+
 Player.prototype.getLastFortifiedRegion = function(object) {
   return this.lastFortified || 0;
 }
 
 Player.prototype.canPlaceObject = function(regionId, object) {
   switch (this.curPower()) {
-    case 'Encampment':
+    case 'Bivouacking':
       if (this.objectCount.encampment >= ENCAMPMENTS_MAX) return false
       break;
     case 'Fortified':
@@ -113,10 +121,19 @@ Player.prototype.placeObject = function(regionId, object, num) {
   regions[regionId].set(object, num);
   this.objectCount[object] += num - old;
   if (object == 'fortified') this.lastFortified = num ? regionId: 0;
+  $($.sprintf('#a%sInHand', object)).html(this.getObjectsInHand(object));
 }
 
 Player.prototype.removeObjects = function(regionId) {
-
+  for (var i in objects) {
+    if (regions[regionId].get(i) && i != 'dragon' && i != 'holeInTheGround') {
+      this.objectCount[i] -= regions[regionId].get(i);
+      regions[regionId].set(i, i == 'encampment' ? 0: false);
+      regions[regionId].deleteObject(i);
+      if (i == 'fortified') this.lastFortified = 0;
+      $($.sprintf('#a%sInHand', i)).html(this.getObjectsInHand(i));
+    }
+  }
 }
 
 Player.prototype.setBerserkDice = function(dice) {
