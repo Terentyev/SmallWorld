@@ -157,7 +157,7 @@ function prepare(gs) {
           break;
         //case LE_FINISH_TURN:
         default:
-          gs.stage = player.haveActiveRace()
+          gs.stage = player.hasActiveRace()
             ? GS_BEFORE_CONQUEST
             : GS_SELECT_RACE;
           break;
