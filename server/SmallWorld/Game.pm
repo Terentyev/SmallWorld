@@ -405,7 +405,7 @@ sub getGameStateForPlayer {
       currentRegionState => {
         ownerId         => $_->{ownerId},
         tokenBadgeId    => $_->{tokenBadgeId},
-        tokensNum       => $_->{tokensNum},
+        tokensNum       => $_->{tokensNum} // 0,
         holeInTheGround => $self->bool($_->{holeInTheGround}),
         encampment      => $_->{encampment} // 0,
         dragon          => $self->bool($_->{dragon}),
