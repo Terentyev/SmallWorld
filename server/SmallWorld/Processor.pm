@@ -46,7 +46,9 @@ sub process {
       $result->{sid} *= 1;
     }
   }
-  print encode_json($result)."\n" or die "Can not encode JSON-object\n";
+  $result = encode_json($result)."\n" or die "Can not encode JSON-object\n";
+  debug($r, $result);
+  print $result;
   $self->{_game} = undef;
 }
 
@@ -91,7 +93,12 @@ sub getGame {
 
 sub needSaveCmd {
   my ($self, $js, $result) = @_;
-  return 1 if $js->{action} eq 'conquer' && $result->{result} eq R_BAD_TOKENS_NUM;
+  if ( $js->{action} eq 'conquer' ) {
+    return 1 if defined $result->{dice};
+    if ( $result->{result} eq R_BAD_TOKENS_NUM ) {
+      return decode_json($self->{db}->getLastCmd($self->{db}->getGameId($js->{sid})))->{action} eq 'throwDice';
+    }
+  }
   return 0 if $result->{result} ne R_ALL_OK;
   foreach ( @{ &SAVED_COMMANDS } ) {
     return 1 if $_ eq $js->{action};
