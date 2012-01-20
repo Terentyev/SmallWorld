@@ -407,7 +407,7 @@ sub getGameStateForPlayer {
         tokenBadgeId    => $_->{tokenBadgeId},
         tokensNum       => $_->{tokensNum},
         holeInTheGround => $self->bool($_->{holeInTheGround}),
-        encampment      => $_->{encampment},
+        encampment      => $_->{encampment} // 0,
         dragon          => $self->bool($_->{dragon}),
         fortified       => $self->bool($_->{fortified}),
         hero            => $self->bool($_->{hero}),
