@@ -91,7 +91,7 @@ sub getGame {
 
 sub needSaveCmd {
   my ($self, $js, $result) = @_;
-  return 1 if $js->{action} eq 'conquer' && defined $result->{dice};
+  return 1 if $js->{action} eq 'conquer' && $result->{result} eq R_BAD_TOKENS_NUM;
   return 0 if $result->{result} ne R_ALL_OK;
   foreach ( @{ &SAVED_COMMANDS } ) {
     return 1 if $_ eq $js->{action};
