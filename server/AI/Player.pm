@@ -206,8 +206,22 @@ sub _sendGameCmd {
   }
   die "Can't define sid of player for command $cmd->{action}\n" if !defined $cmd->{sid};
   (!defined $cmd->{$_} and delete $cmd->{$_}) for keys %$cmd;
+  $self->_forceNumbers(\$cmd);
   $cmd = eval { encode_json($cmd) } || die "Can't encode json :(\n";
   $self->_get($cmd, 1);
+}
+
+sub _forceNumbers {
+  my ($self, $h, $n) = (@_, '');
+  if ( ref($$h) eq 'HASH' ) {
+    $self->_forceNumbers(\$$h->{$_}, $_) for keys %$$h;
+  }
+  elsif ( ref($$h) eq 'ARRAY' ) {
+    $self->_forceNumbers(\$_) for @$$h;
+  }
+  elsif ( $n =~ /id$/i ) {
+    $$h *= 1;
+  }
 }
 
 # текущий ход последний?

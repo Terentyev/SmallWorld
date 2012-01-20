@@ -48,7 +48,7 @@ sub _get {
 
 sub _getGames {
   my $self = shift;
-  my @result = @{ $self->_get('{ "action": "getGameList" }')->{games} };
+  my @result = @{ $self->_get('{ "action": "getGameList" }')->{games} // [] };
   if ( defined $self->{game} ) {
     @result = grep { $_->{gameId} == $self->{game} } @result;
   }
