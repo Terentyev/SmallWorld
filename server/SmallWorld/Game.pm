@@ -342,9 +342,12 @@ sub setTokenBadge {
 }
 
 sub getNotEmptyBadge {
-  return defined $_[1] && defined $_[1]->{tokenBadgeId}
-    ? { %{$_[1]} }
-    : undef;
+  my ($self, $badge) = @_;
+  return undef if !defined $badge || !defined $badge->{tokenBadgeId};
+  my $result = { %$badge };
+  $result->{totalTokensNum} = $result->{tokensInHand} +
+    $self->getTokensNum($result->{tokenBadgeId});
+  return $result;
 }
 
 sub getLastEvent {
@@ -425,16 +428,6 @@ sub getGameStateForPlayer {
       declinedTokenBadge => $self->getNotEmptyBadge($_->{declinedTokenBadge})
     }
   } @{ $gs->{players} };
-  foreach ( @{ $result->{players} } ) {
-    if ( defined $_->{currentTokenBadge}->{tokenBadgeId} ) {
-      $_->{currentTokenBadge}->{totalTokensNum} = $_->{tokensInHand} +
-        $self->getTokensNum($_->{currentTokenBadge}->{tokenBadgeId});
-    }
-    if ( $_->{declinedTokenBadge}->{tokenBadgeId} ) {
-      $_->{declinedTokenBadge}->{totalTokensNum} =
-        $self->getTokensNum($_->{declinedTokenBadge}->{tokenBadgeId});
-    }
-  }
   $self->removeNull($result);
   return $result;
 }
