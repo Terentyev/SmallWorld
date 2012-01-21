@@ -129,6 +129,16 @@ const GS_BEFORE_FINISH_TURN = 'beforeFinishTurn';
 const GS_FINISH_TURN        = 'finishTurn';
 const GS_IS_OVER            = 'gameOver';
 
+const LE_FINISH_TURN    =  4;
+const LE_SELECT_RACE    =  5;
+const LE_CONQUER        =  6;
+const LE_DECLINE        =  7;
+const LE_REDEPLOY       =  8;
+const LE_THROW_DICE     =  9;
+const LE_DEFEND         = 12;
+const LE_SELECT_FRIEND  = 13;
+const LE_FAILED_CONQUER = 14;
+
 const HEROES_MAX = 2;
 const ENCAMPMENTS_MAX = 5;
 const FORTRESSES_MAX = 6;

@@ -70,8 +70,7 @@
                     "userId": 2,
                     "username": "username2",
                     "isReady": true,
-                    "priority": 2,
-                    "currentTokenBadge": {}
+                    "priority": 2
                 }
             ]
         }

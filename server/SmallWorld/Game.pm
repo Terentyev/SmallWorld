@@ -342,9 +342,13 @@ sub setTokenBadge {
 }
 
 sub getNotEmptyBadge {
-  return defined $_[1] && defined $_[1]->{tokenBadgeId}
-    ? { %{$_[1]} }
-    : undef;
+  my ($self, $player, $badge) = @_;
+  $badge = $player->{$badge};
+  return undef if !defined $badge || !defined $badge->{tokenBadgeId};
+  my $result = { %$badge };
+  $result->{totalTokensNum} = $player->{tokensInHand} +
+    $self->getTokensNum($result->{tokenBadgeId});
+  return $result;
 }
 
 sub getLastEvent {
@@ -401,9 +405,9 @@ sub getGameStateForPlayer {
       currentRegionState => {
         ownerId         => $_->{ownerId},
         tokenBadgeId    => $_->{tokenBadgeId},
-        tokensNum       => $_->{tokensNum},
+        tokensNum       => $_->{tokensNum} // 0,
         holeInTheGround => $self->bool($_->{holeInTheGround}),
-        encampment      => $_->{encampment},
+        encampment      => $_->{encampment} // 0,
         dragon          => $self->bool($_->{dragon}),
         fortified       => $self->bool($_->{fortified}),
         hero            => $self->bool($_->{hero}),
@@ -421,20 +425,10 @@ sub getGameStateForPlayer {
       coins              => $_->{coins},
       tokensInHand       => $_->{tokensInHand},
       priority           => $_->{priority} + 1,
-      currentTokenBadge  => $self->getNotEmptyBadge($_->{currentTokenBadge}),
-      declinedTokenBadge => $self->getNotEmptyBadge($_->{declinedTokenBadge})
+      currentTokenBadge  => $self->getNotEmptyBadge($_, 'currentTokenBadge'),
+      declinedTokenBadge => $self->getNotEmptyBadge($_, 'declinedTokenBadge')
     }
   } @{ $gs->{players} };
-  foreach ( @{ $result->{players} } ) {
-    if ( defined $_->{currentTokenBadge}->{tokenBadgeId} ) {
-      $_->{currentTokenBadge}->{totalTokensNum} = $_->{tokensInHand} +
-        $self->getTokensNum($_->{currentTokenBadge}->{tokenBadgeId});
-    }
-    if ( $_->{declinedTokenBadge}->{tokenBadgeId} ) {
-      $_->{declinedTokenBadge}->{totalTokensNum} =
-        $self->getTokensNum($_->{declinedTokenBadge}->{tokenBadgeId});
-    }
-  }
   $self->removeNull($result);
   return $result;
 }

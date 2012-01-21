@@ -61,7 +61,7 @@ table.tablesorter tbody tr td { border:1px solid #336699; padding: 4px;}
 
 table.tablesorter tbody tr.odd td { background-color:#F0F0F6; }
 
-table.tablesorter tbody tr.hover { background-color: red;}
+table.tablesorter tbody tr.hover { background-color: #8dbdd8;}
 
 table.tablesorter thead tr .headerSortUp {
   background-image: url(images/asc.gif);
@@ -87,7 +87,7 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
 
 #myTable tr {border: 1px solid #336699;}
 
-#tabs {min-height: 600px;}
+#tabs {min-height: 500px;}
 
 .modal {display:none;}
 .message table {width: 100%;}

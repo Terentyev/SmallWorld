@@ -76,7 +76,7 @@ function askNumBox(text, onOk, value) {
   $("#divAskNumQuestion").html(text).trigger("update");
   $("#inputAskNum").attr("value", value);
   askNumOkClick = onOk;
-  showModal('#divAskNum', modalSize.minHeight + 2*modalSize.lineHeight, 350);
+  showModal('#divAskNum', modalSize.minHeight + 2*modalSize.lineHeight);
 }
 
 function updatePlayerInfo(gs) {
@@ -157,7 +157,7 @@ function prepare(gs) {
           break;
         //case LE_FINISH_TURN:
         default:
-          gs.stage = player.haveActiveRace()
+          gs.stage = player.hasActiveRace()
             ? GS_BEFORE_CONQUEST
             : GS_SELECT_RACE;
           break;
@@ -474,7 +474,7 @@ function checkDeploy(cmd, add) {
     cmdGetGameState();
   }
   else if (regs.length != 0) {
-    if (player.curPower() == 'Heroic' && !heroes.length || (heroes.length == 1) && (regs.length != 1))
+    if (player.curPower() == 'Heroic' && !heroes.length && data.game.stage != GS_DEFEND || (heroes.length == 1) && (regs.length != 1))
       alert('Place each of your two Heroes in regions you occupy');
     else
       cmd(regs, camps, heroes, player.getLastFortifiedRegion());
