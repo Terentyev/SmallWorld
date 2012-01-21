@@ -1,0 +1,24 @@
+{
+    "description": "initial state",
+    "include": [ "_game1.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Amazons", "Ratmen", "Skeletons", "Orcs", "Humans", "Giants", "Elves", "Dwarves", "Halflings", "Sorcerers", "Tritons", "Trolls", "Wizards" ],
+          "visibleSpecialPowers": [
+            "Berserk", "Alchemist", "Forest", "Bivouacking", "Commando", "Diplomat", "DragonMaster", "Flying", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "getGameState",
+            "gameId": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 1
+        },
+        {
+            "action": "getGameState",
+            "gameId": 1
+        }
+    ]
+}

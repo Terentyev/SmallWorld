@@ -1,0 +1,26 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 3
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badTokensNum", "dice": 0
+    },
+    {
+        "result": "notEnoughTokensForRedeployment"
+    },
+    {
+        "result": "ok"
+    }
+]
