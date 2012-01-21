@@ -235,7 +235,7 @@ sub init {
       dragon           => undef,                  # 1 если присутствует дракон
       fortiefied       => undef,                  # кол-во фортов
       hero             => undef,                  # 1 если присутствует герой
-      inDecline        => undef                   # 1 если раса tokenBadgeId в упадке
+      inDecline        => 1                       # 1 если раса tokenBadgeId в упадке
    } } @{$regions}
   ];
 
