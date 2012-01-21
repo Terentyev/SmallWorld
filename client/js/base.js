@@ -129,6 +129,7 @@ function getRaceImage(raceName, type, decline) {
       name = raceName;
       break;
     }
+  if (name == 'None') postfix = '';
   return prefix + type + name + postfix + ext;
 }
 

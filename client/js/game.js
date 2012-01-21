@@ -242,7 +242,6 @@ function changeGameStage(stage) {
       break;
     case 'beforeFinishTurn':
       commitStageClickAction = commitStageFinishTurn;
-      // TODO: show special power button
       break
     case 'finishTurn':
       commitStageClickAction = commitStageFinishTurn;
@@ -382,7 +381,6 @@ function areaDefend(regionId) {
   var loose = regions[data.game.defendingInfo.regionId];
   if (loose.isAdjacent(regionId)) {
     for (var i in regions) {
-      //var cur = regions[i];
       if (loose.isAdjacent(i) || !regions[i].isOwned(player.curTokenBadgeId())) continue;
       alert("You can't place tokens to this region. You should place tokens on not adjacent regions");
       return;
