@@ -156,14 +156,14 @@ var regionAttr = {
 };
 
 var textAttr = {
-  'text-anchor': 'start',
   'font-size': 14,
-  'stroke': "white"
+  'stroke': "white",
+  'fill': "white"
 };
 
 const modalSize = {
   'defaultWidth': 420,
   'defaultHeight': 160,
-  'minHeight': 110,
+  'minHeight': 120,
   'lineHeight': 28
 }
