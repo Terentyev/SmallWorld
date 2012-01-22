@@ -120,7 +120,7 @@ function prepare(gs) {
   // для совместимости
   if (gs.stage != null) return;
   // можно смотреть также в SmallWorld::Game->getStageForGameState (он работает
-  // однозначно правильно (т. к. тастировался)
+  // однозначно правильно (т. к. тестировался)
   switch (gs.state) {
     case GST_WAIT:
       break;
@@ -163,7 +163,8 @@ function prepare(gs) {
           break;
       }
       break;
-    case ST_FINISH:
+    case GST_FINISH:
+    case GST_EMPTY :
       gs.stage = GS_IS_OVER;
       break;
   }

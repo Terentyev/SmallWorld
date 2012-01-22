@@ -309,11 +309,6 @@ function cmdGetGameState() {
 function hdlGetGameState(ans) {
   $('#divGameError').empty();
   var gs = ans.gameState;
-  if (gs.state == GST_EMPTY) {
-    clearGame();
-    showLobby();
-    return;
-  }
 
   var gameStarted = (data.game == null || data.game.state == GST_WAIT) && gs.state != GST_WAIT;
   var regions = new Array();
