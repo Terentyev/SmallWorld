@@ -3,7 +3,7 @@ var serverUrl = null;
 messages = new Array();
 maps = new Array();
 games = new Array();
-
+currentSort = [[1,0]];
 maxMessagesCount = 5, sentedGameId = null;
 var data = {
       playerId: null,
@@ -84,7 +84,10 @@ function uploadMap(id) {
 
 function init() {
   $("#tabs").tabs();
-  $("#tableGameList").tablesorter({headers: { 0: { sorter: false } } });
+  $("#tableGameList").tablesorter({headers: { 0: { sorter: false } } })
+  .bind("sortEnd", function(sorter) {
+    currentSort = sorter.target.config.sortList;
+  });
   $('.scroll-pane').jScrollPane({showArrows:true, scrollbarOnLeft: true});
   $('#mapList').change(function () {
     changeMap($(this).val());

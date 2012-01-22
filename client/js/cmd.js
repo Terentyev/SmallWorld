@@ -223,7 +223,8 @@ function hdlGetGameList(ans) {
                 $.sprintf("<div class='wrap'>%s</div>", cur.gameDescription)]);
   }
 
-  $('#tableGameList tbody').html(s);
+  $('#tableGameList tbody').html(s).trigger('update');
+  $('#tableGameList:has(tbody tr)').trigger('sorton', [currentSort]);
   $('input:radio[name=listGameId]').first().attr('checked', 1);
   var tmp = $('#tableGameList tbody tr');
   tmp.mouseover(function() {$(this).addClass('hover'); })
