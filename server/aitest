@@ -1,0 +1,42 @@
+#!/bin/bash
+
+SCORES="scores"
+SCORES="${SCORES}.rev"
+SERVER="server.smallworld"
+MINEAI="./ai.pl -g 1 -c 1 -s ${SERVER}"
+OTHERAI="${MINEAI} -b"
+CREATEGAME="./test.pl 70"
+
+
+rm ${SCORES} ${SCORESREV} ai.log 3> /dev/null
+
+go () {
+    for i in `seq 1 50`;
+    do
+        echo Test ${i}st game
+        ./test.pl 70 > /dev/null
+        ${1} > /dev/null &
+        PID1=$!
+        echo 1st pid = ${PID1}
+        sleep 1
+        ${2} > /dev/null &
+        PID2=$!
+        echo 2nd pid = ${PID2}
+        GAMESTATE=`curl -s -d '{"action":"getGameState","gameId":1}' ${SERVER}`
+        until (echo ${GAMESTATE} | grep -e '"state":\(3\|4\)' > /dev/null);
+        do
+            sleep 5
+            echo -n .
+            GAMESTATE=`curl -s -d '{"action":"getGameState","gameId":1}' ${SERVER}`
+        done
+        kill ${PID1}
+        kill ${PID2}
+        wait ${PID1} 2> /dev/null
+        wait ${PID2} 2> /dev/null
+        echo ${GAMESTATE} | grep -e '"coins":[0-9]\+' -o >> ${3}
+        tail -n 2 ${3}
+    done
+}
+
+go "${MINEAI}" "${OTHERAI}" "${SCORES}"
+go "${OTHERAI}" "${MINEAI}" "${SCORESREV}"
