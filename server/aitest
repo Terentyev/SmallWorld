@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCORES="scores"
-SCORES="${SCORES}.rev"
+SCORESREV="${SCORES}.rev"
 SERVER="server.smallworld"
 MINEAI="./ai.pl -g 1 -c 1 -s ${SERVER}"
 OTHERAI="${MINEAI} -b"
