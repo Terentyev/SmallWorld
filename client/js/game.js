@@ -72,11 +72,11 @@ function getRegState(regionId) {
   return data.game.map.regions[regionId].currentRegionState;
 }
 
-function askNumBox(text, onOk, value) {
+function askNumBox(text, onOk, value, height, width) {
   $("#divAskNumQuestion").html(text).trigger("update");
   $("#inputAskNum").attr("value", value);
   askNumOkClick = onOk;
-  showModal('#divAskNum', modalSize.minHeight + 2*modalSize.lineHeight);
+  showModal('#divAskNum', height, width);
 }
 
 function updatePlayerInfo(gs) {
@@ -120,7 +120,7 @@ function prepare(gs) {
   // для совместимости
   if (gs.stage != null) return;
   // можно смотреть также в SmallWorld::Game->getStageForGameState (он работает
-  // однозначно правильно (т. к. тастировался)
+  // однозначно правильно (т. к. тестировался)
   switch (gs.state) {
     case GST_WAIT:
       break;
@@ -163,7 +163,8 @@ function prepare(gs) {
           break;
       }
       break;
-    case ST_FINISH:
+    case GST_FINISH:
+    case GST_EMPTY :
       gs.stage = GS_IS_OVER;
       break;
   }
@@ -242,7 +243,6 @@ function changeGameStage(stage) {
       break;
     case 'beforeFinishTurn':
       commitStageClickAction = commitStageFinishTurn;
-      // TODO: show special power button
       break
     case 'finishTurn':
       commitStageClickAction = commitStageFinishTurn;
@@ -316,7 +316,8 @@ function areaPlaceTokens(regionId) {
     alert('Wrong region');
     return;
   }
-  var s = '';
+  var s = '', hasPower = 1;
+
   $('#spanRedeployObjectName').empty();
   $('#spanRedeployObject').empty();
   switch (player.curPower()) {
@@ -341,11 +342,14 @@ function areaPlaceTokens(regionId) {
       $($.sprintf('<input type="checkbox" id="checkHero" %s %s>',
         regions[regionId].get('hero') ? 'checked="checked"': '',
         player.canPlaceObject(regionId, 'fortified') ? '': 'disabled="disabled"')).appendTo('#spanRedeployObject');
+      break;
+    default:
+      hasPower = 0;
   }
 
   askNumBox('How much tokens deploy on region?',
-            deployRegion,
-            place.tokens());
+            deployRegion, place.tokens(),
+            modalSize.minHeight + (1 + hasPower) * modalSize.lineHeight, 350);
 }
 
 function deployRegion() {
@@ -382,7 +386,6 @@ function areaDefend(regionId) {
   var loose = regions[data.game.defendingInfo.regionId];
   if (loose.isAdjacent(regionId)) {
     for (var i in regions) {
-      //var cur = regions[i];
       if (loose.isAdjacent(i) || !regions[i].isOwned(player.curTokenBadgeId())) continue;
       alert("You can't place tokens to this region. You should place tokens on not adjacent regions");
       return;
@@ -390,9 +393,12 @@ function areaDefend(regionId) {
   }
   defend.regionId = regionId;
   if (defend.regions[regionId] == null) defend.regions[regionId] = 0;
+
+  $('#spanRedeployObjectName').empty();
+  $('#spanRedeployObject').empty();
   askNumBox('How much tokens deploy on region on defend?',
             defendRegion,
-            defend.regions[regionId]);
+            defend.regions[regionId], modalSize.minHeight + 2*modalSize.lineHeight);
 }
 
 function defendRegion() {

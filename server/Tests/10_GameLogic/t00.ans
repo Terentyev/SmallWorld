@@ -1,0 +1,58 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 1], ["Ratmen", 0], ["Alchemist", 2]]
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 3
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 2], ["Skeletons", 0], ["Forest", 0]]
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 1], ["Ratmen", 0], ["Alchemist", 0]]
+    },
+
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 2], ["Skeletons", 0], ["Forest", 0]]
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 5
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "badRegion"
+    }
+
+]

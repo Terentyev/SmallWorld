@@ -146,8 +146,11 @@ Region.prototype.setTokenNum = function(num, numStore, imgStore) {
 }
 
 Region.prototype.setDefendTokenNum = function(num) {
-  if (!num) return;
-  this.model.race.num.attr('text', this.tokens()+'+'+num);
+  if (!num) {
+    this.setTokenNum(this.tokens(), this.model.race.num, this.model.race.image);
+    return;
+  }
+  this.model.race.num.attr('text', this.tokens() + '+' + num);
 }
 
 Region.prototype.createObject = function(object, num) {
@@ -205,8 +208,11 @@ Region.prototype.update = function(region) {
   if (tokenBadgeId != region.currentRegionState.tokenBadgeId) {
     //alert('reg changed:' + this.regionId());
     if (tokenBadgeId == null) {
-      //create new
-      this.createToken(region, this.raceName);
+      //if previous owner was lost tribe this.model.race.image already exists
+      if (this.model.race.image == null || this.model.race.image.removed)
+        this.createToken(region, this.raceName);
+      else
+        this.setToken(this.raceName, newTokensNum, newInDecline);
     } else if (region.currentRegionState.tokenBadgeId == null) {
       //remove old
       this.model.race.image.remove();

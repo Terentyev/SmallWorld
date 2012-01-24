@@ -46,7 +46,7 @@ function showGame() {
 }
 
 function showGameTurn() {
-  var s = (data.game.state == GST_FINISH) ?
+  var s = (data.game.state == GST_FINISH || data.game.state == GST_EMPTY) ?
           'Game over': $.sprintf("%d/%d", data.game.currentTurn + 1, data.game.map.turnsNum);
   $("#spanGameTurn").html(s);
 }
@@ -158,7 +158,7 @@ function showGameStage() {
   if (data.game.stage == null || data.game.stage == '') return;
   btn.show();
   $('#btnThrowDice').hide();
-  if (data.game.state == GST_FINISH) {
+  if (data.game.state == GST_FINISH || data.game.state == GST_EMPTY) {
     $('#spanGameStage').html('Oops!.. Game over. You can see final scores');
     btn.html('Scores').attr('title', 'See final scores');
     commitStageClickAction = showScores;
@@ -275,7 +275,7 @@ function showMessages() {
 }
 
 function showScores() {
-  if (data.game.state != GST_FINISH) return;
+  if (data.game.state != GST_FINISH && data.game.state != GST_EMPTY) return;
   var s = '', sum = 0;
   var p = [];
   for (var i in data.game.players)

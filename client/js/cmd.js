@@ -223,7 +223,8 @@ function hdlGetGameList(ans) {
                 $.sprintf("<div class='wrap'>%s</div>", cur.gameDescription)]);
   }
 
-  $('#tableGameList tbody').html(s);
+  $('#tableGameList tbody').html(s).trigger('update');
+  $('#tableGameList:has(tbody tr)').trigger('sorton', [currentSort]);
   $('input:radio[name=listGameId]').first().attr('checked', 1);
   var tmp = $('#tableGameList tbody tr');
   tmp.mouseover(function() {$(this).addClass('hover'); })
@@ -308,11 +309,6 @@ function cmdGetGameState() {
 function hdlGetGameState(ans) {
   $('#divGameError').empty();
   var gs = ans.gameState;
-  if (gs.state == GST_EMPTY) {
-    clearGame();
-    showLobby();
-    return;
-  }
 
   var gameStarted = (data.game == null || data.game.state == GST_WAIT) && gs.state != GST_WAIT;
   var regions = new Array();

@@ -314,7 +314,6 @@ Player.prototype.canBaseAttack = function(regionId) {
 }
 
 Player.prototype.canDragonAttack = function(regionId) {
-  // TODO: дополнительные проверки
   return this.canBaseAttack(regionId);
 }
 

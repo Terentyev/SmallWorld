@@ -1,0 +1,68 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "gameId": 1,
+            "gameName": "game1",
+            "gameDescription": "description1",
+            "currentPlayersNum": 2,
+            "activePlayerId": 1,
+            "state": 0,
+            "currentTurn": 0,
+            "map" : {
+              "mapId": 1,
+              "mapName": "testMap",
+              "turnsNum": 7,
+              "playersNum": 2,
+              "regions": [
+                {"currentRegionState": {"tokensNum": 0, "inDecline": true, "hero":false, "fortified": false, "dragon": false, "holeInTheGround": false, "encampment": 0}},
+                {},
+                {"currentRegionState": {"inDecline": true, "tokensNum": 1}},
+                {"constRegionState": ["hill", "border", "cavern"]},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {},
+                {"adjacentRegions": [10, 14]}
+              ]
+            },
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "tokensInHand": 0,
+                    "coins": 5,
+	            "isReady": true,
+                    "priority": 1
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "tokensInHand": 0,
+	            "isReady": true,
+                    "coins": 5,
+                    "priority": 2
+                }
+            ]
+        }
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 1,
+            "state": 2
+        }
+    }
+]
