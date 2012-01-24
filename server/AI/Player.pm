@@ -417,6 +417,13 @@ sub _shouldSelectFriend {
   return $self->_canSelectFriend($g, $playerId);
 }
 
+# следует ли нам нападать вообще
+sub _shouldConquer {
+  my ($self, $g) = @_;
+  my $p = $g->{gs}->getPlayer;
+  return $p->tokens + $p->activeRace->redeployTokensBonus($p) > 3 || $g->{gs}->stage ne GS_BEFORE_CONQUEST;
+}
+
 # возвращает список регионов, на которые мы должны напасть
 sub _getRegionsForConquest {
   my ($self, $g) = @_;
@@ -698,7 +705,7 @@ sub _cmd_selectRace {
 sub _cmd_beforeConquest {
   my ($self, $g) = @_;
   $self->_beginTurn($g);
-  $self->_conquer($g);
+  $self->_conquer($g) if $self->_shouldConquer($g);
   # надо прервать все наши действия, что бы дать другому игроку защититься, если
   # в этом есть необходимость
   return if $g->{gs}->stage eq GS_DEFEND;
