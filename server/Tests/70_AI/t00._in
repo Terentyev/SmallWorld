@@ -1,0 +1,9 @@
+{
+  "test": [
+    { "action": "resetServer" },
+    { "action": "createDefaultMaps" },
+    { "action": "register", "username": "lex", "password": "123456" },
+    { "action": "login", "username": "lex", "password": "123456" },
+    { "action": "createGame", "sid": 1, "gameName": "game1", "mapId": 3, "ai": 2 }
+  ]
+}
