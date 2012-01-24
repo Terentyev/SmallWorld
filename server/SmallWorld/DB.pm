@@ -103,6 +103,8 @@ sub updateGame {
   my $gameId = $self->fetch1('SELECT id FROM GAMES WHERE name = ?', $gameName);
   $self->do('DELETE FROM CONNECTIONS WHERE gameId = ?', $gameId);
   $self->commit;
+  $self->do('DELETE FROM HISTORY WHERE gameId = ?', $gameId);
+  $self->commit;
   $self->joinGame($gameId, $sid);
   return $gameId;
 }
@@ -169,8 +171,6 @@ sub leaveGame {
     $self->commit;
     my $count = $self->playersCount($gameId);
     if ( !$count ) {
-      $self->do('DELETE FROM HISTORY WHERE gameId = ?', $gameId);
-      $self->commit;
       $self->do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_EMPTY, $gameId);
       $self->commit;
     }

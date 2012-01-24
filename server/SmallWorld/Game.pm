@@ -361,7 +361,8 @@ sub getNotEmptyBadge {
 sub getLastEvent {
   my ($self, $st, $gameId) = @_;
   return $st if $st == GST_WAIT || $st == GST_BEGIN || $st == GST_EMPTY;
-  my $cmd = decode_json($self->{db}->getLastCmd($gameId));
+  return LE_FINISH_TURN if $st == GST_FINISH;
+  my $cmd = eval { decode_json($self->{db}->getLastCmd($gameId)) || {action => 'finishTurn'} };
   return LE_FAILED_CONQUER if $cmd->{action} eq 'conquer' && defined $cmd->{dice};
   return {
     decline       => LE_DECLINE,
@@ -373,7 +374,8 @@ sub getLastEvent {
     defend        => LE_DEFEND,
     redeploy      => LE_REDEPLOY,
     selectFriend  => LE_SELECT_FRIEND,
-    finishTurn    => LE_FINISH_TURN
+    finishTurn    => LE_FINISH_TURN,
+    leaveGame     => LE_FINISH_TURN
   }->{$cmd->{action}};
 }
 
