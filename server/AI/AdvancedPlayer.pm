@@ -308,7 +308,7 @@ sub _tryUseSpConquer {
   # способность на самом дорогом (в плане количества затраченных фигурок)
   # регионе
   for ( my $j = 0; $j <= $$i; ++$j ) {
-    next if !&$filter($way->[$$i]->{id});
+    next if !&$filter($way->[$j]->{id});
     my $diff = $way->[$j]->{cost} - ($j == 0 ? 0 : $way->[$j - 1]->{cost});
     if ( $maxDiff < $diff ) {
       $maxDiff = $diff;
