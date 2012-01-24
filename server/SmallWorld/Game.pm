@@ -93,7 +93,7 @@ sub loadFromState {
     gotWealthy     => $gs{gotWealthy} ? 1 : 0
   };
   my $state = $self->getStageFromGameState(\%gs);
-  die "Wrong calculate stage: $gs{stage} vs $state\n"
+  warn "Wrong calculate stage: $gs{stage} vs $state\n"
     if defined $gs{stage} && $gs{stage} ne $state && ($gs{state} == GST_BEGIN || $gs{state} == GST_IN_GAME);
   $self->{gameState}->{state} = $state;
   my $i = 0;
@@ -101,7 +101,7 @@ sub loadFromState {
     ++$i;
     push @{ $self->{gameState}->{regions} }, {
       regionId          => $i,
-      constRegionState => $_->{constRegionState},
+      constRegionState  => $_->{constRegionState},
       adjacentRegions   => $_->{adjacentRegions},
       ownerId           => $_->{currentRegionState}->{ownerId},
       tokenBadgeId      => $_->{currentRegionState}->{tokenBadgeId},
@@ -114,7 +114,11 @@ sub loadFromState {
       hero              => $_->{currentRegionState}->{hero} ? 1 : 0,
       inDecline         => $_->{currentRegionState}->{inDecline} ? 1 : 0,
       conquestIdx       => ((defined $gs{defendingInfo} ? $gs{defendingInfo}->{regionId} : undef) // -1) == $i
-        ? 1 : undef
+        ? 1 : $_->{conquestIdx},
+      prevTokensNum     => $_->{prevTokensNum},
+      prevTokenBadgeId  => $_->{prevTokenBadgeId},
+      _cavernAdj        => $_->{_cavernAdj},
+      _type             => $_->{_type}
     };
   }
   foreach ( @{ $gs{players} } ) {
@@ -127,7 +131,8 @@ sub loadFromState {
       tokensInHand       => $_->{tokensInHand},
       priority           => $_->{priority} - 1,
       currentTokenBadge  => $_->{currentTokenBadge} // {},
-      declinedTokenBadge => $_->{declinedTokenBadge} // {}
+      declinedTokenBadge => $_->{declinedTokenBadge} // {},
+      dice               => $_->{dice}
     };
   }
 }
@@ -157,7 +162,7 @@ sub getStageFromGameState {
       !$_->{currentRegionState}->{inDecline} &&
       ($_->{currentRegionState}->{ownerId} // -1) == $gs->{activePlayerId}
     } @{ $gs->{map}->{regions} }) || $le == LE_DEFEND && (grep {
-      $_->{userId} == $gs->{activePlayerId} && $_->{tokensInHand} == 0
+      $_->{userId} == $gs->{activePlayerId} && defined $_->{dice}
     } @{ $gs->{players} });
   return GS_CONQUEST           if $le == LE_THROW_DICE || $le == LE_CONQUER || $le == LE_DEFEND || $le == LE_SELECT_RACE;
   return GS_FINISH_TURN        if $le == LE_DECLINE || $le == LE_SELECT_FRIEND;
@@ -176,6 +181,7 @@ sub loadFromDB {
   my %params = (@_);
   my $gameId = $params{id};
   $self->{db} = $params{db};
+  $self->{db}->lockGame($gameId) if !$params{readonly};
   my $game = $self->{db}->getGameState($gameId);
   my $map = $self->{db}->getMap($game->{MAPID});
 
@@ -209,6 +215,7 @@ sub loadFromDB {
   if ( $game->{GSTATE} == GST_FINISH ) {
     $self->{gameState}->{state} = GS_IS_OVER;
   }
+  $self->{db}->unlockGame();
 }
 
 sub init {
@@ -598,8 +605,10 @@ sub canFirstConquer {
   #можно захватить любой приграничный не морской регион
   #нельзя захватывать моря и озера,
   my $ adj = 0;
+  if ( !defined $region ) {
+    die [caller];
+  }
   foreach my $r ( @{ $region->_hardAdj } ) {
-    my ($isSea, $isBorder) = (0, 0);
     next if !$r->isSea || !$r->isBorder;
     $adj = 1;
     last;
@@ -702,7 +711,6 @@ sub conquer {
 
   if ( defined $player->{dice} ) {
     $result->{dice} = $player->{dice};
-    $player->{dice} = undef;
     $self->gotoRedeploy() if $self->stage ne GS_DEFEND;
   }
   $self->{gameState}->{state} = GS_CONQUEST if $self->{gameState}->{state} eq GS_BEFORE_CONQUEST;
@@ -817,6 +825,7 @@ sub finishTurn {
     $bonus = $self->getPlayerBonus($player, $result->{statistics});
   }
   $player->{coins} += $bonus;
+  $player->{dice} = undef;
 
   $sp->finishTurn($self->{gameState});
   $race->finishTurn($self->{gameState});
@@ -919,9 +928,12 @@ sub endDefend {
   my $self = shift;
   $self->{gameState}->{activePlayerId} = $self->{gameState}->{conquerorId};
   @{ $self->{gameState} }{qw(defendingInfo conquerorId)} = ();
-  $self->{gameState}->{state} = $self->getPlayer->tokens > 0
-    ? GS_CONQUEST
-    : GS_REDEPLOY;
+  if ( defined $self->getPlayer->{dice} ) {
+    $self->gotoRedeploy;
+  }
+  else {
+    $self->{gameState}->{state} = GS_CONQUEST;
+  }
 }
 
 sub enchant {
