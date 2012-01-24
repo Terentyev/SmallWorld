@@ -61,6 +61,7 @@ sub clear {
   foreach (@{&DB_GENERATORS_NAMES}){
     $self->do("SET GENERATOR $_ TO 0");
   }
+  $self->commit;
 }
 
 sub addMap {
@@ -125,19 +126,23 @@ sub aiJoin {
   my ($id, $sid) = ();
   eval {
     ($id, $sid) = ($self->fetch1('SELECT aiId, aiSid FROM AIJOIN(?)', $gameId)) ;
+    $self->commit;
   };
   return ($id, $sid);
 }
 
 sub makeSid {
   my $self = shift;
-  return $self->fetch1('EXECUTE PROCEDURE MAKESID(?,?)', @_);
+  my $result = $self->fetch1('EXECUTE PROCEDURE MAKESID(?,?)', @_);
+  $self->commit;
+  return $result;
 }
 
 sub logout {
   my $self = shift;
   $self->leaveGame($_[0]);
   $self->do('EXECUTE PROCEDURE LOGOUT(?)', $_[0]);
+  $self->commit;
 }
 
 sub playersCount {
@@ -161,16 +166,19 @@ sub leaveGame {
   my $gameId = $self->getGameId($sid);
   if ( defined $gameId ) {
     $self->do('DELETE FROM CONNECTIONS WHERE playerId = ?', $self->getPlayerId($sid));
+    $self->commit;
     my $count = $self->playersCount($gameId);
     if ( !$count ) {
       $self->do('DELETE FROM HISTORY WHERE gameId = ?', $gameId);
+      $self->commit;
       $self->do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_EMPTY, $gameId);
+      $self->commit;
     }
     elsif ( $count == 1 ) {
       $self->do('UPDATE GAMES SET gstate = ? WHERE id = ? AND gstate <> ?', GST_FINISH, $gameId, GST_WAIT);
+      $self->commit;
     }
   }
-  $self->commit;
 }
 
 sub getConnectionsSid {
@@ -357,8 +365,8 @@ sub lockGame {
       $self->{dbh}->rollback;
       $self->do('UPDATE GAMES SET id = id WHERE id = ?', $id);
       $do = 1;
-      sleep 2;
     };
+    sleep 2 if !$do;
   } until ( $do );
 }
 
