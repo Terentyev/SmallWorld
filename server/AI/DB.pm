@@ -13,6 +13,7 @@ use base('SW::DB');
 sub _init {
   my $self = shift;
   $self->SUPER::_init(@_);
+  $self->{dbh}->{AutoCommit} = 1;
   $self->{bldr} = SW::SqlBuilder->new();
 }
 

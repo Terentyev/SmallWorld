@@ -13,6 +13,15 @@ use SmallWorld::Consts;
 use base('SW::DB');
 
 
+sub _init {
+  my $self = shift;
+  $self->SUPER::_init(@_);
+  $self->{dbh}->{AutoCommit} = 0;
+  $self->{dbh}->func(
+      -lock_resolution => { wait => undef },
+      'ib_set_tx_param');
+}
+
 sub getPlayerId {
   my $self = shift;
   return $self->fetch1('SELECT id FROM PLAYERS WHERE sid = ?', @_);
@@ -60,12 +69,14 @@ sub addMap {
       INSERT INTO MAPS (name, playersNum, turnsNum, regions)
       VALUES (?, ?, ?, ?)',
       $name, $playersNum, $turnsNum, $regions);
+  $self->commit;
   return $self->fetch1('SELECT id FROM MAPS WHERE name = ?', $name);
 }
 
 sub addPlayer {
   my $self = shift;
   $self->do('INSERT INTO PLAYERS (username, pass) VALUES(?,?)', @_);
+  $self->commit;
 }
 
 sub createGame {
@@ -73,6 +84,7 @@ sub createGame {
   my ($sid, $gameName, $mapId, $gameDescr, $aiNum, $genNum) = @_;
   $self->do('INSERT INTO GAMES (name, mapId, description, aiNum, genNum) VALUES (?, ?, ?, ?, ?)',
              $gameName, $mapId, !defined $gameDescr ? '' : $gameDescr, $aiNum, $genNum);
+  $self->commit;
   my $gameId = $self->fetch1('SELECT id FROM GAMES WHERE name = ?', $gameName);
   $self->joinGame($gameId, $sid);
   return $gameId;
@@ -86,8 +98,10 @@ sub updateGame {
           activePlayerId = NULL, currentTurn = NULL, state = NULL
       WHERE name = ?',
       $mapId, !defined $gameDescr ? '' : $gameDescr, GST_WAIT, $aiNum, $genNum, $gameName);
+  $self->commit;
   my $gameId = $self->fetch1('SELECT id FROM GAMES WHERE name = ?', $gameName);
   $self->do('DELETE FROM CONNECTIONS WHERE gameId = ?', $gameId);
+  $self->commit;
   $self->joinGame($gameId, $sid);
   return $gameId;
 }
@@ -102,6 +116,7 @@ sub joinGame {
       WHERE g.id = ?', $gameId));
   if ( $plNum > $aiNum ) {
     $self->do('INSERT INTO CONNECTIONS (gameId, playerId) VALUES (?, ?)', $gameId, $self->getPlayerId($sid));
+    $self->commit;
   }
 }
 
@@ -155,6 +170,7 @@ sub leaveGame {
       $self->do('UPDATE GAMES SET gstate = ? WHERE id = ? AND gstate <> ?', GST_FINISH, $gameId, GST_WAIT);
     }
   }
+  $self->commit;
 }
 
 sub getConnectionsSid {
@@ -176,6 +192,7 @@ sub setIsReady {
   my $self = shift;
   my ($isReady, $sid) = @_;
   $self->do('UPDATE CONNECTIONS SET isReady = ? WHERE playerId = ?', $isReady, $self->getPlayerId($sid));
+  $self->commit;
   return $self->tryBeginGame($self->getGameId($sid));
 }
 
@@ -184,6 +201,7 @@ sub tryBeginGame {
   return 0 if $self->readyCount($gameId) != $self->getMaxPlayers($gameId);
 
   $self->do('UPDATE GAMES SET gstate = ? WHERE id = ?', GST_BEGIN, $gameId);
+  $self->commit;
   return 1;
 }
 
@@ -206,6 +224,7 @@ sub addMessage {
   my $self = shift;
   my ($sid, $text) = @_;
   $self->do('INSERT INTO MESSAGES (text, playerId) VALUES (?, ?)', $text, $self->getPlayerId($sid));
+  $self->commit;
 }
 
 sub getMessages {
@@ -230,7 +249,9 @@ sub getGameStateOnly {
 
 sub updateGameStateOnly {
   my ($self, $gameId, $gstate) = @_;
-  return $self->do('UPDATE GAMES SET gstate = ? WHERE id = ?', $gstate, $gameId);
+  $self->do('UPDATE GAMES SET gstate = ? WHERE id = ?', $gstate, $gameId);
+  $self->commit;
+  return 1;
 }
 
 sub getGameState {
@@ -250,6 +271,7 @@ sub saveGameState {
       SET state = ?, version = version + 1, activePlayerId = ?, currentTurn = ?
       WHERE id = ?',
       @_);
+  $self->commit;
 }
 
 sub finishGame {
@@ -259,6 +281,7 @@ sub finishGame {
       SET gstate = ?
       WHERE id = ?',
       GST_FINISH, $id);
+  $self->commit;
 }
 
 sub gameWithNameExists {
@@ -311,6 +334,7 @@ sub getGameVersion {
 sub saveCommand {
   my ($self, $gameId, $data) = @_;
   $self->do('INSERT INTO HISTORY(gameId, cmd) VALUES(?, ?)', $gameId, $data);
+  $self->commit;
 }
 
 sub getHistory {
@@ -321,6 +345,27 @@ sub getHistory {
 sub getLastCmd {
   my ($self, $gameId) = @_;
   return $self->fetch1('SELECT cmd FROM HISTORY WHERE gameId = ? ORDER BY id DESC ROWS 1', $gameId);
+}
+
+sub lockGame {
+  my ($self, $id) = @_;
+  $self->commit;
+#  $self->{dbh}->{AutoCommit} = 0;
+  my $do = 0;
+  do {
+    eval {
+      $self->{dbh}->rollback;
+      $self->do('UPDATE GAMES SET id = id WHERE id = ?', $id);
+      $do = 1;
+      sleep 2;
+    };
+  } until ( $do );
+}
+
+sub unlockGame {
+  my $self = shift;
+  $self->{dbh}->rollback;
+#  $self->{dbh}->{AutoCommit} = 1;
 }
 
 
