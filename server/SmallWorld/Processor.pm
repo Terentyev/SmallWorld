@@ -57,12 +57,12 @@ sub checkAndDo {
   my $result = { result => R_ALL_OK };
   $self->checkJsonCmd($js, $result);
 
-  $self->saveCmd($js, $result) if ($js->{action} // 'createGame') ne 'createGame';
+  $self->saveCmd($js, $result, 1) if ($js->{action} // 'createGame') ne 'createGame' && ($js->{action} // 'setReadinessStatus') ne 'setReadinessStatus';
   if ( $result->{result} eq R_ALL_OK ) {
     my $func = $self->can("cmd_$js->{action}");
     &$func($self, $js, $result) if defined $func;
   }
-  $self->saveCmd($js, $result) if ($js->{action} // '') eq 'createGame';
+  $self->saveCmd($js, $result) if ($js->{action} // '') eq 'createGame' || ($js->{action} // '') eq 'setReadinessStatus';
   $self->{db}->commit;
   
   return $result;
@@ -123,6 +123,7 @@ sub saveCmd {
     $gameId = $gameId // $self->{db}->getGameId($cmd->{sid});
     delete $cmd->{sid};
   }
+  $self->{db}->lockGame($gameId) if $cmd->{action} ne 'createGame';
   if ( $cmd->{action} eq 'setReadinessStatus' ) {
     # если игра началась, то сохраняем в историю сгенерированные пары рас и
     # способностей
@@ -140,6 +141,7 @@ sub saveCmd {
     $cmd->{dice} = 1;
   }
   $self->{db}->saveCommand($gameId, encode_json($cmd));
+  $self->{db}->unlockGame;
 }
 
 # возвращает url до картинки с изображением карты
