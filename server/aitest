@@ -13,7 +13,7 @@ rm ${SCORES} ${SCORESREV} ai.log 3> /dev/null
 go () {
     for i in `seq 1 50`;
     do
-        echo Test ${i}st game
+        echo Test ${i}th game
         ./test.pl 70 > /dev/null
         ${1} > /dev/null &
         PID1=$!
