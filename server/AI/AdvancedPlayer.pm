@@ -350,6 +350,7 @@ sub _getRedeployment {
     $_->tokens(0);
     if ( $_->isImmune ) {
       $p->tokens($p->tokens - 1);
+      $_->tokens(1);
       push @regions, { regionId => $_->id, tokensNum => 1 };
     }
   }
@@ -372,9 +373,11 @@ sub _getRedeployment {
   # раз подсчитать уровень опасности для регионов
   if ( $self->_canPlaceHero($g) ) {
     my $heroesCnt = HEROES_MAX;
+    my $i = @dangerous;
     foreach ( @dangerous ) {
+      $i -= 1;
       my $r = $g->{gs}->getRegion(id => $_->{id});
-      next if $r->isImmune && @dangerous > 3;
+      next if $r->isImmune && $i >= $heroesCnt;
 
       push @heroes, { regionId => $r->id };
       if ( $r->tokens == 0 ) {
