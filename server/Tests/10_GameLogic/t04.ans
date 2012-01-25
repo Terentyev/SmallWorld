@@ -1,0 +1,63 @@
+[
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "tokenBadgeId": 2
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok", "statistics":[["Regions", 2], ["Ratmen", 0], ["Alchemist", 2]]
+    },
+
+    {
+        "result": "ok", "tokenBadgeId": 3
+    },
+    {
+        "result": "ok"
+    },
+    {
+        "result": "ok",
+        "gameState": {
+            "activePlayerId": 2,
+            "state": 2,
+            "currentTurn": 0,
+            "lastEvent": 6,
+            "defendingInfo": {"regionId": 3, "playerId": 1},
+            "players": [
+                {
+                    "userId": 1,
+                    "username": "username1",
+                    "tokensInHand": 4,
+                    "coins": 8,
+	            "isReady": true,
+                    "priority": 1,
+                    "currentTokenBadge": {
+                      "totalTokensNum": 11
+                    }
+                },
+                {
+                    "userId": 2,
+                    "username": "username2",
+                    "tokensInHand": 3,
+	            "isReady": true,
+                    "coins": 4,
+                    "priority": 2,
+                    "currentTokenBadge": {
+                      "totalTokensNum": 10
+                    }
+                }
+            ]
+        }
+    }
+
+
+]

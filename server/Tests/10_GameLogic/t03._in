@@ -1,0 +1,59 @@
+{
+    "description": "leave game",
+    "include": [ "_game2.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Amazons", "Ratmen", "Skeletons", "Orcs", "Humans", "Giants", "Elves", "Dwarves", "Halflings", "Sorcerers", "Tritons", "Trolls", "Wizards" ],
+          "visibleSpecialPowers": [
+            "Berserk", "Alchemist", "Forest", "Bivouacking", "Commando", "Diplomat", "DragonMaster", "Flying", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "leaveGame",
+            "sid": 1
+        },
+        {
+            "action": "selectRace",
+            "sid": 2,
+            "position": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 3
+        },
+        {
+            "action": "redeploy",
+            "sid": 2,
+            "regions": [{"regionId": 3, "tokensNum": 12}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 2
+        },
+
+        {
+            "action": "selectRace",
+            "sid": 3,
+            "position": 1
+        },
+        {
+            "action": "conquer",
+            "sid": 3,
+            "regionId": 4
+        },
+        {
+            "action": "redeploy",
+            "sid": 3,
+            "regions": [{"regionId": 4, "tokensNum": 10}]
+        },
+        {
+            "action": "finishTurn",
+            "sid": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 2,
+            "regionId": 8
+        }
+    ]
+}

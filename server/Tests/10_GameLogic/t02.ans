@@ -62,7 +62,8 @@
         "result": "ok",
         "gameState": {
             "activePlayerId": 1,
-            "state": 2
+            "state": 2,
+            "lastEvent": 5
         }
     }
 ]

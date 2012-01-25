@@ -1,0 +1,41 @@
+{
+    "description": "amazons tokens num",
+    "include": [ "_game1.inc" ],
+    "test": [
+        { "action": "setReadinessStatus", "sid": 2, "isReady": 1, "visibleRaces": [
+            "Amazons", "Ratmen", "Skeletons", "Orcs", "Humans", "Giants", "Elves", "Dwarves", "Halflings", "Sorcerers", "Tritons", "Trolls", "Wizards" ],
+          "visibleSpecialPowers": [
+            "Alchemist", "Berserk", "Forest", "Bivouacking", "Commando", "Diplomat", "DragonMaster", "Flying", "Fortified", "Heroic", "Hill", "Merchant", "Mounted", "Pillaging", "Seafaring", "Stout", "Swamp", "Underworld", "Wealthy" ] 
+        },
+        {
+            "action": "selectRace",
+            "sid": 1,
+            "position": 0
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 3
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 4
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 8
+        },
+        {
+            "action": "conquer",
+            "sid": 1,
+            "regionId": 5
+        },
+
+        {
+            "action": "getGameState",
+            "gameId": 1
+        }
+    ]
+}
