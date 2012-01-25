@@ -981,18 +981,18 @@ sub playerFriendWithRegionOwner {
   return $player->isFriend($self->getPlayer(id => $region->ownerId));
 }
 
-sub id             { return $_[0]->{gameState}->{gameInfo}->{gameId};                                       }
-sub name           { return $_[0]->{gameState}->{gameInfo}->{gameName};                                     }
-sub stage          { return $_[0]->{gameState}->{state};                                                    }
-sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};                                       }
-sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};                                           }
-sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};                                            }
-sub regions        { return wantarray ? @{ $_[0]->{gameState}->{regions} } : $_[0]->{gameState}->{regions}; }
-sub tokenBadges    { return $_[0]->{gameState}->{tokenBadges};                                              }
-sub currentTurn    { return $_[0]->{gameState}->{currentTurn};                                              }
-sub maxTurnNum     { return $_[0]->{gameState}->{map}->{turnsNum} - 1;                                      }
-sub conqueror      { return $_[0]->getPlayer(id => $_[0]->{gameState}->{conquerorId});                      }
-sub dragonAttacked { return $_[0]->{gameState}->{dragonAttacked} // 0;                                      }
+sub id             { return $_[0]->{gameState}->{gameInfo}->{gameId};                                               }
+sub name           { return $_[0]->{gameState}->{gameInfo}->{gameName};                                             }
+sub stage          { return $_[0]->{gameState}->{state};                                                            }
+sub state          { return $_[0]->{gameState}->{gameInfo}->{gstate};                                               }
+sub activePlayerId { return $_[0]->{gameState}->{activePlayerId};                                                   }
+sub defendingInfo  { return $_[0]->{gameState}->{defendingInfo};                                                    }
+sub regions        { return wantarray ? @{ $_[0]->{gameState}->{regions} } : $_[0]->{gameState}->{regions};         }
+sub tokenBadges    { return wantarray ? @{ $_[0]->{gameState}->{tokenBadges} } : $_[0]->{gameState}->{tokenBadges}; }
+sub currentTurn    { return $_[0]->{gameState}->{currentTurn};                                                      }
+sub maxTurnNum     { return $_[0]->{gameState}->{map}->{turnsNum} - 1;                                              }
+sub conqueror      { return $_[0]->getPlayer(id => $_[0]->{gameState}->{conquerorId});                              }
+sub dragonAttacked { return $_[0]->{gameState}->{dragonAttacked} // 0;                                              }
 sub players {
   my ($self, $b, $e) = @_;
   my $players = $self->{gameState}->{players};
