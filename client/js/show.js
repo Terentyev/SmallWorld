@@ -68,7 +68,6 @@ function createMap() {
   for (var i in map.regions) {
     reg = canvas.path(getSVGPath(map.regions[i])).attr(regionAttr)
           .attr("fill", getLandDescriptionUrl(data.game.map.regions[i].constRegionState));
-    //alert(getLandDescriptionUrl(data.game.map.regions[i].constRegionState));
     reg.click( makeFuncRef(areaClick, i) );
     reg.hover(hoverRegion(reg, true), hoverRegion(reg, false));
     regions[i] = new Region(i, reg);
@@ -188,7 +187,7 @@ function showGameStage() {
     case GS_CONQUEST:
       txt = 'Do you want some fun? Let\'s conquer some regions. Click on region to try';
       $('#divConquest').show();
-      btn.html('Skip').attr('title', 'Start redeploy');
+      btn.html('Next').attr('title', 'Start redeploy');
       switch (player.curPower()) {
         case 'Berserk':
           $('#divThrowDice').show();
@@ -214,7 +213,7 @@ function showGameStage() {
     case GS_REDEPLOY:
       txt = 'Place your warriors to the world';
       $('#divRedeploy').show();
-      btn.html('Finish').attr('title', 'Finish redeploy');
+      btn.html('Redeploy').attr('title', 'Finish redeploy');
       break;
     case GS_BEFORE_FINISH_TURN:
       btn.html('Finish').attr('title', 'Finish turn');
@@ -225,13 +224,11 @@ function showGameStage() {
           btn.hide();
           break;
         case 'Diplomat':
-          if (data.game.friendInfo == null || data.game.friendInfo.friendId == null) {
-            txt =  'Select your friend';
-            selectFriend();
-            $('#divSelectFriend').show();
-            btn.hide();
-            break;
-          }
+          txt =  'Select your friend';
+          selectFriend();
+          $('#divSelectFriend').show();
+          btn.hide();
+          break;
         default:
           txt = 'Click finish-turn button, dude';
       }
