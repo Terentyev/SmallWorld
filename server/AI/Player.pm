@@ -43,8 +43,9 @@ sub _init {
   my $self = shift;
   my %p = (@_);
   $self->{req} = $p{req};
-  if ( defined $p{game} && defined $p{ais} ) {
-    $self->games->{$p{game}}->{ais} = eval { decode_json($p{ais}) } || [];
+  if ( defined $p{game} ) {
+    $self->games->{$p{game}}->{ais} = eval { decode_json($p{ais}) } || [] if defined $p{ais};
+    $self->games->{$p{game}}->{count} = $p{count} if defined $p{count};
   }
   $self->{db} = AI::DB->new(
       db          => DB_NAME,
@@ -62,7 +63,7 @@ sub _save {
   my ($self, $g, $playerId) = @_;
   $g->{gs}->dropObjects();
   my $state = { };
-  $self->_saveState($g, $state);
+  $self->_saveState($g, $state, $playerId);
   $state = encode_json($state);
   my $where = { playerId => $playerId };
   if ( $self->{db}->select1(from => STATES_TABLE, fields => [ 1 ], where => $where) ) {
@@ -74,7 +75,7 @@ sub _save {
 }
 
 sub _saveState {
-  my ($self, $g, $state) = @_;
+  my ($self, $g, $state, $playerId) = @_;
   $state->{regions} = [];
   foreach my $r ( @{ $g->{gs}->regions } ) {
     my $s = {};
@@ -83,11 +84,12 @@ sub _saveState {
       $s->{$_} = $r->{$_} if defined $r->{$_};
     }
     push @{ $state->{regions} }, $s;
-  };
+  }
+  $state->{dice} = $g->{gs}->getPlayer(id => $playerId)->{dice};
 }
 
 sub _load {
-  my ($self, $g, $playerId) = @_;
+  my ($self, $gs, $playerId) = @_;
   my $state = $self->{db}->select1(
       from   => STATES_TABLE,
       fields => ['state'],
@@ -95,26 +97,34 @@ sub _load {
   return if !defined $state;
   $state = decode_json($state);
   timeStart();
-  $self->_loadState($g, $state);
+  $self->_loadState($gs, $state, $playerId);
   timeEnd(LOG_FILE, '_loadState ');
 }
 
 sub _loadState {
-  my ($self, $g, $state) = @_;
+  my ($self, $gs, $state, $playerId) = @_;
   foreach my $s ( @{ $state->{regions} // [] } ) {
-    my $r = $g->{gs}->getRegion(id => $s->{regionId});
+    my $r = $gs->{map}->{regions}->[$s->{regionId} - 1];
     # загружаем из БД информацию, которая нужна, что корректно предсказывать
     # результат хода
     foreach ( @savedRegionFields ) {
       $r->{$_} = $s->{$_} if defined $s->{$_};
     }
-    $r->buildAdjacents();
+#    $r->buildAdjacents();
+  }
+  foreach ( @{ $gs->{players} } ) {
+    next if $_->{userId} != $playerId;
+    $_->{dice} = $state->{dice};
+    last;
   }
 }
 
 sub do {
   my ($self, $game) = @_;
-  if ( $game->{state} == GST_WAIT && $game->{aiRequiredNum} > 0 ) {
+  if ( $game->{state} == GST_WAIT && $game->{aiRequiredNum} > 0 && (
+        !defined $self->{games}->{$game->{gameId}}->{count} ||
+        $self->{games}->{$game->{gameId}}->{count} > scalar(@{ $self->{games}->{$game->{gameId}}->{ais} // [] }))
+      ) {
     # если игра в режиме ожидания игроков, то пытаемся к ней подключиться
     $self->_join2Game($game);
     return;
@@ -153,7 +163,6 @@ sub _join2Game {
   }
   push @{ $g->{ais} }, { id => $r->{id}, sid => $r->{sid} };
   $self->games->{$game->{gameId}} = $g;
-  swLog(LOG_FILE, $g, $r);
 }
 
 # все ИИ покидают игру
@@ -172,9 +181,10 @@ sub _ourTurn {
   return 0 if !defined $g; # мы даже не присоединялись к этой игре
 
   my $r = $self->_get('{ "action": "getGameState", "gameId": ' . $game->{gameId} . ' }', 1);
-  return 0 if $r->{result} ne R_ALL_OK; # не получилось обновить состояние игры
+  return 0 if ($r->{result} // '') ne R_ALL_OK; # не получилось обновить состояние игры
 
   timeStart();
+  $self->_load($r->{gameState}, defined $r->{gameState}->{defendingInfo} ? $r->{gameState}->{defendingInfo}->{playerId} : $r->{gameState}->{activePlayerId});
   $g->{gs} = SmallWorld::Game->new(gameState => $r->{gameState});
   timeEnd(LOG_FILE, 'SmallWorld::Game->new ');
   return (grep { $_->{id} == ($g->{gs}->activePlayerId // -1) } @{ $g->{ais} });
@@ -185,7 +195,6 @@ sub _play {
   my ($self, $game) = @_;
   my $g = $self->games->{$game->{gameId}};
   my $playerId = $g->{gs}->activePlayerId; # запомним id активного игрока, потому что он может поменяться
-  $self->_load($g, $playerId);
   my $func = $self->can("_cmd_" . $g->{gs}->stage);
   &$func($self, $g) if defined $func;
   $self->_save($g, $playerId);
@@ -406,6 +415,13 @@ sub _shouldEnchant {
 sub _shouldSelectFriend {
   my ($self, $g, $playerId) = @_;
   return $self->_canSelectFriend($g, $playerId);
+}
+
+# следует ли нам нападать вообще
+sub _shouldConquer {
+  my ($self, $g) = @_;
+  my $p = $g->{gs}->getPlayer;
+  return $p->tokens + $p->activeRace->redeployTokensBonus($p) > 3 || $g->{gs}->stage ne GS_BEFORE_CONQUEST;
 }
 
 # возвращает список регионов, на которые мы должны напасть
@@ -676,7 +692,7 @@ sub _cmd_defend {
       action => 'defend',
       regions => $self->_defend($g)
   )->{result} ne R_ALL_OK;
-  $_->{conquestIdx} = undef for @{ $g->{gs}->regions };
+  $_->{conquestIdx} = undef for $g->{gs}->regions;
 }
 
 sub _cmd_selectRace {
@@ -689,7 +705,7 @@ sub _cmd_selectRace {
 sub _cmd_beforeConquest {
   my ($self, $g) = @_;
   $self->_beginTurn($g);
-  $self->_conquer($g);
+  $self->_conquer($g) if $self->_shouldConquer($g);
   # надо прервать все наши действия, что бы дать другому игроку защититься, если
   # в этом есть необходимость
   return if $g->{gs}->stage eq GS_DEFEND;

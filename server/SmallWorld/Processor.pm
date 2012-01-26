@@ -57,12 +57,13 @@ sub checkAndDo {
   my $result = { result => R_ALL_OK };
   $self->checkJsonCmd($js, $result);
 
-  $self->saveCmd($js, $result) if ($js->{action} // '') eq 'leaveGame';
+  $self->saveCmd($js, $result, 1) if ($js->{action} // 'createGame') ne 'createGame' && ($js->{action} // 'setReadinessStatus') ne 'setReadinessStatus';
   if ( $result->{result} eq R_ALL_OK ) {
     my $func = $self->can("cmd_$js->{action}");
     &$func($self, $js, $result) if defined $func;
   }
-  $self->saveCmd($js, $result) if ($js->{action} // 'leaveGame') ne 'leaveGame';
+  $self->saveCmd($js, $result) if ($js->{action} // '') eq 'createGame' || ($js->{action} // '') eq 'setReadinessStatus';
+  $self->{db}->commit;
   
   return $result;
 }
@@ -72,7 +73,7 @@ sub debug {
 }
 
 sub getGame {
-  my ($self, $js, $id) = @_;
+  my ($self, $js, $id, $readonly) = @_;
   $id = defined $id
     ? $id
     : (defined $js->{gameId}
@@ -86,7 +87,7 @@ sub getGame {
       (grep { $_->{isReady} == 0 } @{ $self->{_game}->{gameState}->{players} }) ||
       $self->{_game}->{gameState}->{gameInfo}->{gameId} != $id ||
       $self->{_game}->{_version} != $version ) {
-    $self->{_game} = SmallWorld::Game->new(db => $self->{db}, id => $id);
+    $self->{_game} = SmallWorld::Game->new(db => $self->{db}, id => $id, readonly => $readonly);
   }
   return $self->{_game};
 }
@@ -122,6 +123,7 @@ sub saveCmd {
     $gameId = $gameId // $self->{db}->getGameId($cmd->{sid});
     delete $cmd->{sid};
   }
+  $self->{db}->lockGame($gameId) if $cmd->{action} ne 'createGame';
   if ( $cmd->{action} eq 'setReadinessStatus' ) {
     # если игра началась, то сохраняем в историю сгенерированные пары рас и
     # способностей
@@ -139,6 +141,7 @@ sub saveCmd {
     $cmd->{dice} = 1;
   }
   $self->{db}->saveCommand($gameId, encode_json($cmd));
+  $self->{db}->unlockGame;
 }
 
 # возвращает url до картинки с изображением карты
@@ -247,7 +250,7 @@ sub cmd_getGameList {
       ];
     }
     else {
-      my $game = $self->getGame($js, $_->{ID});
+      my $game = $self->getGame($js, $_->{ID}, 1);
       $activePlayerId = $game->{gameState}->{activePlayerId};
       $turn = $game->{gameState}->{currentTurn};
       $players = [

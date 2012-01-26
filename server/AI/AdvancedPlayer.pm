@@ -307,8 +307,8 @@ sub _tryUseSpConquer {
   # если судьба одарила нас возможностью атаковать способностью, то применим эту
   # способность на самом дорогом (в плане количества затраченных фигурок)
   # регионе
-  for ( my $j = 0; $j <= $$i; ++$j ) {
-    next if !&$filter($way->[$$i]->{id});
+  for ( my $j = 0; $j <= min($$i, $#$way); ++$j ) {
+    next if !&$filter($way->[$j]->{id});
     my $diff = $way->[$j]->{cost} - ($j == 0 ? 0 : $way->[$j - 1]->{cost});
     if ( $maxDiff < $diff ) {
       $maxDiff = $diff;
@@ -345,9 +345,12 @@ sub _getRedeployment {
   # а также собираем все лагеря и героев
   foreach ( @myRegions ) {
     $p->tokens($p->tokens + $_->tokens);
-    @$_{qw( hero encampment tokensNum )} = (0, 0, 0);
+    $_->hero(0);
+    $_->encampment(0);
+    $_->tokens(0);
     if ( $_->isImmune ) {
       $p->tokens($p->tokens - 1);
+      $_->tokens(1);
       push @regions, { regionId => $_->id, tokensNum => 1 };
     }
   }
@@ -369,15 +372,21 @@ sub _getRedeployment {
   # если игрок может ставить героев, то после расстановки героев надо ещё
   # раз подсчитать уровень опасности для регионов
   if ( $self->_canPlaceHero($g) ) {
-    my $heroes = HEROES_MAX;
+    my $heroesCnt = HEROES_MAX;
+    my $i = @dangerous;
     foreach ( @dangerous ) {
+      $i -= 1;
       my $r = $g->{gs}->getRegion(id => $_->{id});
+      next if $r->isImmune && $i >= $heroesCnt;
+
       push @heroes, { regionId => $r->id };
-      push @regions, { regionId => $r->id, tokensNum => 1 };
-      $p->tokens($p->tokens - 1);
-      $r->tokens(1);
+      if ( $r->tokens == 0 ) {
+        push @regions, { regionId => $r->id, tokensNum => 1 };
+        $p->tokens($p->tokens - 1);
+        $r->tokens(1);
+      }
       $r->hero(1);
-      last if --$heroes == 0;
+      last if --$heroesCnt == 0;
     }
     @dangerous = $self->_calculateDangerous($g, @myRegions);
   }
@@ -515,7 +524,7 @@ sub _shouldStoutDecline {
 
 sub _shouldSelectFriend {
   my ($self, $g, $playerId) = @_;
-  return $playerId == $g->{shouldSelectFriendId};
+  return $playerId == ($g->{shouldSelectFriendId} // $playerId) && $self->_canSelectFriend($g, $playerId);
 }
 
 sub _selectRace {
