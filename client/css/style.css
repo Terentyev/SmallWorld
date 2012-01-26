@@ -78,10 +78,10 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
             -webkit-border-radius: 6px 6px 0 0; border-radius: 6px 6px 0 0; text-align:center;}
 .header span {padding-left:8px;}
 .buttons {line-height:26px; float:right; display: block; padding: 4px 0 0 0;}
-.buttons div { float:right; margin-left:4px; width:80px; height:26px; color:#666; font-weight:bold;
+.buttons div { float:right; margin-left:4px; width:85px; height:26px; color:#666; font-weight:bold;
               text-align:center; background:url(images/button.gif) repeat-x; border:1px solid #336699;
               cursor:pointer;}
-.tbutton {margin-left:4px; padding-top: 4px; width:80px; height:22px; color:#666; font-weight:bold;
+.tbutton {margin-left:4px; padding-top: 4px; width:85px; height:22px; color:#666; font-weight:bold;
           text-align:center; background:url(images/button.gif) repeat-x; border:1px solid #336699;
           cursor:pointer;}
 

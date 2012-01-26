@@ -121,6 +121,7 @@ function prepare(gs) {
   if (gs.stage != null) return;
   // можно смотреть также в SmallWorld::Game->getStageForGameState (он работает
   // однозначно правильно (т. к. тестировался)
+  p = new Player(gs.activePlayerId, gs);
   switch (gs.state) {
     case GST_WAIT:
       break;
@@ -134,7 +135,7 @@ function prepare(gs) {
       }
       switch (gs.lastEvent) {
         case LE_DEFEND:
-          gs.stage = player.tokens() == 0
+          gs.stage = p.tokens() == 0
             ? GS_REDEPLOY
             : GS_CONQUEST;
           break;
@@ -151,7 +152,7 @@ function prepare(gs) {
           gs.stage = GS_BEFORE_FINISH_TURN;
           break;
         case LE_FAILED_CONQUER:
-          gs.stage = player.myRegions().length > 0
+          gs.stage = p.myRegions().length > 0
             ? GS_REDEPLOY
             : GS_BEFORE_FINISH_TURN;
           break;
@@ -287,22 +288,15 @@ function areaConquer(regionId) {
 }
 
 function areaDragonAttack(regionId) {
-  if (!player.canDragonAttack(regionId)) {
-    return;
-    setGameStage(GS_CONQUEST);
-  }
+  if (!player.canDragonAttack(regionId)) return;
   var r = regions[regionId];
   setGameStage(r.needDefend() ? GS_DEFEND: GS_CONQUEST);
   player.setRegionId(regionId);
-  //dragonAttack();
   cmdDragonAttack(regionId);
 }
 
 function areaEnchant(regionId) {
-  if (!player.canEnchant(regionId)) {
-    return;
-    setGameStage(GS_CONQUEST);
-  }
+  if (!player.canEnchant(regionId)) return;
   var r = regions[regionId];
   setGameStage(r.needDefend() ? GS_DEFEND : GS_CONQUEST);
   player.setRegionId(regionId);
@@ -310,7 +304,6 @@ function areaEnchant(regionId) {
 }
 
 function areaPlaceTokens(regionId) {
-  // TODO: do needed checks
   place = regions[regionId];
   if (!place.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');

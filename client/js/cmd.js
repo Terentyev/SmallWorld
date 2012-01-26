@@ -353,7 +353,6 @@ function cmdConquer(regionId) {
 
 function hdlConquer(ans) {
   // first implementation
-  // TODO: change game state handly
   if (ans.dice != null) {
     alert($.sprintf(
           'Dice: %d.\n' +
@@ -391,7 +390,6 @@ function cmdDefend(regions) {
 
 function hdlDefend(ans) {
   // first implementation
-  // TODO: change game state handly
   cmdGetGameState();
 }
 
@@ -410,7 +408,6 @@ function cmdRedeploy(regions, camps, heroes, fortressId) {
 
 function hdlRedeploy(ans) {
   // first implementation
-  // TODO: change game state handly
   cmdGetGameState();
 }
 
@@ -427,7 +424,6 @@ function cmdFinishTurn() {
 
 function hdlFinishTurn(ans) {
   // first implementation
-  // TODO: change game state handly
   cmdGetGameState();
   showTurnScores(ans.statistics);
 }
@@ -445,7 +441,6 @@ function cmdDecline() {
 
 function hdlDecline(ans) {
   // first implementation
-  // TODO: change game state handly
   cmdGetGameState();
 }
 
@@ -475,9 +470,7 @@ function cmdSelectFriend(fid) {
 }
 
 function hdlSelectFriend(ans) {
-  player.setSelectFriend();
   setGameStage(GS_FINISH_TURN);
-  cmdGetGameState();
 }
 
 function cmdDragonAttack(regionId) {
@@ -492,7 +485,6 @@ function cmdDragonAttack(regionId) {
 function hdlDragonAttack(ans) {
   player.setDragonAttack();
   showPlayers();
-  // TODO: надо бы запомнить регион и обновлять вручную
   cmdGetGameState();
 }
 
@@ -508,6 +500,5 @@ function cmdEnchant(regionId) {
 function hdlEnchant(ans) {
   player.setEnchant();
   showPlayers();
-  // TODO: надо бы запомнить регион и обновлять вручную
   cmdGetGameState();
 }

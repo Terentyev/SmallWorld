@@ -31,6 +31,8 @@ function Player(playerId, gs) {
     }
   }
   this.p.berserkDice = this.gs.berserkDice;
+  this.p.enchanted = this.gs.enchanted != null ? this.gs.enchanted : false;
+  this.p.dragonAttacked = this.gs.dragonAttacked != null ? this.gs.dragonAttacked : false;
 }
 
 Player.prototype.userId = function() {
@@ -141,16 +143,12 @@ Player.prototype.setBerserkDice = function(dice) {
   this.p.berserkDice = dice;
 }
 
-Player.prototype.setSelectFriend = function() {
-  // TODO
-}
-
 Player.prototype.setDragonAttack = function() {
-  // TODO
+  this.p.dragonAttacked = true;
 }
 
 Player.prototype.setEnchant = function() {
-  // TODO
+  this.p.enchanted = true;
 }
 
 Player.prototype.setRegionId = function(regionId) {
@@ -314,11 +312,11 @@ Player.prototype.canBaseAttack = function(regionId) {
 }
 
 Player.prototype.canDragonAttack = function(regionId) {
-  return this.canBaseAttack(regionId);
+  return !this.p.dragonAttacked && this.canBaseAttack(regionId) && this.tokens();
 }
 
 Player.prototype.canEnchant = function(regionId) {
-  if (!this.canBaseAttack(regionId))
+  if (this.p.enchanted || !this.canBaseAttack(regionId))
     return false;
 
   var r = regions[regionId];

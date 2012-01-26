@@ -41,12 +41,12 @@
           playerId = $.cookie("playerId");
           username = $.cookie("username");
           sid = $.cookie("sid");
-          if ($.cookie("gameId") != null) {
-            gameId = $.cookie("gameId");
-            mapId = $.cookie("mapId");
-            inGame = $.cookie("inGame");
-            needMakeCurrent = true;
-          }
+        }
+        if ($.cookie("gameId") != null) {
+          gameId = $.cookie("gameId");
+          mapId = $.cookie("mapId");
+          inGame = $.cookie("inGame");
+          needMakeCurrent = true;
         }
       }
       showLobby();
@@ -141,7 +141,7 @@
   </div>
 
   <div id ="divTurnScores" class="modal">
-    <div class="header"><span>Turn scores</span></div>
+    <div class="header"><span>Turn statistics</span></div>
     <div class="message">
       <table>
         <tr><td align="center">
