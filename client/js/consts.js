@@ -97,12 +97,12 @@ var specialPowers = {
 };
 
 var objects = {
-  'holeInTheGround': '/pics/objHoleInTheGround.png',
+  'holeInTheGround': {'src': '/pics/objHoleInTheGround.png', 'title': 'Hole'},
   //'lair': '/pics/objLair.png',
-  'dragon': '/pics/objDragon.png',
-  'fortified': '/pics/objFortified.png',
-  'hero': '/pics/objHero.png',
-  'encampment': '/pics/objEncampment.png'
+  'dragon': {'src': '/pics/objDragon.png', 'title': 'Dragon'},
+  'fortified': {'src': '/pics/objFortified.png', 'title': 'Fortress'},
+  'hero': {'src': '/pics/objHero.png', 'title': 'Hero'},
+  'encampment': {'src': '/pics/objEncampment.png', 'title': 'Encampment'}
 };
 
 var land = {

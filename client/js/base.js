@@ -175,7 +175,7 @@ function getObjectsInHand() {
        $.sprintf('<a id="aTokensInHand">%d</a>', player.tokens())]);
   var obj = getObjectNameByPower(player.curPower());
   if (obj) {
-    s += addRow([$.sprintf('<img src="%s" class="token">', objects[obj]),
+    s += addRow([$.sprintf('<img src="%s" class="token" title="%s">', objects[obj].src, objects[obj].title),
                 $.sprintf('<a id="a%sInHand">%s</a>', obj, player.getObjectsInHand(obj))]);
   }
   s += '</tbody></table>';

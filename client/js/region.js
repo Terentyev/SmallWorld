@@ -156,7 +156,7 @@ Region.prototype.setDefendTokenNum = function(num) {
 Region.prototype.createObject = function(object, num) {
   var x = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[0] + this.model.sp.count * (tokenWidth + 2),
       y = maps[data.game.map.mapId].regions[this.regionId()].powerCoords[1];
-  this.model.sp[object] = canvas.image(objects[object], x, y, tokenWidth, tokenHeight).attr('title', object);
+  this.model.sp[object] = canvas.image(objects[object].src, x, y, tokenWidth, tokenHeight).attr('title', objects[object].title);
   this.model.sp[object].mouseover(hoverRegion(this.model.region, true));
   this.model.sp[object].click( makeFuncRef(areaClick, this.regionId()) );
   if (object == 'encampment') {
@@ -206,7 +206,6 @@ Region.prototype.update = function(region) {
       newInDecline = region.currentRegionState.inDecline == null ? false : region.currentRegionState.inDecline;
   this.raceName = getRaceNameById(region.currentRegionState.tokenBadgeId);
   if (tokenBadgeId != region.currentRegionState.tokenBadgeId) {
-    //alert('reg changed:' + this.regionId());
     if (tokenBadgeId == null) {
       //if previous owner was lost tribe this.model.race.image already exists
       if (this.model.race.image == null || this.model.race.image.removed)
