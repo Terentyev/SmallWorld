@@ -281,9 +281,10 @@ sub cmd_getMapList {
       'picture'     => $self->getMapUrl($_->{ID}),
       'regions'     => [
         map { {
-          coordinates => $_->{coordinates},
-          raceCoords  => $_->{raceCoords},
-          powerCoords => $_->{powerCoords}
+          constRegionState => $_->{landDescription},
+          coordinates      => $_->{coordinates},
+          raceCoords       => $_->{raceCoords},
+          powerCoords      => $_->{powerCoords}
         } } @{ decode_json($_->{REGIONS}) }
       ]
     } } @{$self->{db}->getMaps()}
