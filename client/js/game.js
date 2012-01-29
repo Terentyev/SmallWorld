@@ -370,14 +370,12 @@ function deployRegion() {
 }
 
 function areaDefend(regionId) {
-  // TODO: do needed checks
   var region = regions[regionId];
   if (!region.isOwned(player.curTokenBadgeId())) {
     alert('Wrong region');
     return;
   }
 
-  // TODO: check adjacent regions
   var loose = regions[data.game.defendingInfo.regionId];
   if (loose.isAdjacent(regionId)) {
     for (var i in regions) {

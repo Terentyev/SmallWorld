@@ -274,7 +274,7 @@ Player.prototype.canBaseAttack = function(regionId) {
       return false;
     }
   }
-  //TODO проверить друг ли
+
   if (!(this.curPower() == 'Seafaring' || region.isLand())) {
     alert("You can't conquer not land");
     return false;
