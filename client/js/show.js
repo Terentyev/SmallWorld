@@ -222,7 +222,7 @@ function showGameStage() {
       btn.html('Finish').attr('title', 'Finish turn');
       switch (player.curPower()) {
         case 'Stout':
-          txt = 'You may decline you active race, or finish turn';
+          //txt = 'You may decline you active race, or finish turn';
           $('#divDecline').show();
           btn.hide();
           break;

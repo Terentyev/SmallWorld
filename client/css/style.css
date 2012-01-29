@@ -141,4 +141,4 @@ div.header {height:30px; line-height:30px; width:100%; color:#fff; font-weight:b
 #checkFortified, #checkHero {margin-left: 0px}
 
 #pGameStageText{ text-indent: 10px; margin-top: 4px;}
-#titleGameStage { cursor: hand; color: #FF0000;}
+#titleGameStage { cursor: pointer; color: #FF0000;}

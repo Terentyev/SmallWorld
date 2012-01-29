@@ -180,7 +180,8 @@ Player.prototype.addTokens = function(tokens) {
         break;
       }
     }
-    for (var i = 0; i < -this.tokens(); ++i) {
+    var len = -this.tokens();
+    for (var i = 0; i < len; ++i) {
       regions[regs[i]].rmTokens(1);
       this.p.tokensInHand ++;
     }
