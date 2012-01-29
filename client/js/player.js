@@ -33,6 +33,9 @@ function Player(playerId, gs) {
   this.p.berserkDice = this.gs.berserkDice;
   this.p.enchanted = this.gs.enchanted != null ? this.gs.enchanted : false;
   this.p.dragonAttacked = this.gs.dragonAttacked != null ? this.gs.dragonAttacked : false;
+  this.p.friendId = null;
+  if (this.gs.friendInfo != null && this.gs.friendInfo.friendId == playerId)
+    this.p.friendId = this.gs.friendInfo.diplomatId;
 }
 
 Player.prototype.userId = function() {
@@ -254,9 +257,17 @@ Player.prototype.canBaseAttack = function(regionId) {
     alert('Region is immune');
     return false;
   }
+
+  if (this.p.friendId != null) {
+    f = new Player(this.p.friendId, this.gs);
+    if (region.isOwned(f.curTokenBadgeId())) {
+      alert('You can\'t attack your friend active race');
+      return false;
+    }
+  }
   //TODO проверить друг ли
   if (!(this.curPower() == 'Seafaring' || region.isLand())) {
-    alert("You can't conquer not land")
+    alert("You can't conquer not land");
     return false;
   }
 
