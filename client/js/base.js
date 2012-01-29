@@ -4,7 +4,8 @@ messages = new Array();
 maps = new Array();
 games = new Array();
 currentSort = [[1,0]];
-maxMessagesCount = 5, sentedGameId = null;
+sentedGameId = null;
+
 var data = {
       playerId: null,
       username: null,
@@ -174,7 +175,7 @@ function getObjectsInHand() {
   s += addRow([$.sprintf('<img src="%s" class="token"/>', getRaceImage(player.curRace(), 'token')),
        $.sprintf('<a id="aTokensInHand">%d</a>', player.tokens())]);
   var obj = getObjectNameByPower(player.curPower());
-  if (obj) {
+  if (obj && data.game.stage == GS_REDEPLOY) {
     s += addRow([$.sprintf('<img src="%s" class="token" title="%s">', objects[obj].src, objects[obj].title),
                 $.sprintf('<a id="a%sInHand">%s</a>', obj, player.getObjectsInHand(obj))]);
   }
