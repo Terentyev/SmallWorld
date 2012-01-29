@@ -344,7 +344,7 @@ sub checkRegion_conquer {
          $game->isFirstConquer() && !$game->canFirstConquer($region, $race, $sp) ||
          !$game->isFirstConquer() && (
              !$sp->canAttack($region) ||
-             !(grep $player->id == $_->ownerId, @{ $sp->getRegionsForAttack($region) })
+             !(grep $player->activeConq($_), @{ $sp->getRegionsForAttack($region) })
          ) || $game->playerFriendWithRegionOwner($player, $region);
 }
 
