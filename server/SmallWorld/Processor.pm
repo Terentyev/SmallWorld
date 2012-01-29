@@ -137,8 +137,11 @@ sub saveCmd {
       push @{ $cmd->{visibleSpecialPowers} }, $_->{specialPowerName} foreach ( @{ $game->{gameState}->{tokenBadges} } );
     }
   }
-  if ( $cmd->{action} eq 'conquer' && defined $result->{dice} ) {
-    $cmd->{dice} = 1;
+  if ( $cmd->{action} eq 'conquer' ) {
+    my $game = $self->getGame($js);
+    if ( defined $result->{dice} || $game->stage ne GS_CONQUEST && $game->stage ne GS_BEFORE_CONQUEST ) {
+      $cmd->{dice} = 1;
+    }
   }
   $self->{db}->saveCommand($gameId, encode_json($cmd));
   $self->{db}->unlockGame;
