@@ -70,7 +70,31 @@ var raceDescription = {
   'Tritons': 'Your Tritons may conquer all Coastal Regions (those bordering a Sea or Lake) at a cost of 1 less Triton token than normal. A minimum of 1 Triton token is still required',
   'Trolls': 'Place a Troll\'s Lair in each Region your Trolls occupy. The Troll\'s Lair augments your region\'s defense by 1, and stays in the Region even after your Trolls go into Decline. Remove the Troll\'s Lair if you abandon the Region or when an enemy conquers it',
   'Wizards': 'Each Magic Region your Wizards occupy is worth 1 bonus Victory coin, at the end of your turn'
-}
+};
+
+var powerDescription = {
+  null: '',
+  '': '',
+  'Alchemist': 'Collect 2 bonus Victory coins at the end of each turn your race hasn\'t yet gone into Decline',
+  'Berserk': 'You may use the Reinforcement die before each of your conquests, rather than just the last one of your turn. Roll the die first; select the Region you wish to conquer; then place the required number of Race tokens (minus the die results) there. If you do not have enough tokens left, this is your final conquest attempt for the turn. As usual, a minimum of 1 token is still required to attempt the conquest',
+  'Bivouacking': 'Deploy the 5 Encampment tokens in any of your Region(s), during your Troop Redeployment phase. Each Encampment counts as 1 Race token toward the defense of the Region in which it is placed (thereby possibly protecting a single Race token with an Encampment from the Sorcerer\'s Special Power). Multiple encampments may be placed in the same Region to obtain a higher defense bonus',
+  'Commando': 'You may conquer any adjacent Region with 1 less Race token than normal. A minimum of 1 token is still required',
+  'Diplomat': 'At the end of your turn, you may select one opponent whose Active race you did not attack this turn as your ally. You are now at peace with him and he cannot attack your active race until your next turn. You may change allies each turn, or stay at peace with the same opponent. Tokens In Decline are not impacted',
+  'DragonMaster': 'Once per turn, you may conquer a Region using a single Race token, regardless of the number of enemy tokens defending it. Once conquered, place your Dragon there. The Region is now immune to enemy conquests as well as to their racial and special powers until your Dragon moves. During each new turn, you may move your Dragon to a different Region you wish to conquer. Your Dragon disappears when you go into Decline',
+  'Flying': 'You may conquer any Region of the map except Seas. These Regions do not need to be adjacent or contiguous to ones you already occupy',
+  'Forest': 'Collect 1 bonus Victory coin for each Forest Region you occupy at turn\'s end',
+  'Fortified': 'Once per turn, place 1 Fortress in a Region you occupy. The Fortress is worth 1 bonus Victory coin at turn\'s end, unless you leave or are In Decline. The Fortress also augments your Region\'s defense by 1, even if you leave or are In Decline. Remove the Fortress if you abandon the Region or when an enemy conquers it. There can only ever be a maximum of 1 Fortress per Region, and a maximum of 6 Fortresses on the map',
+  'Heroic': 'At the end of your turn, place each of your 2 Heroes in 2 different Regions you occupy These 2 Regions are immune to enemy conquests as well as to their racial and special powers until your Heroes move. Your Heroes disappear when you go into Decline',
+  'Hill': 'Collect 1 bonus Victory coin for each Hill Region you occupy at turn\'s end',
+  'Merchant': 'Collect 1 bonus Victory coin for any Region you occupy at turn\'s end',
+  'Mounted': 'You may conquer any Hill or Farmland Region with 1 less Race token than normal. A minimum of 1 token is still required',
+  'Pillaging': 'Each non-empty Region you conquer this turn is worth 1 bonus Victory coin at turn\'s end',
+  'Seafaring': 'You can consider the Seas and Lakes as empty Regions you may conquer. You keep these Regions even once you go into Decline, and continue scoring for them for as long as you have tokens there',
+  'Stout': 'You may go In Decline at the end of a regular turn of conquests, after scoring, instead of spending an entire turn going into Decline',
+  'Swamp': 'Collect 1 bonus Victory coin for each Swamp Region you occupy at turn\'s end',
+  'Underworld': 'You may conquer any Region with a Cavern with 1 less Race token than normal. A minimum of 1 token is still required. All Regions with a Cavern are also considered adjacent to each other for your conquest purposes',
+  'Wealthy': 'Collect 7 bonus Victory coins, once only, at the end of your first turn'
+};
 
 var specialPowers = {
   null: '/pics/spNone.png',

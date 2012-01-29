@@ -202,8 +202,8 @@ function addOurPlayerInfo(player) {
       '<tr><td colspan="2">Active race:</td></tr><tr><td colspan="2">' +
       '<img src="%s" class="badge" title="%s"/><img src="%s" class="badge" title="%s"/>' +
       '</td></tr>',
-      getRaceImage(player.currentTokenBadge.raceName, 'race'), player.currentTokenBadge.raceName,
-      specialPowers[player.currentTokenBadge.specialPowerName], player.currentTokenBadge.specialPowerName);
+      getRaceImage(player.currentTokenBadge.raceName, 'race'), raceDescription[player.currentTokenBadge.raceName],
+      specialPowers[player.currentTokenBadge.specialPowerName], powerDescription[player.currentTokenBadge.specialPowerName]);
   }
   if (player.declinedTokenBadge && player.declinedTokenBadge.raceName != null) {
     s += $.sprintf(

@@ -123,8 +123,8 @@ function showBadges() {
     s += addRow([showCoins(cur.bonusMoney, 0, 1), $.sprintf(
           "<a href='#' class='clickable' onclick='tokenBadgeClick(%d)'>" +
           "<img src='%s' class='badge' title=\"%s\"/>" +
-          "<img src='%s' class='badge' /></a>",
-          i, getRaceImage(cur.raceName, 'race'), raceDescription[cur.raceName], specialPowers[cur.specialPowerName])]);
+          "<img src='%s' class='badge' title=\"%s\"/></a>",
+          i, getRaceImage(cur.raceName, 'race'), raceDescription[cur.raceName], specialPowers[cur.specialPowerName], powerDescription[cur.specialPowerName])]);
   }
   $("#tableTokenBadges tbody").html(s);
   $("#tableTokenBadges").trigger("update");
