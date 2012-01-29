@@ -94,10 +94,10 @@ function showCoin(type, num, dx, dy, off){
   var s = '';
   for (var i = 0; i < num; ++i){
     s += $.sprintf('<img src="./pics/coin%d.png" class="coin" style="top:%d; left:%d" />',
-                    type, off.y-4*i*dy, off.x-4*i*dx);
+                    type, off.y-coinStep*i*dy, off.x-coinStep*i*dx);
   }
-  off.x -= 4*num*dx;
-  off.y -= 4*num*dy;
+  off.x -= coinStep*num*dx;
+  off.y -= coinStep*num*dy;
   return s;
 }
 
@@ -107,7 +107,7 @@ function showCoins(num, dx, dy) {
   if (num <= 0) return '';
   var a = Math.floor(num / 25), b = Math.floor((num - a*25)/5);
   c = num - a*25 - b*5;
-  var off = { x: 4*(c + a + b -1)*dx, y : 4*(c + a + b -1)*dy };
+  var off = { x: coinStep*(c + a + b -1)*dx, y : coinStep*(c + a + b -1)*dy };
   var s = $.sprintf('<div class="coin-container" style="width:%d; height:%d" title="%s">', coinWidth + off.x, coinHeight + off.y, num);
   s += showCoin(1, c, dx, dy, off);
   s += showCoin(5, b, dx, dy, off);
@@ -157,8 +157,11 @@ function showGameStage() {
   if (data.game.stage == null || data.game.stage == '') return;
   btn.show();
   $('#btnThrowDice').hide();
+  $('#titleGameStage').html('');
+  $('#spanGameStage').html(stageNames[data.game.stage]);
+
   if (data.game.state == GST_FINISH || data.game.state == GST_EMPTY) {
-    $('#spanGameStage').html('Oops!.. Game over. You can see final scores');
+    $('#spanGameStageText').html('Oops!.. Game over. You can see final scores');
     btn.html('Scores').attr('title', 'See final scores');
     commitStageClickAction = showScores;
     return;
@@ -166,13 +169,14 @@ function showGameStage() {
 
   if (!player.isActive()) {
     btn.html('Update').attr('title', 'Update game state');
-    $('#spanGameStage').html(player.inGame() ? 'Wait other players': '');
+    $('#spanGameStageText').html(player.inGame() ? 'Wait other players': '');
     return;
   }
 
   switch (data.game.stage) {
     case GS_DEFEND:
       txt = 'Let\'s defend, my friend!';
+      $('#divDefend').show();
       btn.html('Defend').attr('title', 'Finish defend');
       break;
     case GS_SELECT_RACE:
@@ -180,12 +184,12 @@ function showGameStage() {
       btn.hide();
       break;
     case GS_BEFORE_CONQUEST:
-      txt = 'You may decline you active race, or start conquer';
+      txt = '';//You may decline you active race, or start conquer';
       $('#divDecline').show();
       btn.hide();
       break;
     case GS_CONQUEST:
-      txt = 'Do you want some fun? Let\'s conquer some regions. Click on region to try';
+      txt = 'Do you want some fun? Let\'s conquer some regions';
       $('#divConquest').show();
       btn.html('Next').attr('title', 'Start redeploy');
       switch (player.curPower()) {
@@ -224,21 +228,22 @@ function showGameStage() {
           btn.hide();
           break;
         case 'Diplomat':
-          txt =  'Select your friend';
+          txt =  'Select your friend:';
           selectFriend();
           $('#divSelectFriend').show();
           btn.hide();
           break;
         default:
-          txt = 'Click finish-turn button, dude';
+          txt = 'Click finish button, dude';
       }
       break;
     case GS_FINISH_TURN:
-      txt = 'Click finish-turn button, dude';
+      txt = 'Click finish button, dude';
       btn.html('Finish').attr('title', 'Finish turn');
   }
-
-  $('#spanGameStage').html(txt);
+  if (stageTitles[data.game.stage] && stageTitles[data.game.stage] != '')
+    $('#titleGameStage').html('*').attr('title', stageTitles[data.game.stage]);
+  $('#spanGameStageText').html(txt);
 }
 
 function showLobby() {

@@ -113,6 +113,7 @@ var land = {
   'hill': "url('./pics/hill.png')",
   'farmland': "url('./pics/farmland.png')"
 }
+const maxMessagesCount = 100;
 
 const GST_WAIT    = 1;
 const GST_BEGIN   = 0;
@@ -129,6 +130,24 @@ const GS_BEFORE_FINISH_TURN = 'beforeFinishTurn';
 const GS_FINISH_TURN        = 'finishTurn';
 const GS_IS_OVER            = 'gameOver';
 
+var stageNames = {
+  'defend':           'Defend',
+  'selectRace':       'Select race',
+  'beforeConquest':   'Conquest',
+  'conquest':         'Conquest',
+  'redeploy':         'Redeploy',
+  'beforeFinishTurn': 'Finish Turn',
+  'finishTurn':       'Finish Turn',
+  'gameOver':         'Game over'
+};
+
+var stageTitles = {
+  'defend': 'Click on your region to redeploy tokens on it. This region not have to be adjacent(if possible) to region they fled from',
+  'selectRace': 'Select pair race/special power in left column',
+  'conquest': 'Click on region to try conquer it',
+  'redeploy': 'Click on your region to change number of tokens on it and place or remove game objects'
+};
+
 const LE_FINISH_TURN    =  4;
 const LE_SELECT_RACE    =  5;
 const LE_CONQUER        =  6;
@@ -143,12 +162,13 @@ const HEROES_MAX = 2;
 const ENCAMPMENTS_MAX = 5;
 const FORTRESSES_MAX = 6;
 
-const actionDivs = ['#divDecline', '#divEnchant', '#divDragonAttack', '#divThrowDice', '#divRedeploy', '#divConquest', '#divSelectFriend'];
+const actionDivs = ['#divDecline', '#divEnchant', '#divDragonAttack', '#divThrowDice', '#divConquest', '#divSelectFriend'];
 
 const tokenWidth = 40;
 const tokenHeight = 40;
 const coinWidth = 16;
 const coinHeight = 16;
+const coinStep = 12;
 var regionAttr = {
   'stroke': 'gray',
   'stroke-width': 2,

@@ -235,12 +235,6 @@
 
           <table id="tableCenter" width="100%" align="center">
             <tr>
-              <td><span id="spanGameStage"></span></td>
-            </tr>
-            <tr>
-              <td><div id="divGameError" class="error"><div></td>
-            </tr>
-            <tr>
               <td>
                 <div id="divMapContainer">
                   <div id="divMapCanvas"></div>
@@ -256,16 +250,15 @@
         </td>
         <td width="250">
          <div class="corner-all">
-            <div class="header"><span>Actions</span></div>
+            <div class="header"><span>Stage:<span id="spanGameStage"></span></span></div>
             <div class="message">
               <table id="tableActions" width="100%" height="100%" align="center">
                 <tr><td>
                   <div id="divActions">
+                      <p id="pGameStageText"><span id="spanGameStageText"></span><sup id="titleGameStage">*</sup></p>
+                      <div id="divGameError" class="error"><div>
                       <div id="divSelectFriend">
                         <table>
-                          <tr>
-                            <td colspan="2">Select your friend</td>
-                          </tr>
                           <tr>
                             <td class="smallLeft">Name:</td>
                             <td><select id="selectPlayers"></select></td>
@@ -280,36 +273,26 @@
                           </tr>
                         </table>
                       </div>
-                      <div id="divRedeploy">Redeploy:</div>
                       <div id="divConquest">
-                        <table>
-                          <tr>
-                            <td>Conquer:</td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <div id="divThrowDice">
-                                <table>
-                                  <tr>
-                                    <td class="smallLeft">Dice:</td>
-                                    <td><span id="spanDiceValue"></span></td>
-                                  </tr>
-                                </table>
-                              </div>
-                              <div id="divDragonAttack">
-                                <input id="checkBoxDragon" type="checkbox" onclick="dragonAttack()"/>Use dragon
-                              </div>
-                              <div id="divEnchant">
-                                <input id="checkBoxEnchant" type="checkbox" onclick="enchant()"/>Use enchant
-                              </div>
-                            <td>
-                          </tr>
-                        </table>
+                        <div id="divThrowDice">
+                          <table>
+                            <tr>
+                              <td class="smallLeft">Dice:</td>
+                              <td><span id="spanDiceValue"></span></td>
+                            </tr>
+                          </table>
+                        </div>
+                        <div id="divDragonAttack">
+                          <input id="checkBoxDragon" type="checkbox" onclick="dragonAttack()"/>Use dragon
+                        </div>
+                        <div id="divEnchant">
+                          <input id="checkBoxEnchant" type="checkbox" onclick="enchant()"/>Use enchant
+                        </div>
                       </div>
                       <div id="divDecline">
                         <table>
                           <tr>
-                            <td>Do you want decline you race?</td>
+                            <td align="center">Decline you active race?</td>
                           </tr>
                           <tr>
                             <td>
