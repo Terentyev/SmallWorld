@@ -30,9 +30,9 @@ function Player(playerId, gs) {
         this.objectCount[j] += cur[j] || 0;
     }
   }
-  this.p.berserkDice = this.gs.berserkDice;
-  this.p.enchanted = this.gs.enchanted != null ? this.gs.enchanted : false;
-  this.p.dragonAttacked = this.gs.dragonAttacked != null ? this.gs.dragonAttacked : false;
+  this.p.berserkDice = this.curPower == 'Berserk' ? this.gs.berserkDice: null;
+  this.p.enchanted = (this.curRace() == 'Sorcerers' && this.gs.enchanted != null) ? this.gs.enchanted : false;
+  this.p.dragonAttacked = (this.curPower == 'DragonMaster' && this.gs.dragonAttacked != null) ? this.gs.dragonAttacked : false;
   this.p.friendId = null;
   if (this.gs.friendInfo != null && this.gs.friendInfo.friendId == playerId)
     this.p.friendId = this.gs.friendInfo.diplomatId;
@@ -154,6 +154,10 @@ Player.prototype.setEnchant = function() {
   this.p.enchanted = true;
 }
 
+Player.prototype.getEnchant = function() {
+  return this.p.enchanted;
+}
+
 Player.prototype.setRegionId = function(regionId) {
   this.p.regionId = regionId;
 }
@@ -175,6 +179,10 @@ Player.prototype.addTokens = function(tokens) {
       if (this.tokens() == 0) {
         break;
       }
+    }
+    for (var i = 0; i < -this.tokens(); ++i) {
+      regions[regs[i]].rmTokens(1);
+      this.p.tokensInHand ++;
     }
   }
   $('#aTokensInHand').html(this.tokens()).trigger('update');
@@ -362,4 +370,8 @@ Player.prototype.canAttack = function(regionId) {
   }
 
   return (tokensDiff <= 0) || confirm('Not enough tokens for conquest. Do you want to throw dice?');
+}
+
+Player.prototype.canAutoFinishTurn = function() {
+  return this.curPower() != 'Diplomat' && this.curPower() != 'Stout';
 }

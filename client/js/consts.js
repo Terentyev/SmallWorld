@@ -114,6 +114,7 @@ var land = {
   'farmland': "url('./pics/farmland.png')"
 }
 const maxMessagesCount = 100;
+const autoFinishTurn = 1;
 
 const GST_WAIT    = 1;
 const GST_BEGIN   = 0;

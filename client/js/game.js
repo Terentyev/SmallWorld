@@ -244,9 +244,11 @@ function changeGameStage(stage) {
       break;
     case 'beforeFinishTurn':
       commitStageClickAction = commitStageFinishTurn;
+      if (autoFinishTurn && player.canAutoFinishTurn()) commitStageFinishTurn();
       break
     case 'finishTurn':
       commitStageClickAction = commitStageFinishTurn;
+      if (autoFinishTurn) commitStageFinishTurn();
       break;
     case 'gameOver':
       // TODO: show game results

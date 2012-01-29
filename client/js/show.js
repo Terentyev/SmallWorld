@@ -184,7 +184,6 @@ function showGameStage() {
       btn.hide();
       break;
     case GS_BEFORE_CONQUEST:
-      txt = '';//You may decline you active race, or start conquer';
       $('#divDecline').show();
       btn.hide();
       break;
@@ -241,7 +240,7 @@ function showGameStage() {
       txt = 'Click finish button, dude';
       btn.html('Finish').attr('title', 'Finish turn');
   }
-  if (stageTitles[data.game.stage] && stageTitles[data.game.stage] != '')
+  if (stageTitles[data.game.stage] != null && stageTitles[data.game.stage] != '')
     $('#titleGameStage').html('*').attr('title', stageTitles[data.game.stage]);
   $('#spanGameStageText').html(txt);
 }
