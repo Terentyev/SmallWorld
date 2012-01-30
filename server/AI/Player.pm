@@ -421,7 +421,7 @@ sub _shouldSelectFriend {
 sub _shouldConquer {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer;
-  return $p->tokens + $p->activeRace->redeployTokensBonus($p) > 3 || $g->{gs}->stage ne GS_BEFORE_CONQUEST;
+  return $p->tokens + $p->activeRace->redeployTokensBonus($p) > 4 || $g->{gs}->stage ne GS_BEFORE_CONQUEST;
 }
 
 # возвращает список регионов, на которые мы должны напасть

@@ -143,8 +143,8 @@ sub _constructBadgesEstimates {
     my $upSp = $self->_translateToConst($_->{specialPowerName});
     push @result, {
       est => (
-        $self->_safeGetConst("EST_$upRace") +
-        $self->_safeGetConst("EST_$upSp") + 
+        ($self->_safeGetConst("EST_$upRace") +
+        $self->_safeGetConst("EST_$upSp")) * 3 + 
         $self->_safeGetConst("$upRace\_TOKENS_NUM") + 
         $self->_safeGetConst("$upSp\_TOKENS_NUM") +
         $_->{bonusMoney} - $i),
