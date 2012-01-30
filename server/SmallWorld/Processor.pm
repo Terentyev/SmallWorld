@@ -97,7 +97,7 @@ sub needSaveCmd {
   if ( $js->{action} eq 'conquer' ) {
     return 1 if defined $result->{dice};
     if ( $result->{result} eq R_BAD_TOKENS_NUM ) {
-      return decode_json($self->{db}->getLastCmd($self->{db}->getGameId($js->{sid})))->{action} eq 'throwDice';
+      return decode_json($self->{db}->getLastCmd($self->{db}->getGameId($js->{sid}))->[0])->{action} eq 'throwDice';
     }
   }
   return 0 if $result->{result} ne R_ALL_OK;

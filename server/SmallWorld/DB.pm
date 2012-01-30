@@ -352,7 +352,7 @@ sub getHistory {
 
 sub getLastCmd {
   my ($self, $gameId) = @_;
-  return $self->fetch1('SELECT cmd FROM HISTORY WHERE gameId = ? ORDER BY id DESC ROWS 1', $gameId);
+  return $self->fetchcol('SELECT cmd FROM HISTORY WHERE gameId = ? ORDER BY id DESC ROWS 2', $gameId);
 }
 
 sub lockGame {

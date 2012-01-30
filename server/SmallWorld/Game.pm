@@ -362,21 +362,24 @@ sub getLastEvent {
   my ($self, $st, $gameId) = @_;
   return $st if $st == GST_WAIT || $st == GST_BEGIN || $st == GST_EMPTY;
   return LE_FINISH_TURN if $st == GST_FINISH;
-  my $cmd = eval { decode_json($self->{db}->getLastCmd($gameId)) || {action => 'finishTurn'} };
-  return LE_FAILED_CONQUER if $cmd->{action} eq 'conquer' && defined $cmd->{dice};
-  return {
-    decline       => LE_DECLINE,
-    selectRace    => LE_SELECT_RACE,
-    throwDice     => LE_THROW_DICE,
-    conquer       => LE_CONQUER,
-    dragonAttack  => LE_CONQUER,
-    enchant       => LE_CONQUER,
-    defend        => LE_DEFEND,
-    redeploy      => LE_REDEPLOY,
-    selectFriend  => LE_SELECT_FRIEND,
-    finishTurn    => LE_FINISH_TURN,
-    leaveGame     => LE_FINISH_TURN
-  }->{$cmd->{action}};
+  foreach ( @{ $self->{db}->getLastCmd($gameId) } ) {
+    my $cmd = eval { decode_json($_) || {action => 'finishTurn'} };
+    next if $cmd->{action} eq 'defend';
+    return LE_FAILED_CONQUER if $cmd->{action} eq 'conquer' && defined $cmd->{dice};
+    return {
+      decline       => LE_DECLINE,
+      selectRace    => LE_SELECT_RACE,
+      throwDice     => LE_THROW_DICE,
+      conquer       => LE_CONQUER,
+      dragonAttack  => LE_CONQUER,
+      enchant       => LE_CONQUER,
+#      defend        => LE_DEFEND,
+      redeploy      => LE_REDEPLOY,
+      selectFriend  => LE_SELECT_FRIEND,
+      finishTurn    => LE_FINISH_TURN,
+      leaveGame     => LE_FINISH_TURN
+    }->{$cmd->{action}};
+  }
 }
 
 # возвращает состояние игры для конкретного игрока (удаляет секретные данные)
@@ -739,6 +742,18 @@ sub baseDecline {
     }
   }
   my $badge = $player->{currentTokenBadge};
+  if ( defined $player->declinedTokenBadgeId ) {
+    foreach ( $self->tokenBadges ) {
+      next if defined $_->{raceName};
+      $_->{raceName} = $player->{declinedTokenBadge}->{raceName};
+      last;
+    }
+    push @{$self->tokenBadges}, {
+      tokenBadgeId => scalar(@{$self->tokenBadges}) + 1,
+      specialPowerName => $player->{declinedTokenBadge}->{specialPowerName},
+      bonusMoney => 0
+    };
+  }
   @{ $player }{qw( tokensInHand currentTokenBadge declinedTokenBadge )} = (INITIAL_TOKENS_NUM, undef, $badge);
 }
 
