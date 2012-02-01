@@ -27,6 +27,8 @@ sub handler {
   my $r = Apache2::Request->new($rr);
 
   $rr->content_type('text/plain; charset="utf-8"');
+  $rr->headers_out()->{'Access-Control-Allow-Origin'} = "*";
+
   getServer()->process($r);
 
   return Apache2::Const::OK;
