@@ -26,16 +26,41 @@ sub _constructConquestPlan {
   my @bonusSums = $self->_calculateBonusSums($g, 0, @ways);
   @bonusSums = $self->_calculateBonusSums($g, 1, @ways)
     if !@bonusSums && ($g->{gs}->stage ne GS_BEFORE_CONQUEST || $self->_isLastTurn($g));
+  @ways = $self->_sortAgressiveConq($g, @bonusSums);
+  swLog(LOG_FILE, '@ways', \@ways);
   # формируем массив регионов по порядку их завоевания
   my @result = ();
-  foreach my $bs( @bonusSums ) {
-    foreach ( @{ $bs->{way} } ) {
+  foreach my $w ( @ways ) {
+    foreach ( @$w ) {
       my $r = $g->{gs}->getRegion(id => $_->{id});
       push @result, $r if !$r->{inResult};
       $r->{inResult} = 1;
     }
   }
+  delete $_->{inResult} for $g->{gs}->regions;
   return @result;
+}
+
+sub _sortAgressiveConq {
+  my ($self, $g, @bonusSums) = @_;
+  my @result = ();
+  my @tmp = ();
+  my $max = undef;
+  foreach ( @bonusSums ) {
+    last if defined $max && $max > $_->{bonus};
+    $max = $_->{bonus};
+    my $c = 0;
+    foreach ( @{ $_->{way} } ) {
+      my $r = $g->{gs}->getRegion(id => $_->{id});
+      next if $r->ownerId == -1;
+      my $p = $g->{gs}->getPlayer(id => $r->ownerId);
+      my $ar = $p->activeRace;
+      ++$c if $r->inDecline && ($p->declinedRace->isWeak($p) || $ar->isDefensive || $p->activeSpName eq SP_DIPLOMAT) ||
+        $ar->isScoring && !$r->inDecline;
+    }
+    push @tmp, { way => $_->{way}, c => $c };
+  }
+  return map { $_->{way} } sort { $b->{c} <=> $a->{c} } @tmp;
 }
 
 # создает различные варианты путей захвата регионов, а также подсчитывает кол-во
@@ -338,7 +363,7 @@ sub _getRedeployment {
   my @encampments = ();
   my %fortified = ();
   my $sumD = 0;
-  my $encampments = $self->_canPlaceEncampment($g) ? (ENCAMPMENTS_MAX - $self->_alienEncampNum($g)) : 0;
+  my $encampments = $self->_canPlaceEncampment($g) ? ENCAMPMENTS_MAX : 0;
   my $fortifieds = $self->_canPlaceFortified($g)  ? 1 : 0;
 
   # собираем все токены с регионов (оставляем один только там, где иммунитет),
@@ -348,7 +373,7 @@ sub _getRedeployment {
     $_->hero(0);
     $_->encampment(0);
     $_->tokens(0);
-    if ( $_->isImmune ) {
+    if ( $_->isImmune || $_->isSea ) {
       $p->tokens($p->tokens - 1);
       $_->tokens(1);
       push @regions, { regionId => $_->id, tokensNum => 1 };
@@ -377,7 +402,7 @@ sub _getRedeployment {
     foreach ( @dangerous ) {
       $i -= 1;
       my $r = $g->{gs}->getRegion(id => $_->{id});
-      next if $r->isImmune && $i >= $heroesCnt;
+      next if ($r->isImmune || $r->isSea) && $i >= $heroesCnt;
 
       push @heroes, { regionId => $r->id };
       if ( $r->tokens == 0 ) {
@@ -401,7 +426,7 @@ sub _getRedeployment {
   foreach my $d ( @dangerous ) {
     $n -= 1;
     my $r = $g->{gs}->getRegion(id => $d->{id});
-    next if $r->isImmune;
+    next if $r->isImmune || $r->isSea;
 
     my $t = $sumD != 0 ? max(1, int(($p->tokens - $m) * $d->{est} / $sumD)) : 1;
     $sumD -= $d->{est};
@@ -431,7 +456,7 @@ sub _getRedeployment {
   foreach ( @regions ) {
     swLog(LOG_FILE, $_);
     $region = $g->{gs}->getRegion(id => $_->{regionId});
-    if ( !$region->isImmune ) {
+    if ( !$region->isImmune && !$region->isSea ) {
       $r = $_;
       last;
     }

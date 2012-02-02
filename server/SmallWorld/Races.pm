@@ -114,7 +114,14 @@ sub finishTurn {
   my ($self, $state) = @_;
 }
 
-sub regions { return wantarray ? @{ $_[0]->{regions} } : $_[0]->{regions}; }
+sub regions     { return wantarray ? @{ $_[0]->{regions} } : $_[0]->{regions}; }
+sub isScoring   { 0;                                                           }
+sub isDefensive { 0;                                                           }
+sub isOffensive { 0;                                                           }
+sub isWeak {
+  my ($self, $player) = @_;
+  return scalar(@{ $self->regions }) < scalar(@{ $player->regions });
+}
 
 
 package SmallWorld::RaceAmazons;
@@ -138,6 +145,8 @@ sub redeployTokensBonus {
   return - AMAZONS_CONQ_TOKENS_NUM;
 }
 
+sub isOffensive { 1; }
+
 
 package SmallWorld::RaceDwarves;
 use strict;
@@ -160,6 +169,8 @@ sub declineCoinsBonus {
   return $_[0]->coinsBonus();
 }
 
+sub isScoring { 1; }
+
 
 package SmallWorld::RaceElves;
 use strict;
@@ -177,6 +188,8 @@ sub initialTokens {
 sub looseTokensBonus {
   return ELVES_LOOSE_TOKENS_NUM;
 }
+
+sub isDefensive { 1; }
 
 
 package SmallWorld::RaceGiants;
@@ -202,6 +215,8 @@ sub conquestRegionTokensBonus {
       $_->isMountain
     } @{ $sp->getAdjacentRegions($region) }) ? 1 : 0;
 }
+
+sub isOffensive { 1; }
 
 
 package SmallWorld::RaceHalflings;
@@ -251,6 +266,8 @@ sub activate {
   $state->{holesPlaced} = 0;
 }
 
+sub isDefensive { 1; }
+
 
 package SmallWorld::RaceHumans;
 use strict;
@@ -268,6 +285,8 @@ sub initialTokens {
 sub coinsBonus {
   return $_[0]->SUPER::coinsBonus() + $_[0]->getOwnedRegionsNum(REGION_TYPE_FARMLAND);
 }
+
+sub isScoring { 1; }
 
 
 package SmallWorld::RaceOrcs;
@@ -289,6 +308,8 @@ sub coinsBonus {
     1 * (grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} $_[0]->regions);
 }
 
+sub isScoring { 1; }
+
 
 package SmallWorld::RaceRatmen;
 use strict;
@@ -302,6 +323,8 @@ use SmallWorld::Consts;
 sub initialTokens {
   return RATMEN_TOKENS_NUM;
 }
+
+sub isOffensive { 1; }
 
 
 package SmallWorld::RaceSkeletons;
@@ -325,6 +348,8 @@ sub redeployTokensBonus {
   my $bonus = int ((grep { defined $_->{conquestIdx} && $_->{prevTokensNum}} $self->regions) / 2);
   return min($bonus, SKELETONS_TOKENS_MAX -  $inGame);
 }
+
+sub isDefensive { 1; }
 
 
 package SmallWorld::RaceSorcerers;
@@ -356,6 +381,8 @@ sub finishTurn {
   $state->{enchanted} = 0;
 }
 
+sub isDefensive { 1; }
+
 
 package SmallWorld::RaceTritons;
 use strict;
@@ -376,6 +403,8 @@ sub conquestRegionTokensBonus {
   return !$region->isSea && 
     (grep { $_->isSea } @{ $sp->getAdjacentRegions($region)}) ? 1 : 0;
 }
+
+sub isOffensive { 1; }
 
 
 package SmallWorld::RaceTrolls;
@@ -407,6 +436,8 @@ sub abandonRegion {
   $region->{lair} = undef;
 }
 
+sub isDefensive { 1; }
+
 
 package SmallWorld::RaceWizards;
 use strict;
@@ -424,6 +455,8 @@ sub initialTokens {
 sub coinsBonus {
   return $_[0]->getOwnedRegionsNum(REGION_TYPE_MAGIC) + $_[0]->SUPER::coinsBonus();
 }
+
+sub isScoring { 1; }
 
 
 1;
