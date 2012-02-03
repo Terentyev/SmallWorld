@@ -29,7 +29,7 @@ sub _init {
   $self->{regions} = [grep {
     defined $_->{tokenBadgeId} && defined $badge->{tokenBadgeId} &&
     $_->{tokenBadgeId} == $badge->{tokenBadgeId}
-  } @regions] || [];
+  } @regions];
 }
 
 # возвращает количество первоначальных фигурок для каждой расы
