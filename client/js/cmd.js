@@ -171,19 +171,17 @@ function cmdGetGameList() {
 }
 
 function updatePlayersInGame() {
-  with (data.game) {
-    var s = $.sprintf('%d/%d', currentPlayersNum, map.playersNum);
-    s += '<br>';
-    $('#checkBoxReady').attr('disabled', !data.inGame ? 'disabled': null).attr('checked', null);
-    for (var i in players) {
-      with (players[i]) {
-        s += $.sprintf('%s %s<br>', username, isReady ? 'ready' : '');
-        if (userId == data.playerId && isReady)
-          $('#checkBoxReady').attr('checked', 'checked');
-      }
+  var s = $.sprintf('%d/%d', data.game.currentPlayersNum, data.game.map.playersNum);
+  s += '<br>';
+  $('#checkBoxReady').attr('disabled', !data.inGame ? 'disabled': null).attr('checked', null);
+  for (var i in data.game.players) {
+    with (data.game.players[i]) {
+      s += $.sprintf('%s %s<br>', username, isReady ? 'ready' : '');
+      if (userId == data.playerId && isReady)
+        $('#checkBoxReady').attr('checked', 'checked');
     }
-    $('#cgamePlayers').html(s);
   }
+  $('#cgamePlayers').html(s);
 }
 
 function hdlGetGameList(ans) {
@@ -222,7 +220,6 @@ function hdlGetGameList(ans) {
                 cur.state == GST_WAIT ? 'Not started' :$.sprintf("%d/%d", cur.turn, cur.turnsNum),
                 $.sprintf("<div class='wrap'>%s</div>", cur.gameDescription)]);
   }
-
   $('#tableGameList tbody').html(s).trigger('update');
   $('#tableGameList:has(tbody tr)').trigger('sorton', [currentSort]);
   $('input:radio[name=listGameId]').first().attr('checked', 1);
