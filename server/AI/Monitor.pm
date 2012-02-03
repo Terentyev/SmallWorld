@@ -4,8 +4,10 @@ package AI::Monitor;
 use strict;
 use warnings;
 use utf8;
+use Switch;
 
 use AI::AdvancedPlayer;
+use AI::AdvancedPlayerSE;
 use AI::Config;
 use AI::Player;
 use AI::Requester;
@@ -26,9 +28,12 @@ sub _init {
   my %p = (@_);
   $self->{req} = AI::Requester->new(%p);
   $p{req} = $self->{req};
-  $self->{ai} = $p{simple}
-    ? AI::Player->new(%p)
-    : AI::AdvancedPlayer->new(%p);
+  $p{level} //= 2;
+  switch ($p{level}) {
+    case 0 { $self->{ai} = AI::Player->new(%p) }
+    case 1 { $self->{ai} = AI::AdvancedPlayer->new(%p) }
+    else { $self->{ai} = AI::AdvancedPlayerSE->new(%p) }
+  }
   $self->{game} = $p{game};
 }
 

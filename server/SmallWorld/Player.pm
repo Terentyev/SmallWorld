@@ -45,7 +45,7 @@ sub activeTokenBadgeId   { return $_[0]->{currentTokenBadge}->{tokenBadgeId};   
 sub declinedTokenBadgeId { return $_[0]->{declinedTokenBadge}->{tokenBadgeId};                   }
 sub activeRace           { return $_[0]->{game}->createRace($_[0]->{currentTokenBadge});         }
 sub activeSp             { return $_[0]->{game}->createSpecialPower('currentTokenBadge', $_[0]); }
-sub declinedRace         { return $_[0]->{game}->createRace($_[0]->{decliendTokenBadge});        }
+sub declinedRace         { return $_[0]->{game}->createRace($_[0]->{declinedTokenBadge});        }
 sub activeRaceName       { return $_[0]->{currentTokenBadge}->{raceName} // 'none';              }
 sub activeSpName         { return $_[0]->{currentTokenBadge}->{specialPowerName} // 'none';      }
 sub tokens {
