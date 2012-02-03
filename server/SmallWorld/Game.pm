@@ -742,7 +742,7 @@ sub baseDecline {
     }
   }
   my $badge = $player->{currentTokenBadge};
-  if ( defined $player->declinedTokenBadgeId ) {
+  if ( $player->declinedTokenBadgeId != -1 ) {
     foreach ( $self->tokenBadges ) {
       next if defined $_->{raceName};
       $_->{raceName} = $player->{declinedTokenBadge}->{raceName};
