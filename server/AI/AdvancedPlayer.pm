@@ -73,7 +73,7 @@ sub _constructConqWays {
   my @regions = ();
   # сначал надо определиться с регионами, с которых мы можем начать цепочки
   # завоеваний
-  if ( scalar(@{ $p->regions }) == 0 ) {
+  if ( scalar(@{ $ar->regions }) == 0 ) {
     # если у игрока нет регионов, значит это первое завоевание,
     # пробегаемся по всем регионам и составляем список регионов, на которые
     # можем напасть при первом завоевании
@@ -87,16 +87,6 @@ sub _constructConqWays {
       foreach ( @{ $asp->getRegionsForAttack($mine) } ) {
         push @regions, $_
           if !$_->isImmune && !$p->isOwned($_) && $asp->canAttack($_) && !$g->{gs}->playerFriendWithRegionOwner($p, $_);
-      }
-    }
-    if ( $#regions < 0 && $#{ $ar->regions } < 0 ) {
-      # если у игрока есть регионы, но он не может продолжать захватывать не
-      # свои регионы, а мы обязаны попытаться хотя бы захватить хоть что-то,
-      # нам следует захватить хотя бы регионы с расой в упадке
-      foreach ( @{ $p->declinedRace->regions } ) {
-        next if !$self->_canBaseAttack($g, $_->id);
-        push @regions, $_;
-        last;
       }
     }
   }
