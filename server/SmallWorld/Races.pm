@@ -120,7 +120,7 @@ sub isDefensive { 0;                                                           }
 sub isOffensive { 0;                                                           }
 sub isWeak {
   my ($self, $player) = @_;
-  return scalar(@{ $self->regions }) < scalar(@{ $player->regions });
+  return scalar(@{ $self->regions }) < scalar(@{ $player->activeRace->regions });
 }
 
 
