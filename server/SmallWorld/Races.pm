@@ -29,7 +29,7 @@ sub _init {
   $self->{regions} = [grep {
     defined $_->{tokenBadgeId} && defined $badge->{tokenBadgeId} &&
     $_->{tokenBadgeId} == $badge->{tokenBadgeId}
-  } @regions] || [];
+  } @regions];
 }
 
 # возвращает количество первоначальных фигурок для каждой расы
@@ -120,7 +120,7 @@ sub isDefensive { 0;                                                           }
 sub isOffensive { 0;                                                           }
 sub isWeak {
   my ($self, $player) = @_;
-  return scalar(@{ $self->regions }) < scalar(@{ $player->regions });
+  return scalar(@{ $self->regions }) < scalar(@{ $player->activeRace->regions });
 }
 
 

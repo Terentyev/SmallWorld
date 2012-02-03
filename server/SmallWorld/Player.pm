@@ -41,8 +41,8 @@ sub isFriend {
 sub id                   { return $_[0]->{playerId};                                             }
 sub name                 { return $_[0]->{username};                                             }
 sub coins                { return $_[0]->{coins};                                                }
-sub activeTokenBadgeId   { return $_[0]->{currentTokenBadge}->{tokenBadgeId};                    }
-sub declinedTokenBadgeId { return $_[0]->{declinedTokenBadge}->{tokenBadgeId};                   }
+sub activeTokenBadgeId   { return $_[0]->{currentTokenBadge}->{tokenBadgeId} // -1;              }
+sub declinedTokenBadgeId { return $_[0]->{declinedTokenBadge}->{tokenBadgeId} // -1;             }
 sub activeRace           { return $_[0]->{game}->createRace($_[0]->{currentTokenBadge});         }
 sub activeSp             { return $_[0]->{game}->createSpecialPower('currentTokenBadge', $_[0]); }
 sub declinedRace         { return $_[0]->{game}->createRace($_[0]->{declinedTokenBadge});        }

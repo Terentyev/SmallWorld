@@ -55,7 +55,8 @@ sub _sortAgressiveConq {
       next if $r->ownerId == -1;
       my $p = $g->{gs}->getPlayer(id => $r->ownerId);
       my $ar = $p->activeRace;
-      ++$c if $r->inDecline && ($p->declinedRace->isWeak($p) || $ar->isDefensive || $p->activeSpName eq SP_DIPLOMAT) ||
+      ++$c if $r->inDecline &&
+        ($p->declinedRace->isWeak($p) || $p->activeTokenBadgeId == -1 || $ar->isDefensive || $p->activeSpName eq SP_DIPLOMAT) ||
         $ar->isScoring && !$r->inDecline;
     }
     push @tmp, { way => $_->{way}, c => $c };
@@ -82,13 +83,13 @@ sub _constructConqWays {
   }
   else {
     # у игрока есть территории, продолжаем завоевывать относительно их
-    foreach my $mine ( @{ $p->regions } ) {
+    foreach my $mine ( @{ $ar->regions } ) {
       foreach ( @{ $asp->getRegionsForAttack($mine) } ) {
         push @regions, $_
           if !$_->isImmune && !$p->isOwned($_) && $asp->canAttack($_) && !$g->{gs}->playerFriendWithRegionOwner($p, $_);
       }
     }
-    if ( $#regions < 0 && $#{ $ar->regions } < 0 && $p->declinedTokenBadgeId ) {
+    if ( $#regions < 0 && $#{ $ar->regions } < 0 ) {
       # если у игрока есть регионы, но он не может продолжать захватывать не
       # свои регионы, а мы обязаны попытаться хотя бы захватить хоть что-то,
       # нам следует захватить хотя бы регионы с расой в упадке
