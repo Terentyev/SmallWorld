@@ -46,6 +46,7 @@ sub _init {
   if ( defined $p{game} ) {
     $self->games->{$p{game}}->{ais} = eval { decode_json($p{ais}) } || [] if defined $p{ais};
     $self->games->{$p{game}}->{count} = $p{count} if defined $p{count};
+    $self->{exitAfterGameEnd} = 1;
   }
   $self->{db} = AI::DB->new(
       db          => DB_NAME,
@@ -576,6 +577,7 @@ sub _leaveGame {
   }
   $g->{ais} = [grep $_->{sid} != $sid, @{ $g->{ais} }];
   swLog(LOG_FILE, 'leaveGame', $g->{ais}, $sid);
+  exit if ( $self->{exitAfterGameEnd} && !@{$g->{ais}} );
 }
 
 # производим захват регионов

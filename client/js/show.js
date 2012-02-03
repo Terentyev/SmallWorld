@@ -285,7 +285,7 @@ function showScores() {
   for (var i in p)
     s += addRow([(parseInt(i)+1)+'.', p[i].username, showCoins(p[i].coins, 1, 0)]);
   $('#tableScores tbody').html(s);
-  showModal('#divScores', modalSize.minHeight + p.length*modalSize.lineHeight, 300);
+  showModal('#divScores', modalSize.minHeight + p.length*modalSize.lineHeight, 350);
 }
 
 function showTurnScores(stats) {
