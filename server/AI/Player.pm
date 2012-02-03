@@ -264,16 +264,6 @@ sub _useSpConquer {
   return 0;
 }
 
-# количество лагерей, которые стоят на чужих регионах
-sub _alienEncampNum {
-  my ($self, $g) = @_;
-  my $result = 0;
-  foreach ( @{ $g->{gs}->regions } ) {
-    $result += ($_->{encampment} // 0) if ($_->{ownerId} // -1) != $g->{gs}->activePlayerId;
-  }
-  return $result;
-}
-
 # можем ли мы произвести атаку по базовым правилам
 sub _canBaseAttack {
   my ($self, $g, $regionId) = @_;
@@ -371,8 +361,7 @@ sub _canPlaceEncampment {
   my ($self, $g) = @_;
   my $p = $g->{gs}->getPlayer();
   my $asp = $p->activeSp;
-  return $asp->canCmd({ action => 'redeploy', encampments => [] }, $g->{gs}->stage, $p) &&
-    $self->_alienEncampNum($g) < ENCAMPMENTS_MAX;
+  return $asp->canCmd({ action => 'redeploy', encampments => [] }, $g->{gs}->stage, $p);
 }
 
 # можем ли мы размещать форты
@@ -476,9 +465,6 @@ sub _getRedeployment {
     # прежде, чем мы начнем ставить лагеря, надо посчитать сколько максмимум мы
     # можем поставить
     my $encampNum = ENCAMPMENTS_MAX;
-    # надо пробежаться по всем НЕ нашим регионам и вычесть количество уже
-    # расставленных лагерей, которые мы не можем двигать
-    $encampNum -= $self->_alienEncampNum($g);
     # каждый лагерь, который мы сейчас будем расставлять приравнивается одной
     # фигурке
     $tokens += $encampNum;
