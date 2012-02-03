@@ -67,6 +67,50 @@ use constant EST_SWAMP         => 0.5;
 use constant EST_UNDERWORLD    => 0.5;
 use constant EST_WEALTHY       => 0.5;
 
+
+# оценки для рас и умений в зависимости от фазы игры
+use constant GP_EARLY => 0;
+use constant GP_MIDDLE => 1;
+use constant GP_LATE => 2;
+
+use constant EST_RACE => {
+  'Amazons'   => [5, 3, 4],
+  'Dwarves'   => [1, 1, 1],
+  'Elves'     => [3, 4, 2],
+  'Giants'    => [4, 3, 4],
+  'Halflings' => [2, 4, 3],
+  'Humans'    => [1, 3, 3],
+  'Orcs'      => [1, 2, 3],
+  'Ratmen'    => [5, 4, 4],
+  'Skeletons' => [1, 4, 3],
+  'Sorcerers' => [1, 3, 2],
+  'Tritons'   => [5, 2, 4],
+  'Trolls'    => [4, 4, 2],
+  'Wizards'   => [1, 3, 3]
+};
+
+use constant EST_POWER => {
+  'Alchemist'    => [1, 4, 3],
+  'Berserk'      => [3, 2, 3],
+  'Bivouacking'  => [2, 4, 1],
+  'Commando'     => [4, 2, 4],
+  'Diplomat'     => [2, 4, 3],
+  'DragonMaster' => [4, 4, 4],
+  'Flying'       => [3, 3, 3],
+  'Forest'       => [1, 3, 3],
+  'Fortified'    => [2, 4, 1],
+  'Heroic'       => [2, 4, 2],
+  'Hill'         => [1, 3, 3],
+  'Merchant'     => [1, 3, 3],
+  'Mounted'      => [4, 3, 3],
+  'Pillaging'    => [1, 3, 3],
+  'Seafaring'    => [4, 2, 4],
+  'Stout'        => [4, 3, 2],
+  'Swamp'        => [1, 3, 3],
+  'Underworld'   => [4, 3, 4],
+  'Wealthy'      => [4, 1, 4]
+};
+
 # глубина поиска атак при одном прохождении
 use constant CONQ_WAY_MAX_REGIONS_NUM => 200;
 

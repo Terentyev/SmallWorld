@@ -12,6 +12,7 @@ use SW::Util qw( swLog );
 
 use AI::Config;
 use AI::Monitor;
+use Data::Dumper;
 
 BEGIN {
   $SIG{__DIE__} = \&log_die;
@@ -33,13 +34,13 @@ sub renameKey {
 
 sub parseArgs {
   my %result = ();
-  getopts('s:g:t:u:bc:', \%result) || HELP_MESSAGE();
+  getopts('s:g:t:u:c:l:', \%result) || HELP_MESSAGE();
   renameKey('s', 'server',  \%result);
   renameKey('g', 'game',    \%result);
   renameKey('t', 'timeout', \%result);
   renameKey('u', 'ais',     \%result);
-  renameKey('b', 'simple',  \%result);
   renameKey('c', 'count',   \%result);
+  renameKey('l', 'level',   \%result);
   return %result;
 }
 
@@ -53,7 +54,7 @@ Usage: $0 [[-s server_address] [[-g game_id] [|-c ais_count|-u ais]] [-b] [-t ti
   -g game_id            specify game id for play
   -t timeout            specify refresh timeout in seconds (default timeout $t)
   -u ais                specify AIs info (see more below)
-  -b                    specify use simple AI (default use advanced AI)
+  -l level              specify AI level 0: simple; 1: advanced; 2:advanced SE; (default level 2)
   -c ais_count          specify AIs count for game (default max possible)
   --help                show this information
 AIs info:
