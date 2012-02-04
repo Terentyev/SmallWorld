@@ -51,7 +51,7 @@ sub _sortAgressiveConq {
   my $max = undef;
   foreach ( @bonusSums ) {
     last if defined $max && $max > $_->{bonus};
-    $max = $_->{bonus};
+    $max = $_->{bonus} - 1;
     my $c = 0;
     foreach ( @{ $_->{way} } ) {
       my $r = $g->{gs}->getRegion(id => $_->{id});
