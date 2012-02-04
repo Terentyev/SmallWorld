@@ -271,7 +271,7 @@ sub _canBaseAttack {
   my $p = $g->{gs}->getPlayer();
   my $ar = $p->activeRace();
   my $asp = $p->activeSp();
-  return !$r->isImmune() && $p->tokens > 0 &&
+  return !$r->isImmune() &&
     !$self->checkRegion_conquer(undef, $g->{gs}, $p, $r, $ar, $asp, undef);
 }
 
@@ -286,7 +286,7 @@ sub _canAttack {
   };
   my $ar = $p->activeRace();
   my $asp = $p->activeSp();
-  return $self->_canBaseAttack($g, $regionId) && $g->{gs}->canAttack($p, $r, $ar, $asp, $dummy);
+  return $self->_canBaseAttack($g, $regionId) && $p->tokens > 0 && $g->{gs}->canAttack($p, $r, $ar, $asp, $dummy);
 }
 
 # можем ли мы зачаровать этот регион
