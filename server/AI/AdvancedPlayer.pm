@@ -22,7 +22,9 @@ our @backupNames = qw( ownerId tokenBadgeId conquestIdx prevTokenBadgeId prevTok
 # создает план по захвату территорий (какие регионы в каком порядке)
 sub _constructConquestPlan {
   my ($self, $g, $p) = @_;
-  my @ways = $self->_constructConqWays($g, $p);
+  my @ways = $self->_constructConqWays($g, $p, 0);
+  @ways = $self->_constructConqWays($g, $p, 1)
+    if !@ways && ($g->{gs}->stage ne GS_BEFORE_CONQUEST || $self->_isLastTurn($g));
   my @bonusSums = $self->_calculateBonusSums($g, 0, @ways);
   @bonusSums = $self->_calculateBonusSums($g, 1, @ways)
     if !@bonusSums && ($g->{gs}->stage ne GS_BEFORE_CONQUEST || $self->_isLastTurn($g));
@@ -38,6 +40,7 @@ sub _constructConquestPlan {
     }
   }
   delete $_->{inResult} for $g->{gs}->regions;
+  swLog(LOG_FILE, '@result', [map { { id => $_->id, tokens => $_->tokens, ownerId => $_->ownerId } } @result]);
   return @result;
 }
 
@@ -67,38 +70,28 @@ sub _sortAgressiveConq {
 # создает различные варианты путей захвата регионов, а также подсчитывает кол-во
 # бонусных монеток и кол-во затраченных фигурок
 sub _constructConqWays {
-  my ($self, $g, $p) = @_;
+  my ($self, $g, $p, $force) = @_;
   my $ar = $p->activeRace;
   my $asp = $p->activeSp;
   my @regions = ();
+  my @tmp = ();
   # сначал надо определиться с регионами, с которых мы можем начать цепочки
   # завоеваний
-  if ( scalar(@{ $p->regions }) == 0 ) {
+  if ( scalar(@{ $ar->regions }) == 0 ) {
     # если у игрока нет регионов, значит это первое завоевание,
     # пробегаемся по всем регионам и составляем список регионов, на которые
     # можем напасть при первом завоевании
-    foreach ( @{ $g->{gs}->regions } ) {
-      push @regions, $_ if $self->_canBaseAttack($g, $_->id);
-    }
+    @tmp = $g->{gs}->regions;
   }
   else {
     # у игрока есть территории, продолжаем завоевывать относительно их
-    foreach my $mine ( @{ $ar->regions } ) {
-      foreach ( @{ $asp->getRegionsForAttack($mine) } ) {
-        push @regions, $_
-          if !$_->isImmune && !$p->isOwned($_) && $asp->canAttack($_) && !$g->{gs}->playerFriendWithRegionOwner($p, $_);
-      }
+    foreach ( @{ $ar->regions } ) {
+      push @tmp, @{ $asp->getRegionsForAttack($_) };
     }
-    if ( $#regions < 0 && $#{ $ar->regions } < 0 ) {
-      # если у игрока есть регионы, но он не может продолжать захватывать не
-      # свои регионы, а мы обязаны попытаться хотя бы захватить хоть что-то,
-      # нам следует захватить хотя бы регионы с расой в упадке
-      foreach ( @{ $p->declinedRace->regions } ) {
-        next if !$self->_canBaseAttack($g, $_->id);
-        push @regions, $_;
-        last;
-      }
-    }
+  }
+  foreach ( @tmp ) {
+    push @regions, $_
+      if $self->_canBaseAttack($g, $_->id) && ($force || !$p->isOwned($_));
   }
 
   # уберем повторения
