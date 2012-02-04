@@ -57,8 +57,8 @@ sub _shouldConquer {
   my $availableTokens = $p->tokens + $p->activeRace->redeployTokensBonus($p);
 
   #если раса в упадке слаба то decline, много фигурок на руках или достаточно регионов то не decline
-  return scalar(@$dregs) < 2 && $p->declinedTokenBadgeId == -1  && $availableTokens > 4 ||
-         scalar(@$dregs) > 1 && ($availableTokens > 4 || scalar(@$dregs) + scalar(@$aregs) > 9);
+  return $availableTokens > 4 ||
+         (scalar(@$dregs) > 2 && scalar(@$aregs) > 4);
 }
 
 1;
