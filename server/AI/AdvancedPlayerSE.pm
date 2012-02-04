@@ -26,16 +26,14 @@ sub _getGamePhase {
   return GP_MIDDLE;
 }
 
-# создает различные варианты путей захвата регионов, а также подсчитывает кол-во
-# бонусных монеток и кол-во затраченных фигурок
+# создает оценки для каждой доступной пары раса/умение и сортирует их в порядке
+# уменьшения интересности в зависимости от фазы игры
 sub _constructBadgesEstimates {
   my ($self, $g) = @_;
   my @result = ();
   my $i = 0;
   my $phase = $self->_getGamePhase($g);
   foreach ( @{ $g->{gs}->tokenBadges } ) {
-    swLog(LOG_FILE, 'no race', $_->{raceName}) unless EST_RACE->{$_->{raceName}}->[$phase];
-    swLog(LOG_FILE, 'no power', $_->{specialPowerName}) unless EST_RACE->{$_->{raceName}}->[$phase];
     push @result, {
       est => (
         (EST_RACE->{$_->{raceName}}->[$phase] + 
@@ -56,10 +54,11 @@ sub _shouldConquer {
   my $p = $g->{gs}->getPlayer;
   my $dregs = $p->declinedRace->regions;
   my $aregs = $p->activeRace->regions;
+  my $availableTokens = $p->tokens + $p->activeRace->redeployTokensBonus($p);
 
   #если раса в упадке слаба то decline, много фигурок на руках или достаточно регионов то не decline
-  return scalar(@$dregs) > 1 &&
-         ($p->tokens + $p->activeRace->redeployTokensBonus($p) > 4 || scalar(@$dregs) + scalar(@$aregs) > 9);
+  return scalar(@$dregs) < 2 && $p->declinedTokenBadgeId == -1  && $availableTokens > 4 ||
+         scalar(@$dregs) > 1 && ($availableTokens > 4 || scalar(@$dregs) + scalar(@$aregs) > 9);
 }
 
 1;

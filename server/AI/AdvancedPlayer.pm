@@ -30,7 +30,7 @@ sub _constructConquestPlan {
     if !@bonusSums && ($g->{gs}->stage ne GS_BEFORE_CONQUEST || $self->_isLastTurn($g));
   @ways = $self->_sortAgressiveConq($g, @bonusSums);
   swLog(LOG_FILE, '@ways', \@ways);
-  # формируем массив регионов по порядку их завоевания
+  # формируем массив регионов в порядке их завоевания
   my @result = ();
   foreach my $w ( @ways ) {
     foreach ( @$w ) {
@@ -84,7 +84,7 @@ sub _constructConqWays {
     @tmp = $g->{gs}->regions;
   }
   else {
-    # у игрока есть территории, продолжаем завоевывать относительно их
+    # у игрока есть территории, продолжаем завоевывать относительно них
     foreach ( @{ $ar->regions } ) {
       push @tmp, @{ $asp->getRegionsForAttack($_) };
     }
