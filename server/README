@@ -46,5 +46,5 @@ III. AI
 
 * for ai you need next perl packages: Getopt::Std (>=1.06),
     LWP::UserAgent (>=6.03), URI::Escape (>=3.30), JSON (>=2.27),
-    Curses (>=1.280.0), List::Util (>=1.23)
+    Curses (>=1.280.0), List::Util (>=1.23), Switch (>=2.16)
 * for more information use: ./ai.pl --help
